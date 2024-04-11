@@ -1,0 +1,14 @@
+<div class="gdt-form">
+
+    {%field.render_paragraph()%}
+
+    <form>
+
+        {%
+        for gdt in field._fields
+            write(gdt.render_form())
+        %}
+
+    </form>
+
+</div>

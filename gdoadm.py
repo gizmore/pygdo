@@ -1,8 +1,10 @@
 import argparse
 import os
 import sys
+import traceback
 
 from gdo.core.Application import Application
+from gdo.core.Logger import Logger
 from gdo.core.ModuleLoader import ModuleLoader
 from gdo.install.Installer import Installer
 
@@ -34,11 +36,13 @@ class App:
         parser.add_argument('--module')
         parser.add_argument('--modules')
         args = parser.parse_args(sys.argv[2:])
-        reinstall = not not args.reinstall
+        reinstall = args.reinstall
         if args.all:
             modules = ModuleLoader.instance().load_modules_fs('*', reinstall)
         elif args.module:
-            module = ModuleLoader.instance().load_module_fs(args.module, reinstall)
+            module = ModuleLoader.instance().load_module_fs(args.module.lower(), reinstall)
+            if not module:
+                raise GDOError('err_module')
             modules = [module]
         elif args.modules:
             modules = ModuleLoader.instance().load_modules_fs(args.modules, reinstall)
@@ -68,7 +72,7 @@ class App:
         else:
             modules = []
 
-        for module in modules:
+        for module in Installer.modules_with_deps(modules):
             Installer.wipe(module)
 
     def migrate(self):
@@ -95,7 +99,12 @@ class App:
 def launch():
     path = os.path.dirname(__file__)
     Application.init(path)
-    App().argparser()
+    try:
+        App().argparser()
+    except Exception as ex:
+        Logger.exception(ex)
+        traceback.print_exc()
+        raise ex
 
 
 if __name__ == "__main__":

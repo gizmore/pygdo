@@ -1,8 +1,12 @@
 from enum import Enum
 
+from mysql.connector import ProgrammingError
+
 from gdo.core.Application import Application
+from gdo.core.Exceptions import GDODBException
+from gdo.core.GDT import GDT
 from gdo.core.Logger import Logger
-from gdo.db.Result import Result
+from gdo.core.Result import Result
 
 
 class Type(Enum):
@@ -12,7 +16,8 @@ class Type(Enum):
     SELECT = 4
     UPDATE = 5
     INSERT = 6
-    DELETE = 7
+    REPLACE = 7
+    DELETE = 8
 
 
 class Query:
@@ -22,13 +27,14 @@ class Query:
     _gdo: object
     _type: Type
     _columns: str
+    _vals: dict[str, str]
     _where: str
     _offset: int
     _limit: int
 
     def __init__(self):
         super().__init__()
-        self._debug = False
+        self._debug = True
         self._type = Type.UNKNOWN
 
     def is_select(self):
@@ -40,8 +46,18 @@ class Query:
     def is_update(self):
         return self.is_type(Type.UPDATE)
 
+    def is_insert(self):
+        return self.is_type(Type.INSERT)
+
+    def is_replace(self):
+        return self.is_type(Type.REPLACE)
+
     def is_type(self, _type):
         return self._type == _type
+
+    def type(self, type: Type):
+        self._type = type
+        return self
 
     def raw(self, query: str):
         self._raw = query
@@ -98,9 +114,25 @@ class Query:
         self._offset = offset
         return self
 
+    def set_val(self, key: str, val: str):
+        return self.set_vals({key: val})
+
+    def set_vals(self, vals: dict):
+        if not hasattr(self, '_vals'):
+            self._vals = {}
+        self._vals.update(vals)
+        return self
+
+
     def build_query(self):
         if self.is_raw():
             return self._raw
+        if self.is_insert():
+            values = ",".join(map(lambda v: GDT.quote(v), self._vals.values()))
+            return f"INSERT INTO {self._table} VALUES ({values})"
+        if self.is_replace():
+            values = ",".join(map(lambda v: GDT.quote(v), self._vals.values()))
+            return f"REPLACE INTO {self._table} VALUES ({values})"
         if self.is_select():
             return (
                 f"SELECT {self._columns} FROM {self._table} WHERE {self._where} {self.buildLimit()}"
@@ -115,10 +147,15 @@ class Query:
 
     def exec(self):
         query = self.build_query()
-        if self._debug:
-            Logger.debug(query)
-        result = Application.DB.query(query)
-        if self.is_select():
-            return Result(result, self._gdo)
-        return True
+        try:
+            if self._debug:
+                Logger.debug(query)
+            if self.is_select():
+                cursor = Application.DB.cursor()
+                cursor.execute(query)
+                return Result(cursor, self._gdo)
+            else:
+                return Application.DB.query(query)
+        except ProgrammingError as ex:
+            raise GDODBException(ex.msg, query)
 

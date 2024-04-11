@@ -25,11 +25,17 @@ class GDT_Field(GDT):
         self._value = None
         self._converted = False
 
+
     def get_name(self):
         return self._name
 
     def gdo(self, gdo: GDO):
         self._gdo = gdo
+        self._val = gdo.get(self._name)
+        return self
+
+    def initial(self, val: str):
+        self._initial = val
         return self
 
     def is_primary(self):
@@ -76,6 +82,4 @@ class GDT_Field(GDT):
 
     def validate_unique(self, value):
         self._gdo.table().select()
-
-
 

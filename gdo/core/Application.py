@@ -1,16 +1,15 @@
 import os
 import toml
-from gdo.db.Database import Database
 
 
 class Application:
-
+    DB = None
     path: str
     config: dict
-    DB: Database
 
     @classmethod
     def init(cls, path):
+        from gdo.core.Database import Database
         cls.count = 0
         cls.path = os.path.normpath(path)
         config_path = os.path.join(cls.path, 'protected/config.toml')
@@ -19,6 +18,7 @@ class Application:
             cfg = cls.config['Database']['db']
             cls.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
 
+
     @classmethod
     def has_db(cls):
         return cls.DB is not None
@@ -26,4 +26,3 @@ class Application:
     @classmethod
     def file_path(cls, path: str):
         return os.path.join(cls.path, path)
-

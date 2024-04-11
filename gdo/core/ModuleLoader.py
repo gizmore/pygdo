@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import glob
 import importlib
 import os
 
 from gdo.core.Application import Application
-from gdo.core.Exceptions import GDODBException
+from gdo.core.Exceptions import GDOException
 
 
 class ModuleLoader:
@@ -18,11 +20,11 @@ class ModuleLoader:
 
     def gdo_import(self, name):
         mn = importlib.import_module("gdo." + name)
-        classname = "module_" + name
+        classname = 'module_' + name
         if classname in mn.__dict__.keys():
             self._cache[name] = mn.__dict__[classname]()
-            return True
-        return False
+            return self._cache[name]
+        return None
 
     def __init__(self):
         self._cache = {}
@@ -31,7 +33,7 @@ class ModuleLoader:
         return self._cache[module_name]
 
     def sort_cache(self):
-        cc = sorted(self.cache.items(), key=lambda mod: mod[1]._priority)
+        cc = sorted(self._cache.items(), key=lambda mod: mod[1]._priority)
         self._cache = {k: v for k, v in cc}
         return self
 
@@ -57,8 +59,43 @@ class ModuleLoader:
 
     def module_installed(self, modulename: str) -> bool:
         if not Application.DB.is_configured():
-            raise GDODBException("Database not configured!")
+            raise GDOException("Database not configured!")
         return False
+
+    def load_modules_db(self, enabled: None | bool):
+        from gdo.core.GDO_Module import GDO_Module
+        back = []
+        query = GDO_Module.table().select()
+        if isinstance(enabled, bool):
+            query.where(f"module_enabled=%i" % enabled)
+        result = query.exec()
+        for db in result:
+            fs = self.gdo_import(db.get('module_name'))
+            fs.set_vals(db._vals, False)
+            fs.all_dirty(False)
+            back.append(fs)
+        return back
+
+    def load_module_db(self, modulename, enabled=False):
+        from gdo.core.GDO_Module import GDO_Module
+        db = GDO_Module.table().get_by_name(modulename)
+        fs = self.gdo_import(modulename)
+        if db:
+            fs.set_vals(db._vals)
+        else:
+            return None
+        if enabled:
+            if not fs.is_enabled():
+                return None
+        return fs
+
+    def init_modules(self, enabled=True):
+        for module in self._cache.values():
+            if enabled and module.is_enabled():
+                module.init_language()
+        for module in self._cache.values():
+            if enabled and module.is_enabled():
+                module.gdo_init()
 
     # def module_instance(self, name):
     #     mn = "module_" + name

@@ -3,6 +3,8 @@ from gdo.core.Cache import Cache
 from gdo.core.GDO import GDO
 from gdo.core.GDO_Module import GDO_Module
 from gdo.core.Logger import Logger
+from gdo.core.ModuleLoader import ModuleLoader
+from gdo.core.Util import Arrays
 
 
 class Installer:
@@ -13,9 +15,25 @@ class Installer:
             cls.install_module(module)
 
     @classmethod
-    def modules_with_deps(cls, modules):
-        depped = []
-        return modules
+    def modules_with_deps(cls, modules: list) -> [GDO_Module]:
+        loader = ModuleLoader.instance()
+        modules.append(loader.load_module_fs('core'))
+        deps = Arrays.unique(modules)
+        before = len(deps)
+        after = 0
+        while before != after:
+            before = after
+            for dep in deps:
+                more = dep.gdo_dependencies()
+                for name in more:
+                    mod = loader.load_module_fs(name)
+                    if mod not in deps:
+                        deps.append(mod)
+            after = len(deps)
+        sorted(deps, key=lambda m: m._priority)
+        return deps
+
+
 
     @classmethod
     def install_module(cls, module: GDO_Module):
@@ -24,12 +42,27 @@ class Installer:
         for classname in classes:
             Logger.debug(f'Installing module class {classname}')
             cls.install_gdo(classname)
+        cls.install_module_entry(module)
+        module.gdo_install()
+
+    @classmethod
+    def install_module_entry(cls, module: GDO_Module):
+        loader = ModuleLoader.instance()
+        db = loader.load_module_db(module.get_name())
+        mid = '0'
+        if db is not None:
+            mid = db.get_id()
+        module.set_vals({
+            'module_id': mid,
+            'module_name': module.get_name(),
+            'module_enabled': '1',
+        }).soft_replace()
+
 
     @classmethod
     def install_gdo(cls, classname):
         table = Cache.table_for(classname)
-        cls.DB.create_table(table)
-        pass
+        return Application.DB.create_table(table)
 
     @classmethod
     def migrate_module(cls, module: GDO_Module):
@@ -105,6 +138,10 @@ class Installer:
         if old and new:
             return list(set(old).intersection(new))
         return []
+
+    @classmethod
+    def wipe(cls, module: GDO_Module):
+         module.delete()
 
 
 

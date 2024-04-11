@@ -10,5 +10,8 @@ class module_user(GDO_Module):
 
     def gdo_classes(self):
         return [
-            GDO_User
+            GDO_User,
         ]
+
+    def gdo_install(self):
+        GDO_User.blank([])

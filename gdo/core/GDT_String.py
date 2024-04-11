@@ -1,6 +1,8 @@
 from enum import Enum
 
 from gdo.core.GDT_Field import GDT_Field
+from gdo.core.GDT_Template import GDT_Template
+from gdo.core.WithLabel import WithLabel
 
 
 class Encoding(Enum):
@@ -9,7 +11,7 @@ class Encoding(Enum):
     BINARY = 3
 
 
-class GDT_String(GDT_Field):
+class GDT_String(WithLabel, GDT_Field):
 
     _encoding: Encoding
     _case_s: bool
@@ -18,6 +20,8 @@ class GDT_String(GDT_Field):
     _maxlen: int
     _pattern: str
 
+    _input_type: str
+
     def __init__(self, name):
         super().__init__(name)
         self._encoding = Encoding.UTF8
@@ -25,6 +29,8 @@ class GDT_String(GDT_Field):
         self._maxlen = 192
         self._pattern = ''
         self._case_s = False
+        self._input_type = 'text'
+        self.label(name)
 
     def minlen(self, minlen: int):
         self._minlen = minlen
@@ -89,3 +95,9 @@ class GDT_String(GDT_Field):
 
     def validate_length(self, value):
         return True
+
+    def render_html(self):
+        pass
+
+    def render_form(self):
+        return GDT_Template.python('core', 'form_string.html', {'field': self})

@@ -22,6 +22,8 @@ class GDT:
 
     @classmethod
     def quote(cls, val: str) -> str:
+        if val is None or val == '':
+            return 'NULL'
         return f"'{cls.escape(val)}'"
 
     def gdo(self, gdo):

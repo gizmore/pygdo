@@ -1,17 +1,22 @@
-import os.path
 import unittest
 
-from gdo.core.Application import Application
+from gdotest.test_forms import FormTestCase
 from gdotest.test_install import InstallTestCase
+from gdotest.test_ui import UITestCase
+from gdotest.test_util import UtilityTestCase
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(InstallTestCase())
-    return suite
+    mysuite = unittest.TestSuite()
+    loader = unittest.TestLoader()
+    mysuite.addTests(loader.loadTestsFromTestCase(InstallTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(FormTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(UITestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(UtilityTestCase))
+    return mysuite
 
 
 if __name__ == '__main__':
-    Application.init(os.path.dirname(__file__))
     runner = unittest.TextTestRunner()
     runner.run(suite())
+

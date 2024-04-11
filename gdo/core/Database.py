@@ -25,31 +25,33 @@ class Database:
                 user=self.username,
                 password=self.password,
             )
-            try:
-                self.link.database = self.db_name
-            except:
-                pass
+            self.link.autocommit = True
+            self.link.database = self.db_name
             self.query('SET NAMES utf8mb4')
         return self.link
 
     def query(self, query):
         try:
             return self.get_link().cmd_query(query)
-        except ProgrammingError:
-            print(query)
-            raise GDODBException("Database error")
+        except ProgrammingError as ex:
+            raise GDODBException(ex.msg, query)
+
+    def cursor(self, dictionary=True):
+        return self.get_link().cursor(False, False, dictionary=dictionary)
 
     def create_table(self, gdo):
         Logger.debug(f"Installing {gdo.gdo_table_name()}")
         cols = []
         prim = []
-        for gdt in gdo.gdo_columns():
+        for gdt in gdo.columns():
             Logger.debug(f"Field {gdt.get_name()}")
             define = gdt.gdo_column_define()
             cols.append(define)
             if gdt.is_primary():
                 prim.append(gdt.get_name())
-
+        if prim:
+            primary = ",".join(prim)
+            cols.append(f"PRIMARY KEY ({primary})")
         query = f"CREATE TABLE IF NOT EXISTS {gdo.gdo_table_name()} (" + ",\n".join(cols) + ")\n"
         self.query(query)
 
@@ -69,4 +71,6 @@ class Database:
         return self.get_link().get_rows()
 
     def fetch_row(self):
-        return self.get_link().get_row()
+        row = self.get_link().get_row()
+        return list(row.values())
+
