@@ -1,4 +1,4 @@
-from gdo.core.Trans import t
+from gdo.base.Trans import t
 
 
 class GDOException(Exception):
@@ -15,5 +15,5 @@ class GDODBException(Exception):
 
 class GDOError(Exception):
     
-    def __init__(self, key, args):
+    def __init__(self, key, args=None):
         super().__init__(t(key, args))

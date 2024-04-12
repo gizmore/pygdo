@@ -1,8 +1,5 @@
 import mysql.connector
-from mysql.connector import ProgrammingError
-
-from gdo.core.Exceptions import GDODBException
-from gdo.core.Logger import Logger
+from gdo.base.Logger import Logger
 
 
 class Database:
@@ -18,6 +15,12 @@ class Database:
         self.username = user
         self.password = pw
 
+    def __del__(self):
+        if self.link:
+            self.link.close()
+            delattr(self, 'link')
+
+
     def get_link(self):
         if self.link is None:
             self.link = mysql.connector.connect(
@@ -31,20 +34,17 @@ class Database:
         return self.link
 
     def query(self, query):
-        try:
-            return self.get_link().cmd_query(query)
-        except ProgrammingError as ex:
-            raise GDODBException(ex.msg, query)
+        return self.get_link().cmd_query(query)
 
     def cursor(self, dictionary=True):
         return self.get_link().cursor(False, False, dictionary=dictionary)
 
     def create_table(self, gdo):
-        Logger.debug(f"Installing {gdo.gdo_table_name()}")
+        # Logger.debug(f"Installing {gdo.gdo_table_name()}")
         cols = []
         prim = []
         for gdt in gdo.columns():
-            Logger.debug(f"Field {gdt.get_name()}")
+            # Logger.debug(f"Field {gdt.get_name()}")
             define = gdt.gdo_column_define()
             cols.append(define)
             if gdt.is_primary():
@@ -67,10 +67,4 @@ class Database:
         query = f"SET FOREIGN_KEY_CHECKS = %i" % state
         return self.query(query)
 
-    def fetch_rows(self, result):
-        return self.get_link().get_rows()
-
-    def fetch_row(self):
-        row = self.get_link().get_row()
-        return list(row.values())
 

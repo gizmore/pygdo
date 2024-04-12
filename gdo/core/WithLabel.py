@@ -1,5 +1,5 @@
-from gdo.core.Util import Strings
-from gdo.core.Trans import t
+from gdo.base.Util import Strings
+from gdo.base.Trans import t
 
 
 class WithLabel:

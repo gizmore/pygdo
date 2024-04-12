@@ -2,10 +2,8 @@ import os
 import re
 import sys
 
-from pyparsing import unicode
-
-from gdo.core.Application import Application
-from gdo.core.GDT import GDT
+from gdo.base.Application import Application
+from gdo.base.GDT import GDT
 
 
 class Templite(object):

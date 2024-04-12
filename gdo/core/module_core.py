@@ -1,5 +1,5 @@
-from gdo.core.GDO_Module import GDO_Module
-from gdo.core.GDO_ModuleVar import GDO_ModuleVar
+from gdo.base.GDO_Module import GDO_Module
+from gdo.base.GDO_ModuleVar import GDO_ModuleVar
 
 
 class module_core(GDO_Module):
@@ -13,13 +13,10 @@ class module_core(GDO_Module):
 
     def gdo_dependencies(self) -> list:
         return [
+            'base',
+            'date',
             'language',
             'user',
         ]
 
-    def gdo_classes(self):
-        return [
-            GDO_Module,
-            GDO_ModuleVar,
-        ]
 

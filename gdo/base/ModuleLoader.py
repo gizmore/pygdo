@@ -4,8 +4,9 @@ import glob
 import importlib
 import os
 
-from gdo.core.Application import Application
-from gdo.core.Exceptions import GDOException
+from gdo.base.Application import Application
+from gdo.base.Exceptions import GDOException
+from gdo.base.Logger import Logger
 
 
 class ModuleLoader:
@@ -19,6 +20,7 @@ class ModuleLoader:
         return cls._instance
 
     def gdo_import(self, name):
+        # Logger.debug(f'gdo_import({name})')
         mn = importlib.import_module("gdo." + name)
         classname = 'module_' + name
         if classname in mn.__dict__.keys():
@@ -63,21 +65,21 @@ class ModuleLoader:
         return False
 
     def load_modules_db(self, enabled: None | bool):
-        from gdo.core.GDO_Module import GDO_Module
+        from gdo.base.GDO_Module import GDO_Module
         back = []
         query = GDO_Module.table().select()
         if isinstance(enabled, bool):
             query.where(f"module_enabled=%i" % enabled)
         result = query.exec()
         for db in result:
-            fs = self.gdo_import(db.get('module_name'))
+            fs = self.gdo_import(db.gdo_val('module_name'))
             fs.set_vals(db._vals, False)
             fs.all_dirty(False)
             back.append(fs)
         return back
 
     def load_module_db(self, modulename, enabled=False):
-        from gdo.core.GDO_Module import GDO_Module
+        from gdo.base.GDO_Module import GDO_Module
         db = GDO_Module.table().get_by_name(modulename)
         fs = self.gdo_import(modulename)
         if db:
@@ -97,6 +99,6 @@ class ModuleLoader:
             if enabled and module.is_enabled():
                 module.gdo_init()
 
-    # def module_instance(self, name):
-    #     mn = "module_" + name
-    #     return mn()
+    def load_modules_cache(self):
+        return self.load_modules_db(True)
+

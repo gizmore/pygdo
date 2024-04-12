@@ -2,6 +2,9 @@ from enum import Enum
 
 from mysql.connector.cursor import MySQLCursorDict
 
+from gdo.base.Application import Application
+from gdo.base.Cache import Cache
+
 
 class IterType(Enum):
     ROW = 1
@@ -17,6 +20,11 @@ class Result:
     def __init__(self, result, gdo):
         self._result = result
         self._table = gdo
+
+    def __del__(self):
+        if self._result:
+            self._result.close()
+            delattr(self, '_result')
 
     def type(self, iter_type: IterType):
         self._iter = iter_type
@@ -60,4 +68,5 @@ class Result:
             return None
         obj = self._table.__class__()
         obj.set_vals(row)
-        return obj
+        obj.all_dirty(False)
+        return Cache.obj_for(obj)

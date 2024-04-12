@@ -1,9 +1,9 @@
 import os.path
 import unittest
 
-from gdo.core.Application import Application
+from gdo.base.Application import Application
 from gdo.core.GDT_String import GDT_String
-from gdo.core.ModuleLoader import ModuleLoader
+from gdo.base.ModuleLoader import ModuleLoader
 from gdo.form.GDT_CSRF import GDT_CSRF
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit

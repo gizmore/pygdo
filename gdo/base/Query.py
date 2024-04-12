@@ -1,12 +1,12 @@
 from enum import Enum
 
-from mysql.connector import ProgrammingError
+from mysql.connector import ProgrammingError, DataError
 
-from gdo.core.Application import Application
-from gdo.core.Exceptions import GDODBException
-from gdo.core.GDT import GDT
-from gdo.core.Logger import Logger
-from gdo.core.Result import Result
+from gdo.base.Application import Application
+from gdo.base.Exceptions import GDODBException
+from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
+from gdo.base.Result import Result
 
 
 class Type(Enum):
@@ -34,10 +34,13 @@ class Query:
 
     def __init__(self):
         super().__init__()
-        self._debug = True
+        self._debug = False
         self._type = Type.UNKNOWN
 
+
     def is_select(self):
+        if self.is_raw() and self._raw.startswith('SELECT'):
+            return True
         return self.is_type(Type.SELECT)
 
     def is_raw(self):
@@ -61,6 +64,7 @@ class Query:
 
     def raw(self, query: str):
         self._raw = query
+        self._type = Type.RAW
         return self
 
     def debug(self, debug=True):
@@ -123,16 +127,20 @@ class Query:
         self._vals.update(vals)
         return self
 
-
     def build_query(self):
         if self.is_raw():
             return self._raw
         if self.is_insert():
+            keys = ",".join(map(lambda v: GDT.escape(v), self._vals.keys()))
             values = ",".join(map(lambda v: GDT.quote(v), self._vals.values()))
-            return f"INSERT INTO {self._table} VALUES ({values})"
+            return f"INSERT INTO {self._table} ({keys}) VALUES ({values})"
         if self.is_replace():
+            keys = ",".join(map(lambda v: GDT.escape(v), self._vals.keys()))
             values = ",".join(map(lambda v: GDT.quote(v), self._vals.values()))
-            return f"REPLACE INTO {self._table} VALUES ({values})"
+            return f"REPLACE INTO {self._table} ({keys}) VALUES ({values})"
+        if self.is_update():
+            set_string = ",".join(map(lambda kv: f"{kv[0]}={GDT.quote(kv[1])}", self._vals.items()))
+            return f"UPDATE {self._table} SET {set_string} WHERE {self._where}"
         if self.is_select():
             return (
                 f"SELECT {self._columns} FROM {self._table} WHERE {self._where} {self.buildLimit()}"
@@ -156,6 +164,9 @@ class Query:
                 return Result(cursor, self._gdo)
             else:
                 return Application.DB.query(query)
+        except AttributeError as ex:
+            raise GDODBException(ex.__str__(), query)
         except ProgrammingError as ex:
             raise GDODBException(ex.msg, query)
-
+        except DataError as ex:
+            raise GDODBException(ex.msg, query)

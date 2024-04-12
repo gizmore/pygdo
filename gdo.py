@@ -1,13 +1,12 @@
 import os
-from gdo.core.Application import Application
-from gdo.core.ModuleLoader import ModuleLoader
-from gdo.install.Installer import Installer
+from gdo.base.Application import Application
+from gdo.base.ModuleLoader import ModuleLoader
 
 
 def init():
     Application.init(os.path.dirname(__file__))
-    ModuleLoader.instance().load_modules_fs('')
-    Installer.install_modules(ModuleLoader.instance().sort_cache()._cache.values())
+    ModuleLoader.instance().load_modules_cached()
+
 
 
 if __name__ == "__main__":

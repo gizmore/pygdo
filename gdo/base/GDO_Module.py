@@ -1,15 +1,11 @@
-import os.path
-
-from gdo.core.Application import Application
-from gdo.core.GDO import GDO
-from gdo.core.GDT_AutoInc import GDT_AutoInc
-from gdo.core.GDT_Bool import GDT_Bool
-from gdo.core.GDT_Name import GDT_Name
-from gdo.core.ModuleLoader import ModuleLoader
-from gdo.core.Trans import Trans, t
+from gdo.base.Application import Application
+from gdo.base.GDO import GDO
+from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Trans import Trans, t
 
 
 class GDO_Module(GDO):
+
     _priority: int
 
     @classmethod
@@ -31,6 +27,9 @@ class GDO_Module(GDO):
         return []
 
     def gdo_columns(self):
+        from gdo.core.GDT_AutoInc import GDT_AutoInc
+        from gdo.core.GDT_Bool import GDT_Bool
+        from gdo.core.GDT_Name import GDT_Name
         return [
             GDT_AutoInc('module_id'),
             GDT_Name('module_name').not_null(),
@@ -44,10 +43,10 @@ class GDO_Module(GDO):
         return self.get_by_vars({'module_name': modulename})
 
     def installed(self):
-        return self.persisted()
+        return self.is_persisted()
 
     def is_enabled(self):
-        return self.get('module_enabled') == '1'
+        return self.gdo_val('module_enabled') == '1'
 
     def init_language(self):
         Trans.add_language(self.file_path(f"lang/{self.get_name()}"))

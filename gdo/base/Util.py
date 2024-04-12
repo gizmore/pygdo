@@ -59,3 +59,17 @@ class Arrays:
     def unique(cls, lst):
         """Return only unique items of a list"""
         return list(set(lst))
+
+    @classmethod
+    def chunkify(cls, lst: list, chunk_size: int):
+        """
+        Split a list into chunks of a specified size.
+
+        Args:
+            lst (list): The list to split.
+            chunk_size (int): The size of each chunk.
+
+        Returns:
+            list: A list of lists, each containing elements of the original list in chunks.
+        """
+        return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]

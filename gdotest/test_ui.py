@@ -1,9 +1,9 @@
 import os.path
 import unittest
 
-from gdo.core.Application import Application
+from gdo.base.Application import Application
 from gdo.core.GDT_String import GDT_String
-from gdo.core.ModuleLoader import ModuleLoader
+from gdo.base.ModuleLoader import ModuleLoader
 
 
 class UITestCase(unittest.TestCase):

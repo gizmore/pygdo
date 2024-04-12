@@ -3,10 +3,11 @@ import subprocess
 import unittest
 
 from gdo.core import module_core
-from gdo.core.Application import Application
-from gdo.core.Exceptions import GDODBException
-from gdo.core.GDO_Module import GDO_Module
-from gdo.core.ModuleLoader import ModuleLoader
+from gdo.base.Application import Application
+from gdo.base.Exceptions import GDODBException
+from gdo.base.GDO_Module import GDO_Module
+from gdo.base.ModuleLoader import ModuleLoader
+from gdo.user.GDO_User import GDO_User
 
 
 class InstallTestCase(unittest.TestCase):
@@ -41,6 +42,12 @@ class InstallTestCase(unittest.TestCase):
         loader = ModuleLoader.instance()
         mods = loader.load_modules_db(False)
         self.assertEqual(len(mods), 0, 'Test if loading uninstalled modules from db somewhat works')
+
+    def test_system_created(self):
+        self.assertIsInstance(GDO_User.system(), GDO_User, 'Test if system user exists')
+        self.assertEqual(GDO_User.system().get_id(), '1', 'Test if system user has ID#1')
+
+
 
 
 if __name__ == '__main__':

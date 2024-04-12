@@ -1,4 +1,4 @@
-from gdo.core.GDO_Module import GDO_Module
+from gdo.base.GDO_Module import GDO_Module
 from gdo.language.GDO_Language import GDO_Language
 
 

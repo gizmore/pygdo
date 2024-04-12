@@ -1,11 +1,11 @@
 import argparse
 import os
 import sys
-import traceback
 
-from gdo.core.Application import Application
-from gdo.core.Logger import Logger
-from gdo.core.ModuleLoader import ModuleLoader
+from gdo.base.Application import Application
+from gdo.base.Exceptions import GDOError
+from gdo.base.Logger import Logger
+from gdo.base.ModuleLoader import ModuleLoader
 from gdo.install.Installer import Installer
 
 
@@ -30,6 +30,7 @@ class App:
         getattr(self, args.command)()
 
     def install(self):
+        loader = ModuleLoader.instance()
         parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all')
         parser.add_argument('--reinstall', action='store_true')
         parser.add_argument('--all', action='store_true')
@@ -38,12 +39,12 @@ class App:
         args = parser.parse_args(sys.argv[2:])
         reinstall = args.reinstall
         if args.all:
-            modules = ModuleLoader.instance().load_modules_fs('*', reinstall)
+            modules = loader.load_modules_fs('*', reinstall)
         elif args.module:
-            module = ModuleLoader.instance().load_module_fs(args.module.lower(), reinstall)
+            module = loader.load_module_fs(args.module.lower(), reinstall)
             if not module:
                 raise GDOError('err_module')
-            modules = [module]
+            modules = Installer.modules_with_deps([module])
         elif args.modules:
             modules = ModuleLoader.instance().load_modules_fs(args.modules, reinstall)
         else:
@@ -103,7 +104,6 @@ def launch():
         App().argparser()
     except Exception as ex:
         Logger.exception(ex)
-        traceback.print_exc()
         raise ex
 
 

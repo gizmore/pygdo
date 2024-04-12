@@ -1,4 +1,4 @@
-from gdo.core.GDT import GDT
+from gdo.base.GDT import GDT
 from gdo.core.WithLabel import WithLabel
 
 

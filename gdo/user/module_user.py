@@ -1,5 +1,6 @@
-from gdo.core.GDO_Module import GDO_Module
+from gdo.base.GDO_Module import GDO_Module
 from gdo.user.GDO_User import GDO_User
+from gdo.user.InstallUser import InstallUser
 
 
 class module_user(GDO_Module):
@@ -14,4 +15,4 @@ class module_user(GDO_Module):
         ]
 
     def gdo_install(self):
-        GDO_User.blank([])
+        InstallUser.now(self)

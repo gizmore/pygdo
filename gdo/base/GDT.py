@@ -28,3 +28,16 @@ class GDT:
 
     def gdo(self, gdo):
         return self
+
+    def get_val(self):
+        return ''
+
+    def get_value(self):
+        return None
+
+    def to_value(self, val: str):
+        return val
+
+    def to_val(self, value):
+        return str(value)
+

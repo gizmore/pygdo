@@ -1,4 +1,4 @@
-from gdo.core.GDO import GDO
+from gdo.base.GDO import GDO
 from gdo.core.GDT_UInt import GDT_UInt
 
 

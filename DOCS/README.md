@@ -12,7 +12,7 @@ There are no getters unless they compute a value, : def getMinMaxTuple()
 
 There are basically three monster base classes.
 
- - [GDT](../gdo/core/GDT.py) (Gizmore Data Types)
- - [GDO](../gdo/core/GDO.py) (Gizmore Data Object - which is a GDT)
+ - [GDT](../gdo/base/GDT.py) (Gizmore Data Types)
+ - [GDO](../gdo/base/GDO.py) (Gizmore Data Object - which is a GDT)
  - []
 

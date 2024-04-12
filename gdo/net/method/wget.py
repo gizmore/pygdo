@@ -1,4 +1,4 @@
-from gdo.core.Method import Method
+from gdo.base.Method import Method
 from gdo.net.GDT_Url import GDT_Url
 
 

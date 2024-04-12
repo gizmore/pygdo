@@ -1,5 +1,5 @@
-from gdo.core.GDO import GDO
-from gdo.core.GDT import GDT
+from gdo.base.GDO import GDO
+from gdo.base.GDT import GDT
 
 
 class GDT_Field(GDT):
@@ -25,13 +25,35 @@ class GDT_Field(GDT):
         self._value = None
         self._converted = False
 
-
     def get_name(self):
         return self._name
 
+    def get_val(self):
+        if not self._val:
+            return None
+        return str(self._val)
+
+    def get_value(self):
+        if not self._converted:
+            self._value = self.to_value(self.get_val())
+            self._converted = True
+        return self._value
+
+    def val(self, val: str):
+        self._val = val
+        self._converted = False
+        delattr(self, '_value')
+        return self
+
+    def value(self, value):
+        self._converted = True
+        self._value = value
+        self._val = self.to_val(value)
+        return self
+
     def gdo(self, gdo: GDO):
         self._gdo = gdo
-        self._val = gdo.get(self._name)
+        self._val = gdo.gdo_val(self._name)
         return self
 
     def initial(self, val: str):

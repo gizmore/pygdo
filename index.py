@@ -1,6 +1,6 @@
 import os
 from mod_python import apache
-from gdo.core.Application import Application
+from gdo.base.Application import Application
 
 is_fresh: bool = True
 

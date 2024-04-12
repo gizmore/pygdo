@@ -1,10 +1,10 @@
-from gdo.core.Application import Application
-from gdo.core.Cache import Cache
-from gdo.core.GDO import GDO
-from gdo.core.GDO_Module import GDO_Module
-from gdo.core.Logger import Logger
-from gdo.core.ModuleLoader import ModuleLoader
-from gdo.core.Util import Arrays
+from gdo.base.Application import Application
+from gdo.base.Cache import Cache
+from gdo.base.GDO import GDO
+from gdo.base.GDO_Module import GDO_Module
+from gdo.base.Logger import Logger
+from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Util import Arrays
 
 
 class Installer:
@@ -30,17 +30,14 @@ class Installer:
                     if mod not in deps:
                         deps.append(mod)
             after = len(deps)
-        sorted(deps, key=lambda m: m._priority)
-        return deps
-
-
+        return sorted(deps, key=lambda m: m._priority)
 
     @classmethod
     def install_module(cls, module: GDO_Module):
-        Logger.debug(f'Installing module {module.get_name()}')
+        # Logger.debug(f'Installing module {module.get_name()}')
         classes = module.gdo_classes()
         for classname in classes:
-            Logger.debug(f'Installing module class {classname}')
+            # Logger.debug(f'Installing module class {classname}')
             cls.install_gdo(classname)
         cls.install_module_entry(module)
         module.gdo_install()
@@ -57,7 +54,6 @@ class Installer:
             'module_name': module.get_name(),
             'module_enabled': '1',
         }).soft_replace()
-
 
     @classmethod
     def install_gdo(cls, classname):
@@ -109,8 +105,6 @@ class Installer:
         finally:
             db.foreign_keys(True)
 
-
-
     @classmethod
     def migrate_modules(cls, modules):
         for module in modules:
@@ -123,15 +117,15 @@ class Installer:
 
         # Old column names
         query = ('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS '
-            f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{temptable}'"
-        )
+                 f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{temptable}'"
+                 )
         result = db.query(query)
         rows = db.fetch_all_rows(result)
         old = rows.map(lambda c: c[0], rows)
 
         # New column names
         query = ("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
-            f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{gdo.gdo_table_name()}'")
+                 f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{gdo.gdo_table_name()}'")
         result = db.query(query)
         rows = db.fetch_all_rows(result)
         new = rows.map(lambda c: c[0], rows)
@@ -141,11 +135,4 @@ class Installer:
 
     @classmethod
     def wipe(cls, module: GDO_Module):
-         module.delete()
-
-
-
-
-
-
-
+        module.delete()

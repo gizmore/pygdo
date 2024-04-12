@@ -1,8 +1,8 @@
 import os.path
 import unittest
 
-from gdo.core.Application import Application
-from gdo.core.Util import Strings, Arrays
+from gdo.base.Application import Application
+from gdo.base.Util import Strings, Arrays
 
 
 class UtilityTestCase(unittest.TestCase):
