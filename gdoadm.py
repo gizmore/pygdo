@@ -4,8 +4,10 @@ import sys
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError
+from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.install.Config import Config
 from gdo.install.Installer import Installer
 
 
@@ -16,10 +18,10 @@ class App:
             description='PyGdo admin utility.',
             usage='''gdo_adm.sh <command> [<args>]
         The Commands are:
-           install -a or -m   Install modules. Example: gdoadm.sh install -m Dog,*Comment*,DogIRC*
-           wipe -a or -m      Remove modules from the database
-           migrate -a or -m   Migrate the database for a single module or all of them.
-           confgrade          Re-create the protected config.toml
+           configure -i [path] Re-create the protected config.toml
+           install -a or -m    Install modules. Example: gdoadm.sh install -m Dog,*Comment*,DogIRC*
+           wipe -a or -m       Remove modules from the database
+           migrate -a or -m    Migrate the database for a single module or all of them.
         ''')
         parser.add_argument('command', help='subcommand to run')
         args = parser.parse_args(sys.argv[1:2])
@@ -29,21 +31,39 @@ class App:
             exit(1)
         getattr(self, args.command)()
 
+    def configure(self):
+        parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all')
+        parser.add_argument('--interactive', action='store_true')
+        parser.add_argument('-i', action='store_true')
+        parser.add_argument('--path', default='protected/config.toml')
+        args = parser.parse_args(sys.argv[2:])
+        interactive = args.interactive or args.i
+        path = args.path
+        data = Config.data(Application.CONFIG)
+        if interactive:
+            self.configure_interactive(path, data)
+        else:
+            Config.rewrite(path, data)
+
+    def configure_interactive(self, path: str, data: dict[str, GDT]):
+        pass
+
     def install(self):
         loader = ModuleLoader.instance()
         parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all')
         parser.add_argument('--reinstall', action='store_true')
+        parser.add_argument('-a', action='store_true')
         parser.add_argument('--all', action='store_true')
         parser.add_argument('--module')
         parser.add_argument('--modules')
         args = parser.parse_args(sys.argv[2:])
         reinstall = args.reinstall
-        if args.all:
+        if args.all or args.a:
             modules = loader.load_modules_fs('*', reinstall)
         elif args.module:
             module = loader.load_module_fs(args.module.lower(), reinstall)
             if not module:
-                raise GDOError('err_module')
+                raise GDOError('err_module', [args.module])
             modules = Installer.modules_with_deps([module])
         elif args.modules:
             modules = ModuleLoader.instance().load_modules_fs(args.modules, reinstall)
@@ -95,6 +115,7 @@ class App:
                 modules = ModuleLoader.instance().load_modules_fs(args['modules'], True)
                 Installer.migrate_modules(modules)
         print("All done!")
+
 
 
 def launch():

@@ -1,5 +1,6 @@
 import unittest
 
+from gdotest.test_cli import CLITestCase
 from gdotest.test_date import DateTestCase
 from gdotest.test_db import DBTestCase
 from gdotest.test_forms import FormTestCase
@@ -17,6 +18,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(FormTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(UITestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(UtilityTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(CLITestCase))
     return mysuite
 
 

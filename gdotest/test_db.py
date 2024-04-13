@@ -3,7 +3,7 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.user.GDO_User import GDO_User
+from gdo.core.GDO_User import GDO_User
 
 
 class DBTestCase(unittest.TestCase):

@@ -1,0 +1,22 @@
+"%s" = "%s" # required for hacks do not change!
+module_core = "Core"
+
+##############
+### Errors ###
+##############
+err_module = "Unknown Module: %s."
+err_int_min = "may not be smaller than %s."
+err_int_max = "may not be larger than %s."
+
+
+##############
+### Fields ###
+##############
+login = "Login"
+tt_login = "Use your username or your email."
+
+############
+### Echo ###
+############
+mt_core_echo = "Echo"
+md_core_echo = "The echo command replies it's rest of text parameter."

@@ -5,7 +5,6 @@ from gdo.base.Trans import Trans, t
 
 
 class GDO_Module(GDO):
-
     _priority: int
 
     @classmethod
@@ -39,8 +38,11 @@ class GDO_Module(GDO):
     def gdo_classes(self):
         return []
 
-    def get_by_name(self, modulename: str):
-        return self.get_by_vars({'module_name': modulename})
+    def get_by_name(self, modulename: str, enabled: bool = None):
+        vals = {'module_name': modulename}
+        if isinstance(enabled, bool):
+            vals['module_enabled'] = f"%i" % enabled
+        return self.get_by_vals(vals)
 
     def installed(self):
         return self.is_persisted()

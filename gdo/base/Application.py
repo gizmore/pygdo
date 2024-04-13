@@ -2,34 +2,32 @@ import os
 import time
 import toml
 
-from gdo.base.Logger import Logger
-from gdo.base.Util import Files
-
 
 class Application:
-
     LANG_ISO = 'en'
     TIME = time.time()
 
     DB = None
-    path: str
-    config: dict
+    PATH: str
+    CONFIG: dict[str, any]
+
+    @classmethod
+    def tick(cls):
+        cls.TIME = time.time()
 
     @classmethod
     def init(cls, path):
         from gdo.base.Database import Database
-        # Logger.debug("Setting timezone to UTC")
         os.environ['TZ'] = 'UTC'
         time.tzset()
-        # Logger.debug("Loading config")
-        cls.path = os.path.normpath(path)
-        config_path = os.path.join(cls.path, 'protected/config.toml')
-        if Files.exists(config_path):
+        cls.tick()
+        cls.PATH = os.path.normpath(path) + '/'
+        config_path = os.path.join(cls.PATH, 'protected/config.toml')
+        if os.path.isfile(config_path):
             with open(config_path, 'r') as f:
-                cls.config = toml.load(f)
-                cfg = cls.config['Database']['db']
+                cls.CONFIG = toml.load(f)
+                cfg = cls.CONFIG['db']
                 cls.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
-
 
     @classmethod
     def has_db(cls):
@@ -37,9 +35,8 @@ class Application:
 
     @classmethod
     def file_path(cls, path: str):
-        return os.path.join(cls.path, path)
+        return os.path.join(cls.PATH, path)
 
     @classmethod
     def now(cls):
         pass
-

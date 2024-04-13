@@ -6,7 +6,6 @@ import os
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException
-from gdo.base.Logger import Logger
 
 
 class ModuleLoader:
@@ -60,8 +59,11 @@ class ModuleLoader:
         return self.gdo_import(modulename)
 
     def module_installed(self, modulename: str) -> bool:
+        from gdo.base.GDO_Module import GDO_Module
         if not Application.DB.is_configured():
             raise GDOException("Database not configured!")
+        if GDO_Module.table().get_by_name(modulename, True):
+            return True
         return False
 
     def load_modules_db(self, enabled: None | bool):
@@ -99,6 +101,6 @@ class ModuleLoader:
             if enabled and module.is_enabled():
                 module.gdo_init()
 
-    def load_modules_cache(self):
+    def load_modules_cached(self):
         return self.load_modules_db(True)
 

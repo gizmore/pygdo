@@ -1,6 +1,8 @@
 from gdo.base.GDT import GDT
+from gdo.core.WithFields import WithFields
 
-class GDT_Paragraph(GDT):
+
+class GDT_Paragraph(WithFields, GDT):
 
     def __init__(self):
-        pass
+        super().__init__()

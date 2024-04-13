@@ -1,4 +1,8 @@
-from gdo.base.Trans import t
+class GDOError(Exception):
+
+    def __init__(self, key, args=None):
+        from gdo.base.Trans import t
+        super().__init__(t(key, args))
 
 
 class GDOException(Exception):
@@ -10,10 +14,4 @@ class GDOException(Exception):
 class GDODBException(Exception):
 
     def __init__(self, error, query):
-        super().__init__(f'DB-Error: {error}\nQuery: {query}')
-
-
-class GDOError(Exception):
-    
-    def __init__(self, key, args=None):
-        super().__init__(t(key, args))
+        super().__init__(f"DB-Error: {error}\nQuery:\n{query}")

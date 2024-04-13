@@ -1,4 +1,16 @@
+from __future__ import annotations
+
 import os.path
+from collections import OrderedDict
+from typing import Sequence
+
+
+class CLI:
+    @classmethod
+    def parse(cls, line):
+        from gdo.base.Parser import Parser
+        method = Parser(line).parse()
+        return method
 
 
 class Strings:
@@ -43,7 +55,11 @@ class Strings:
 
     @classmethod
     def html(cls, s: str):
-        return s
+        return (s.replace('&', '&amp;').
+                replace('"', '&quot').
+                replace("'", '&#039;').
+                replace('<', '&lt;').
+                replace('>', '&gt;'))
 
 
 class Files:
@@ -54,14 +70,39 @@ class Files:
 
 
 class Arrays:
+    """
+    List and Dictionary utilities.
+    """
 
     @classmethod
-    def unique(cls, lst):
-        """Return only unique items of a list"""
+    def walk(cls, dictionary: dict, path: str):
+        """
+        Access a nested dictionary via a path separated by dot.
+        """
+        keys = path.split('.')
+        value = dictionary
+        for key in keys:
+            value = value.get(key)
+            if value is None:
+                return None
+        return value
+
+    @classmethod
+    def reverse_dict(cls, dic: dict) -> dict:
+        """
+        Reverse a dictionary.
+        """
+        return OrderedDict(reversed(list(dic.items())))
+
+    @classmethod
+    def unique(cls, lst: list) -> list:
+        """
+        Return only unique items of a list
+        """
         return list(set(lst))
 
     @classmethod
-    def chunkify(cls, lst: list, chunk_size: int):
+    def chunkify(cls, lst: list, chunk_size: int) -> list:
         """
         Split a list into chunks of a specified size.
 
@@ -73,3 +114,15 @@ class Arrays:
             list: A list of lists, each containing elements of the original list in chunks.
         """
         return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
+
+    def recursive_map(cls, seq, func):
+        for item in seq:
+            if isinstance(item, Sequence):
+                yield type(item)
+                cls.recursive_map(item, func)
+            else:
+                yield func(item)
+
+
+
+

@@ -11,6 +11,6 @@ class wget(Method):
 
     def execute(self):
 
-        url = self.gdo_parameter_value('url')
+        url = self.param_value('url')
 
 

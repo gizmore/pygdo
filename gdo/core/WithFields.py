@@ -1,3 +1,4 @@
+from gdo.base.Util import Arrays
 
 
 class WithFields:
@@ -20,3 +21,14 @@ class WithFields:
                 if gdt2:
                     return gdt2
         return None
+
+    ##########
+    # Render #
+    ##########
+
+    def render(self) -> str | list:
+        pass
+
+    def render_html(self) -> str:
+        mapped = Arrays.recusrive_map(self._fields)
+

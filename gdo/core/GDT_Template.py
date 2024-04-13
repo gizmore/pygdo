@@ -4,6 +4,10 @@ import sys
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
+from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Trans import Trans
+from gdo.date.Time import Time
 
 
 class Templite(object):
@@ -110,6 +114,11 @@ class Templite(object):
             stack.append(t.render(**namespace))
 
         namespace['include'] = include
+
+        namespace['Time'] = Time
+        namespace['t'] = Trans.t
+        namespace['tiso'] = Trans.tiso
+
         # execute template code
         exec(self._code, namespace)
         return ''.join(stack)
@@ -134,10 +143,18 @@ class GDT_Template(GDT):
 
     @classmethod
     def python(cls, modulename, filename, vals):
-        path = cls.get_path(modulename, filename)
-        tpl = Templite(None, path)
-        return tpl.render(**vals)
+        try:
+            data = {
+                "modules": ModuleLoader.instance()._cache,
+            }
+            data.update(vals)
+            path = cls.get_path(modulename, filename)
+            tpl = Templite(None, path)
+            return tpl.render(**data)
+        except Exception as ex:
+            Logger.exception(ex)
+            return ''
 
     @classmethod
     def get_path(cls, modulename: str, path: str):
-        return os.path.join(Application.path, f"gdo/{modulename}/tpl/{path}")
+        return os.path.join(Application.PATH, f"gdo/{modulename}/tpl/{path}")

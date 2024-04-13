@@ -1,5 +1,7 @@
 import json
 
+import toml
+
 from gdo.base.Application import Application
 from gdo.base.Util import Files
 
@@ -14,6 +16,9 @@ def tiso(iso: str, key: str, args=None):
     if args is None:
         args = []
     return Trans.tiso(iso, key, args)
+
+def thas(key: str) -> bool:
+    return Trans.has(key)
 
 
 class Trans:
@@ -36,12 +41,13 @@ class Trans:
     def _load(cls, iso: str):
         if not len(cls.CACHE[iso]):
             for path in cls.BASES:
-                file_path = f"{path}_{iso}.json"  # Construct the file path
+                file_path = f"{path}_{iso}.toml"  # Construct the file path
                 if Files.exists(file_path):
-                    with open(file_path, 'r') as file:
-                        more = json.load(file)  # Load JSON data from the file
-                        cls.CACHE[iso].update(more)  # Update the CACHE dictionary with the loaded data
+                    with open(file_path, 'r') as f:
+                        more = toml.load(f)
+                        cls.CACHE[iso].update(more)
             cls.LOADED = True
+        return cls.CACHE[iso]
 
     @classmethod
     def t(cls, key, args):
@@ -58,3 +64,8 @@ class Trans:
         if args:
             return fmt % args
         return fmt
+
+    @classmethod
+    def has(cls, key: str) -> bool:
+        data = cls._load(Application.LANG_ISO)
+        return key in data.keys()

@@ -37,12 +37,21 @@ class DateTestCase(unittest.TestCase):
         # DB Parser micros
         parsed = Time.parse_datetime_iso('en', '1980-11-09 16:20:42.313375', 'UTC', 'db')
         self.assertAlmostEqual(342634842.313375, parsed.timestamp(), 6, 'UTC DB date with micros cannot be parsed.')
+
+    def test_tz_and_display(self):
         # TZ Parser human
         parsed = Time.parse_datetime_iso('en', '11/09/1980 13:37', 'Europe/Berlin', 'parse')
         self.assertAlmostEqual(342617820.0, parsed.timestamp(), 6, 'Berlin DB date with human parse format cannot be parsed.')
         # Display UTC date from berlin date
         displayed = Time.display_datetime_iso('en', parsed, 'short', '---', 'UTC')
         self.assertEqual('11/09/1980 11:37', displayed, 'Berlin Date can be printed as UTC')
+
+    def test_diff(self):
+        parsed1 = Time.parse_datetime_iso('en', '11/09/1980 13:37', 'Europe/Berlin', 'parse')
+        parsed2 = Time.parse_datetime_iso('en', '11/09/1980 12:37', 'Europe/Berlin', 'parse')
+        Time.get_diff_time(parsed1.timestamp(), parsed2.timestamp())
+
+
 
 
 if __name__ == '__main__':

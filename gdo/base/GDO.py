@@ -12,12 +12,18 @@ from gdo.base.WithBulk import WithBulk
 
 
 class GDO(WithBulk, GDT):
+
+    COUNT = 0
+    MAX_COUNT = 0
+
     _vals: dict
     _dirty: list
     _is_table: bool
 
     def __init__(self):
         super().__init__()
+        self.COUNT += 1
+        self.MAX_COUNT = max(self.MAX_COUNT, self.COUNT)
         self._vals = {}
         self._dirty = []
         self._is_table = False
@@ -42,7 +48,7 @@ class GDO(WithBulk, GDT):
     def is_persisted(self):
         return len(self._dirty) == 0
 
-    def gdo_columns(self):
+    def gdo_columns(self) -> list[GDT]:
         return []
 
     def column(self, key: str) -> GDT:
@@ -117,18 +123,18 @@ class GDO(WithBulk, GDT):
         return cols
 
     def get_by(self, key: str, val: str):
-        return self.get_by_vars({key: val})
+        return self.get_by_vals({key: val})
 
     def get_by_id(self, id: str):
         cols = self.get_pk_columns()
         ids = id.split(':')
-        return self.get_by_vars({col.get_name(): Strings.nullstr(val) for col, val in zip(cols, ids) if val})
+        return self.get_by_vals({col.get_name(): Strings.nullstr(val) for col, val in zip(cols, ids) if val})
 
     def pk_where(self) -> str:
         cols = self.get_pk_columns()
         return " AND ".join(map(lambda gdt: f"{gdt.get_name()}={GDT.quote(gdt._val)}", cols))
 
-    def get_by_vars(self, vals: dict[str, str]):
+    def get_by_vals(self, vals: dict[str, str]):
         where = []
         for k, v in vals.items():
             where.append(f'{k}={self.quote(v)}')

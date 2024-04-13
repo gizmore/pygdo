@@ -1,0 +1,5 @@
+#!/bin/bash
+set -euo pipefail
+gdopath="$(dirname "$0")/pygdo.py"
+python3 $gdopath $@
+

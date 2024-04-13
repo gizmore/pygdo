@@ -1,9 +1,6 @@
 from datetime import timedelta
 
 from gdo.base.GDO import GDO
-from gdo.core.GDT_AutoInc import GDT_AutoInc
-from gdo.core.GDT_Int import GDT_Int
-from gdo.core.GDT_Name import GDT_Name
 
 
 class GDO_Timezone(GDO):
@@ -24,6 +21,9 @@ class GDO_Timezone(GDO):
         super().__init__()
 
     def gdo_columns(self):
+        from gdo.core.GDT_AutoInc import GDT_AutoInc
+        from gdo.core.GDT_Int import GDT_Int
+        from gdo.core.GDT_Name import GDT_Name
         return [
             GDT_AutoInc('tz_id'),
             GDT_Name('tz_name').unique(),

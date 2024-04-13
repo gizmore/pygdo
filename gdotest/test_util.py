@@ -24,6 +24,13 @@ class UtilityTestCase(unittest.TestCase):
         unique_list = Arrays.unique(original_list)
         self.assertEqual(unique_list, expected_unique_list, 'Test unique')
 
+    def test_array_walk(self):
+        the_dict = {"db": {"mysql": {"host": "localhost"}}}
+        val = Arrays.walk(the_dict, 'db.mysql.host')
+        self.assertEqual('localhost', val, 'Arrays.walk does not work')
+        val = Arrays.walk(the_dict, 'db.mysql.name')
+        self.assertIsNone(val, 'Arrays.walk does crash on invalid path')
+
 
 if __name__ == '__main__':
     unittest.main()

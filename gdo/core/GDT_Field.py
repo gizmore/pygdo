@@ -1,15 +1,14 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.ui.WithIcon import WithIcon
+from gdo.ui.WithTooltip import WithTooltip
 
 
-class GDT_Field(GDT):
+class GDT_Field(WithTooltip, WithIcon, GDT):
 
     _name: str
     _gdo: GDO
     _not_null: bool
-    _erraw: str
-    _errkey: str
-    _errargs: list
     _val: str
     _initial: str
     _converted: bool
@@ -17,6 +16,7 @@ class GDT_Field(GDT):
     _unique: bool
 
     def __init__(self, name):
+        super().__init__()
         self._name = name
         self._not_null = False
         self._val = ''

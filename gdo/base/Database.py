@@ -40,11 +40,9 @@ class Database:
         return self.get_link().cursor(False, False, dictionary=dictionary)
 
     def create_table(self, gdo):
-        # Logger.debug(f"Installing {gdo.gdo_table_name()}")
         cols = []
         prim = []
         for gdt in gdo.columns():
-            # Logger.debug(f"Field {gdt.get_name()}")
             define = gdt.gdo_column_define()
             cols.append(define)
             if gdt.is_primary():

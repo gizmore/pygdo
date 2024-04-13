@@ -2,7 +2,7 @@ from gdo.base.GDO import GDO
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Name import GDT_Name
 from gdo.date.GDT_Created import GDT_Created
-from gdo.user.GDT_UserType import GDT_UserType
+from gdo.core.GDT_UserType import GDT_UserType
 
 
 class GDO_User(GDO):
@@ -19,7 +19,7 @@ class GDO_User(GDO):
     @classmethod
     def system(cls):
         if not hasattr(cls, 'SYSTEM'):
-            cls.SYSTEM = GDO_User.table().get_by_vars({
+            cls.SYSTEM = GDO_User.table().get_by_vals({
                 'user_id': '1',
                 'user_type': GDT_UserType.SYSTEM,
             })
