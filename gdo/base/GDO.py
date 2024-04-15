@@ -42,7 +42,7 @@ class GDO(WithBulk, GDT):
         back = cls().set_vals(vals)
         return back
 
-    def gdo_primary_key_column(self):
+    def primary_key_column(self):
         return self.columns()[0]
 
     def is_persisted(self):
@@ -157,8 +157,10 @@ class GDO(WithBulk, GDT):
         return self.insertOrReplace(Type.REPLACE)
 
     def insertOrReplace(self, type: Type):
+        self.before_create()
         query = self.query().type(type).set_vals(self._vals)
         query.exec()
+        self.after_create()
         return self.all_dirty(False)
 
     def delete(self):
@@ -171,7 +173,40 @@ class GDO(WithBulk, GDT):
         return vals
 
     def save(self):
-        query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
-        query.exec()
-        return self.all_dirty(False)
+        if len(self._dirty):
+            self.before_update()
+            query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
+            query.exec()
+            self.after_update()
+            return self.all_dirty(False)
+        else:
+            return self
+
+    ##########
+    # Events #
+    ##########
+
+    def before_create(self):
+        for gdt in self.columns():
+            gdt.gdo_before_create(self)
+        self.gdo_before_create(self)
+        pass
+
+    def after_create(self):
+        for gdt in self.columns():
+            gdt.gdo_after_create(self)
+        self.gdo_after_create(self)
+
+    def before_update(self):
+        for gdt in self.columns():
+            gdt.gdo_before_update(self)
+        self.gdo_before_update(self)
+
+    def after_update(self):
+        for gdt in self.columns():
+            gdt.gdo_after_update(self)
+        self.gdo_after_update(self)
+
+
+
 

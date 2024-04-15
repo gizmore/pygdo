@@ -1,4 +1,7 @@
 import mysql.connector
+from mysql.connector import ProgrammingError
+
+from gdo.base.Exceptions import GDODBException
 from gdo.base.Logger import Logger
 
 
@@ -34,7 +37,10 @@ class Database:
         return self.link
 
     def query(self, query):
-        return self.get_link().cmd_query(query)
+        try:
+            return self.get_link().cmd_query(query)
+        except ProgrammingError as ex:
+            raise GDODBException(ex.msg, query)
 
     def cursor(self, dictionary=True):
         return self.get_link().cursor(False, False, dictionary=dictionary)

@@ -43,9 +43,9 @@ class GDO_Server(GDO):
             'user_name': username,
         })
 
-    def create_user(self, username: str, displayname: str):
+    def create_user(self, username: str, displayname: str = None):
         return GDO_User.blank({
             'user_name': username,
-            'user_displayname': displayname,
+            'user_displayname': username or displayname,
             'user_server': self.get_id(),
         }).insert()

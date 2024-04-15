@@ -13,7 +13,7 @@ class GDT_Object(GDT_UInt):
         return self
 
     def gdo_column_define(self) -> str:
-        pk = self._table.gdo_primary_key_column()
+        pk = self._table.primary_key_column()
         define = pk.gdo_column_define()
         define = define.replace(pk._name, self._name)
         define = define.replace(' NOT NULL', '')

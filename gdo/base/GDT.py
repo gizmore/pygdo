@@ -27,6 +27,25 @@ class GDT:
         self.GDT_COUNT += 1
         self.GDT_MAX = max(self.GDT_COUNT, self.GDT_MAX)
 
+    def gdo_before_create(self, gdo):
+        pass
+
+    def gdo_after_create(self, gdo):
+        pass
+
+    def gdo_before_update(self, gdo):
+        pass
+
+    def gdo_after_update(self, gdo):
+        pass
+
+    def gdo_before_delete(self, gdo):
+        pass
+
+    def gdo_after_delete(self, gdo):
+        pass
+
+
     def get_name(self):
         return self.__class__.__name__ + "#" + str(id(self))
 

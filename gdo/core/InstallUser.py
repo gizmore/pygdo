@@ -9,14 +9,7 @@ class InstallUser:
     def now(cls):
         cls.install_bash()
         cls.install_system()
-
-    @classmethod
-    def install_bash(cls):
-        if not GDO_Server.get_by_connector('Bash'):
-            GDO_Server.blank({
-                'serv_name': 'Bash',
-                'serv_connector': 'Bash',
-            }).insert()
+        cls.install_web()
 
     @classmethod
     def install_system(cls):
@@ -28,6 +21,18 @@ class InstallUser:
                 'user_server': GDO_Server.get_by_connector('Bash').get_id(),
             }).insert()
 
+    @classmethod
+    def install_bash(cls):
+        if not GDO_Server.get_by_connector('Bash'):
+            GDO_Server.blank({
+                'serv_name': 'Bash',
+                'serv_connector': 'Bash',
+            }).insert()
 
-
-
+    @classmethod
+    def install_web(cls):
+        if not GDO_Server.get_by_connector('Web'):
+            GDO_Server.blank({
+                'serv_name': 'Web',
+                'serv_connector': 'Web',
+            }).insert()

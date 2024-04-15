@@ -84,8 +84,8 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
 
     def gdo_column_define_default(self) -> str:
         if self._initial != '':
-            return "DEFAULT " + self.quote(self._initial)
-        return ''
+            return " DEFAULT " + self.quote(self._initial)
+        return GDT.EMPTY_STRING
 
     def not_null(self, not_null=True):
         self._not_null = not_null
