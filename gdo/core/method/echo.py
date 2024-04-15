@@ -1,6 +1,7 @@
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.core.GDT_RestOfText import GDT_RestOfText
+from gdo.core.GDT_String import GDT_String
 
 
 class echo(Method):
@@ -15,5 +16,4 @@ class echo(Method):
 
     def gdo_execute(self) -> GDT:
         text = self.param_value('text')
-        return self.message_raw(text)
-
+        return GDT_String('response').initial(text)
