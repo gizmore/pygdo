@@ -21,12 +21,14 @@ class Config:
         lst = [
             GDT_Section().title_raw('Database'),
             cls.data_str('db.host', 'localhost'),
-            cls.data_str('db.name', 'localhost'),
-            cls.data_str('db.user', 'localhost'),
-            cls.data_str('db.pass', 'localhost'),
+            cls.data_str('db.name', 'pygdo'),
+            cls.data_str('db.user', 'pygdo'),
+            cls.data_str('db.pass', 'pygdo'),
             cls.data_int('db.debug', 0),
             GDT_Section().title_raw('Locale'),
             GDT_Select('i18n.iso').choices({'en': 'English', 'de': 'Deutsch'}).initial('en'),
+            GDT_Section().title_raw('Session'),
+            cls.data_str('sess.name', 'PyGDO'),
         ]
         dic = {}
         for gdt in lst:

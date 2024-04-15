@@ -1,7 +1,11 @@
 import json
 import os
-from mod_python import apache
+from urllib.parse import urlparse, parse_qs
+
+from mod_python import Cookie, apache
 from gdo.base.Application import Application
+from gdo.base.Parser import WebParser
+from gdo.session.GDO_Session import GDO_Session
 
 is_fresh: bool = True
 
@@ -11,7 +15,13 @@ def handler(req):
     if is_fresh:
         is_fresh = False
         Application.init(os.path.dirname(__file__))
+
+
+    session = GDO_Session.start(Cookie.get_cookies(req))
+    parser = WebParser(req.args, session)
     req.content_type = 'text/plain'
-    req.write(json.dumps(req.args))
-    req.write("Hello, World!" + Application.DB.__str__())
+    get = parse_qs(req.args)
+
+    req.write(json.dumps(get['_url'].__class__.__str__()))
+
     return apache.OK

@@ -4,10 +4,10 @@ from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Repeat import GDT_Repeat
+from gdo.session.GDO_Session import GDO_Session
 
 
 class Parser:
-
     _line: str
     _last: Method
     _user: GDO_User
@@ -88,5 +88,15 @@ class Parser:
             tokens.append(current_token)
 
         return tokens
+
     def get_method(self, cmd: str) -> Method:
         return ModuleLoader.instance()._methods[cmd]
+
+
+class WebParser(Parser):
+    _session: GDO_Session
+
+    def __init__(self, line: str, session):
+        super().__init__(line, session.get_user)
+        self._session = session
+

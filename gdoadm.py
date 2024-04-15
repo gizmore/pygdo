@@ -32,6 +32,9 @@ class App:
         getattr(self, args.command)()
 
     def configure(self):
+        loader = ModuleLoader.instance()
+        loader.load_modules_fs()
+        loader.init_modules()
         parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all')
         parser.add_argument('--interactive', action='store_true')
         parser.add_argument('-i', action='store_true')
@@ -115,7 +118,6 @@ class App:
                 modules = ModuleLoader.instance().load_modules_fs(args['modules'], True)
                 Installer.migrate_modules(modules)
         print("All done!")
-
 
 
 def launch():

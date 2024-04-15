@@ -41,7 +41,7 @@ class GDT_Float(GDT_String):
         return float(val)
 
     def gdo_column_define(self) -> str:
-        return (f"{self._name} DOUBLE {self.gdo_column_define_null()} {self.gdo_column_define_default()}")
+        return f"{self._name} DOUBLE {self.gdo_column_define_null()} {self.gdo_column_define_default()}"
 
 ############
 # Validate #
