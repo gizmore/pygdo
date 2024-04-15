@@ -35,7 +35,8 @@ class Trans:
 
     @classmethod
     def add_language(cls, base_path):
-        cls.BASES.append(base_path)
+        if base_path not in cls.BASES:
+            cls.BASES.append(base_path)
 
     @classmethod
     def _load(cls, iso: str):
@@ -50,19 +51,19 @@ class Trans:
         return cls.CACHE[iso]
 
     @classmethod
-    def t(cls, key, args):
+    def t(cls, key: str, args: list):
         iso = Application.LANG_ISO
         return tiso(iso, key, args)
 
     @classmethod
-    def tiso(cls, iso, key, args):
+    def tiso(cls, iso, key: str, args: list):
         cls._load(iso)
         data = cls.CACHE[iso]
         if key not in data.keys():
             return f"__{key}: {json.dumps(args)}"
         fmt = data[key]
         if args:
-            return fmt % args
+            return fmt % tuple(args)
         return fmt
 
     @classmethod

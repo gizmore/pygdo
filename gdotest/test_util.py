@@ -2,6 +2,8 @@ import os.path
 import unittest
 
 from gdo.base.Application import Application
+from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Trans import t
 from gdo.base.Util import Strings, Arrays
 
 
@@ -30,6 +32,12 @@ class UtilityTestCase(unittest.TestCase):
         self.assertEqual('localhost', val, 'Arrays.walk does not work')
         val = Arrays.walk(the_dict, 'db.mysql.name')
         self.assertIsNone(val, 'Arrays.walk does crash on invalid path')
+
+    def test_i18n(self):
+        ModuleLoader.instance().load_modules_db(True)
+        ModuleLoader.instance().init_modules()
+        trans = t('%s', ['Hello world'])
+        self.assertEqual(trans, 'Hello world', 'Basic %s translation does not work')
 
 
 if __name__ == '__main__':

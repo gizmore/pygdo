@@ -19,13 +19,13 @@ class Config:
         from gdo.core.GDT_UInt import GDT_UInt
         from gdo.ui.GDT_Section import GDT_Section
         lst = [
-            GDT_Section('database'),
+            GDT_Section().title_raw('Database'),
             cls.data_str('db.host', 'localhost'),
             cls.data_str('db.name', 'localhost'),
             cls.data_str('db.user', 'localhost'),
             cls.data_str('db.pass', 'localhost'),
             cls.data_int('db.debug', 0),
-            GDT_Section('Locale'),
+            GDT_Section().title_raw('Locale'),
             GDT_Select('i18n.iso').choices({'en': 'English', 'de': 'Deutsch'}).initial('en'),
         ]
         dic = {}
@@ -41,6 +41,7 @@ class Config:
             gdt.initial(Arrays.walk(Application.CONFIG, key_path))
         return gdt
 
+    @classmethod
     def data_int(cls, key_path: str, default: int):
         from gdo.core.GDT_Int import GDT_Int
         gdt = GDT_Int(key_path).initial(str(default))
@@ -54,4 +55,4 @@ class Config:
         out = GDT_Template.python('install', 'config.toml.html', {'data': data})
         if out:
             with open(path, 'w') as fo:
-                print(out)
+                fo.write(out)

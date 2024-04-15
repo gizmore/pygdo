@@ -18,7 +18,7 @@ class GDT_Divider(WithTitle, WithFlow, GDT):
         super().__init__()
 
     def render_cli(self):
-        title = self.render_title()
+        title = self.render_title(Mode.CLI)
         cli = Mode.CLI
         title = Render.underline(Render.bold(title, cli), cli)
         if self.is_horizontal():

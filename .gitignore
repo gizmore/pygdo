@@ -2,3 +2,11 @@
 /.venv/
 __pycache__/
 /protected/
+/gdo/*
+!/gdo/base/
+!/gdo/core/
+!/gdo/date/
+!/gdo/ui/
+!/gdo/table/
+!/gdo/form/
+

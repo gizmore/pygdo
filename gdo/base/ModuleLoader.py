@@ -6,6 +6,7 @@ import os
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException
+from gdo.base.Trans import Trans
 
 
 class ModuleLoader:
@@ -94,6 +95,7 @@ class ModuleLoader:
         return fs
 
     def init_modules(self, enabled=True):
+        Trans.LOADED = False
         for module in self._cache.values():
             if enabled and module.is_enabled():
                 module.init_language()

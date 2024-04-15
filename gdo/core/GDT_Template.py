@@ -1,17 +1,19 @@
 import os
 import re
 import sys
+import traceback
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Render import Mode
 from gdo.base.Trans import Trans
 from gdo.date.Time import Time
 
 
 class Templite(object):
-    autowrite = re.compile('(^[\'\"])|(^[a-zA-Z0-9_\[\]\'\"]+$)')
+    #autowrite = re.compile('(^[\'\"])|(^[a-zA-Z0-9_\[\]\'\"]+$)')
     delimiters = ('<!', '!>')
     cache = {}
 
@@ -73,8 +75,8 @@ class Templite(object):
                     offset -= 1
                     part = part_stripped[1:]
                     if not part.endswith(':'): continue
-                elif self.autowrite.match(part_stripped):
-                    part = 'write(%s)' % part_stripped
+#                elif self.autowrite.match(part_stripped):
+#                    part = 'write(%s)' % part_stripped
                 elif part_stripped.startswith('='):
                     part = 'write(%s)' % part_stripped[1:]
                 lines = part.splitlines()
@@ -146,6 +148,7 @@ class GDT_Template(GDT):
         try:
             data = {
                 "modules": ModuleLoader.instance()._cache,
+                "Mode": Mode,
             }
             data.update(vals)
             path = cls.get_path(modulename, filename)
@@ -153,7 +156,8 @@ class GDT_Template(GDT):
             return tpl.render(**data)
         except Exception as ex:
             Logger.exception(ex)
-            return ''
+            tb = traceback.format_exc()
+            return f"Exception: {ex}\nTraceback: {tb}"
 
     @classmethod
     def get_path(cls, modulename: str, path: str):

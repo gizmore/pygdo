@@ -4,12 +4,21 @@ import os.path
 from collections import OrderedDict
 from typing import Sequence
 
+from gdo.base.Render import Mode
+
 
 class CLI:
+
+    @classmethod
+    def get_current_user(cls):
+        from gdo.core.connector.Bash import Bash
+        name = os.getlogin()
+        return Bash.get_server().get_or_create_user(name)
+
     @classmethod
     def parse(cls, line):
         from gdo.base.Parser import Parser
-        method = Parser(line).parse()
+        method = Parser(line, cls.get_current_user()).parse()
         return method
 
 
@@ -54,12 +63,19 @@ class Strings:
         return None
 
     @classmethod
-    def html(cls, s: str):
-        return (s.replace('&', '&amp;').
-                replace('"', '&quot').
-                replace("'", '&#039;').
-                replace('<', '&lt;').
-                replace('>', '&gt;'))
+    def html(cls, s: str, mode: Mode = Mode.HTML):
+        """
+        Escape output for various formats
+        """
+        match mode:
+            case Mode.HTML:
+                return (s.replace('&', '&amp;').
+                        replace('"', '&quot;').
+                        replace("'", '&#039;').
+                        replace('<', '&lt;').
+                        replace('>', '&gt;'))
+            case _:
+                return s
 
 
 class Files:

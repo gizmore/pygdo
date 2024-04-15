@@ -42,7 +42,6 @@ class GDT_Field(WithTooltip, WithIcon, GDT):
     def val(self, val: str):
         self._val = val
         self._converted = False
-        delattr(self, '_value')
         return self
 
     def value(self, value):
@@ -58,7 +57,7 @@ class GDT_Field(WithTooltip, WithIcon, GDT):
 
     def initial(self, val: str):
         self._initial = val
-        return self
+        return self.val(val)
 
     def is_primary(self):
         return self._primary

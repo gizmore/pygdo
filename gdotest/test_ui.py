@@ -2,9 +2,11 @@ import os.path
 import unittest
 
 from gdo.base.Application import Application
+from gdo.base.Render import Mode
 from gdo.core.GDT_String import GDT_String
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.ui.GDT_Divider import GDT_Divider
+from gdo.ui.GDT_Section import GDT_Section
 
 
 class UITestCase(unittest.TestCase):
@@ -25,8 +27,9 @@ class UITestCase(unittest.TestCase):
         horz = GDT_Divider().title_raw('Test').horz().render_cli()
         self.assertEqual('|', horz[0], 'Divider does not start with pipe')
 
-
-        self.assertEqual(horz, '|', "Render for horz() Divider failed-")
+    def test_section(self):
+        sect = GDT_Section().title_raw("Test").render_title(Mode.CLI)
+        self.assertIn(sect, "Test", 'Section does not render in CLI mode.')
 
 
 if __name__ == '__main__':

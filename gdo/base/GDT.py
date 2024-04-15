@@ -68,4 +68,4 @@ class GDT:
     # Render #
     ##########
     def render_toml(self) -> str:
-        return f"{self.get_name()}=\"{self.get_val()}\"\n"
+        return f"{self.get_name()} = \"{self.get_val()}\"\n"

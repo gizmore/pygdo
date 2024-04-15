@@ -1,3 +1,4 @@
+from gdo.base.Render import Mode
 from gdo.base.Trans import t
 from gdo.base.Util import Strings
 
@@ -8,10 +9,10 @@ class WithTitle:
     _title_args: list
     _title_escaped: bool
 
-    def render_title(self) -> str:
+    def render_title(self, mode: Mode) -> str:
         out = t(self._title_key, self._title_args)
         if self._title_escaped:
-            return Strings.html(out)
+            return Strings.html(out, mode)
         return out
 
     def title(self, key, args: list = None, title_escaped=False):

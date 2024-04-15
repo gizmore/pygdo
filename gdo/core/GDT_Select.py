@@ -2,7 +2,6 @@ from gdo.core.GDT_ComboBox import GDT_ComboBox
 
 
 class GDT_Select(GDT_ComboBox):
-
     _choices: dict
 
     def __init__(self, name):
@@ -16,3 +15,8 @@ class GDT_Select(GDT_ComboBox):
 
     def gdo_choices(self) -> dict:
         return {}
+
+    def validate(self, value):
+        if not super().validate(value):
+            return False
+        return True

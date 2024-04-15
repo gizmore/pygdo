@@ -5,7 +5,7 @@ from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.InstallUser import InstallUser
-from gdo.core.connector.bash import Bash
+from gdo.core.connector.Bash import Bash
 
 
 class module_core(GDO_Module):

@@ -1,4 +1,4 @@
 <div>
-    <label for="<!=field.get_name()!>"><!=field.render_label()!></label>
-    <input id="<!=field.get_name()!>" type="<!=field._input_type!>" aria-label="<!=field.render_label()!>" />
+    <label for="<!=field.get_name()!>"><!=field.render_label(Mode.HTML)!></label>
+    <input id="<!=field.get_name()!>" type="<!=field._input_type!>" aria-label="<!=field.render_label(Mode.HTML)!>" />
 </div>

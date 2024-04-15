@@ -48,17 +48,6 @@ class InstallTestCase(unittest.TestCase):
         self.assertIsInstance(GDO_User.system(), GDO_User, 'Test if system user exists')
         self.assertEqual(GDO_User.system().get_id(), '1', 'Test if system user has ID#1')
 
-    def test_configure(self):
-        ModuleLoader.instance().load_modules_db(True)
-        date1 = Application.CONFIG['gen']['date']
-        data = Config.data(Application.CONFIG)
-        Config.rewrite(Application.file_path('protected/config.toml'), data)
-        Application.init(Application.PATH)
-        date2 = Application.CONFIG['gen']['date']
-        self.assertNotEquals(date1, date2, "Cannot rewrite config.")
-
-
-
 
 if __name__ == '__main__':
     unittest.main()

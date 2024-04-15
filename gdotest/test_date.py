@@ -49,9 +49,8 @@ class DateTestCase(unittest.TestCase):
     def test_diff(self):
         parsed1 = Time.parse_datetime_iso('en', '11/09/1980 13:37', 'Europe/Berlin', 'parse')
         parsed2 = Time.parse_datetime_iso('en', '11/09/1980 12:37', 'Europe/Berlin', 'parse')
-        Time.get_diff_time(parsed1.timestamp(), parsed2.timestamp())
-
-
+        diff = Time.get_diff_time(parsed1.timestamp(), parsed2.timestamp())
+        self.assertAlmostEqual(diff, 3600.0, 1, "Date diff is incorrect.")
 
 
 if __name__ == '__main__':

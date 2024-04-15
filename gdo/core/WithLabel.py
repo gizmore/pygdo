@@ -1,3 +1,4 @@
+from gdo.base.Render import Mode
 from gdo.base.Util import Strings
 from gdo.base.Trans import t
 
@@ -20,10 +21,10 @@ class WithLabel:
         self._label_escape = escape
         return self
 
-    def render_label(self):
+    def render_label(self, mode: Mode):
         trans = t(self._label_key, self._label_args)
         if self._label_escape:
-            trans = Strings.html(trans)
+            trans = Strings.html(trans, mode)
         return trans
 
     def render_cli(self):
