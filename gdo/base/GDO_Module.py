@@ -1,7 +1,12 @@
+import importlib
+import os
+
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
+from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import Trans, t
+from gdo.base.Util import Files
 
 
 class GDO_Module(GDO):
@@ -64,3 +69,39 @@ class GDO_Module(GDO):
 
     def render_name(self):
         return t(f"module_{self.get_name()}")
+
+    def get_methods(self) -> list[Method]:
+        methods = []
+        dirname = self.file_path('method')
+        if Files.exists(dirname):
+            for file_name in os.listdir(dirname):
+                full_path = os.path.join(dirname, file_name)
+                if not file_name.startswith('_'):
+                    method = self.instanciate_method(file_name[:-3])
+                    methods.append(method)
+        return methods
+
+    # def get_method(self, name: str) -> Method:
+    #     dirname = self.file_path('method')
+    #     full_path = os.path.join(dirname, f"{name}.py")
+    #     return self.instanciate_method(full_path)
+
+    def instanciate_method(self, name):
+        # Logger.debug(f'gdo_import({name})')
+        mn = importlib.import_module("gdo." + self.get_name() + ".method." + name)
+        if name in mn.__dict__.keys():
+            return mn.__dict__[name]()
+        return None
+
+    # def instanciate_method(self, file_path):
+    #     module_name = os.path.basename(file_path)[:-3]  # Remove the .py extension
+    #     spec = importlib.util.spec_from_file_location(module_name, file_path)
+    #     module = importlib.util.module_from_spec(spec)
+    #     spec.loader.exec_module(module)
+    #     for name in dir(module):
+    #         obj = getattr(module, name)
+    #         if isinstance(obj, type) and name == module_name:
+    #             return obj()
+    #
+    #     return None
+

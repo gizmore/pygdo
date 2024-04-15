@@ -15,3 +15,10 @@ class WithProxy:
     def not_null(self, notnull=True):
         self._proxy.not_null(notnull)
         return self
+
+    def val(self, val: str):
+        self._proxy.val(val)
+        return self
+
+    def get_val(self):
+        return self._proxy.get_val()

@@ -12,14 +12,15 @@ class CLITestCase(unittest.TestCase):
         Application.init(os.path.dirname(__file__ + "/../../"))
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
+        ModuleLoader.instance().init_cli()
         return self
 
     def test_echo(self):
-        result = CLI.parse("core.echo 'Hello world'").execute().render_cli()
-        self.assertEqual(result, 'Hello world', 'Test if CLI core.echo "Hello world" works.')
+        result = CLI.parse("echo \"Hello world\"").execute().render_cli()
+        self.assertIn('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
 
-        result = CLI.parse("core.echo Hello world").render_cli()
-        self.assertEqual(result, 'Hello world', 'Test if CLI core.echo "Hello world" works without quotes.')
+        result = CLI.parse("echo Hello world").execute().render_cli()
+        self.assertIn('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
 
 
 

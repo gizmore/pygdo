@@ -5,6 +5,9 @@ from gdo.core.GDT_RestOfText import GDT_RestOfText
 
 class echo(Method):
 
+    def cli_trigger(self) -> str:
+        return 'echo'
+
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_RestOfText('text').not_null(),

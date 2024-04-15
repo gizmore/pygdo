@@ -12,6 +12,7 @@ from gdo.base.Trans import Trans
 class ModuleLoader:
     _instance = None
     _cache: dict
+    _methods: dict
 
     @classmethod
     def instance(cls):
@@ -105,4 +106,13 @@ class ModuleLoader:
 
     def load_modules_cached(self):
         return self.load_modules_db(True)
+
+    def init_cli(self):
+        self._methods = {}
+        """
+        Init all methods
+        """
+        for module in self._cache.values():
+            for method in module.get_methods():
+                self._methods[method.cli_trigger()] = method
 

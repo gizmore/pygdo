@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import getpass
 import os.path
 from collections import OrderedDict
 from typing import Sequence
@@ -12,7 +13,7 @@ class CLI:
     @classmethod
     def get_current_user(cls):
         from gdo.core.connector.Bash import Bash
-        name = os.getlogin()
+        name = getpass.getuser()
         return Bash.get_server().get_or_create_user(name)
 
     @classmethod

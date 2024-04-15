@@ -1,5 +1,6 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.GDT_Name import GDT_Name
@@ -30,16 +31,21 @@ class GDO_Server(GDO):
             GDT_Creator('serv_creator'),
         ]
 
-    def get_or_create_user(self, username: str):
+    def get_or_create_user(self, username: str, displayname: str = None):
         user = self.get_user_by_name(username)
         if not user:
-            user = self.create_user(username)
+            user = self.create_user(username, displayname or username)
         return user
 
     def get_user_by_name(self, username):
-        pass
+        return GDO_User.table().get_by_vals({
+            'user_server': self.get_id(),
+            'user_name': username,
+        })
 
-    def create_user(self, username):
-        pass
-
-
+    def create_user(self, username: str, displayname: str):
+        return GDO_User.blank({
+            'user_name': username,
+            'user_displayname': displayname,
+            'user_server': self.get_id(),
+        }).insert()

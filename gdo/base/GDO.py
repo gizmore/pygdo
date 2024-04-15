@@ -157,7 +157,7 @@ class GDO(WithBulk, GDT):
         return self.insertOrReplace(Type.REPLACE)
 
     def insertOrReplace(self, type: Type):
-        query = self.query().type(type).set_vals(self.dirty_vals())
+        query = self.query().type(type).set_vals(self._vals)
         query.exec()
         return self.all_dirty(False)
 

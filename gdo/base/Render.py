@@ -23,7 +23,7 @@ class Mode(Enum):
     XML = 13
     JSON = 14
     MAIL = 15
-    TEXT = 16
+    TXT = 16
     MARKDOWN = 17
     GTK = 18
     RSS = 19
@@ -46,7 +46,7 @@ class Render:
         Turn text green.
         """
         match mode:
-            case Mode.TEXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN:
                 return s
             case Mode.CLI:
                 return cls._cli_color(s, '1')
@@ -61,7 +61,7 @@ class Render:
         Turn text red.
         """
         match mode:
-            case Mode.TEXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN:
                 return s
             case Mode.CLI:
                 return cls._cli_color(s, '2')
@@ -73,7 +73,7 @@ class Render:
     @classmethod
     def bold(cls, s: str, mode: Mode) -> str | list:
         match mode:
-            case Mode.TEXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN:
                 return f"*{s}*"
             case Mode.CLI:
                 return cls._cli_mode('1', s)
@@ -85,7 +85,7 @@ class Render:
     @classmethod
     def dim(cls, s: str, mode: Mode) -> str | list:
         match mode:
-            case Mode.TEXT:
+            case Mode.TXT:
                 return s
             case Mode.MARKDOWN:
                 return s
@@ -99,7 +99,7 @@ class Render:
     @classmethod
     def italic(cls, s: str, mode: Mode) -> str | list:
         match mode:
-            case Mode.TEXT:
+            case Mode.TXT:
                 return "/{s}/"
             case Mode.MARKDOWN:
                 return f"**{s}**"
@@ -113,7 +113,7 @@ class Render:
     @classmethod
     def underline(cls, s: str, mode: Mode) -> str | list:
         match mode:
-            case Mode.TEXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN:
                 return f"_{s}_"
             case Mode.CLI:
                 return cls._cli_mode('4', s)
@@ -125,7 +125,7 @@ class Render:
     @classmethod
     def blink(cls, s: str, mode: Mode):
         match mode:
-            case Mode.TEXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN:
                 return f"!{s}!"
             case Mode.CLI:
                 return cls._cli_mode('5', s)
@@ -137,7 +137,7 @@ class Render:
     @classmethod
     def invisible(cls, s: str, mode: Mode):
         match mode:
-            case Mode.TEXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN:
                 return '_' * len(s)
             case Mode.CLI:
                 return cls._cli_mode('6', s)
@@ -145,6 +145,10 @@ class Render:
                 return f'<span class="invisible">{s}</span>'
             case Mode.NIL | _:
                 return GDT.EMPTY_STRING
+
+    ###########
+    # Private #
+    ###########
 
     @classmethod
     def _cli_mode(cls, typ: str, s: str):

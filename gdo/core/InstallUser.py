@@ -14,7 +14,8 @@ class InstallUser:
     def install_bash(cls):
         if not GDO_Server.get_by_connector('Bash'):
             GDO_Server.blank({
-
+                'serv_name': 'Bash',
+                'serv_connector': 'Bash',
             }).insert()
 
     @classmethod
@@ -23,6 +24,7 @@ class InstallUser:
             GDO_User.blank({
                 'user_type': GDT_UserType.SYSTEM,
                 'user_name': 'System',
+                'user_displayname': 'System',
                 'user_server': GDO_Server.get_by_connector('Bash').get_id(),
             }).insert()
 

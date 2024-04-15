@@ -37,6 +37,6 @@ class Application:
     def file_path(cls, path: str):
         return os.path.join(cls.PATH, path)
 
-    @classmethod
-    def now(cls):
-        pass
+    # @classmethod
+    # def now(cls):
+    #     pass

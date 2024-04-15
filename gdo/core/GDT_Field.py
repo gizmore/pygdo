@@ -1,10 +1,11 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.WithError import WithError
 from gdo.ui.WithIcon import WithIcon
 from gdo.ui.WithTooltip import WithTooltip
 
 
-class GDT_Field(WithTooltip, WithIcon, GDT):
+class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
 
     _name: str
     _gdo: GDO
@@ -69,6 +70,12 @@ class GDT_Field(WithTooltip, WithIcon, GDT):
     def unique(self, unique=True):
         self._unique = unique
         return self
+
+    def is_positional(self) -> bool:
+        return self._not_null and self._initial is None
+
+    def get_initial(self):
+        return self._initial
 
     def gdo_column_define_null(self) -> str:
         if self._not_null:

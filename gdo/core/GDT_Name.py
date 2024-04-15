@@ -9,5 +9,3 @@ class GDT_Name(GDT_String):
         self._minlen = 2
         self._maxlen = 64
         self._case_s = True
-        self._unique = True
-        self._not_null = True

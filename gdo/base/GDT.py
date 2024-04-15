@@ -42,6 +42,12 @@ class GDT:
     def gdo(self, gdo):
         return self
 
+    def val(self, val: str):
+        return self
+
+    def value(self, value):
+        return self
+
     def get_val(self):
         return self.EMPTY_STRING
 
@@ -64,8 +70,14 @@ class GDT:
             return self
         return None
 
+    def is_positional(self) -> bool:
+        return False
+
     ##########
     # Render #
     ##########
     def render_toml(self) -> str:
         return f"{self.get_name()} = \"{self.get_val()}\"\n"
+
+    def get_initial(self):
+        return None

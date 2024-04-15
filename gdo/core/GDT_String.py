@@ -12,7 +12,6 @@ class Encoding(Enum):
 
 
 class GDT_String(WithLabel, GDT_Field):
-
     _encoding: Encoding
     _case_s: bool
 
