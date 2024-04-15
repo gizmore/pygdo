@@ -2,10 +2,8 @@ import argparse
 
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.base.Util import Strings
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Repeat import GDT_Repeat
-from gdo.core.method.echo import echo
 
 
 class Parser:
@@ -48,7 +46,6 @@ class Parser:
         return commands
 
     def parse_line(self, line: str) -> Method:
-
         tokens = self.tokenize(line)
         # command = Strings.substr_to(line, ' ', line)
         # argline = Strings.substr_from(line, ' ', '')

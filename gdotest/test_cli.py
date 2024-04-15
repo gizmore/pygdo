@@ -1,6 +1,8 @@
 import os.path
+import subprocess
 import unittest
 
+from bin.pygdo import run
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import CLI
@@ -27,6 +29,10 @@ class CLITestCase(unittest.TestCase):
         self.assertIn(str(module_base.instance().CORE_VERSION), result, 'Test if CLI version contains version number.')
         self.assertIn('GDO', result, 'Test if CLI version contains version number.')
         self.assertIn('Python', result, 'Test if CLI version contains version number.')
+
+    def test_binary(self):
+        result = subprocess.run(["pygdo", "echo", "Hello world"], capture_output=True)
+        self.assertIn('Hello world', str(result.stdout), 'Test if CLI core.echo "Hello world" works via binary execution.')
 
 
 if __name__ == '__main__':

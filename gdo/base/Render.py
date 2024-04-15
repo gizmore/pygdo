@@ -2,7 +2,6 @@ from enum import Enum
 
 from gdo.base.GDT import GDT
 
-
 class Mode(Enum):
     """
     Rendering Modes for GDTs
@@ -49,7 +48,7 @@ class Render:
             case Mode.TXT | Mode.MARKDOWN:
                 return s
             case Mode.CLI:
-                return cls._cli_color(s, '1')
+                return cls._cli_color(s, '2')
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f"<span class=\"green\">{s}</span>"
             case Mode.NIL | _:
@@ -64,7 +63,7 @@ class Render:
             case Mode.TXT | Mode.MARKDOWN:
                 return s
             case Mode.CLI:
-                return cls._cli_color(s, '2')
+                return cls._cli_color(s, '1')
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f"<span class=\"red\">{s}</span>"
             case Mode.NIL | _:
@@ -152,8 +151,8 @@ class Render:
 
     @classmethod
     def _cli_mode(cls, typ: str, s: str):
-        return f"\\033[%sm%s\\033[0m" % (typ, s)
+        return f"\033[%sm%s\033[0m" % (typ, s)
 
     @classmethod
     def _cli_color(cls, s: str, color: str):
-        return f"\\033[3{color}m{s}\\033[0m"
+        return f"\033[3{color}m{s}\033[0m"
