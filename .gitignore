@@ -6,7 +6,10 @@ __pycache__/
 !/gdo/base/
 !/gdo/core/
 !/gdo/date/
-!/gdo/ui/
-!/gdo/table/
 !/gdo/form/
+!/gdo/install/
+!/gdo/language/
+!/gdo/net/
+!/gdo/table/
+!/gdo/ui/
 
