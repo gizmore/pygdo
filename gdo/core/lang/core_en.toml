@@ -10,7 +10,6 @@ err_permission = "You do not have the required permissions to execute that metho
 err_int_min = "may not be smaller than %s."
 err_int_max = "may not be larger than %s."
 
-
 ##############
 ### Fields ###
 ##############
@@ -22,3 +21,10 @@ tt_login = "Use your username or your email."
 ############
 mt_core_echo = "Echo"
 md_core_echo = "The echo command replies it's rest of text parameter."
+
+###############
+### Version ###
+###############
+mt_core_version = "Version"
+md_core_version = "Print python and GDO version."
+msg_version = "Python %s - GDOv%s"

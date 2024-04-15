@@ -1,5 +1,6 @@
 import sys
 
+from gdo.base import module_base
 from gdo.base.Method import Method
 
 
@@ -9,5 +10,5 @@ class version(Method):
         super().__init__()
 
     def execute(self):
-        return self.message_raw(sys.version)
+        return self.message('msg_version', [sys.version, str(module_base.instance().CORE_VERSION)])
 

@@ -28,7 +28,7 @@ class GDT:
         self.GDT_MAX = max(self.GDT_COUNT, self.GDT_MAX)
 
     def get_name(self):
-        return self.__class__.__name__ + "#" + id(self).__str__()
+        return self.__class__.__name__ + "#" + str(id(self))
 
     def has_error(self) -> bool:
         return False

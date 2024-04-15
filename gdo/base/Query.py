@@ -165,7 +165,7 @@ class Query:
             else:
                 return Application.DB.query(query)
         except AttributeError as ex:
-            raise GDODBException(ex.__str__(), query)
+            raise GDODBException(str(ex), query)
         except ProgrammingError as ex:
             raise GDODBException(ex.msg, query)
         except DataError as ex:
