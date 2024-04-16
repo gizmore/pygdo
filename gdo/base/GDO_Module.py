@@ -79,29 +79,17 @@ class GDO_Module(WithModuleConfig, GDO):
             for file_name in os.listdir(dirname):
                 full_path = os.path.join(dirname, file_name)
                 if not file_name.startswith('_'):
-                    method = self.instanciate_method(file_name[:-3])
+                    method = self.instantiate_method(file_name[:-3])
                     methods.append(method)
         return methods
 
     def get_method(self, name: str) -> Method:
-        return self.instanciate_method(name)
+        return self.instantiate_method(name)
 
-    def instanciate_method(self, name):
+    def instantiate_method(self, name):
         try:
             mn = importlib.import_module("gdo." + self.get_name() + ".method." + name)
             return mn.__dict__[name]()
         except ModuleNotFoundError as ex:
             raise GDOMethodException(self.get_name(), name)
-
-    # def instanciate_method(self, file_path):
-    #     module_name = os.path.basename(file_path)[:-3]  # Remove the .py extension
-    #     spec = importlib.util.spec_from_file_location(module_name, file_path)
-    #     module = importlib.util.module_from_spec(spec)
-    #     spec.loader.exec_module(module)
-    #     for name in dir(module):
-    #         obj = getattr(module, name)
-    #         if isinstance(obj, type) and name == module_name:
-    #             return obj()
-    #
-    #     return None
 

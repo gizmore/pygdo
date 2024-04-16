@@ -6,6 +6,7 @@ from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
+from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.InstallUser import InstallUser
 from gdo.core.connector.Bash import Bash
@@ -45,6 +46,7 @@ class module_core(GDO_Module):
             GDO_Permission,
             GDO_UserPermission,
             GDO_Session,
+            GDO_UserSetting,
         ]
 
     def gdo_install(self):

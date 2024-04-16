@@ -1,6 +1,5 @@
 from gdo.base.Exceptions import GDOError
 from gdo.base.GDT import GDT
-from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import t, thas
 from gdo.base.Util import Strings
 from gdo.base.WithEnv import WithEnv
@@ -117,6 +116,7 @@ class Method(WithEnv, WithInput, WithError, GDT):
     #     return GDT_Error().title_raw(self.module().render_name()).text(key, args)
 
     def module(self):
+        from gdo.base.ModuleLoader import ModuleLoader
         mn = self.__module__
         mn = Strings.substr_from(mn, 'gdo.')
         mn = Strings.substr_to(mn, '.')

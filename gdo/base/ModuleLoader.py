@@ -101,12 +101,18 @@ class ModuleLoader:
         return fs
 
     def init_modules(self, enabled: bool = True):
+        from gdo.core.GDT_UserSetting import GDT_UserSetting
         Trans.LOADED = False
+        for module in self._cache.values():
+            for gdt in module.gdo_user_config():
+                GDT_UserSetting.register(gdt)
+            for gdt in module.gdo_user_settings():
+                GDT_UserSetting.register(gdt)
         for module in self._cache.values():
             if enabled and not module.is_enabled():
                 continue
             module.init_language()
-        self.load_module_vars()
+        # self.load_module_vars()
         for module in self._cache.values():
             if enabled and not module.is_enabled():
                 continue

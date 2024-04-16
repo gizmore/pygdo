@@ -8,7 +8,7 @@ class GDT_Select(GDT_ComboBox):
         super().__init__(name)
 
     def init_choices(self):
-        if not hasattr(self, 'choices'):
+        if not hasattr(self, '_choices'):
             self._choices = {}
             self._choices.update(self.gdo_choices())
         return self._choices

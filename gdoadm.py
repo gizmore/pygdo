@@ -47,6 +47,7 @@ class App:
             self.configure_interactive(path, data)
         else:
             Config.rewrite(path, data)
+        print("All Done!")
 
     def configure_interactive(self, path: str, data: dict[str, GDT]):
         pass
@@ -72,7 +73,7 @@ class App:
             modules = ModuleLoader.instance().load_modules_fs(args.modules, reinstall)
         else:
             modules = []
-
+        loader.init_modules()
         Installer.install_modules(modules)
         print("All Done!")
 

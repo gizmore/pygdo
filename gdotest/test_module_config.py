@@ -4,6 +4,7 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core import module_core
+from gdo.core.connector.Web import Web
 
 
 class ModuleConfigTestCase(unittest.TestCase):
@@ -27,7 +28,13 @@ class ModuleConfigTestCase(unittest.TestCase):
         self.assertEqual(got, '1', "Check if changed back config is working.")
 
     def test_module_user_config(self):
-        pass
+        web = Web.get_server()
+        user = web.get_or_create_user('gizmore')
+        email = user.get_setting_val('email')
+        self.assertIsNone(email, "User email is not null")
+        user.save_setting('email', 'gizmore@gizmore.org')
+        email = user.get_setting_val('email')
+        self.assertEqual(email, 'gizmore@gizmore.org', "Cannot save user setting")
 
     def test_module_user_settings(self):
         pass

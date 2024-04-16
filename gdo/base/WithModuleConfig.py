@@ -1,13 +1,26 @@
 from gdo.base.Exceptions import GDOValidationException
-from gdo.base.GDO_ModuleVar import GDO_ModuleVar
 from gdo.base.GDT import GDT
 
 
 class WithModuleConfig:
     _module_config: dict[str, GDT]
 
+    ############
+    # Abstract #
+    ############
+
     def gdo_module_config(self) -> list[GDT]:
         return []
+
+    def gdo_user_config(self) -> list[GDT]:
+        return []
+
+    def gdo_user_settings(self) -> list[GDT]:
+        return []
+
+    ##########
+    # Module #
+    ##########
 
     def module_config(self) -> dict[str, GDT]:
         if not hasattr(self, '_module_config'):
@@ -26,6 +39,7 @@ class WithModuleConfig:
         return self.config_column(key).get_value()
 
     def save_config_val(self, key: str, val: str):
+        from gdo.base.GDO_ModuleVar import GDO_ModuleVar
         gdt = self.config_column(key)
         if gdt.validate(gdt.to_value(val)):
             if val != self.get_config_val(key):
@@ -38,3 +52,9 @@ class WithModuleConfig:
         else:
             raise GDOValidationException(self.get_name(), key, val)
         return self
+
+    ########
+    # User #
+    ########
+
+

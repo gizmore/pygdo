@@ -1,6 +1,6 @@
 from enum import Enum
 
-from mysql.connector import ProgrammingError, DataError
+from mysql.connector import ProgrammingError, DataError, DatabaseError
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDODBException
@@ -207,4 +207,6 @@ class Query:
         except ProgrammingError as ex:
             raise GDODBException(ex.msg, query)
         except DataError as ex:
+            raise GDODBException(ex.msg, query)
+        except DatabaseError as ex:
             raise GDODBException(ex.msg, query)

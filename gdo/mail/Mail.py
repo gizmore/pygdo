@@ -12,12 +12,13 @@ class Mail:
     _body: str
     _attachments: dict[str, str]
 
-    def _cfg(self) -> dict[str, str]:
-        return Application.CONFIG['mail']
+    @classmethod
+    def _cfg(cls, key: str) -> dict[str, str]:
+        return Application.CONFIG['mail'][key]
 
     @classmethod
     def from_bot(cls):
-        return cls().sender()
+        return cls().sender(cls._cfg('sender'), cls._cfg('sender_name'))
 
     def __init__(self):
         self._lazy = False
@@ -54,7 +55,7 @@ class Mail:
         return self
 
     def send_to_user(self, user: GDO_User) -> bool:
-        self.recipient(user.get_mail(), user.get_val('user_displayname'))
+        self.recipient(user.get_mail(), user.gdo_val('user_displayname'))
         return self.send()
 
     def send(self) -> bool:

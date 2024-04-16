@@ -132,7 +132,8 @@ class GDO(WithBulk, GDT):
     def get_by_id(self, id: str):
         cols = self.get_pk_columns()
         ids = id.split(':')
-        return self.get_by_vals({col.get_name(): Strings.nullstr(val) for col, val in zip(cols, ids) if val})
+        return self.get_by_vals({
+            col.get_name(): Strings.nullstr(val) for col, val in zip(cols, ids) if val})
 
     def pk_where(self) -> str:
         cols = self.get_pk_columns()

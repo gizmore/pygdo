@@ -1,6 +1,6 @@
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.base.Trans import t
+from gdo.base.Trans import t, sitename
 from gdo.base.Util import Strings
 from gdo.core import module_core
 from gdo.mail.Mail import Mail
