@@ -8,9 +8,10 @@ from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import Trans, t
 from gdo.base.Util import Files
+from gdo.base.WithModuleConfig import WithModuleConfig
 
 
-class GDO_Module(GDO):
+class GDO_Module(WithModuleConfig, GDO):
     _priority: int
 
     @classmethod

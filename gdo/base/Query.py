@@ -31,12 +31,15 @@ class Query:
     _where: str
     _offset: int
     _limit: int
+    _join: str
+    _joined_objects: list[str]
 
     def __init__(self):
         super().__init__()
         self._debug = False
         self._type = Type.UNKNOWN
-
+        self._join = ''
+        self._joined_objects = []
 
     def is_select(self):
         if self.is_raw() and self._raw.startswith('SELECT'):
@@ -96,6 +99,10 @@ class Query:
         delattr(self, '_columns')
         return self.select(columns)
 
+    def all(self):
+        self._where = '1'
+        return self
+
     def where(self, where, op='AND'):
         if hasattr(self, '_where'):
             self._where += f" {op} {where}"
@@ -127,6 +134,33 @@ class Query:
         self._vals.update(vals)
         return self
 
+    def join_object(self, key: str, join: str = 'JOIN'):
+        from gdo.core.GDT_Join import GDT_Join
+        from gdo.core.GDT_Object import GDT_Object
+        if key in self._joined_objects:
+            return self
+        self._joined_objects.append(key)
+
+        gdt = self._gdo.column(key)
+
+        if isinstance(gdt, GDT_Join):
+            join = gdt._join
+        elif isinstance(gdt, GDT_Object):
+            table = gdt._table
+            a_tbl = self._gdo.gdo_table_name()
+            f_tbl = f"{key}_t"
+            join = f"{join} {table.gdo_table_name()} AS {f_tbl} ON {f_tbl}.{table.primary_key_column().get_name()}={a_tbl}.{gdt.get_name()}"
+        else:
+            raise GDODBException("Cannot join object", self.build_query())
+        return self.join(join)
+
+    def join(self, join: str):
+        if hasattr(self, '_join') and self.join is not None:
+            self._join += f" {join}"
+        else:
+            self._join = f" {join}"
+        return self
+
     def build_query(self):
         if self.is_raw():
             return self._raw
@@ -143,7 +177,7 @@ class Query:
             return f"UPDATE {self._table} SET {set_string} WHERE {self._where}"
         if self.is_select():
             return (
-                f"SELECT {self._columns} FROM {self._table} WHERE {self._where} {self.buildLimit()}"
+                f"SELECT {self._columns} FROM {self._table} {self._join} WHERE {self._where} {self.buildLimit()}"
             )
 
     def buildLimit(self):

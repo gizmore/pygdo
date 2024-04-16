@@ -6,6 +6,8 @@ import os
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException
+from gdo.base.GDO_ModuleVar import GDO_ModuleVar
+from gdo.base.Result import IterType
 from gdo.base.Trans import Trans
 
 
@@ -19,6 +21,9 @@ class ModuleLoader:
         if not cls._instance:
             cls._instance = ModuleLoader()
         return cls._instance
+
+    def reset(self):
+        self._cache = {}
 
     def gdo_import(self, name):
         # Logger.debug(f'gdo_import({name})')
@@ -100,18 +105,25 @@ class ModuleLoader:
         for module in self._cache.values():
             if enabled and module.is_enabled():
                 module.init_language()
+        self.load_module_vars()
         for module in self._cache.values():
             if enabled and module.is_enabled():
                 module.gdo_init()
+
+    def load_module_vars(self):
+        result = GDO_ModuleVar.table().select('module_name, mv_key, mv_val').join_object('mv_module').all().exec().iter(IterType.ROW)
+        for config in result:
+            module_name, key, val = config
+            self.get_module(module_name).config_column(key).initial(val)
 
     def load_modules_cached(self):
         return self.load_modules_db(True)
 
     def init_cli(self):
-        self._methods = {}
         """
         Init all methods
         """
+        self._methods = {}
         for module in self._cache.values():
             for method in module.get_methods():
                 self._methods[method.cli_trigger()] = method

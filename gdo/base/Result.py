@@ -26,7 +26,7 @@ class Result:
             self._result.close()
             delattr(self, '_result')
 
-    def type(self, iter_type: IterType):
+    def iter(self, iter_type: IterType):
         self._iter = iter_type
         return self
 
@@ -48,7 +48,8 @@ class Result:
         row = self._result.fetchone()
         if row is None:
             return None
-        return list(row.values())
+
+        return list(map(lambda val: val.decode() if isinstance(val, bytearray) else val, row.values()))
 
     def fetch_assoc(self):
         row = self._result.fetchone()

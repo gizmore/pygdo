@@ -1,3 +1,6 @@
+from gdo.base.Trans import t
+
+
 class GDOError(Exception):
 
     def __init__(self, key, args=None):
@@ -27,3 +30,9 @@ class GDOMethodException(Exception):
 
     def __init(self, module_name: str, method_name: str):
         super().__init__(f"Unknown method: {module_name} / {method_name}")
+
+
+class GDOValidationException(Exception):
+
+    def __init__(self, module_name: str, key: str, val: str):
+        super().__init__(t('err_gdt_validation', [module_name, key, val]))
