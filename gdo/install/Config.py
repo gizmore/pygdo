@@ -19,6 +19,8 @@ class Config:
         from gdo.core.GDT_UInt import GDT_UInt
         from gdo.ui.GDT_Section import GDT_Section
         lst = [
+            GDT_Section().title_raw('Core'),
+            cls.data_str('core.sitename', 'GDO'),
             GDT_Section().title_raw('Database'),
             cls.data_str('db.host', 'localhost'),
             cls.data_str('db.name', 'pygdo'),
@@ -48,17 +50,18 @@ class Config:
     @classmethod
     def data_str(cls, key_path: str, default: str):
         from gdo.core.GDT_String import GDT_String
-        gdt = GDT_String(key_path).initial(default)
-        with contextlib.suppress(KeyError, IndexError):
-            gdt.initial(Arrays.walk(Application.CONFIG, key_path))
+        gdt = GDT_String(key_path)
+        v = Arrays.walk(Application.CONFIG, key_path)
+        gdt.initial(v or default)
         return gdt
 
     @classmethod
     def data_int(cls, key_path: str, default: int):
         from gdo.core.GDT_Int import GDT_Int
         gdt = GDT_Int(key_path).initial(str(default))
-        with contextlib.suppress(KeyError):
-            gdt.initial(str(Arrays.walk(Application.CONFIG, key_path)))
+        v = Arrays.walk(Application.CONFIG, key_path)
+        if v:
+            gdt.initial(str(v))
         return gdt
 
     @classmethod

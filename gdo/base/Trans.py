@@ -20,6 +20,9 @@ def tiso(iso: str, key: str, args=None):
 def thas(key: str) -> bool:
     return Trans.has(key)
 
+def sitename() -> str:
+    return Application.CONFIG['core']['sitename']
+
 
 class Trans:
     CACHE = {

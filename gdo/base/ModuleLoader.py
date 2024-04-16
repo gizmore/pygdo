@@ -103,12 +103,14 @@ class ModuleLoader:
     def init_modules(self, enabled: bool = True):
         Trans.LOADED = False
         for module in self._cache.values():
-            if enabled and module.is_enabled():
-                module.init_language()
+            if enabled and not module.is_enabled():
+                continue
+            module.init_language()
         self.load_module_vars()
         for module in self._cache.values():
-            if enabled and module.is_enabled():
-                module.gdo_init()
+            if enabled and not module.is_enabled():
+                continue
+            module.gdo_init()
 
     def load_module_vars(self):
         result = GDO_ModuleVar.table().select('module_name, mv_key, mv_val').join_object('mv_module').all().exec().iter(IterType.ROW)

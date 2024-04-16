@@ -13,12 +13,10 @@ from gdo.date.Time import Time
 
 
 class Templite(object):
-    #autowrite = re.compile('(^[\'\"])|(^[a-zA-Z0-9_\[\]\'\"]+$)')
-    delimiters = ('<%', '%>')
     cache = {}
+    delimiters = ('<%', '%>')
 
-    def __init__(self, text=None, filename=None,
-                 encoding='utf-8', delimiters=None, caching=False):
+    def __init__(self, text=None, filename=None, encoding='utf-8', delimiters=None, caching=False):
         """Loads a template from string or file."""
         if filename:
             filename = os.path.abspath(filename)
