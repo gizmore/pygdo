@@ -2,9 +2,9 @@
 ### PyGDO Config ###
 ####################
 
-gen.version = '<!=modules['base'].CORE_VERSION!>'
-gen.date = '<!=Time.get_date()!>'
-<!
+gen.version = '<%=modules['base'].CORE_VERSION%>'
+gen.date = '<%=Time.get_date()%>'
+<%
 for gdt in data.values():
     write(gdt.render_toml())
-!>
+%>

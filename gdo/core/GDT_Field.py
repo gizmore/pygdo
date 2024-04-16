@@ -111,3 +111,11 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     def validate_unique(self, value):
         self._gdo.table().select()
 
+    ##########
+    # Render #
+    ##########
+    def render_html(self) -> str:
+        return self._val
+
+    def render_cli(self) -> str:
+        return self._val

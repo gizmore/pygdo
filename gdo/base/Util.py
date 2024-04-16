@@ -69,6 +69,8 @@ class Strings:
         """
         Escape output for various formats
         """
+        if s is None:
+            return ''
         match mode:
             case Mode.HTML:
                 return (s.replace('&', '&amp;').

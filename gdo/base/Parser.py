@@ -1,10 +1,14 @@
 import argparse
+import json
+from urllib.parse import parse_qs
 
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Util import Strings
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Repeat import GDT_Repeat
 from gdo.core.GDO_Session import GDO_Session
+from gdo.core.method.echo import echo
 
 
 class Parser:
@@ -50,7 +54,7 @@ class Parser:
         # argline = Strings.substr_from(line, ' ', '')
         method = self.get_method(tokens[0])
         method.user(self._user)
-        method.cli_session()
+        self.start_session(method)
         parser = argparse.ArgumentParser(description=method.gdo_render_descr(), usage=method.gdo_render_usage())
         for gdt in method.parameters().values():
             if gdt.is_positional():
@@ -92,11 +96,38 @@ class Parser:
     def get_method(self, cmd: str) -> Method:
         return ModuleLoader.instance()._methods[cmd]
 
+    def start_session(self, method: Method):
+        method.cli_session()
+
+
 
 class WebParser(Parser):
+    _user: object
+    _request: object
     _session: GDO_Session
 
-    def __init__(self, line: str, session):
-        super().__init__(line, session.get_user)
-        self._session = session
+    def __init__(self, req):
+        self._request = req
+        self._session = GDO_Session.start(req)
+        self._user = self._session.get_user()
+        super().__init__(self.build_line(), self._session.get_user())
+
+    def build_line(self) -> str:
+        # self._request.write("a")
+        qs = parse_qs(self._request.args)
+        url = qs['_url'][0]
+        return url.replace(';', ' ')
+
+    def write(self, s):
+        self._request.write(s)
+
+    def get_method(self, cmd: str) -> Method:
+        loader = ModuleLoader.instance()
+        mod_method = Strings.substr_to(cmd, ';', cmd)
+        module_name = Strings.substr_to(mod_method, '.')
+        method_name = Strings.substr_from(mod_method, '.')
+        return loader._cache[module_name].get_method(method_name)
+
+    def start_session(self, method: Method):
+        pass
 

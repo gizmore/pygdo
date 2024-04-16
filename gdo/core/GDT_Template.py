@@ -14,7 +14,7 @@ from gdo.date.Time import Time
 
 class Templite(object):
     #autowrite = re.compile('(^[\'\"])|(^[a-zA-Z0-9_\[\]\'\"]+$)')
-    delimiters = ('<!', '!>')
+    delimiters = ('<%', '%>')
     cache = {}
 
     def __init__(self, text=None, filename=None,

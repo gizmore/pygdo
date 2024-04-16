@@ -30,5 +30,6 @@ class WithFields:
         pass
 
     def render_html(self) -> str:
-        mapped = Arrays.recusrive_map(self._fields)
+        mapped = Arrays.recursive_map(self._fields, lambda gdt: gdt.render_html())
+        return mapped
 

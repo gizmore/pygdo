@@ -1,5 +1,4 @@
 from gdo.base.GDO_Module import GDO_Module
-from gdo.date.DateInstall import DateInstall
 from gdo.date.GDO_Timezone import GDO_Timezone
 
 
@@ -15,4 +14,5 @@ class module_date(GDO_Module):
         ]
 
     def gdo_install(self):
+        from gdo.date.DateInstall import DateInstall
         DateInstall.now(self)

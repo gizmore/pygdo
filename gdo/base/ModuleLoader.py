@@ -95,7 +95,7 @@ class ModuleLoader:
                 return None
         return fs
 
-    def init_modules(self, enabled=True):
+    def init_modules(self, enabled: bool = True):
         Trans.LOADED = False
         for module in self._cache.values():
             if enabled and module.is_enabled():

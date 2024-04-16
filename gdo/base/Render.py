@@ -1,6 +1,5 @@
 from enum import Enum
 
-from gdo.base.GDT import GDT
 
 class Mode(Enum):
     """
@@ -31,8 +30,6 @@ class Mode(Enum):
 
 
 class Render:
-
-
     """
     Text Rendering utility.
     Knows underline, bold, italic, green and red.
@@ -52,7 +49,7 @@ class Render:
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f"<span class=\"green\">{s}</span>"
             case Mode.NIL | _:
-                return GDT.EMPTY_STRING
+                return ''
 
     @classmethod
     def red(cls, s: str, mode: Mode) -> str:
@@ -67,7 +64,7 @@ class Render:
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f"<span class=\"red\">{s}</span>"
             case Mode.NIL | _:
-                return GDT.EMPTY_STRING
+                return ''
 
     @classmethod
     def bold(cls, s: str, mode: Mode) -> str | list:
@@ -79,7 +76,7 @@ class Render:
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f"<b>{s}</b>"
             case Mode.NIL | _:
-                return GDT.EMPTY_STRING
+                return ''
 
     @classmethod
     def dim(cls, s: str, mode: Mode) -> str | list:
@@ -93,7 +90,7 @@ class Render:
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f"<span class=\"dim\">{s}</span>"
             case Mode.NIL | _:
-                return GDT.EMPTY_STRING
+                return ''
 
     @classmethod
     def italic(cls, s: str, mode: Mode) -> str | list:
@@ -107,7 +104,7 @@ class Render:
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f"<i>{s}</i>"
             case Mode.NIL | _:
-                return GDT.EMPTY_STRING
+                return ''
 
     @classmethod
     def underline(cls, s: str, mode: Mode) -> str | list:
@@ -119,7 +116,7 @@ class Render:
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f"<u>{s}</u>"
             case Mode.NIL | _:
-                return GDT.EMPTY_STRING
+                return ''
 
     @classmethod
     def blink(cls, s: str, mode: Mode):
@@ -131,7 +128,7 @@ class Render:
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f'<span class="blink">{s}</span>'
             case Mode.NIL | _:
-                return GDT.EMPTY_STRING
+                return ''
 
     @classmethod
     def invisible(cls, s: str, mode: Mode):
@@ -143,7 +140,7 @@ class Render:
             case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
                 return f'<span class="invisible">{s}</span>'
             case Mode.NIL | _:
-                return GDT.EMPTY_STRING
+                return ''
 
     ###########
     # Private #

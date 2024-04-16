@@ -2,6 +2,7 @@ import importlib
 import os
 
 from gdo.base.Application import Application
+from gdo.base.Exceptions import GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
@@ -81,17 +82,15 @@ class GDO_Module(GDO):
                     methods.append(method)
         return methods
 
-    # def get_method(self, name: str) -> Method:
-    #     dirname = self.file_path('method')
-    #     full_path = os.path.join(dirname, f"{name}.py")
-    #     return self.instanciate_method(full_path)
+    def get_method(self, name: str) -> Method:
+        return self.instanciate_method(name)
 
     def instanciate_method(self, name):
-        # Logger.debug(f'gdo_import({name})')
-        mn = importlib.import_module("gdo." + self.get_name() + ".method." + name)
-        if name in mn.__dict__.keys():
+        try:
+            mn = importlib.import_module("gdo." + self.get_name() + ".method." + name)
             return mn.__dict__[name]()
-        return None
+        except ModuleNotFoundError as ex:
+            raise GDOMethodException(self.get_name(), name)
 
     # def instanciate_method(self, file_path):
     #     module_name = os.path.basename(file_path)[:-3]  # Remove the .py extension

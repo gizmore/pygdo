@@ -4,7 +4,7 @@ from gdo.base.Util import Strings
 from gdo.ui.GDT_Paragraph import GDT_Paragraph
 
 
-class WithText(GDT_Paragraph):
+class WithText:
     _text_key: str
     _text_args: list
     _text_escaped: bool

@@ -1,3 +1,5 @@
+from mod_python import Cookie
+
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.core.GDO_User import GDO_User
@@ -8,17 +10,19 @@ from gdo.core.GDT_User import GDT_User
 
 
 class GDO_Session(GDO):
+    _req: object
     _cookies: dict[str, str]
     _data: dict[str, any]
 
     def __init__(self):
         super().__init__()
+        self._req = None
         self._cookies = {}
         self._data = {}
 
     @classmethod
-    def start(cls, cookies):
-        instance = cls().cookies(cookies)
+    def start(cls, req):
+        instance = cls().request(req).cookies(Cookie.get_cookies(req))
         return instance
 
     @classmethod
@@ -40,6 +44,13 @@ class GDO_Session(GDO):
             GDT_User('sess_user'),
             GDT_Serialize('sess_data'),
         ]
+
+    def get_user(self) -> GDO_User:
+        return self.gdo_value('sess_user')
+
+    def request(self, req):
+        self._req = req
+        return self
 
     def cookies(self, cookies):
         self._cookies = cookies

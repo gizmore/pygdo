@@ -15,3 +15,15 @@ class GDODBException(Exception):
 
     def __init__(self, error, query):
         super().__init__(f"DB-Error: {error}\nQuery:\n{query}")
+
+
+class GDOModuleException(Exception):
+
+    def __init(self, module_name: str):
+        super().__init__(f"Unknown module: {module_name}")
+
+
+class GDOMethodException(Exception):
+
+    def __init(self, module_name: str, method_name: str):
+        super().__init__(f"Unknown method: {module_name} / {method_name}")

@@ -98,11 +98,5 @@ class GDT_String(WithLabel, GDT_Field):
     def validate_length(self, value):
         return True
 
-    def render_html(self):
-        pass
-
-    def render_cli(self):
-        return self._val
-
     def render_form(self):
         return GDT_Template.python('core', 'form_string.html', {'field': self})

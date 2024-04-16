@@ -26,6 +26,3 @@ class WithLabel:
         if self._label_escape:
             trans = Strings.html(trans, mode)
         return trans
-
-    def render_cli(self):
-        return t(self._label_key, self._label_args)

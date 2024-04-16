@@ -1,3 +1,6 @@
+from gdo.base.Util import Strings
+
+
 class GDT:
     """
     Base class of every other class.
@@ -67,6 +70,9 @@ class GDT:
     def value(self, value):
         return self
 
+    def get_initial(self):
+        return None
+
     def get_val(self):
         return self.EMPTY_STRING
 
@@ -98,5 +104,8 @@ class GDT:
     def render_toml(self) -> str:
         return f"{self.get_name()} = \"{self.get_val()}\"\n"
 
-    def get_initial(self):
-        return None
+    def render_html(self) -> str:
+        return Strings.html(self.get_val())
+
+    def render_cli(self) -> str:
+        return self.get_val()

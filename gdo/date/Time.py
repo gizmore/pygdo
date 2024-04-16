@@ -3,10 +3,8 @@ from __future__ import annotations
 from datetime import timezone, datetime
 from typing import Dict
 
-import pytz
-
 from gdo.base.Application import Application
-from gdo.base.Trans import tiso, Trans
+from gdo.base.Trans import tiso
 from gdo.base.Util import Arrays
 from gdo.date.GDO_Timezone import GDO_Timezone
 
