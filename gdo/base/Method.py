@@ -93,6 +93,15 @@ class Method(WithEnv, WithInput, WithError, GDT):
                     return value
         return None
 
+    def init_params(self, params: dict):
+        for key, val in params.items():
+            self.parameter(key).val(val)
+        return self
+
+    ###########
+    # Message #
+    ###########
+
     def message_raw(self, message):
         return self.message('%s', [message])
 

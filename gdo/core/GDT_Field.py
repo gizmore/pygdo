@@ -25,6 +25,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         self._primary = False
         self._value = None
         self._converted = False
+        self._unique = False
 
     def get_name(self):
         return self._name

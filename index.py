@@ -40,7 +40,7 @@ def handler(request):
         method = parser.parse()
         result = method.execute()
     except GDOMethodException as ex:
-        result = not_found().user(parser._user).execute()
+        result = not_found().init_params({'_url': url}).user(parser._user).execute()
 
     page = GDT_Page().result(result)
     request.write(page.render_html())

@@ -7,6 +7,8 @@ module_core = "Core"
 error = 'Error'
 err_module = "Unknown Module: %s."
 err_permission = "You do not have the required permissions to execute that method"
+err_not_found = "File not found: %s"
+
 err_int_min = "may not be smaller than %s."
 err_int_max = "may not be larger than %s."
 

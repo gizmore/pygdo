@@ -14,4 +14,4 @@ class not_found(Method):
 
     def gdo_execute(self):
         url = self.param_val('_url')
-        return GDT_Error().text('err_not_found', [Strings.html(url)])
+        return GDT_Error().title('module_core').text('err_not_found', [Strings.html(f'"{url}"')])
