@@ -29,6 +29,16 @@ class Config:
             GDT_Select('i18n.iso').choices({'en': 'English', 'de': 'Deutsch'}).initial('en'),
             GDT_Section().title_raw('Session'),
             cls.data_str('sess.name', 'PyGDO'),
+            GDT_Section().title_raw('Mail'),
+            cls.data_int('mail.debug', 1),
+            cls.data_str('mail.host', 'localhost'),
+            cls.data_int('mail.port', 587),
+            cls.data_str('mail.user', 'pygdo@localhost'),
+            cls.data_str('mail.pass', 'pygdo'),
+            cls.data_str('mail.sender', 'pygdo@localhost'),
+            cls.data_str('mail.sender_name', 'PyGDO System'),
+            cls.data_str('mail.errors_to', 'errors@pygdo.com'),
+
         ]
         dic = {}
         for gdt in lst:

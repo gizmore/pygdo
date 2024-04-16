@@ -25,6 +25,7 @@ class module_core(GDO_Module):
             'base',
             'date',
             'language',
+            'mail',
             'net',
         ]
 
@@ -33,6 +34,9 @@ class module_core(GDO_Module):
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
         ]
+
+    def cfg_404_mails(self) -> bool:
+        return self.get_config_value('send_404_mails')
 
     def gdo_classes(self):
         return [

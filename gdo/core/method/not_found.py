@@ -1,6 +1,7 @@
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.Util import Strings
+from gdo.core import module_core
 from gdo.net.GDT_Url import GDT_Url
 from gdo.ui.GDT_Error import GDT_Error
 
@@ -13,5 +14,10 @@ class not_found(Method):
         ]
 
     def gdo_execute(self):
+        if module_core.instance().cfg_404_mails():
+            self.send_mail()
         url = self.param_val('_url')
         return GDT_Error().title('module_core').text('err_not_found', [Strings.html(f'"{url}"')])
+
+    def send_mail(self):
+        pass

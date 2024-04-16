@@ -22,6 +22,16 @@ class ModuleConfigTestCase(unittest.TestCase):
         ModuleLoader.instance().init_modules()
         got = mod.get_config_val('send_404_mails')
         self.assertEqual(got, '0', "Check if changed default config is working.")
+        mod.save_config_val('send_404_mails', '1')
+        got = mod.get_config_val('send_404_mails')
+        self.assertEqual(got, '1', "Check if changed back config is working.")
+
+    def test_module_user_config(self):
+        pass
+
+    def test_module_user_settings(self):
+        pass
+
 
 
 if __name__ == '__main__':

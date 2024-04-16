@@ -31,3 +31,6 @@ class GDO_User(GDO):
                 delattr(cls, 'SYSTEM')
                 return None
         return cls.SYSTEM
+
+    def get_mail(self) -> str:
+        return 'foo@bar'

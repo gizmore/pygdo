@@ -22,7 +22,7 @@ class WithModuleConfig:
     def get_config_val(self, key: str) -> str:
         return self.config_column(key).get_val()
 
-    def get_config_value(self, key: str) -> str:
+    def get_config_value(self, key: str):
         return self.config_column(key).get_value()
 
     def save_config_val(self, key: str, val: str):

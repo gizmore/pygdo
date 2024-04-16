@@ -10,6 +10,7 @@ __pycache__/
 !/gdo/form/
 !/gdo/install/
 !/gdo/language/
+!/gdo/mail/
 !/gdo/net/
 !/gdo/table/
 !/gdo/ui/
