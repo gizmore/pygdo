@@ -1,5 +1,6 @@
 from enum import Enum
 
+from gdo.base.GDT import GDT
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.WithLabel import WithLabel
@@ -61,7 +62,7 @@ class GDT_String(WithLabel, GDT_Field):
 
     def gdo_column_define(self) -> str:
         return (f"{self._name} VARCHAR({self._maxlen}) "
-                f"CHARSET {self.gdo_column_define_charset()} COLLATE {self.gdo_column_define_collate()} "
+                f"CHARSET {self.gdo_column_define_charset()} {self.gdo_column_define_collate()} "
                 f"{self.gdo_column_define_default()} "
                 f"{self.gdo_column_define_null()} ")
 
@@ -75,10 +76,12 @@ class GDT_String(WithLabel, GDT_Field):
                 return 'binary'
 
     def gdo_column_define_collate(self) -> str:
+        if self._encoding == Encoding.BINARY:
+            return GDT.EMPTY_STRING
         append = '_general_ci'
         if self._case_s:
             append = '_bin'
-        return f"{self.gdo_column_define_charset()}{append}"
+        return f" COLLATE {self.gdo_column_define_charset()}{append}"
 
     def validate(self, value):
         if not super().validate(value):

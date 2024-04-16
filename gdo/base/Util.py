@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import getpass
 import os.path
+import secrets
 from collections import OrderedDict
 from typing import Sequence
 
@@ -141,5 +142,8 @@ class Arrays:
                 yield func(item)
 
 
+class Random():
 
-
+    @classmethod
+    def token(cls, length: int):
+        return secrets.token_hex(length)

@@ -4,12 +4,11 @@ from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Repeat import GDT_Repeat
-from gdo.session.GDO_Session import GDO_Session
+from gdo.core.GDO_Session import GDO_Session
 
 
 class Parser:
     _line: str
-    _last: Method
     _user: GDO_User
 
     def __init__(self, line: str, user):
@@ -51,6 +50,7 @@ class Parser:
         # argline = Strings.substr_from(line, ' ', '')
         method = self.get_method(tokens[0])
         method.user(self._user)
+        method.cli_session()
         parser = argparse.ArgumentParser(description=method.gdo_render_descr(), usage=method.gdo_render_usage())
         for gdt in method.parameters().values():
             if gdt.is_positional():

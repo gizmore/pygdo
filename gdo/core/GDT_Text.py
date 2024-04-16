@@ -11,7 +11,7 @@ class GDT_Text(GDT_String):
 
     def gdo_column_define(self) -> str:
         return (f"{self._name} TEXT({self._maxlen}) "
-                f"CHARSET {self.gdo_column_define_charset()} COLLATE {self.gdo_column_define_collate()} "
+                f"CHARSET {self.gdo_column_define_charset()}{self.gdo_column_define_collate()} "
                 f"{self.gdo_column_define_default()} "
                 f"{self.gdo_column_define_null()} ")
 

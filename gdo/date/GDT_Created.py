@@ -8,5 +8,5 @@ class GDT_Created(GDT_Timestamp):
         super().__init__(name)
 
     def gdo_before_create(self, gdo):
-        gdo.set(self._name, Time.get_date())
+        gdo.set_val(self._name, Time.get_date())
         return self

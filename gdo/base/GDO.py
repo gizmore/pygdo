@@ -6,15 +6,14 @@ if TYPE_CHECKING:
 
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
-from gdo.base.Query import Type, Query
-from gdo.base.Util import Strings, Arrays
+from gdo.base.Query import Type
+from gdo.base.Util import Strings
 from gdo.base.WithBulk import WithBulk
 
 
 class GDO(WithBulk, GDT):
-
-    COUNT = 0
-    MAX_COUNT = 0
+    GDO_COUNT = 0
+    GDO_MAX = 0
 
     _vals: dict
     _dirty: list
@@ -22,11 +21,12 @@ class GDO(WithBulk, GDT):
 
     def __init__(self):
         super().__init__()
-        self.COUNT += 1
-        self.MAX_COUNT = max(self.MAX_COUNT, self.COUNT)
+        self.GDO_COUNT += 1
+        self.GDO_MAX = max(self.GDO_MAX, self.GDO_COUNT)
         self._vals = {}
         self._dirty = []
         self._is_table = False
+        self._last_id = None
 
     @classmethod
     def table(cls) -> Self:
@@ -65,7 +65,7 @@ class GDO(WithBulk, GDT):
     def gdo_value(self, key: str):
         return self.column(key).get_value()
 
-    def set(self, key, val, dirty=True):
+    def set_val(self, key, val, dirty=True):
         if key in self._vals.keys():
             if val == self._vals[key]:
                 dirty = False
@@ -74,9 +74,13 @@ class GDO(WithBulk, GDT):
         self._vals[key] = str(val)
         return self.dirty(key, dirty)
 
+    def set_value(self, key, value, dirty=True):
+        val = self.column(key).value(value).to_val(value)
+        return self.set_val(key, val, dirty)
+
     def set_vals(self, vals: dict, dirty=True):
         for key, val in vals.items():
-            self.set(key, val, dirty)
+            self.set_val(key, val, dirty)
         return self
 
     def gdo_table_name(self) -> str:
@@ -159,7 +163,7 @@ class GDO(WithBulk, GDT):
     def insertOrReplace(self, type: Type):
         self.before_create()
         query = self.query().type(type).set_vals(self._vals)
-        query.exec()
+        self._last_id = query.exec()
         self.after_create()
         return self.all_dirty(False)
 

@@ -23,7 +23,6 @@ class Database:
             self.link.close()
             delattr(self, 'link')
 
-
     def get_link(self):
         if self.link is None:
             self.link = mysql.connector.connect(
@@ -35,6 +34,9 @@ class Database:
             self.link.database = self.db_name
             self.query('SET NAMES utf8mb4')
         return self.link
+
+    def insert_id(self) -> str:
+        return self.get_link().insert_id()
 
     def query(self, query):
         try:
@@ -70,5 +72,3 @@ class Database:
     def foreign_keys(self, state=False):
         query = f"SET FOREIGN_KEY_CHECKS = %i" % state
         return self.query(query)
-
-

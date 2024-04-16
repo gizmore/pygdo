@@ -158,6 +158,10 @@ class Query:
         try:
             if self._debug:
                 Logger.debug(query)
+            if self.is_insert():
+                cursor = Application.DB.cursor()
+                cursor.execute(query)
+                return cursor.lastrowid
             if self.is_select():
                 cursor = Application.DB.cursor()
                 cursor.execute(query)

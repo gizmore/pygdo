@@ -68,7 +68,7 @@ class ModuleLoader:
             return True
         return False
 
-    def load_modules_db(self, enabled: None | bool):
+    def load_modules_db(self, enabled: None | bool = True):
         from gdo.base.GDO_Module import GDO_Module
         back = []
         query = GDO_Module.table().select()
