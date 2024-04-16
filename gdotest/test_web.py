@@ -27,11 +27,16 @@ class WebTestCase(unittest.TestCase):
         handler(req)
         self.assertIn('This Test', req._out, "Plugged web test failed")
 
+    def test_welcome(self):
+        req = WebPlug("core.welcome")
+        handler(req)
+        self.assertIn('GDO', req._out, "Plugged web test failed")
+
+
     def test_file_not_found(self):
         req = WebPlug("core.echoNONO;This%20Test.html?_lang=de")
         handler(req)
         self.assertIn('not found', req._out, "Plugged web test 404 failed")
-
 
 
 if __name__ == '__main__':

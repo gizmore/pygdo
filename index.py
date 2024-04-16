@@ -24,7 +24,9 @@ def handler(request):
         loader.init_modules()
 
     qs = parse_qs(request.args)
-    url = qs['_url'][0]
+    url = 'core.welcome'
+    if '_url' in qs:
+        url = qs['_url'][0]
 
     if Files.exists(url):
         mime = magic.Magic(mime=True)
@@ -35,7 +37,7 @@ def handler(request):
 
     request.content_type = 'text/html'
 
-    parser = WebParser(request)
+    parser = WebParser(request, url)
     try:
         method = parser.parse()
         result = method.execute()

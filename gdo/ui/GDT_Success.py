@@ -9,3 +9,6 @@ class GDT_Success(GDT_Panel):
 
     def render_cli(self):
         return Render.green(self.render_text(Mode.CLI), Mode.CLI)
+
+    def render_html(self):
+        return Render.green(f"{self.render_title(Mode.HTML)}: {self.render_text(Mode.HTML)}", Mode.HTML)

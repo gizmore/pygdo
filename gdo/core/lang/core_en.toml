@@ -18,6 +18,13 @@ err_int_max = "may not be larger than %s."
 login = "Login"
 tt_login = "Use your username or your email."
 
+###############
+### Welcome ###
+###############
+mt_core_welcome = "Welcome"
+md_core_welcome = "A default welcome page for a PyGDO installation."
+msg_gdo_working = 'Welcome to your default PyGDO installation.'
+
 ############
 ### Echo ###
 ############

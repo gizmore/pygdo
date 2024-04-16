@@ -102,21 +102,21 @@ class Parser:
 
 
 class WebParser(Parser):
+    _url: str
     _user: object
     _request: object
     _session: GDO_Session
 
-    def __init__(self, req):
+    def __init__(self, req, url):
+        self._url = url
         self._request = req
         self._session = GDO_Session.start(req)
         self._user = self._session.get_user()
         super().__init__(self.build_line(), self._session.get_user())
 
     def build_line(self) -> str:
-        # self._request.write("a")
-        qs = parse_qs(self._request.args)
-        url = qs['_url'][0]
-        return url.replace(';', ' ')
+        line = self._url.replace(';', ' ')
+        return line
 
     def write(self, s):
         self._request.write(s)
