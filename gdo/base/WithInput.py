@@ -9,6 +9,10 @@ class WithInput:
         return self
 
     def inputs(self, vals: dict):
-        for key, val in vals:
+        for key, val in vals.items():
             self.input(key, val)
         return self
+
+    def has_input(self, key):
+        return key in self._input.keys()
+

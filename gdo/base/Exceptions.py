@@ -21,14 +21,16 @@ class GDODBException(Exception):
 
 
 class GDOModuleException(Exception):
+    _module: str
 
-    def __init(self, module_name: str):
+    def __init__(self, module_name: str):
         super().__init__(f"Unknown module: {module_name}")
+        self._module = module_name
 
 
 class GDOMethodException(Exception):
 
-    def __init(self, module_name: str, method_name: str):
+    def __init__(self, module_name: str, method_name: str):
         super().__init__(f"Unknown method: {module_name} / {method_name}")
 
 

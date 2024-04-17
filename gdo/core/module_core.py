@@ -36,6 +36,9 @@ class module_core(GDO_Module):
             GDT_Bool('send_404_mails').initial('1'),
         ]
 
+    def cfg_403_mails(self) -> bool:
+        return self.get_config_value('send_403_mails')
+
     def cfg_404_mails(self) -> bool:
         return self.get_config_value('send_404_mails')
 
@@ -52,3 +55,6 @@ class module_core(GDO_Module):
     def gdo_install(self):
         InstallUser.now()
 
+    def gdo_load_scripts(self, page):
+        self.add_css('css/pygdo.css')
+        self.add_js('js/pygdo.js')

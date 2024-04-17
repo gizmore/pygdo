@@ -8,7 +8,7 @@ error = 'Error'
 err_module = "Unknown Module: %s."
 err_permission = "You do not have the required permissions to execute that method"
 err_not_found = "File not found: %s"
-
+err_not_null = "This field may not be left empty."
 err_int_min = "may not be smaller than %s."
 err_int_max = "may not be larger than %s."
 
@@ -17,6 +17,20 @@ err_int_max = "may not be larger than %s."
 ##############
 login = "Login"
 tt_login = "Use your username or your email."
+password = "Password"
+tt_password = "A password has to be at least 4 characters"
+
+##################
+### GDT_Select ###
+##################
+yes = "Yes"
+no = "No"
+choose = "Please choose"
+
+#################
+### Not Found ###
+#################
+mt_core_not_found = "File Not Found"
 
 ###############
 ### Welcome ###

@@ -1,5 +1,6 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Util import Strings
 from gdo.base.WithError import WithError
 from gdo.ui.WithIcon import WithIcon
 from gdo.ui.WithTooltip import WithTooltip
@@ -15,6 +16,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     _converted: bool
     _primary: bool
     _unique: bool
+    _writable: bool
 
     def __init__(self, name):
         super().__init__()
@@ -26,6 +28,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         self._value = None
         self._converted = False
         self._unique = False
+        self._writable = True
 
     def get_name(self):
         return self._name
@@ -41,8 +44,8 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
             self._converted = True
         return self._value
 
-    def val(self, val: str):
-        self._val = val
+    def val(self, val: str | list):
+        self._val = val[0] if isinstance(val, list) else val
         self._converted = False
         return self
 
@@ -74,6 +77,9 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
 
     def is_positional(self) -> bool:
         return self._not_null and self._initial is None
+
+    def is_writable(self) -> bool:
+        return self._writable
 
     def get_initial(self):
         return self._initial
@@ -115,8 +121,11 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     ##########
     # Render #
     ##########
+    def render_val(self):
+        return Strings.html(self._val)
+
     def render_html(self) -> str:
-        return self._val
+        return Strings.html(self._val)
 
     def render_cli(self) -> str:
         return self._val

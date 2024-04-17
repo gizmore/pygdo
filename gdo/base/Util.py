@@ -9,6 +9,10 @@ from typing import Sequence
 from gdo.base.Render import Mode
 
 
+def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
+    return f"/{module_name}.{method_name}{append}.{fmt}"
+
+
 class CLI:
 
     @classmethod
@@ -135,7 +139,8 @@ class Arrays:
         """
         return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
 
-    def recursive_map(cls, seq, func):
+    @classmethod
+    def recursive_map(cls, seq, func, out=''):
         for item in seq:
             if isinstance(item, Sequence):
                 yield type(item)
@@ -143,8 +148,12 @@ class Arrays:
             else:
                 yield func(item)
 
+    @classmethod
+    def dict_index(cls, dic: dict[str, any], value):
+        return dic.values()[dic.keys().index(value)];
 
-class Random():
+
+class Random:
 
     @classmethod
     def token(cls, length: int):

@@ -6,7 +6,7 @@ class GDT_Section(GDT_Divider):
 
     def __init__(self):
         super().__init__()
-        self.vert()
+        self.vertical()
 
     def render_toml(self) -> str:
         return f"\n# {self.render_title(Mode.TOML)}\n"

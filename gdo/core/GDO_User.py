@@ -1,10 +1,13 @@
+from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.core.GDT_AutoInc import GDT_AutoInc
+from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Server import GDT_Server
 from gdo.core.GDT_String import GDT_String
 from gdo.date.GDT_Created import GDT_Created
 from gdo.core.GDT_UserType import GDT_UserType
+from gdo.date.GDT_Deleted import GDT_Deleted
 
 
 class GDO_User(GDO):
@@ -22,6 +25,10 @@ class GDO_User(GDO):
                 return None
         return cls.SYSTEM
 
+    @classmethod
+    def current(cls):
+        return Application.STORAGE.user or cls.system()
+
     def gdo_columns(self) -> list:
         return [
             GDT_AutoInc('user_id'),
@@ -30,6 +37,8 @@ class GDO_User(GDO):
             GDT_String('user_displayname').not_null(),
             GDT_Server('user_server').not_null(),
             GDT_Created('user_created'),
+            GDT_Creator('user_creator').not_null(False),
+            GDT_Deleted('user_deleted'),
         ]
 
     def get_mail(self) -> str:

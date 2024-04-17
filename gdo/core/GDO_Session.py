@@ -7,6 +7,7 @@ from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Serialize import GDT_Serialize
 from gdo.core.GDT_Token import GDT_Token
 from gdo.core.GDT_User import GDT_User
+from gdo.net.GDT_IP import GDT_IP
 
 
 class GDO_Session(GDO):
@@ -42,6 +43,7 @@ class GDO_Session(GDO):
             GDT_AutoInc('sess_id'),
             GDT_Token('sess_token'),
             GDT_User('sess_user'),
+            GDT_IP('sess_ip'),
             GDT_Serialize('sess_data'),
         ]
 

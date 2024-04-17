@@ -23,12 +23,12 @@ class WebTestCase(unittest.TestCase):
         self.assertIsInstance(method, echo, "Cannot load method echo via web means")
 
     def test_plug(self):
-        req = WebPlug("core.echo;This%20Test.html?_lang=de")
+        req = WebPlug("core.echo;text.This%20Test.html?_lang=de")
         handler(req)
         self.assertIn('This Test', req._out, "Plugged web test failed")
 
     def test_welcome(self):
-        req = WebPlug("core.welcome")
+        req = WebPlug("core.welcome.html")
         handler(req)
         self.assertIn('GDO', req._out, "Plugged web test failed")
 

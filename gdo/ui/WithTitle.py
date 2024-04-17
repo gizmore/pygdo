@@ -9,10 +9,15 @@ class WithTitle:
     _title_args: list
     _title_escaped: bool
 
-    def render_title(self, mode: Mode) -> str:
-        out = t(self._title_key, self._title_args)
-        if self._title_escaped:
-            return Strings.html(out, mode)
+    def has_title(self) -> bool:
+        return hasattr(self, '_title_key')
+
+    def render_title(self, mode: Mode = Mode.HTML) -> str:
+        out = ''
+        if self.has_title():
+            out = t(self._title_key, self._title_args)
+            if self._title_escaped:
+                return Strings.html(out, mode)
         return out
 
     def title(self, key, args: list = None, title_escaped=False):

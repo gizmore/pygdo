@@ -4,20 +4,20 @@ class WithFlow:
     Horizontal or vertical.
     """
 
-    _flow_horizontal: bool
+    _flow_horz: bool
 
-    def horz(self, horizontal: bool = True):
-        self._flow_horizontal = horizontal
+    def horizontal(self, horizontal: bool = True):
+        self._flow_horz = horizontal
         return self
 
-    def vert(self, vertical: bool = True):
-        return self.horz(not vertical)
+    def vertical(self, vertical: bool = True):
+        return self.horizontal(not vertical)
 
     def is_horizontal(self) -> bool:
-        return self._flow_horizontal
+        return self._flow_horz
 
     def is_vertical(self) -> bool:
-        return not self._flow_horizontal
+        return not self._flow_horz
 
     def render_class(self) -> str:
         return 'gdt-col' if self.is_horizontal() else 'gdt-row'

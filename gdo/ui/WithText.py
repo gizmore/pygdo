@@ -9,7 +9,7 @@ class WithText:
     _text_args: list
     _text_escaped: bool
 
-    def text(self, key, args: list = None, title_escaped=False):
+    def text(self, key, args: list = None, title_escaped: bool = False):
         self._text_key = key
         self._text_args = args
         return self.text_escaped(title_escaped)
@@ -21,8 +21,13 @@ class WithText:
         self._text_escaped = escaped
         return self
 
-    def render_text(self, mode: Mode) -> str:
-        out = t(self._text_key, self._text_args)
-        if self._text_escaped:
-            return Strings.html(out, mode)
+    def has_text(self) -> bool:
+        return hasattr(self, '_text_key')
+
+    def render_text(self, mode: Mode = Mode.HTML) -> str:
+        out = ''
+        if self.has_text():
+            out = t(self._text_key, self._text_args)
+            if self._text_escaped:
+                return Strings.html(out, mode)
         return out

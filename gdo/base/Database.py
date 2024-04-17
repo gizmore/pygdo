@@ -10,6 +10,7 @@ class Database:
     db_name: str
     username: str
     password: str
+    locks: list[str]
 
     def __init__(self, host, name, user, pw):
         self.link = None
@@ -17,6 +18,7 @@ class Database:
         self.db_name = name
         self.username = user
         self.password = pw
+        self.locks = []
 
     def __del__(self):
         if self.link:
@@ -72,3 +74,9 @@ class Database:
     def foreign_keys(self, state=False):
         query = f"SET FOREIGN_KEY_CHECKS = %i" % state
         return self.query(query)
+
+    def lock(self, name: str):
+        return self.query(f"GET LOCK '{name}'")
+
+    def unlock(self, name: str):
+        return self.query(f"RELEASE LOCK '{name}'")

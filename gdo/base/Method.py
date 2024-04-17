@@ -41,7 +41,7 @@ class Method(WithEnv, WithInput, WithError, GDT):
         raise GDOError('err_stub')
 
     def gdo_render_title(self) -> str:
-        return t(f'mt_{self._mome()}')
+        return t(f'mt_{self._mome().replace(".", "_")}')
 
     def gdo_render_descr(self) -> str:
         return t(f'md_{self._mome()}')
@@ -74,7 +74,9 @@ class Method(WithEnv, WithInput, WithError, GDT):
 
     def parameter(self, name: str):
         self.parameters()
-        return self._parameters[name]
+        if name in self._parameters:
+            return self._parameters[name]
+        return None
 
     def param_val(self, key):
         for name, gdt in self.parameters().items():
@@ -122,14 +124,30 @@ class Method(WithEnv, WithInput, WithError, GDT):
         mn = Strings.substr_to(mn, '.')
         return ModuleLoader.instance()._cache[mn]
 
+    ########
+    # Exec #
+    ########
+    def input(self, key, val):
+        super().input(key, val)
+        param = self.parameter(key)
+        if param:
+            param.val(val)
+        return self
+
     def execute(self):
         """
         Check method environment and if allowed, gdo_execute() on permission
         """
-        if not self.has_permission(self._user):
-            return self.error('err_permission')
-
+        if not self.prepare():
+            return self
         return self.gdo_execute()
+
+    def prepare(self):
+        if not self.has_permission(self._user):
+            self.error('err_permission')
+            return False
+        return True
+
 
     def has_permission(self, user):
         return True

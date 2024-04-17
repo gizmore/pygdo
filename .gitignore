@@ -4,10 +4,12 @@ __pycache__/
 /protected/
 /.htaccess
 /gdo/*
+!/gdo/account/
 !/gdo/base/
 !/gdo/core/
 !/gdo/date/
 !/gdo/form/
+!/gdo/file/
 !/gdo/install/
 !/gdo/language/
 !/gdo/mail/

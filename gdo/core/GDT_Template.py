@@ -73,8 +73,6 @@ class Templite(object):
                     offset -= 1
                     part = part_stripped[1:]
                     if not part.endswith(':'): continue
-#                elif self.autowrite.match(part_stripped):
-#                    part = 'write(%s)' % part_stripped
                 elif part_stripped.startswith('='):
                     part = 'write(%s)' % part_stripped[1:]
                 lines = part.splitlines()
@@ -95,11 +93,13 @@ class Templite(object):
         # add write method
         def write(*args):
             for value in args:
-                # if isinstance(value, unicode):
-                #     value = value.encode(self.encoding)
                 stack.append(str(value))
 
+        def writeln(line: str):
+            write(f"{line}\n")
+
         namespace['write'] = write
+        namespace['writeln'] = writeln
 
         # add include method
         def include(file):
@@ -160,3 +160,7 @@ class GDT_Template(GDT):
     @classmethod
     def get_path(cls, modulename: str, path: str):
         return os.path.join(Application.PATH, f"gdo/{modulename}/tpl/{path}")
+
+
+def tpl(modulename: str, filename: str, vals: dict = None):
+    return GDT_Template.python(modulename, filename, vals)

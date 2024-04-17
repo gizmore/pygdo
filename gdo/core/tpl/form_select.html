@@ -1,6 +1,11 @@
 <div class="gdt-select">
     <label for="<%=field._name%>"><%=field.render_label()%></label>
-    <select id="<%=field._name%>">
-
+    <select id="<%=field._name%>" name="<%=field._name%>">
+        <%
+        for key, gdt in field.init_choices().items():
+            if not isinstance(gdt, str):
+                gdt = gdt.render_list()
+            writeln(f'<option>{gdt}</option>')
+        %>
     </select>
 </div>

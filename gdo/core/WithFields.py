@@ -2,8 +2,7 @@ from gdo.base.Util import Arrays
 
 
 class WithFields:
-
-    _fields: []
+    _fields: list
 
     def add_field(self, *fields):
         if not hasattr(self, '_fields'):
@@ -22,6 +21,12 @@ class WithFields:
                     return gdt2
         return None
 
+    def has_fields(self) -> bool:
+        return True
+
+    def fields(self) -> list:
+        return self._fields
+
     ##########
     # Render #
     ##########
@@ -30,6 +35,16 @@ class WithFields:
         pass
 
     def render_html(self) -> str:
-        mapped = Arrays.recursive_map(self._fields, lambda gdt: gdt.render_html())
-        return mapped
+        output = ""
+        if hasattr(self, '_fields'):
+            for gdt in self._fields:
+                output += gdt.render_html()
+        return output
+
+    def render_form(self) -> str:
+        output = ""
+        if hasattr(self, '_fields'):
+            for gdt in self._fields:
+                output += gdt.render_form()
+        return output
 

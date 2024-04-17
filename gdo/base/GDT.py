@@ -90,17 +90,26 @@ class GDT:
     def validate(self, value) -> bool:
         return True
 
-    def validated(self, value):
-        if self.validate(value):
+    def validated(self):
+        if self.validate(self.get_value()):
             return self
         return None
 
     def is_positional(self) -> bool:
         return False
 
+    def has_fields(self) -> bool:
+        return False
+
+    def is_writable(self) -> bool:
+        return False
+
     ##########
     # Render #
     ##########
+    def html_class(self):
+        return self.__class__.__name__.lower().replace('_', '-')
+
     def render_toml(self) -> str:
         return f"{self.get_name()} = \"{self.get_val()}\"\n"
 
@@ -109,3 +118,7 @@ class GDT:
 
     def render_cli(self) -> str:
         return self.get_val()
+
+    def fields(self) -> list:
+        return []
+

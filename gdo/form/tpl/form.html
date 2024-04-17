@@ -1,14 +1,11 @@
 <div class="gdt-form">
-
-    {%field.render_paragraph()%}
-
-    <form>
-
-        {%
-        for gdt in field._fields
+    <h4><%=field.render_title(Mode.HTML)%></h4>
+    <p><%=field.render_text(Mode.HTML)%></p>
+    <form method="POST" action="<%=field.render_href()%>">
+        <%
+        for gdt in field._fields:
             write(gdt.render_form())
-        %}
-
+        %>
+        <%=field._actions.render_form()%>
     </form>
-
 </div>

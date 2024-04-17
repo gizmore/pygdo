@@ -2,9 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title><%=field._method.gdo_render_title()%></title>
+    <meta name="description" content="a">
+    <%
+    for url in field._css:
+        writeln(f'<link rel="stylesheet" href="{url}" />')
+    %>
 </head>
 <body>
-<%=field._result.render_html()%>
+<nav id="gdt-left-nav" class="gdt-nav">
+<%=field._left_bar.render_html()%>
+</nav>
+<nav id="gdt-right-nav" class="gdt-nav">
+<%=field._right_bar.render_html()%>
+</nav>
+<nav>
+    <%=field._left_bar.render_html()%>
+</nav>
+<main>
+    <%=field._result.render_html()%>
+</main>
 </body>
 </html>

@@ -24,7 +24,7 @@ class UITestCase(unittest.TestCase):
         self.assertIn("login", tpl, 'Test if string form renders somewhat 2')
 
     def test_flow(self):
-        horz = GDT_Divider().title_raw('Test').horz().render_cli()
+        horz = GDT_Divider().title_raw('Test').horizontal().render_cli()
         self.assertEqual('|', horz[0], 'Divider does not start with pipe')
 
     def test_section(self):

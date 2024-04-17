@@ -1,17 +1,22 @@
 import importlib
 import os
 
+from packaging.version import Version
+
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import Trans, t
-from gdo.base.Util import Files
+from gdo.base.Util import Files, href
 from gdo.base.WithModuleConfig import WithModuleConfig
 
 
 class GDO_Module(WithModuleConfig, GDO):
+    CORE_VERSION = Version("8.0.0")
+    CORE_REV = "PyGDOv8-0.0-r1000"
+
     _priority: int
 
     @classmethod
@@ -21,6 +26,18 @@ class GDO_Module(WithModuleConfig, GDO):
     def __init__(self):
         super().__init__()
         self._priority = 50
+
+    def gdo_install(self):
+        pass
+
+    def gdo_init(self):
+        pass
+
+    def gdo_init_sidebar(self, page):
+        pass
+
+    def gdo_load_scripts(self, page):
+        pass
 
     @classmethod
     def get_name(cls):
@@ -60,12 +77,6 @@ class GDO_Module(WithModuleConfig, GDO):
     def init_language(self):
         Trans.add_language(self.file_path(f"lang/{self.get_name()}"))
 
-    def gdo_install(self):
-        pass
-
-    def gdo_init(self):
-        pass
-
     def file_path(self, append=''):
         return Application.file_path(f"gdo/{self.get_name()}/{append}")
 
@@ -93,3 +104,22 @@ class GDO_Module(WithModuleConfig, GDO):
         except ModuleNotFoundError as ex:
             raise GDOMethodException(self.get_name(), name)
 
+    def href(self, method_name: str, append: str = '', format: str = 'html'):
+        return href(self.get_name(), method_name, append, format)
+
+    def add_css(self, filename: str):
+        from gdo.ui.GDT_Page import GDT_Page
+        path = f"{self.file_path(filename)}?v={self.CORE_REV}"
+        GDT_Page.instance()._css.append(path)
+        return self
+
+    def add_js(self, filename: str):
+        from gdo.ui.GDT_Page import GDT_Page
+        path = self.file_path(filename)
+        GDT_Page.instance()._js.append(path)
+        return self
+
+    def add_js_inline(self, code: str):
+        from gdo.ui.GDT_Page import GDT_Page
+        GDT_Page.instance()._js_inline += f"<script>{code}</script>\n"
+        return self

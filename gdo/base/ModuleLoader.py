@@ -13,8 +13,8 @@ from gdo.base.Trans import Trans
 
 class ModuleLoader:
     _instance = None
-    _cache: dict
-    _methods: dict
+    _cache: dict[str, any]
+    _methods: dict[str, any]
 
     @classmethod
     def instance(cls):
