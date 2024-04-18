@@ -12,7 +12,7 @@ from gdo.ui.GDT_Section import GDT_Section
 class UITestCase(unittest.TestCase):
 
     def setUp(self):
-        Application.init(os.path.dirname(__file__ + "/../../"))
+        Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
         return self

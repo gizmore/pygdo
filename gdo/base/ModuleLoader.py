@@ -56,13 +56,11 @@ class ModuleLoader:
     def load_module_fs(self, modulename, installed=False):
         if modulename in self._cache.keys():
             module = self._cache[modulename]
-            if installed:
-                if not module.installed():
-                    return None
-            return module
-        if installed:
-            if not self.module_installed(modulename):
+            if installed and not module.installed():
                 return None
+            return module
+        if installed and not self.module_installed(modulename):
+            return None
         return self.gdo_import(modulename)
 
     def module_installed(self, modulename: str) -> bool:

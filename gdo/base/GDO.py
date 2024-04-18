@@ -71,7 +71,7 @@ class GDO(WithBulk, GDT):
                 dirty = False
         if isinstance(val, bytearray):
             val = val.decode()
-        self._vals[key] = str(val)
+        self._vals[key] = Strings.nullstr(val)
         return self.dirty(key, dirty)
 
     def set_value(self, key, value, dirty=True):

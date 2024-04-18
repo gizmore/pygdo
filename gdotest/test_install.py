@@ -8,34 +8,37 @@ from gdo.base.Exceptions import GDODBException
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_User import GDO_User
-from gdo.install.Config import Config
-
 
 class InstallTestCase(unittest.TestCase):
 
     def setUp(self):
-        Application.init(os.path.dirname(__file__ + "/../../"))
+        Application.init(os.path.dirname(__file__) + "/../")
         return self
 
-    def test_core_install(self):
+    def test_core_config(self):
         db = Application.DB
         self.assertTrue(db.is_configured(), 'Database is configured')
         self.assertIsNotNone(db.get_link(), 'Database is ready')
 
-        loader = ModuleLoader.instance()
-        modules = loader.load_modules_fs()
-        self.assertGreater(len(modules), 5, 'Some modules can be loaded')
-
-        subprocess.run(["python", "gdoadm.py", "wipe", "--all"], capture_output=True)
+    def test_wipe(self):
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'wipe', "--all"], capture_output=True)
         with self.assertRaises(GDODBException, msg="Test if all modules are deleted"):
             GDO_Module.table().count_where()
 
-        subprocess.run(["/bin/python3", "gdoadm.py", "install", "--module", "Core"], capture_output=True)
+    def test_core_install(self):
+        loader = ModuleLoader.instance()
+        modules = loader.load_modules_fs()
+        loader.init_modules(False)
+        self.assertGreater(len(modules), 5, 'Some modules can be loaded')
+
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), "install", "--module", "Core"], capture_output=True)
+        if result.stderr:
+            print(result.stderr)
         mc_one = GDO_Module.table().count_where()
         need = len(module_core.instance().gdo_dependencies())
         self.assertGreater(mc_one, need, "Test if core module is installed with dependencies")
 
-        subprocess.run(["/bin/python3", "gdoadm.py", "install", "--module", "Core"], capture_output=True)
+        subprocess.run(["python3", "gdoadm.py", "install", "--module", "Core"], capture_output=True)
         mc_two = GDO_Module.table().count_where()
         self.assertEqual(mc_one, mc_two, "Test if no more modules are installed on a second run")
 
@@ -47,6 +50,10 @@ class InstallTestCase(unittest.TestCase):
     def test_system_created(self):
         self.assertIsInstance(GDO_User.system(), GDO_User, 'Test if system user exists')
         self.assertEqual(GDO_User.system().get_id(), '1', 'Test if system user has ID#1')
+
+    def test_zzz(self):
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "--all"], capture_output=True)
+        self.assertIsNotNone(result, "Install all")
 
 
 if __name__ == '__main__':

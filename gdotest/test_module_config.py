@@ -10,7 +10,7 @@ from gdo.core.connector.Web import Web
 class ModuleConfigTestCase(unittest.TestCase):
 
     def setUp(self):
-        Application.init(os.path.dirname(__file__ + "/../../"))
+        Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
         return self
@@ -30,6 +30,7 @@ class ModuleConfigTestCase(unittest.TestCase):
     def test_module_user_config(self):
         web = Web.get_server()
         user = web.get_or_create_user('gizmore')
+        user.save_setting('email', '')
         email = user.get_setting_val('email')
         self.assertIsNone(email, "User email is not null")
         user.save_setting('email', 'gizmore@gizmore.org')
@@ -38,7 +39,6 @@ class ModuleConfigTestCase(unittest.TestCase):
 
     def test_module_user_settings(self):
         pass
-
 
 
 if __name__ == '__main__':

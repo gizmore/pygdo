@@ -188,6 +188,8 @@ class Query:
         return f'LIMIT {self._limit, self._offset}'
 
     def exec(self):
+        self.debug(Application.config('db.debug') != '0')
+
         query = self.build_query()
         try:
             if self._debug:
@@ -200,6 +202,8 @@ class Query:
                 cursor = Application.DB.cursor()
                 cursor.execute(query)
                 return Result(cursor, self._gdo)
+            if self.is_update():
+                return Application.DB.query(query)
             else:
                 return Application.DB.query(query)
         except AttributeError as ex:

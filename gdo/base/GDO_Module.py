@@ -18,6 +18,7 @@ class GDO_Module(WithModuleConfig, GDO):
     CORE_REV = "PyGDOv8-0.0-r1000"
 
     _priority: int
+    _inited: bool
 
     @classmethod
     def instance(cls):
@@ -26,6 +27,7 @@ class GDO_Module(WithModuleConfig, GDO):
     def __init__(self):
         super().__init__()
         self._priority = 50
+        self._inited = False
 
     def gdo_install(self):
         pass
@@ -74,11 +76,23 @@ class GDO_Module(WithModuleConfig, GDO):
     def is_enabled(self):
         return self.gdo_val('module_enabled') == '1'
 
+    def init(self):
+        if not self._inited:
+            self.gdo_init()
+            self._inited = True
+        pass
+
     def init_language(self):
         Trans.add_language(self.file_path(f"lang/{self.get_name()}"))
 
     def file_path(self, append=''):
         return Application.file_path(f"gdo/{self.get_name()}/{append}")
+
+    def www_path(self, filename: str) -> str:
+        return f"/{Application.config('core.web_root')}/gdo/{self.get_name()}/{filename}"
+
+    def www_url(self, filename: str) -> str:
+        return f"http://{Application.config('core.domain')}/gdo/{self.get_name()}/{filename}"
 
     def render_name(self):
         return t(f"module_{self.get_name()}")
@@ -109,13 +123,13 @@ class GDO_Module(WithModuleConfig, GDO):
 
     def add_css(self, filename: str):
         from gdo.ui.GDT_Page import GDT_Page
-        path = f"{self.file_path(filename)}?v={self.CORE_REV}"
+        path = f"{self.www_path(filename)}?v={self.CORE_REV}"
         GDT_Page.instance()._css.append(path)
         return self
 
     def add_js(self, filename: str):
         from gdo.ui.GDT_Page import GDT_Page
-        path = self.file_path(filename)
+        path = self.www_path(filename)
         GDT_Page.instance()._js.append(path)
         return self
 

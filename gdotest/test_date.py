@@ -12,7 +12,7 @@ from gdotest.TestUtil import install_module
 class DateTestCase(unittest.TestCase):
 
     def setUp(self):
-        Application.init(os.path.dirname(__file__ + "/../../"))
+        Application.init(os.path.dirname(__file__) + "/../")
         install_module('date')
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()

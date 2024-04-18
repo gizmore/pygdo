@@ -4,6 +4,7 @@ import time
 import toml
 
 from gdo.base.Render import Mode
+from gdo.base.Util import Arrays
 
 
 class Application:
@@ -13,7 +14,7 @@ class Application:
 
     DB = None
     PATH: str
-    CONFIG: dict[str, any]
+    CONFIG: dict[str, str] = {}
 
     @classmethod
     def tick(cls):
@@ -34,6 +35,9 @@ class Application:
                 cls.CONFIG = toml.load(f)
                 cfg = cls.CONFIG['db']
                 cls.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
+        else:
+            from gdo.install.Config import Config
+            cls.CONFIG = Config.defaults()
 
     @classmethod
     def has_db(cls):
@@ -65,4 +69,8 @@ class Application:
     @classmethod
     def is_html(cls) -> bool:
         return cls.get_mode().value < 10
+
+    @classmethod
+    def config(cls, path: str, default = '') -> str:
+        return Arrays.walk(cls.CONFIG, path) or default
 

@@ -63,7 +63,7 @@ class App:
         args = parser.parse_args(sys.argv[2:])
         reinstall = args.reinstall
         if args.all or args.a:
-            modules = loader.load_modules_fs('*', reinstall)
+            modules = list(loader.load_modules_fs('*', reinstall).values())
         elif args.module:
             module = loader.load_module_fs(args.module.lower(), reinstall)
             if not module:
@@ -122,7 +122,7 @@ class App:
 
 
 def launch():
-    path = os.path.dirname(__file__)
+    path = os.path.dirname(__file__) + "/"
     Application.init(path)
     try:
         App().argparser()

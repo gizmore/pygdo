@@ -10,7 +10,7 @@ from gdo.base.Util import Strings, Arrays
 class UtilityTestCase(unittest.TestCase):
 
     def setUp(self):
-        Application.init(os.path.dirname(__file__ + "/../../"))
+        Application.init(os.path.dirname(__file__) + "/../")
         return self
 
     def test_strings(self):
@@ -38,6 +38,17 @@ class UtilityTestCase(unittest.TestCase):
         ModuleLoader.instance().init_modules()
         trans = t('%s', ['Hello world'])
         self.assertEqual(trans, 'Hello world', 'Basic %s translation does not work')
+
+    def test_dict_index(self):
+        dic = {"foo": "bar", "tes": "test"}
+        key = Arrays.dict_index(dic, 'test')
+        self.assertEqual(key, 'tes', "Arrays.dict_index() failed.")
+
+    def test_dict_map(self):
+        dic = {"foo": "bar", "tes": {"test": "two"}}
+        Arrays.map_dict_values_only(lambda s: s + "3", dic)
+        self.assertEqual(dic['foo'], 'bar3', 'Arrays.map_dict#1 failed.')
+        self.assertEqual(dic['tes']['test'], 'two3', 'Arrays.map_dict#1 failed.')
 
 
 if __name__ == '__main__':

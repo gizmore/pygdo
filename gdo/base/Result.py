@@ -1,5 +1,6 @@
 from enum import Enum
 
+from mysql.connector import InternalError
 from mysql.connector.cursor import MySQLCursorDict
 
 from gdo.base.Application import Application
@@ -17,13 +18,16 @@ class Result:
     _table: object
     _iter = IterType.OBJECT
 
-    def __init__(self, result, gdo):
+    def __init__(self, result, gdo=None):
         self._result = result
         self._table = gdo
 
     def __del__(self):
-        if self._result:
-            self._result.close()
+        if hasattr(self, '_result'):
+            try:
+                self._result.close()
+            except InternalError:
+                pass
             delattr(self, '_result')
 
     def iter(self, iter_type: IterType):
@@ -44,11 +48,16 @@ class Result:
             raise StopIteration
         return data
 
+    def fetch_all(self):
+        back = []
+        for row in self:
+            back.append(row)
+        return back
+
     def fetch_row(self):
         row = self._result.fetchone()
         if row is None:
             return None
-
         return list(map(lambda val: val.decode() if isinstance(val, bytearray) else val, row.values()))
 
     def fetch_assoc(self):

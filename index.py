@@ -1,18 +1,14 @@
-import traceback
-
 import magic
 import os
 from urllib.parse import parse_qs
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOMethodException, GDOModuleException
-from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import WebParser
 from gdo.base.Util import Files
 from gdo.core.method.not_found import not_found
 from gdo.ui.GDT_Error import GDT_Error
-from gdo.ui.GDT_Page import GDT_Page
 
 is_fresh: bool = True
 

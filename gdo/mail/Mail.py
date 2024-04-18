@@ -14,7 +14,7 @@ class Mail:
 
     @classmethod
     def _cfg(cls, key: str) -> dict[str, str]:
-        return Application.CONFIG['mail'][key]
+        return Application.config(f'mail')
 
     @classmethod
     def from_bot(cls):

@@ -4,13 +4,15 @@ from gdo.base.GDO import GDO
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Result import IterType
 from gdo.base.Util import Arrays
+from gdo.core import module_core
 
 
 class Installer:
 
     @classmethod
-    def install_modules(cls, modules):
+    def install_modules(cls, modules: list[GDO_Module]):
         for module in cls.modules_with_deps(modules):
             cls.install_module(module)
 
@@ -41,6 +43,8 @@ class Installer:
             cls.install_gdo(classname)
         cls.install_module_entry(module)
         module.gdo_install()
+        module.init()
+        Installer.migrate_module(module_core.instance())
 
     @classmethod
     def install_module_entry(cls, module: GDO_Module):
@@ -74,12 +78,12 @@ class Installer:
             db.foreign_keys(False)
             # Remove old temp table
             tablename = gdo.gdo_table_name()
-            temptable = "zzz_temp_{tablename}"
+            temptable = f"zzz_temp_{tablename}"
             # create temp and copy as old
             db.drop_table(temptable)
             query = f"SHOW CREATE TABLE {tablename}"
-            result = db.query(query)
-            query = result.fetch_row()
+            result = db.select(query)
+            query = result.fetch_row()[1]
             query = query.replace(tablename, temptable)
             db.query(query)
             query = f"INSERT INTO {temptable} SELECT * FROM {tablename}"
@@ -90,18 +94,18 @@ class Installer:
             db.create_table(gdo)
 
             # calculate columns and copy back in new
-            colums = cls.column_names(gdo, temptable)
+            cols = cls.column_names(gdo, temptable)
 
-            columns = ",".join(colums)
+            columns = ",".join(cols)
 
             query = f"INSERT INTO {tablename} ({columns}) SELECT {columns} FROM {temptable}"
             db.query(query)
 
             # drop temp after all succeded.
-            query = "DROP TABLE {temptable}"
+            query = f"DROP TABLE {temptable}"
             db.query(query)
-        except:
-            raise
+        except Exception as ex:
+            Logger.exception(ex)
         finally:
             db.foreign_keys(True)
 
@@ -119,16 +123,16 @@ class Installer:
         query = ('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS '
                  f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{temptable}'"
                  )
-        result = db.query(query)
-        rows = db.fetch_all_rows(result)
-        old = rows.map(lambda c: c[0], rows)
+        result = db.select(query)
+        rows = result.iter(IterType.ROW).fetch_all()
+        old = map(lambda c: c[0], rows)
 
         # New column names
         query = ("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
                  f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{gdo.gdo_table_name()}'")
-        result = db.query(query)
-        rows = db.fetch_all_rows(result)
-        new = rows.map(lambda c: c[0], rows)
+        result = db.select(query)
+        rows = result.iter(IterType.ROW).fetch_all()
+        new = map(lambda c: c[0], rows)
         if old and new:
             return list(set(old).intersection(new))
         return []

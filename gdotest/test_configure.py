@@ -8,7 +8,7 @@ from gdo.install.Config import Config
 
 class ConfigureTestCase(unittest.TestCase):
     def setUp(self):
-        Application.init(os.path.dirname(__file__ + "/../../"))
+        Application.init(os.path.dirname(__file__) + "/../")
         return self
 
     def test_configure(self):

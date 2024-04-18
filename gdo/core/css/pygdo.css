@@ -13,3 +13,7 @@
 .red {
     color: red;
 }
+
+.error p {
+    white-space: pre;
+}

@@ -1,4 +1,5 @@
 import os
+import sys
 import unittest
 
 from gdo.base.Application import Application
@@ -11,7 +12,7 @@ from index import handler
 class WebTestCase(unittest.TestCase):
 
     def setUp(self):
-        Application.init(os.path.dirname(__file__ + "/../../"))
+        Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules()

@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title><%=field._method.gdo_render_title()%></title>
-    <meta name="description" content="a">
+    <meta name="description" content="<%=field._method.gdo_render_descr()%>">
     <%
     for url in field._css:
         writeln(f'<link rel="stylesheet" href="{url}" />')
     %>
 </head>
 <body>
-<nav id="gdt-left-nav" class="gdt-nav">
-<%=field._left_bar.render_html()%>
-</nav>
-<nav id="gdt-right-nav" class="gdt-nav">
-<%=field._right_bar.render_html()%>
-</nav>
-<nav>
-    <%=field._left_bar.render_html()%>
-</nav>
-<main>
-    <%=field._result.render_html()%>
-</main>
+<header id="gdt-title-bar">
+    <nav><%=field._title_bar.render_html()%></nav>
+</header>
+<div class="gdt-top-bar"><%=field._top_bar.render_html()%></div>
+<nav id="gdt-left-nav" class="gdt-nav"><%=field._left_bar.render_html()%></nav>
+<nav id="gdt-right-nav" class="gdt-nav"><%=field._right_bar.render_html()%></nav>
+<main><%=field._result.render_html()%></main>
+<footer></footer>
+<%
+for url in field._js:
+    writeln(f'<script src="{url}" />')
+%>
 </body>
 </html>

@@ -7,7 +7,7 @@ def run():
     from gdo.base.ModuleLoader import ModuleLoader
     from gdo.base.Util import CLI
 
-    Application.init(os.path.dirname(__file__ + "/../../"))
+    Application.init(__file__ + "/../../")
     ModuleLoader.instance().load_modules_cached()
     ModuleLoader.instance().init_modules()
     ModuleLoader.instance().init_cli()

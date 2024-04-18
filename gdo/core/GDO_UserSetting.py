@@ -26,7 +26,7 @@ class GDO_UserSetting(GDO):
         return self.gdo_val('uset_val')
 
     @classmethod
-    def setting_column(cls, key: str, user: 'GDO_User'):
+    def setting_column(cls, key: str, user: GDO_User):
         gdt = GDT_UserSetting.KNOWN[key]
         gdo = cls.get_setting(user, key)
         if gdo:

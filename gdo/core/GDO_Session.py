@@ -62,8 +62,8 @@ class GDO_Session(GDO):
         self._data[key] = value
         return self
 
-    def get(self, key: str):
-        return self._data[key]
+    def get(self, key: str, default: str = None):
+        return self._data[key] if key in self._data else default
 
     def save(self):
         self.set_value('sess_data', self._data)

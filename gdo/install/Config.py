@@ -14,13 +14,19 @@ class Config:
     """
 
     @classmethod
+    def defaults(cls):
+        gdts = cls.data({})
+        return Arrays.map_dict_values_only(lambda gdt: gdt.get_val(), gdts)
+
+    @classmethod
     def data(cls, cfg: dict) -> dict[str, GDT]:
         from gdo.core.GDT_Select import GDT_Select
-        from gdo.core.GDT_UInt import GDT_UInt
         from gdo.ui.GDT_Section import GDT_Section
         lst = [
             GDT_Section().title_raw('Core'),
             cls.data_str('core.sitename', 'GDO'),
+            cls.data_str('core.web_root', '/'),
+            cls.data_str('core.domain', 'localhost'),
             GDT_Section().title_raw('Database'),
             cls.data_str('db.host', 'localhost'),
             cls.data_str('db.name', 'pygdo'),
@@ -71,3 +77,4 @@ class Config:
         if out:
             with open(path, 'w') as fo:
                 fo.write(out)
+

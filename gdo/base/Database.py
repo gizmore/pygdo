@@ -3,6 +3,7 @@ from mysql.connector import ProgrammingError
 
 from gdo.base.Exceptions import GDODBException
 from gdo.base.Logger import Logger
+from gdo.base.Result import Result
 
 
 class Database:
@@ -46,6 +47,11 @@ class Database:
         except ProgrammingError as ex:
             raise GDODBException(ex.msg, query)
 
+    def select(self, query: str):
+        cursor = self.cursor()
+        cursor.execute(query)
+        return Result(cursor)
+
     def cursor(self, dictionary=True):
         return self.get_link().cursor(False, False, dictionary=dictionary)
 
@@ -67,7 +73,7 @@ class Database:
         return self.db_host is not None
 
     def drop_table(self, tablename):
-        Logger.debug(f"Dropping table {tablename}")
+        # Logger.debug(f"Dropping table {tablename}")
         query = f"DROP TABLE IF EXISTS {tablename}"
         self.query(query)
 

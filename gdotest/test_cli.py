@@ -12,7 +12,7 @@ from gdo.base import module_base
 class CLITestCase(unittest.TestCase):
 
     def setUp(self):
-        Application.init(os.path.dirname(__file__ + "/../../"))
+        Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db()
         ModuleLoader.instance().init_modules()
         ModuleLoader.instance().init_cli()

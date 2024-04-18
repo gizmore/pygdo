@@ -1,12 +1,14 @@
 import urllib.parse
 
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Parser import Parser
 from gdo.install.Installer import Installer
 from index import handler
 
 
 def install_module(name):
     install_modules([name])
+    return ModuleLoader.instance().get_module(name)
 
 
 def install_modules(modules):
@@ -48,3 +50,7 @@ class WebPlug:
 
 def web_plug(url):
     return WebPlug(url)
+
+
+def cli_plug(user, command) -> str:
+    return Parser(command, user).parse().execute().render_cli()

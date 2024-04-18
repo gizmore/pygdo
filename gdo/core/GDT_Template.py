@@ -150,8 +150,9 @@ class GDT_Template(GDT):
             }
             data.update(vals)
             path = cls.get_path(modulename, filename)
-            tpl = Templite(None, path)
-            return tpl.render(**data)
+            # Logger.debug(f"Template({filename}, {path})")
+            lite = Templite(None, path)
+            return lite.render(**data)
         except Exception as ex:
             Logger.exception(ex)
             tb = traceback.format_exc()

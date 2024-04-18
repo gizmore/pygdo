@@ -114,7 +114,6 @@ class WebParser(Parser):
     _user: object
     _request: object
     _session: GDO_Session
-    _format: Mode
 
     def __init__(self, req, url):
         self._url = url
@@ -122,7 +121,7 @@ class WebParser(Parser):
         self._session = GDO_Session.start(req)
         self._user = self._session.get_user()
         Application.set_current_user(self._user)
-        self._format = Mode.HTML
+        Application.mode(Mode.HTML)
         super().__init__(self.build_line(self._url), self._session.get_user())
 
     def build_line(self, url: str) -> str:
@@ -132,7 +131,7 @@ class WebParser(Parser):
         qa = url.split('?', 1)
         line = qa[0]
         ext = Strings.rsubstr_from(line, '.')
-        self._format = Mode[ext.upper()]  # get Render.Mode from url extension
+        Application.mode(Mode[ext.upper()])
         line = Strings.rsubstr_to(line, '.')  # remove extension
         parts = line.split(';')
         cmd = parts[0]  # command part

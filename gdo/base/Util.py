@@ -9,6 +9,12 @@ from typing import Sequence
 from gdo.base.Render import Mode
 
 
+def err(msg: str, title: str = 'PyGDO'):
+    from gdo.base.Application import Application
+    from gdo.ui.GDT_Error import GDT_Error
+    Application.get_page()._top_bar.add_field(GDT_Error().title_raw(title).title_raw(msg))
+
+
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
     return f"/{module_name}.{method_name}{append}.{fmt}"
 
@@ -64,9 +70,9 @@ class Strings:
     @classmethod
     def nullstr(cls, s: str):
         """Return None on empty strings"""
-        if s != '':
-            return s
-        return None
+        if s is None or s == '':
+            return None
+        return str(s)
 
     @classmethod
     def html(cls, s: str, mode: Mode = Mode.HTML):
@@ -149,8 +155,21 @@ class Arrays:
                 yield func(item)
 
     @classmethod
+    def map_dict_values_only(cls, f: callable, dic: dict) -> dict:
+        """
+        Map a dict recursively but only touch values.
+        """
+        for key, val in dic.items():
+            if isinstance(val, dict):
+                dic[key] = cls.map_dict_values_only(f, val)
+            else:
+                dic[key] = f(val)
+        return dic
+
+    @classmethod
     def dict_index(cls, dic: dict[str, any], value):
-        return dic.values()[dic.keys().index(value)];
+        index_no = list(dic.values()).index(value)
+        return list(dic.keys())[index_no]
 
 
 class Random:

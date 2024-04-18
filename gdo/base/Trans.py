@@ -21,7 +21,7 @@ def thas(key: str) -> bool:
     return Trans.has(key)
 
 def sitename() -> str:
-    return Application.CONFIG['core']['sitename']
+    return Application.config('core.sitename', 'PyGDO')
 
 
 class Trans:
