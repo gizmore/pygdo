@@ -33,6 +33,8 @@ class WebPlug:
 
     def write(self, s):
         if s is not None:
+            if isinstance(s, bytes):
+                s = s.decode('utf-8')
             self._out += s
 
     def post(self, dic: dict):

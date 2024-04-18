@@ -1,5 +1,4 @@
 import os
-import sys
 import unittest
 
 from gdo.base.Application import Application
@@ -37,6 +36,11 @@ class WebTestCase(unittest.TestCase):
         req = WebPlug("core.echoNONO;This%20Test.html?_lang=de")
         handler(req)
         self.assertIn('not found', req._out, "Plugged web test 404 failed")
+
+    def test_asset_download(self):
+        req = WebPlug("gdo/core/css/pygdo.css?v=2")
+        handler(req)
+        self.assertIn('margin:', req._out, "CSS asset pygdo.css cannot be served by web handler.")
 
 
 if __name__ == '__main__':

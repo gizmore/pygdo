@@ -89,7 +89,7 @@ class GDO_Module(WithModuleConfig, GDO):
         return Application.file_path(f"gdo/{self.get_name()}/{append}")
 
     def www_path(self, filename: str) -> str:
-        return f"/{Application.config('core.web_root')}/gdo/{self.get_name()}/{filename}"
+        return f"{Application.config('core.web_root')}gdo/{self.get_name()}/{filename}"
 
     def www_url(self, filename: str) -> str:
         return f"http://{Application.config('core.domain')}/gdo/{self.get_name()}/{filename}"

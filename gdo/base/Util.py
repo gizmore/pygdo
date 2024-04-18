@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import getpass
+import mimetypes
 import os.path
 import secrets
 from collections import OrderedDict
@@ -97,6 +98,21 @@ class Files:
     @classmethod
     def exists(cls, path: str) -> bool:
         return os.path.exists(path)
+
+    @classmethod
+    def serve_filename(cls, file_path: str, request) -> bool:
+        from gdo.base.Application import Application
+        mime_type, _ = mimetypes.guess_type(file_path)
+        if mime_type:
+            request.content_type = mime_type
+        with open(file_path, 'rb') as file:
+            chunk_size = int(Application.config('file.block_size', 4096))
+            while True:
+                chunk = file.read(chunk_size)
+                if not chunk:
+                    break
+                request.write(chunk)
+        return True
 
 
 class Arrays:

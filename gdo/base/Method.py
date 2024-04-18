@@ -44,7 +44,7 @@ class Method(WithEnv, WithInput, WithError, GDT):
         return t(f'mt_{self._mome().replace(".", "_")}')
 
     def gdo_render_descr(self) -> str:
-        return t(f'md_{self._mome()}')
+        return t(f'md_{self._mome().replace(".", "_")}')
 
     def gdo_render_usage(self) -> str:
         key = t(f'mu_{self._mome()}')

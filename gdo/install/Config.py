@@ -27,6 +27,8 @@ class Config:
             cls.data_str('core.sitename', 'GDO'),
             cls.data_str('core.web_root', '/'),
             cls.data_str('core.domain', 'localhost'),
+            GDT_Section().title_raw('File'),
+            cls.data_int('file.block_size', 4096),
             GDT_Section().title_raw('Database'),
             cls.data_str('db.host', 'localhost'),
             cls.data_str('db.name', 'pygdo'),

@@ -6,7 +6,7 @@ from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOMethodException, GDOModuleException
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import WebParser
-from gdo.base.Util import Files
+from gdo.base.Util import Files, Strings
 from gdo.core.method.not_found import not_found
 from gdo.ui.GDT_Error import GDT_Error
 
@@ -24,14 +24,14 @@ def handler(request):
 
     qs = parse_qs(request.args)
     url = 'core.welcome.html'
+    file = ''
     if '_url' in qs:
         url = qs['_url'][0]
+        file = Strings.substr_to(url, '?', url)
+        file = Application.file_path(file)
 
-    if Files.exists(url):
-        mime = magic.Magic(mime=True)
-        request.content_type = mime.from_file(url)
-        with open(url) as fi:
-            request.write(fi.read())
+    if file and Files.exists(file):
+        Files.serve_filename(file, request)
         return 0
 
     request.content_type = 'text/html'
@@ -43,7 +43,8 @@ def handler(request):
         method = parser.parse()
         page._method = method
         post_data = parse_qs(request.read().decode('UTF-8'))
-        method.inputs(post_data)
+
+        method.inputs(post_data or {})
         result = method.execute()
     except GDOMethodException as ex:
         result = page._method.init_params({'_url': url}).user(parser._user).execute()

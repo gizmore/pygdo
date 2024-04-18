@@ -12,6 +12,7 @@ from gdo.date.GDT_Deleted import GDT_Deleted
 
 class GDO_User(GDO):
     SYSTEM: GDO
+    _authenticated: bool
 
     @classmethod
     def system(cls):
@@ -60,3 +61,15 @@ class GDO_User(GDO):
         }).soft_replace()
         return self
 
+    ###############
+    # Permissions #
+    ###############
+    def authenticate(self):
+        self._authenticated = True
+
+    def logout(self):
+        delattr(self, '_authenticated')
+        return self
+
+    def is_authenticated(self) -> bool:
+        return hasattr(self, '_authenticated')
