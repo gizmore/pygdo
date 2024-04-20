@@ -114,13 +114,22 @@ class Files:
         if mime_type:
             request.content_type = mime_type
         with open(file_path, 'rb') as file:
-            chunk_size = int(Application.config('file.block_size', 4096))
+            chunk_size = int(Application.config('file.block_size', '4096'))
             while True:
                 chunk = file.read(chunk_size)
                 if not chunk:
                     break
                 request.write(chunk)
         return True
+
+    @classmethod
+    def human_file_size(cls, num: int, div: int = 1000, suffix: str = "B") -> str:
+        for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
+            if num < div:
+                return f"{num:3.1f}{unit}{suffix}"
+            num /= div
+        return f"{num:.1f}Yi{suffix}"
+
 
 
 class Arrays:

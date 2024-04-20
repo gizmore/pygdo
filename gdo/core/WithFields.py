@@ -44,6 +44,13 @@ class WithFields:
     def render(self) -> str | list:
         pass
 
+    def render_cli(self) -> str:
+        output = ""
+        if hasattr(self, '_fields'):
+            for gdt in self._fields:
+                output += gdt.render_cli()
+        return output
+
     def render_html(self) -> str:
         output = ""
         if hasattr(self, '_fields'):

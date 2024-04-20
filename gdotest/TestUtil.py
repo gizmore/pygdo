@@ -3,6 +3,7 @@ import urllib.parse
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import Parser
+from gdo.core.connector.Web import Web
 from gdo.install.Installer import Installer
 from index import handler
 
@@ -67,4 +68,6 @@ def web_plug(url):
 
 
 def cli_plug(user, command) -> str:
+    if user is None:
+        user = Web.get_server().get_or_create_user('gizmore')
     return Parser(command, user).parse().execute().render_cli()

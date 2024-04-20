@@ -35,6 +35,7 @@ def run_tests():
             test_loader = unittest.TestLoader()
             test_suite = test_loader.discover(test_directory, pattern='test_*.py')
             test_runner = unittest.TextTestRunner()
+            test_runner.verbosity = 3
             test_runner.run(test_suite)
 
 

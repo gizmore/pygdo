@@ -7,6 +7,7 @@ from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import CLI
 from gdo.base import module_base
+from gdotest.TestUtil import cli_plug
 
 
 class CLITestCase(unittest.TestCase):
@@ -18,21 +19,25 @@ class CLITestCase(unittest.TestCase):
         ModuleLoader.instance().init_cli()
         return self
 
-    def test_echo(self):
+    def test_01_echo(self):
         result = CLI.parse("echo \"Hello world\"").execute().render_cli()
         self.assertIn('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
         result = CLI.parse("echo Hello world").execute().render_cli()
         self.assertIn('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
 
-    def test_version(self):
+    def test_02_version(self):
         result = CLI.parse("core.version").execute().render_cli()
         self.assertIn(str(module_base.instance().CORE_VERSION), result, 'Test if CLI version contains version number.')
         self.assertIn('GDO', result, 'Test if CLI version contains version number.')
         self.assertIn('Python', result, 'Test if CLI version contains version number.')
 
-    def test_binary(self):
+    def test_03_binary(self):
         result = subprocess.run(["pygdo", "echo", "Hello world"], capture_output=True)
         self.assertIn('Hello world', str(result.stdout), 'Test if CLI core.echo "Hello world" works via binary execution.')
+
+    def test_04_perf(self):
+        result = cli_plug(None, "core.perf")
+        self.assertIn('mem', result, 'Test if CLI core.perf renders ok.')
 
 
 if __name__ == '__main__':
