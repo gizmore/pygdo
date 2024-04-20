@@ -1,5 +1,4 @@
 import json
-
 import toml
 
 from gdo.base.Application import Application
@@ -17,8 +16,10 @@ def tiso(iso: str, key: str, args=None):
         args = []
     return Trans.tiso(iso, key, args)
 
+
 def thas(key: str) -> bool:
     return Trans.has(key)
+
 
 def sitename() -> str:
     return Application.config('core.sitename', 'PyGDO')
@@ -60,14 +61,16 @@ class Trans:
 
     @classmethod
     def tiso(cls, iso, key: str, args: list):
-        cls._load(iso)
-        data = cls.CACHE[iso]
-        if key not in data.keys():
+        try:
+            data = cls._load(iso)
+            fmt = data[key]
+            if args:
+                return fmt % tuple(args)
+            return fmt
+        except KeyError:
             return f"__{key}: {json.dumps(args)}"
-        fmt = data[key]
-        if args:
-            return fmt % tuple(args)
-        return fmt
+        except TypeError:
+            return f"____{key}: {json.dumps(args)}"
 
     @classmethod
     def has(cls, key: str) -> bool:

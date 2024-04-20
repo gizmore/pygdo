@@ -10,10 +10,18 @@ from typing import Sequence
 from gdo.base.Render import Mode
 
 
-def err(msg: str, title: str = 'PyGDO'):
+def err(key: str, args: list[str] = None, title: str = 'PyGDO'):
     from gdo.base.Application import Application
     from gdo.ui.GDT_Error import GDT_Error
-    Application.get_page()._top_bar.add_field(GDT_Error().title_raw(title).title_raw(msg))
+    error = GDT_Error().text(key, args).title_raw(title)
+    Application.get_page()._top_bar.add_field(error)
+
+
+def msg(key: str, args: list[str] = None, title: str = 'PyGDO'):
+    from gdo.base.Application import Application
+    from gdo.ui.GDT_Success import GDT_Success
+    message = GDT_Success().text(key, args).title_raw(title)
+    Application.get_page()._top_bar.add_field(message)
 
 
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):

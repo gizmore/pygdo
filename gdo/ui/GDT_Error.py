@@ -25,4 +25,4 @@ class GDT_Error(GDT_Panel):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         file = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         line = exc_tb.tb_lineno
-        return cls().title_raw(title).text_raw(str(ex) + f"{exc_type} in {file} line {line}\nBacktrace:\n{traceback.format_exc()}\n")
+        return cls().title_raw(title).text_raw(str(ex) + f"{exc_type} in {file} line {line}\n<pre>Backtrace:\n{traceback.format_exc()}\n</pre>", False)

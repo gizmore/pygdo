@@ -15,17 +15,17 @@ class InstallTestCase(unittest.TestCase):
         Application.init(os.path.dirname(__file__) + "/../")
         return self
 
-    def test_core_config(self):
+    def test_01_core_config(self):
         db = Application.DB
         self.assertTrue(db.is_configured(), 'Database is configured')
         self.assertIsNotNone(db.get_link(), 'Database is ready')
 
-    def test_wipe(self):
+    def test_02_wipe(self):
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'wipe', "--all"], capture_output=True)
         with self.assertRaises(GDODBException, msg="Test if all modules are deleted"):
             GDO_Module.table().count_where()
 
-    def test_core_install(self):
+    def test_03_core_install(self):
         loader = ModuleLoader.instance()
         modules = loader.load_modules_fs()
         loader.init_modules(False)
@@ -42,16 +42,16 @@ class InstallTestCase(unittest.TestCase):
         mc_two = GDO_Module.table().count_where()
         self.assertEqual(mc_one, mc_two, "Test if no more modules are installed on a second run")
 
-    def test_loading_of_modules(self):
+    def test_04_loading_of_modules(self):
         loader = ModuleLoader.instance()
         mods = loader.load_modules_db(False)
         self.assertEqual(len(mods), 0, 'Test if loading uninstalled modules from db somewhat works')
 
-    def test_system_created(self):
+    def test_05_system_created(self):
         self.assertIsInstance(GDO_User.system(), GDO_User, 'Test if system user exists')
         self.assertEqual(GDO_User.system().get_id(), '1', 'Test if system user has ID#1')
 
-    def test_zzz(self):
+    def test_06_install_all_modules(self):
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "--all"], capture_output=True)
         self.assertIsNotNone(result, "Install all")
 

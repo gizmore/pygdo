@@ -15,6 +15,7 @@ is_fresh: bool = True
 
 def handler(request):
     global is_fresh
+    Application.init_web(request)
     loader = ModuleLoader.instance()
     if is_fresh:
         is_fresh = False

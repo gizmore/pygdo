@@ -38,6 +38,11 @@ class Application:
         else:
             from gdo.install.Config import Config
             cls.CONFIG = Config.defaults()
+        cls.get_page().init()
+
+    @classmethod
+    def reset(cls):
+        cls.get_page().init()
 
     @classmethod
     def has_db(cls):
@@ -71,6 +76,19 @@ class Application:
         return cls.get_mode().value < 10
 
     @classmethod
-    def config(cls, path: str, default = '') -> str:
+    def config(cls, path: str, default: str = '') -> str:
         return Arrays.walk(cls.CONFIG, path) or default
 
+    @classmethod
+    def storage(cls, key: str, default: str = '') -> str:
+        return cls.STORAGE.__getattribute__(key) or default
+
+    @classmethod
+    def init_web(cls, request):
+        cls.STORAGE.ip = request.get_remote_host()
+        pass
+
+    @classmethod
+    def init_cli(cls):
+        cls.STORAGE.ip = '::1'
+        pass

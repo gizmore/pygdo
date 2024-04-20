@@ -139,4 +139,8 @@ class Installer:
 
     @classmethod
     def wipe(cls, module: GDO_Module):
+        # Logger.debug(f"Wiping {module.get_name()}")
+        for klass in reversed(module.gdo_classes()):
+            Application.DB.drop_table(klass.table().gdo_table_name())
         module.delete()
+

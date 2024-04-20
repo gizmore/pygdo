@@ -37,8 +37,7 @@ class GDO(WithBulk, GDT):
         gdo = cls.table()
         for gdt in gdo.columns():
             name = gdt.get_name()
-            if name:
-                gdt._val = vals[name] if name in vals.keys() else ''
+            vals[name] = vals[name] if name in vals.keys() else gdt.get_initial()
         back = cls().set_vals(vals)
         return back
 
@@ -84,7 +83,7 @@ class GDO(WithBulk, GDT):
         return self
 
     def gdo_table_name(self) -> str:
-        return self.get_name()
+        return self.get_name().lower()
 
     @classmethod
     def get_name(cls):
@@ -161,9 +160,9 @@ class GDO(WithBulk, GDT):
     def replace(self):
         return self.insertOrReplace(Type.REPLACE)
 
-    def insertOrReplace(self, type: Type):
+    def insertOrReplace(self, type_: Type):
         self.before_create()
-        query = self.query().type(type).set_vals(self._vals)
+        query = self.query().type(type_).set_vals(self.insert_vals())
         self._last_id = query.exec()
         self.after_create()
         return self.all_dirty(False)
@@ -171,11 +170,21 @@ class GDO(WithBulk, GDT):
     def delete(self):
         return self
 
-    def dirty_vals(self):
-        vals = {}
-        for gdt in self.columns():
-            vals[gdt.get_name()] = self.gdo_val(gdt.get_name())
-        return vals
+    def dirty_vals(self) -> dict:
+        return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns() if gdt.get_name() in self._dirty}
+        # vals = {}
+        # for gdt in self.columns():
+        #     name = gdt.get_name()
+        #     if name in self._dirty:
+        #         vals[name] = self.gdo_val(gdt.get_name())
+        # return vals
+
+    def insert_vals(self):
+        return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns()}
+        # vals = {}
+        # for gdt in self.columns():
+        #     vals[gdt.get_name()] = self.gdo_val(gdt.get_name())
+        # return vals
 
     def save(self):
         if len(self._dirty):

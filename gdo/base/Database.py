@@ -1,9 +1,28 @@
 import mysql.connector
 from mysql.connector import ProgrammingError
+from mysql.connector.conversion import MySQLConverterBase, MySQLConverter
 
+from gdo.base.Application import Application
 from gdo.base.Exceptions import GDODBException
 from gdo.base.Logger import Logger
 from gdo.base.Result import Result
+
+
+class NopeConverter(MySQLConverter):
+    def row_to_python(self, row_data: tuple[bytearray], desc: list):
+        return map(lambda val: val.decode('utf-8') if val is not None else val, row_data)
+
+    # def row_to_python(self, row_data, desc):
+    #     return [self._decode_binary(val) if desc[i][1] == FieldType.BLOB else val for i, val in enumerate(row_data)]
+    #
+    # def _decode_binary(self, value):
+    #     if isinstance(value, bytearray):
+    #         # If it's binary data, handle it appropriately
+    #         # For example, you might want to decode it using a specific encoding
+    #         return value.decode('utf-8')
+    #     else:
+    #         # If it's not binary data, return it as is
+    #         return value
 
 
 class Database:
@@ -32,6 +51,7 @@ class Database:
                 host=self.db_host,
                 user=self.username,
                 password=self.password,
+                converter_class=NopeConverter,
             )
             self.link.autocommit = True
             self.link.database = self.db_name
@@ -42,6 +62,8 @@ class Database:
         return self.get_link().insert_id()
 
     def query(self, query):
+        if Application.config('db.debug') != '0':
+            Logger.debug(query)
         try:
             return self.get_link().cmd_query(query)
         except ProgrammingError as ex:
@@ -53,7 +75,7 @@ class Database:
         return Result(cursor)
 
     def cursor(self, dictionary=True):
-        return self.get_link().cursor(False, False, dictionary=dictionary)
+        return self.get_link().cursor(dictionary=dictionary)
 
     def create_table(self, gdo):
         cols = []

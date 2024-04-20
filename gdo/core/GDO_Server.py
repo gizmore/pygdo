@@ -1,6 +1,8 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Query import Query
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.GDT_Name import GDT_Name
@@ -42,6 +44,9 @@ class GDO_Server(GDO):
             'user_server': self.get_id(),
             'user_name': username,
         })
+
+    def get_users_with_setting(self, key: str, val: str, op: str = '=') -> Query:
+        return GDO_UserSetting.get_users_with_setting(self.get_id(), key, val, op)
 
     def create_user(self, username: str, displayname: str = None):
         return GDO_User.blank({

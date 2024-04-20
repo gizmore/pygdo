@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import re
 from datetime import timezone, datetime
 from typing import Dict
 
 from gdo.base.Application import Application
-from gdo.base.Trans import tiso
+from gdo.base.Trans import tiso, t
 from gdo.base.Util import Arrays
 from gdo.date.GDO_Timezone import GDO_Timezone
 
@@ -286,12 +287,17 @@ class Time:
         return cls.human_duration(Application.TIME - timestamp)
 
     @classmethod
-    def human_duration(cls, seconds: float, n_units: int = 2, with_millis: bool = False) -> str:
+    def human_duration(cls, seconds: float, n_units: int = 2, with_millis: bool = True) -> str:
         return cls.human_duration_iso(Application.LANG_ISO, seconds, n_units, with_millis)
 
     @classmethod
     def human_duration_iso(cls, iso: str, seconds: float, n_units: int = 2, with_millis: bool = True) -> str:
-        cls.human_duration_iso.cache = {
+        factors = cls._human_duration_factors(iso)
+        return cls._human_duration_raw(seconds, n_units, factors, with_millis)
+
+    @classmethod
+    def _human_duration_factors(cls, iso: str):
+        factors = {
             'tu_s': 60,
             'tu_m': 60,
             'tu_h': 24,
@@ -299,10 +305,14 @@ class Time:
             'tu_w': 52.14,
             'tu_y': 9999
         }
-        return cls._human_duration_raw(seconds, n_units, cls.human_duration_iso.cache, with_millis)
+        back = {}
+        for key, val in factors.items():
+            back[tiso(iso, key)] = val
+        return back
+
 
     @classmethod
-    def _human_duration_raw(cls, seconds: float, n_units: int, units: dict, with_millis: bool = False) -> str:
+    def _human_duration_raw(cls, seconds: float, n_units: int, units: dict, with_millis: bool = True) -> str:
         calculated = {}
         ms = int(seconds * 1000) % 1000 if with_millis else 0
         duration = int(seconds)
@@ -312,7 +322,7 @@ class Time:
             remainder = (duration % mod) / 1000.0
             if int(remainder) > 0:
                 calculated[text] = f"{int(remainder)}{text}"
-            duration /= mod
+            duration //= mod
             if duration == 0:
                 break
 
@@ -320,27 +330,24 @@ class Time:
             return f"0{next(iter(units))}"
 
         calculated = Arrays.reverse_dict(calculated)
-        calculated = calculated.values().__reversed__()
+        # calculated = calculated.values().__reversed__()
         i = 0
         for key in list(calculated.keys()):
             i += 1
             if i > n_units:
                 del calculated[key]
-
-        if len(calculated) < n_units:
-            if with_millis:
-                calculated.append(f"{ms:03d}")
-
+        calculated = list(calculated.values())
+        if len(calculated) < n_units and with_millis:
+            calculated.append(f"%03dms" % ms)
         return ' '.join(calculated)
 
     @classmethod
     def display_age_iso(cls, date: str, iso: str) -> str:
-        return cls.display_age_ts_iso(cls.get_timestamp(date), iso)
+        return cls.display_age_ts_iso(cls.get_time(date), iso)
 
     @classmethod
     def display_age_ts_iso(cls, timestamp: float, iso: str) -> str:
         return cls.human_duration_iso(iso, Application.TIME - timestamp)
-
 
     @classmethod
     def week_timestamp(cls, year: int, week: int) -> int:
@@ -365,10 +372,10 @@ class Time:
         return True
 
     @classmethod
-    def human_to_seconds(cls, duration: str) -> float:
+    def human_to_seconds(cls, duration: str) -> float | None:
         if duration is None:
             return None
-        multis = {
+        multi = {
             'ms': 0.001,
             's': 1,
             'm': 60,
@@ -384,7 +391,7 @@ class Time:
         back = 0.0
         for match in matches:
             d, unit = match
-            unit_mult = multis.get(unit, 1.0)
+            unit_mult = multi.get(unit, 1.0)
             back += d * unit_mult
         return float(back)
 
@@ -402,7 +409,7 @@ class Time:
 
     @classmethod
     def is_sunday(cls, time: int = 0, timezone_id: str = 'UTC') -> bool:
-        return cls.is_day(cls.SUNDAY, time, timezone_id)
+        return cls.is_day(str(cls.SUNDAY), time, timezone_id)
 
     @classmethod
     def is_day(cls, day: str, time: int = 0, timezone_id: str = 'UTC') -> bool:

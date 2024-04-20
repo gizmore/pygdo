@@ -5,7 +5,10 @@
         for key, gdt in field.init_choices().items():
             if not isinstance(gdt, str):
                 gdt = gdt.render_list()
-            writeln(f'<option>{gdt}</option>')
+            writeln(f'<option value="{key}">{gdt}</option>')
         %>
     </select>
+    <% if field.has_error():
+        write(f'<div class="form-field-error">%s</div>' % field.render_error())
+    %>
 </div>

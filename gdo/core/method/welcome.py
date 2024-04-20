@@ -1,7 +1,8 @@
 from gdo.base.Method import Method
+from gdo.ui.GDT_Success import GDT_Success
 
 
 class welcome(Method):
 
     def gdo_execute(self):
-        return self.message('msg_gdo_working')
+        return GDT_Success().text('msg_gdo_working')

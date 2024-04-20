@@ -103,7 +103,10 @@ class Query:
         self._where = '1'
         return self
 
-    def where(self, where, op='AND'):
+    def or_where(self, where: str):
+        return self.where(where, 'OR')
+
+    def where(self, where: str, op='AND'):
         if hasattr(self, '_where'):
             self._where += f" {op} {where}"
         else:
@@ -187,9 +190,9 @@ class Query:
             return f'LIMIT {self._limit}'
         return f'LIMIT {self._limit, self._offset}'
 
-    def exec(self):
-        self.debug(Application.config('db.debug') != '0')
-
+    def exec(self, use_dict: bool = True):
+        if Application.config('db.debug') != '0':
+            self.debug()
         query = self.build_query()
         try:
             if self._debug:
@@ -199,7 +202,7 @@ class Query:
                 cursor.execute(query)
                 return cursor.lastrowid
             if self.is_select():
-                cursor = Application.DB.cursor()
+                cursor = Application.DB.cursor(use_dict)
                 cursor.execute(query)
                 return Result(cursor, self._gdo)
             if self.is_update():

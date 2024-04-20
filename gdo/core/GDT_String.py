@@ -1,6 +1,7 @@
 from enum import Enum
 
 from gdo.base.GDT import GDT
+from gdo.base.Trans import t
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.WithLabel import WithLabel
@@ -25,6 +26,7 @@ class GDT_String(WithLabel, GDT_Field):
     def __init__(self, name):
         super().__init__(name)
         self._encoding = Encoding.UTF8
+        self._hidden = False
         self._minlen = 0
         self._maxlen = 192
         self._pattern = ''
@@ -83,6 +85,10 @@ class GDT_String(WithLabel, GDT_Field):
             append = '_bin'
         return f" COLLATE {self.gdo_column_define_charset()}{append}"
 
+    ############
+    # Validate #
+    ############
+
     def validate(self, value):
         if not super().validate(value):
             return False
@@ -98,5 +104,15 @@ class GDT_String(WithLabel, GDT_Field):
     def validate_length(self, value):
         return True
 
+    ########
+    # Util #
+    ########
+
+    def text(self, key: str, args: list[str] = None):
+        return self.val(t(key, args))
+
+    ##########
+    # Render #
+    ##########
     def render_form(self):
         return GDT_Template.python('core', 'form_string.html', {'field': self})

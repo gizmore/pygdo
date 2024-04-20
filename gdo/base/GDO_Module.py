@@ -9,7 +9,7 @@ from gdo.base.GDO import GDO
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import Trans, t
-from gdo.base.Util import Files, href
+from gdo.base.Util import Files, href, err, msg
 from gdo.base.WithModuleConfig import WithModuleConfig
 
 
@@ -46,7 +46,7 @@ class GDO_Module(WithModuleConfig, GDO):
         return cls.__name__[7:]
 
     def gdo_table_name(self) -> str:
-        return 'GDO_Module'
+        return 'gdo_module'
 
     def gdo_dependencies(self) -> list:
         return []
@@ -121,6 +121,20 @@ class GDO_Module(WithModuleConfig, GDO):
     def href(self, method_name: str, append: str = '', format: str = 'html'):
         return href(self.get_name(), method_name, append, format)
 
+    ##########
+    # Errors #
+    ##########
+    def err(self, key: str, args: list[str] = None):
+        err(key, args, self.get_name())
+        return self
+
+    def msg(self, key: str, args: list[str] = None):
+        msg(key, args, self.get_name())
+        return self
+
+    ##########
+    # Assets #
+    ##########
     def add_css(self, filename: str):
         from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"

@@ -1,3 +1,4 @@
+import sys
 import traceback
 
 
@@ -9,4 +10,5 @@ class Logger:
 
     @classmethod
     def exception(cls, ex: Exception):
-        print(ex)
+        sys.stderr.write(str(ex))
+        sys.stderr.write(traceback.format_exc())

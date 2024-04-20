@@ -103,19 +103,11 @@ class Method(WithEnv, WithInput, WithError, GDT):
     # Message #
     ###########
 
-    def message_raw(self, message):
-        return self.message('%s', [message])
+    def msg(self, key, args: list = None):
+        return self.module().msg(key, args)
 
-    def message(self, key, args: list = None):
-        from gdo.ui.GDT_Success import GDT_Success
-        return GDT_Success().title_raw(self.module().render_name()).text(key, args)
-
-    # def error_raw(self, error):
-    #     return self.error('%s', [error])
-    #
-    # def error(self, key, args: list = None):
-    #     from gdo.ui.GDT_Error import GDT_Error
-    #     return GDT_Error().title_raw(self.module().render_name()).text(key, args)
+    def err(self, key, args: list = None):
+        return self.module().err(key, args)
 
     def module(self):
         from gdo.base.ModuleLoader import ModuleLoader
@@ -143,7 +135,7 @@ class Method(WithEnv, WithInput, WithError, GDT):
         return self.gdo_execute()
 
     def prepare(self):
-        if not self.has_permission(self._user):
+        if not self.has_permission(self._env_user):
             self.error('err_permission')
             return False
         return True

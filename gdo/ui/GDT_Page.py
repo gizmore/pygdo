@@ -26,6 +26,9 @@ class GDT_Page(GDT):
 
     def __init__(self):
         super().__init__()
+        self.init()
+
+    def init(self):
         self._js = []
         self._css = []
         self._js_inline = ''
@@ -34,6 +37,7 @@ class GDT_Page(GDT):
         self._left_bar = GDT_Bar().vertical()
         self._right_bar = GDT_Bar().vertical()
         self._bottom_bar = GDT_Container()
+        return self
 
     def result(self, result: GDT):
         self._result = result

@@ -44,3 +44,17 @@ class MethodForm(Method):
         for gdt2 in gdt.fields():
             self.apply_input(gdt2, input_)
 
+    def param_val(self, key):
+        for gdt in self.get_form().all_fields():
+            if gdt.get_name() == key:
+                return gdt.get_val()
+        return super().param_val(key)
+
+    def param_value(self, key):
+        for gdt in self.get_form().all_fields():
+            if gdt.get_name() == key:
+                return gdt.to_value(gdt.get_val())
+        return super().param_value(key)
+
+
+

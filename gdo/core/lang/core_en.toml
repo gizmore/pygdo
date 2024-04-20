@@ -13,6 +13,11 @@ err_int_min = "may not be smaller than %s."
 err_int_max = "may not be larger than %s."
 err_stub = "This method is not implemented yet."
 
+################
+### Messages ###
+################
+msg_back_to = "You can now get back to %s."
+
 ##############
 ### Fields ###
 ##############

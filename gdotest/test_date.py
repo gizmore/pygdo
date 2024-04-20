@@ -13,9 +13,9 @@ class DateTestCase(unittest.TestCase):
 
     def setUp(self):
         Application.init(os.path.dirname(__file__) + "/../")
-        install_module('date')
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
+        install_module('date')
         return self
 
     def test_installed(self):
@@ -51,6 +51,12 @@ class DateTestCase(unittest.TestCase):
         parsed2 = Time.parse_datetime_iso('en', '11/09/1980 12:37', 'Europe/Berlin', 'parse')
         diff = Time.get_diff_time(parsed1.timestamp(), parsed2.timestamp())
         self.assertAlmostEqual(diff, 3600.0, 1, "Date diff is incorrect.")
+
+    def test_durations(self):
+        output = Time.human_to_seconds("5s 120ms")
+        self.assertAlmostEqual(output, 5.120, 3, 'human_to_seconds() does not work.')
+        reverse = Time.human_duration(output)
+        self.assertEqual("5s 120ms", reverse, 'human_duration() does not work.')
 
 
 if __name__ == '__main__':

@@ -27,6 +27,16 @@ class WithFields:
     def fields(self) -> list:
         return self._fields
 
+    def all_fields(self):
+        """
+        Returns an iterator that iterates over all nested fields.
+        """
+        if self.has_fields():
+            for gdt in self._fields:
+                yield gdt
+                if gdt.has_fields():
+                    yield from gdt.all_fields()
+
     ##########
     # Render #
     ##########

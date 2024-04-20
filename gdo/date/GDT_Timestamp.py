@@ -8,7 +8,7 @@ class GDT_Timestamp(GDT_String):
 
     def __init__(self, name):
         super().__init__(name)
-        self._date_format = t('df_long')
+        self._date_format = 'df_long'
         self._millis = 6
 
     def gdo_column_define(self) -> str:

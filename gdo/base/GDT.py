@@ -48,7 +48,6 @@ class GDT:
     def gdo_after_delete(self, gdo):
         pass
 
-
     def get_name(self):
         return self.__class__.__name__ + "#" + str(id(self))
 
@@ -102,6 +101,9 @@ class GDT:
         return False
 
     def is_writable(self) -> bool:
+        return False
+
+    def is_hidden(self) -> bool:
         return False
 
     ##########

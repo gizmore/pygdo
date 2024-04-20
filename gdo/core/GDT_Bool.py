@@ -13,3 +13,11 @@ class GDT_Bool(GDT_Select):
         choices['1'] = 'yes'
         choices['0'] = 'no'
         return choices
+
+    def to_value(self, val: str):
+        if val == '1':
+            return True
+        elif val == '0':
+            return False
+        else:
+            return None

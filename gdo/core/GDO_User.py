@@ -64,12 +64,17 @@ class GDO_User(GDO):
     ###############
     # Permissions #
     ###############
-    def authenticate(self):
+    def authenticate(self, bind_ip: bool = False):
         self._authenticated = True
+        return self
 
     def logout(self):
-        delattr(self, '_authenticated')
+        if self.is_authenticated():
+            delattr(self, '_authenticated')
         return self
 
     def is_authenticated(self) -> bool:
         return hasattr(self, '_authenticated')
+
+    def render_name(self):
+        return self.gdo_val('user_displayname')

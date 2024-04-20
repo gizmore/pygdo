@@ -7,7 +7,6 @@ from gdo.ui.WithTooltip import WithTooltip
 
 
 class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
-
     _name: str
     _gdo: GDO
     _not_null: bool
@@ -17,6 +16,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     _primary: bool
     _unique: bool
     _writable: bool
+    _hidden: bool
 
     def __init__(self, name):
         super().__init__()
@@ -29,6 +29,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         self._converted = False
         self._unique = False
         self._writable = True
+        self._hidden = False
 
     def get_name(self):
         return self._name
@@ -80,6 +81,13 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
 
     def is_writable(self) -> bool:
         return self._writable
+
+    def hidden(self, hidden: bool = True):
+        self._hidden = hidden
+        return self
+
+    def is_hidden(self) -> bool:
+        return self._hidden
 
     def get_initial(self):
         return self._initial
