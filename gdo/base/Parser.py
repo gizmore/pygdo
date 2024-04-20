@@ -9,15 +9,13 @@ from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.base.Util import Strings
-from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Repeat import GDT_Repeat
 from gdo.core.GDO_Session import GDO_Session
-from gdo.core.method.echo import echo
 
 
 class Parser:
     _line: str
-    _user: GDO_User
+    _user: object
 
     def __init__(self, line: str, user):
         super().__init__()

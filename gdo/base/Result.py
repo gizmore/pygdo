@@ -26,7 +26,7 @@ class Result:
         if hasattr(self, '_result'):
             try:
                 self._result.close()
-            except InternalError:
+            except:
                 pass
             delattr(self, '_result')
 

@@ -9,7 +9,6 @@ from gdo.base.Trans import tiso, t
 from gdo.base.Util import Arrays
 from gdo.date.GDO_Timezone import GDO_Timezone
 
-
 """
 Time utility.
 In the language file are various date format templates.
@@ -22,6 +21,8 @@ Method namings follow these conventions in signature elements:
  - tzid | a [GDO_Timezone](../g) object
 @version 8.0.0
 """
+
+
 class Time:
     # Constants
     ONE_MILLISECOND = 0.001
@@ -60,15 +61,15 @@ class Time:
     # Timezones #
     #############
 
-    @classmethod
-    def set_timezone_named(cls, timezone_name: str) -> None:
-        """
-        Set the timezone using a timezone name.
-        """
-        # timezone_object = GDO_Timezone.get_by_name(timezone_name).getValue()
+    # @classmethod
+    # def set_timezone_named(cls, timezone_name: str) -> None:
+    #     """
+    #     Set the timezone using a timezone name.
+    #     """
+    #     timezone_object = GDO_Timezone.get_by_name(timezone_name).getValue()
         # cls.set_timezone_gdo(timezone_object)
 
-    @classmethod
+    # @classmethod
     # def set_timezone_gdo(cls, timezone_object):
     #     GDO_Timezone.table().get_by_id(timezone_object)
     #     pass
@@ -155,7 +156,6 @@ class Time:
         datetime_obj = cls.parse_datetime_iso(iso, date, tz, format)
         return float(datetime_obj.timestamp()) if datetime_obj else None
 
-
     ##################
     # Parse Datetime #
     ##################
@@ -197,9 +197,9 @@ class Time:
             dt = datetime.strptime(date, fmt).replace(tzinfo=tz)
         return dt
 
-###########
-# Display #
-###########
+    ###########
+    # Display #
+    ###########
 
     @classmethod
     def display_timestamp(cls, timestamp: float, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
@@ -257,7 +257,7 @@ class Time:
         return (a - b).total_seconds()
 
     @classmethod
-    def get_diff_time(cls, time_one: float, time_two: float = None)-> float:
+    def get_diff_time(cls, time_one: float, time_two: float = None) -> float:
         time_two = time_two if time_two is not None else Application.TIME
         a = cls.get_datetime(time_one)
         b = cls.get_datetime(time_two)
@@ -309,7 +309,6 @@ class Time:
         for key, val in factors.items():
             back[tiso(iso, key)] = val
         return back
-
 
     @classmethod
     def _human_duration_raw(cls, seconds: float, n_units: int, units: dict, with_millis: bool = True) -> str:
@@ -416,4 +415,3 @@ class Time:
         time = time or datetime.now(tz=cls.get_timezone_object(timezone_id)).timestamp()
         dt = datetime.utcfromtimestamp(time).strftime('%u')
         return dt == day
-

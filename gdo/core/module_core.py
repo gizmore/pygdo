@@ -8,6 +8,7 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.InstallUser import InstallUser
 from gdo.core.connector.Bash import Bash
 
@@ -34,6 +35,7 @@ class module_core(GDO_Module):
         return [
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
+            GDT_Enum('show_perf').choices({"never": "Never", "always": "Always", "staff": "Staff"}).initial('always'),
         ]
 
     def cfg_403_mails(self) -> bool:
@@ -41,6 +43,9 @@ class module_core(GDO_Module):
 
     def cfg_404_mails(self) -> bool:
         return self.get_config_value('send_404_mails')
+
+    def cfg_show_perf(self) -> str:
+        return self.get_config_val('show_perf')
 
     def gdo_classes(self):
         return [
@@ -58,3 +63,18 @@ class module_core(GDO_Module):
     def gdo_load_scripts(self, page):
         self.add_css('css/pygdo.css')
         self.add_js('js/pygdo.js')
+
+    def should_show_perf(self) -> bool:
+        perf = self.cfg_show_perf()
+        if perf == 'always':
+            return True
+        elif perf == 'never':
+            return False
+        else:
+            return GDO_User.current().is_staff()
+
+    def gdo_init_sidebar(self, page):
+        if self.should_show_perf():
+            from gdo.core.GDT_Perf import GDT_Perf
+            page._bottom_bar.add_field(GDT_Perf())
+

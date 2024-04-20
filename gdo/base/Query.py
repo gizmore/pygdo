@@ -1,5 +1,4 @@
 from enum import Enum
-
 from mysql.connector import ProgrammingError, DataError, DatabaseError
 
 from gdo.base.Application import Application

@@ -6,7 +6,6 @@ from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Result import IterType
 from gdo.base.Util import Arrays
-from gdo.core import module_core
 
 
 class Installer:
@@ -45,6 +44,7 @@ class Installer:
         module.gdo_install()
         module.init()
         if module.get_name() != 'base':
+            from gdo.core import module_core
             Installer.migrate_module(module_core.instance())
 
     @classmethod
