@@ -6,6 +6,7 @@ from gdotest.test_date import DateTestCase
 from gdotest.test_db import DBTestCase
 from gdotest.test_forms import FormTestCase
 from gdotest.test_install import InstallTestCase
+from gdotest.test_mail import MailTestCase
 from gdotest.test_module_config import ModuleConfigTestCase
 from gdotest.test_session import SessionTestCase
 from gdotest.test_ui import UITestCase
@@ -30,6 +31,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(UsersTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(SessionTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(WebTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(MailTestCase))
     return mysuite
 
 

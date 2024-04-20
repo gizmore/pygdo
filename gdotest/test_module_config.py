@@ -15,7 +15,7 @@ class ModuleConfigTestCase(unittest.TestCase):
         ModuleLoader.instance().init_modules()
         return self
 
-    def test_module_config(self):
+    def test_01_module_config(self):
         mod = module_core.instance()
         mod.save_config_val('send_404_mails', '0')
         ModuleLoader.instance().reset()
@@ -27,7 +27,7 @@ class ModuleConfigTestCase(unittest.TestCase):
         got = mod.get_config_val('send_404_mails')
         self.assertEqual(got, '1', "Check if changed back config is working.")
 
-    def test_module_user_config(self):
+    def test_02_module_user_config(self):
         web = Web.get_server()
         user = web.get_or_create_user('gizmore')
         user.save_setting('email', '')
@@ -37,7 +37,7 @@ class ModuleConfigTestCase(unittest.TestCase):
         email = user.get_setting_val('email')
         self.assertEqual(email, 'gizmore@gizmore.org', "Cannot save user setting")
 
-    def test_module_user_settings(self):
+    def test_03_module_user_settings(self):
         pass
 
 
