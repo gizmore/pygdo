@@ -38,7 +38,7 @@ class InstallTestCase(unittest.TestCase):
         need = len(module_core.instance().gdo_dependencies())
         self.assertGreater(mc_one, need, "Test if core module is installed with dependencies")
 
-        subprocess.run(["python3", "gdoadm.py", "install", "--module", "Core"], capture_output=True)
+        subprocess.run(["python3", Application.file_path("gdoadm.py"), "install", "--module", "Core"], capture_output=True)
         mc_two = GDO_Module.table().count_where()
         self.assertEqual(mc_one, mc_two, "Test if no more modules are installed on a second run")
 

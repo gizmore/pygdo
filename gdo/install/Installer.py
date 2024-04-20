@@ -36,7 +36,7 @@ class Installer:
 
     @classmethod
     def install_module(cls, module: GDO_Module):
-        # Logger.debug(f'Installing module {module.get_name()}')
+        Logger.debug(f'Installing module {module.get_name()}')
         classes = module.gdo_classes()
         for classname in classes:
             # Logger.debug(f'Installing module class {classname}')
@@ -44,7 +44,8 @@ class Installer:
         cls.install_module_entry(module)
         module.gdo_install()
         module.init()
-        Installer.migrate_module(module_core.instance())
+        if module.get_name() != 'base':
+            Installer.migrate_module(module_core.instance())
 
     @classmethod
     def install_module_entry(cls, module: GDO_Module):

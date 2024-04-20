@@ -8,6 +8,7 @@ from gdo.ui.GDT_HTML import GDT_HTML
 
 
 class Mail:
+    SENT = 0
     _sender: str
     _recipients: list[str]
     _cc: list[str]
@@ -72,6 +73,7 @@ class Mail:
         return self.send()
 
     def send(self) -> bool:
+        self.SENT += 1
         if self.is_debug():
             self.print_mail_to_screen()
             return True

@@ -12,7 +12,7 @@ class Application:
     LANG_ISO = 'en'
     TIME = time.time()
 
-    DB = None
+    DB: object
     PATH: str
     CONFIG: dict[str, str] = {}
 

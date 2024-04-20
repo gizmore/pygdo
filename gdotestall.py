@@ -46,6 +46,7 @@ def run_tests():
     Application.init(os.path.dirname(__file__) + '/')
 
     test_runner = unittest.TextTestRunner()
+    test_runner.verbosity = 3
     test_runner.run(suite())
 
     loader = ModuleLoader.instance()
@@ -58,6 +59,7 @@ def run_tests():
             test_loader = unittest.TestLoader()
             test_suite = test_loader.discover(test_directory, pattern='test_*.py')
             test_runner = unittest.TextTestRunner()
+            test_runner.verbosity = 3
             test_runner.run(test_suite)
 
 

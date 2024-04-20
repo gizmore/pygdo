@@ -122,9 +122,9 @@ class App:
 
 
 def launch():
-    path = os.path.dirname(__file__) + "/"
-    Application.init(path)
     try:
+        path = os.path.dirname(__file__) + "/"
+        Application.init(path)
         App().argparser()
     except Exception as ex:
         Logger.exception(ex)
