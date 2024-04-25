@@ -25,6 +25,7 @@ class Application:
     @classmethod
     def tick(cls):
         cls.TIME = time.time()
+        cls.STORAGE.time_start = cls.TIME
         cls.EVENTS.update_timers(cls.TIME)
 
     @classmethod

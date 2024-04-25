@@ -34,6 +34,7 @@ def process_line(line: str) -> None:
 
 
 def repl():
+    from gdo.base.Application import Application
     from gdo.base.Exceptions import GDOModuleException
     while True:
         try:
@@ -42,6 +43,7 @@ def repl():
                 input_line = readline.get_history_item(readline.get_current_history_length())
             if input_line.lower() == "exit":
                 break
+            Application.tick()
             process_line(input_line)
         except GDOModuleException as ex:
             print(str(ex))
