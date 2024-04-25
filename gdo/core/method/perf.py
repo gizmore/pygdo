@@ -4,5 +4,8 @@ from gdo.core.GDT_Perf import GDT_Perf
 
 class perf(Method):
 
+    def cli_trigger(self) -> str:
+        return 'perf'
+
     def gdo_execute(self):
         return GDT_Perf()

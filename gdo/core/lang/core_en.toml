@@ -67,6 +67,8 @@ msg_version = "Python %s - GDOv%s"
 ############
 ### Perf ###
 ############
+mt_core_perf = "Performance"
+md_core_perf = "Print PyGDO performance metrics."
 perf_version = "Version: %s"
 perf_cpu = "CPU %s%%"
 perf_mem = "Memory: %s"
