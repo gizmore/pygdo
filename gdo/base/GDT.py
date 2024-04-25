@@ -1,4 +1,5 @@
 import sys
+import traceback
 
 from gdo.base.Render import Mode
 from gdo.base.Util import Strings, dump
@@ -30,11 +31,15 @@ class GDT:
         return f"'{cls.escape(val)}'"
 
     def __init__(self):
-        self.GDT_COUNT += 1
-        self.GDT_MAX = max(self.GDT_COUNT, self.GDT_MAX)
+        from gdo.base.Application import Application
+        if Application.config('core.gdt_debug') == '2':
+            from gdo.base.Logger import Logger
+            Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
+        GDT.GDT_COUNT += 1
+        GDT.GDT_MAX = max(GDT.GDT_COUNT, GDT.GDT_MAX)
 
     def __del__(self):
-        self.GDT_COUNT -= 1
+        GDT.GDT_COUNT -= 1
 
     def gdo_before_create(self, gdo):
         pass

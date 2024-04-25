@@ -71,6 +71,8 @@ class WebTestCase(unittest.TestCase):
         req = WebPlug("core.echo;text.This.is.a.test.txt")
         out = req.exec()
         self.assertIn('Memory', out, "Perf does not contain Memory section.")
+        self.assertNotIn('0 GDTs', out, "Perf did not count GDTs")
+        self.assertNotIn('0 GDOs', out, "Perf did not count GDOs")
 
 
 if __name__ == '__main__':

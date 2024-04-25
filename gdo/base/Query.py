@@ -1,3 +1,4 @@
+import traceback
 from enum import Enum
 from mysql.connector import ProgrammingError, DataError, DatabaseError
 
@@ -190,12 +191,14 @@ class Query:
         return f'LIMIT {self._limit, self._offset}'
 
     def exec(self, use_dict: bool = True):
-        if Application.config('db.debug') != '1':
+        if Application.config('db.debug') in ('1', '2'):
             self.debug()
         query = self.build_query()
         try:
             if self._debug:
                 Logger.debug("#" + str(Application.STORAGE.db_queries + 1) + ": " + query)
+                if Application.config('db.debug') == '2':
+                    Logger.debug("".join(traceback.format_stack()))
             if self.is_insert():
                 cursor = Application.DB.cursor()
                 Application.STORAGE.db_writes += 1

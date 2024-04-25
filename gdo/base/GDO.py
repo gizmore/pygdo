@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import traceback
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -21,11 +23,18 @@ class GDO(WithBulk, GDT):
 
     def __init__(self):
         super().__init__()
-        self.GDO_COUNT += 1
-        self.GDO_MAX = max(self.GDO_MAX, self.GDO_COUNT)
+        GDO.GDO_COUNT += 1
+        GDO.GDO_MAX = max(GDO.GDO_MAX, GDO.GDO_COUNT)
+        from gdo.base.Application import Application
+        if Application.config('core.gdo_debug') == '2':
+            from gdo.base.Logger import Logger
+            Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
         self._vals = {}
         self._dirty = []
         self._last_id = None
+
+    def __del__(self):
+        GDO.GDO_COUNT -= 1
 
     @classmethod
     def table(cls) -> Self:

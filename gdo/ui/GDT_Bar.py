@@ -5,4 +5,4 @@ from gdo.ui.WithFlow import WithFlow
 class GDT_Bar(WithFlow, GDT_Container):
 
     def __init__(self):
-        super().__init__()
+        super(GDT_Bar, self).__init__()

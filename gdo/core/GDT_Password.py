@@ -7,6 +7,7 @@ class Password:
     def __init__(self, *, plain: str = None, hashed: str = None):
         self._plain = plain
         self._hash = hashed
+        self._input_type = 'password'
 
     @classmethod
     def hash(cls, plain: str):

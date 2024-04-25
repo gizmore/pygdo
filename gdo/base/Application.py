@@ -164,5 +164,4 @@ class Application:
 
     @classmethod
     def request_time(cls) -> float:
-        dump(time.time() - cls.STORAGE.time_start)
         return time.time() - cls.STORAGE.time_start

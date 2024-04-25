@@ -5,7 +5,7 @@ from gdo.core.GDT_String import GDT_String
 class GDT_IP(GDT_String):
 
     def __init__(self, name):
-        super().__init__(name)
+        super(GDT_IP, self).__init__(name)
         self.minlen(3)
         self.maxlen(39)
         self.ascii()
