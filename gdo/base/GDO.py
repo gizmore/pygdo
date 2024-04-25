@@ -14,10 +14,10 @@ from gdo.base.WithBulk import WithBulk
 class GDO(WithBulk, GDT):
     GDO_COUNT = 0
     GDO_MAX = 0
+    ID_SEPARATOR = ':'
 
     _vals: dict
     _dirty: list
-    _is_table: bool
 
     def __init__(self):
         super().__init__()
@@ -25,7 +25,6 @@ class GDO(WithBulk, GDT):
         self.GDO_MAX = max(self.GDO_MAX, self.GDO_COUNT)
         self._vals = {}
         self._dirty = []
-        self._is_table = False
         self._last_id = None
 
     @classmethod
@@ -33,7 +32,7 @@ class GDO(WithBulk, GDT):
         return Cache.table_for(cls)
 
     @classmethod
-    def blank(cls, vals: dict):
+    def blank(cls, vals: dict = None):
         gdo = cls.table()
         for gdt in gdo.columns():
             name = gdt.get_name()
@@ -45,7 +44,8 @@ class GDO(WithBulk, GDT):
         return self.columns()[0]
 
     def is_persisted(self):
-        return len(self._dirty) == 0
+        id_ = self.get_id()
+        return len(id_) > 0 and not id_.startswith(':')
 
     def gdo_columns(self) -> list[GDT]:
         return []
@@ -57,7 +57,7 @@ class GDO(WithBulk, GDT):
         return Cache.columns_for(self.__class__)
 
     def gdo_val(self, key):
-        if key not in self._vals.keys():
+        if key not in self._vals:
             return None
         return self._vals[key]
 
@@ -84,6 +84,12 @@ class GDO(WithBulk, GDT):
 
     def gdo_table_name(self) -> str:
         return self.get_name().lower()
+
+    def gdo_cached(self) -> bool:
+        """
+        Indicate if this table should build an object cache
+        """
+        return True
 
     @classmethod
     def get_name(cls):
@@ -146,7 +152,7 @@ class GDO(WithBulk, GDT):
 
     def get_id(self) -> str:
         cols = self.get_pk_columns()
-        return ':'.join(map(lambda gdt: gdt._val, cols))
+        return self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', cols))
 
     def soft_replace(self):
         old = self.get_by_id(self.get_id())
@@ -187,6 +193,8 @@ class GDO(WithBulk, GDT):
         # return vals
 
     def save(self):
+        if not self.is_persisted():
+            return self.insert()
         if len(self._dirty):
             self.before_update()
             query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
@@ -207,6 +215,7 @@ class GDO(WithBulk, GDT):
         pass
 
     def after_create(self):
+        self._is_persisted = True
         for gdt in self.columns():
             gdt.gdo_after_create(self)
         self.gdo_after_create(self)

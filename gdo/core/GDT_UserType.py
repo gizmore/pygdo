@@ -3,6 +3,7 @@ from gdo.core.GDT_Enum import GDT_Enum
 
 class GDT_UserType(GDT_Enum):
     SYSTEM = 'system'
+    GHOST = 'ghost'
     GUEST = 'guest'
     MEMBER = 'member'
     BOT = 'bot'

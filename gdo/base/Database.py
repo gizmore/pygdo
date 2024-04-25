@@ -56,6 +56,7 @@ class Database:
             self.link.autocommit = True
             self.link.database = self.db_name
             self.query('SET NAMES utf8mb4')
+            self.query("SET time_zone = '+00:00'")
         return self.link
 
     def insert_id(self) -> str:
@@ -63,8 +64,10 @@ class Database:
 
     def query(self, query):
         if Application.config('db.debug') != '0':
-            Logger.debug(query)
+            Logger.debug("#" + str(Application.STORAGE.db_queries) + ": " + query)
         try:
+            Application.STORAGE.db_writes += 1
+            Application.STORAGE.db_queries += 1
             return self.get_link().cmd_query(query)
         except ProgrammingError as ex:
             raise GDODBException(ex.msg, query)

@@ -17,3 +17,10 @@
 .error p {
     white-space: pre;
 }
+
+.gdt-divider.gdt-horizontal {
+    padding: 0 16px;
+}
+.gdt-divider.gdt-horizontal:BEFORE {
+    content: "|";
+}

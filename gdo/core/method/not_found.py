@@ -13,7 +13,7 @@ class not_found(Method):
     def cli_trigger(self) -> str:
         return ''
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Url("_url").not_null(),
         ]

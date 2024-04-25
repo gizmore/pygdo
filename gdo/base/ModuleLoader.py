@@ -5,22 +5,19 @@ import importlib
 import os
 
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOException
+from gdo.base.Exceptions import GDOException, GDODBException
 from gdo.base.GDO_ModuleVar import GDO_ModuleVar
 from gdo.base.Result import IterType
 from gdo.base.Trans import Trans
 
 
 class ModuleLoader:
-    _instance = None
     _cache: dict[str, any]
     _methods: dict[str, any]
 
     @classmethod
     def instance(cls):
-        if not cls._instance:
-            cls._instance = ModuleLoader()
-        return cls._instance
+        return Application.LOADER
 
     def reset(self):
         self._cache = {}
@@ -35,7 +32,7 @@ class ModuleLoader:
         return None
 
     def __init__(self):
-        self._cache = {}
+        self._cache = self.__dict__.get('_cache', {})
 
     def get_module(self, module_name):
         return self._cache[module_name]
@@ -61,7 +58,8 @@ class ModuleLoader:
             return module
         if installed and not self.module_installed(modulename):
             return None
-        return self.gdo_import(modulename)
+        module = self.gdo_import(modulename)
+        return module
 
     def module_installed(self, modulename: str) -> bool:
         from gdo.base.GDO_Module import GDO_Module
@@ -91,6 +89,7 @@ class ModuleLoader:
         fs = self.gdo_import(modulename)
         if db:
             fs.set_vals(db._vals)
+            fs._is_persisted = True
         else:
             return None
         if enabled:
@@ -132,5 +131,7 @@ class ModuleLoader:
         self._methods = {}
         for module in self._cache.values():
             for method in module.get_methods():
-                self._methods[method.cli_trigger()] = method
+                fqn = method.__module__ + '.' + method.__class__.__qualname__
+                self._methods[method.cli_trigger()] = fqn
+
 

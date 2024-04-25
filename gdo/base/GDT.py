@@ -1,4 +1,7 @@
-from gdo.base.Util import Strings
+import sys
+
+from gdo.base.Render import Mode
+from gdo.base.Util import Strings, dump
 
 
 class GDT:
@@ -29,6 +32,9 @@ class GDT:
     def __init__(self):
         self.GDT_COUNT += 1
         self.GDT_MAX = max(self.GDT_COUNT, self.GDT_MAX)
+
+    def __del__(self):
+        self.GDT_COUNT -= 1
 
     def gdo_before_create(self, gdo):
         pass
@@ -109,6 +115,14 @@ class GDT:
     ##########
     # Render #
     ##########
+    def render(self, mode: Mode = Mode.HTML):
+        """
+        Call the appropriate render method
+        """
+        method_name = f'render_{mode.name.lower()}'
+        method = getattr(self, method_name)
+        return method()
+
     def html_class(self):
         return self.__class__.__name__.lower().replace('_', '-')
 

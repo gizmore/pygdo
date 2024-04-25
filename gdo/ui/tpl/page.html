@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%=Application.LANG_ISO%>">
 <head>
     <meta charset="UTF-8">
     <title><%=field._method.gdo_render_title()%></title>
     <meta name="description" content="<%=field._method.gdo_render_descr()%>">
+    <meta name="keywords" content="<%=field._method.gdo_render_keywords()%>">
     <%
     for url in field._css:
         writeln(f'<link rel="stylesheet" href="{url}" />')
@@ -17,10 +18,10 @@
 <nav id="gdt-left-nav" class="gdt-nav"><%=field._left_bar.render_html()%></nav>
 <nav id="gdt-right-nav" class="gdt-nav"><%=field._right_bar.render_html()%></nav>
 <main><%=field._result.render_html()%></main>
-<footer></footer>
+<footer><%=field._bottom_bar.render_html()%></footer>
 <%
 for url in field._js:
-    writeln(f'<script src="{url}" />')
+    writeln(f'<script src="{url}"></script>')
 %>
 </body>
 </html>

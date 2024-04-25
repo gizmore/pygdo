@@ -76,6 +76,9 @@ class GDO_Module(WithModuleConfig, GDO):
     def is_enabled(self):
         return self.gdo_val('module_enabled') == '1'
 
+    def is_installable(self) -> bool:
+        return True
+
     def init(self):
         if not self._inited:
             self.gdo_init()
@@ -125,11 +128,11 @@ class GDO_Module(WithModuleConfig, GDO):
     # Errors #
     ##########
     def err(self, key: str, args: list[str] = None):
-        err(key, args, self.get_name())
+        err(key, args, self.render_name())
         return self
 
     def msg(self, key: str, args: list[str] = None):
-        msg(key, args, self.get_name())
+        msg(key, args, self.render_name())
         return self
 
     ##########

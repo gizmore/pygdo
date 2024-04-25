@@ -1,3 +1,5 @@
+import argparse
+
 from gdo.base.Exceptions import GDOError
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t, thas
@@ -19,6 +21,7 @@ class Method(WithEnv, WithInput, WithError, GDT):
         super().__init__()
         self._params = {}
         self._next = None
+        self._input = {}
 
     def cli_trigger(self) -> str:
         module = self.module()
@@ -41,25 +44,35 @@ class Method(WithEnv, WithInput, WithError, GDT):
         raise GDOError('err_stub')
 
     def gdo_render_title(self) -> str:
-        return t(f'mt_{self._mome().replace(".", "_")}')
+        return t(self._mome_tkey('mt'))
 
     def gdo_render_descr(self) -> str:
-        return t(f'md_{self._mome().replace(".", "_")}')
+        return t(self._mome_tkey('md'))
 
     def gdo_render_usage(self) -> str:
-        key = t(f'mu_{self._mome()}')
+        key = self._mome_tkey('mu')
         if thas(key):
             return t(key)
-        return self._generate_usage()
+        return "unknown usage"#self._generate_usage()
 
-    def _generate_usage(self):
-        return "USAGE_GEN"
+    def gdo_render_keywords(self) -> str:
+        kw = self.site_keywords()
+        key = self._mome_tkey('mk')
+        if thas(key):
+            return f"{kw},{t(key)}"
+        return kw
 
-    def gdo_render_keywd(self) -> str:
-        return t(f'mk_{self._mome()}')
+    def site_keywords(self):
+        return t('keywords') if thas('keywords') else 'PyGDO,Website,HTTP Handler,WSGI'
 
     def _mome(self):
         return self.module().get_name() + "." + self.get_name()
+
+    def _mome_tkey(self, key: str) -> str:
+        return f'{key}_{self.module().get_name()}_{self.get_name()}'
+
+    def _generate_usage(self) -> str:
+        return self.get_arg_parser().format_usage()
 
     ##############
     # Parameters #
@@ -140,7 +153,16 @@ class Method(WithEnv, WithInput, WithError, GDT):
             return False
         return True
 
-
     def has_permission(self, user):
         return True
+
+    def get_arg_parser(self, is_web: bool = True):
+        parser = argparse.ArgumentParser(description=self.gdo_render_descr(), usage=self.gdo_render_usage())
+        for gdt in self.parameters().values():
+            if gdt.is_positional() and not is_web:
+                parser.add_argument(gdt.get_name())
+            else:
+                parser.add_argument(f'--{gdt.get_name()}', default=gdt.get_initial())
+        return parser
+
 

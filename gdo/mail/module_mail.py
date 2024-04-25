@@ -1,6 +1,5 @@
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
-from gdo.date.GDT_DateTime import GDT_DateTime
 from gdo.mail.GDO_Mail import GDO_Mail
 from gdo.mail.GDT_Email import GDT_Email
 
@@ -13,6 +12,7 @@ class module_mail(GDO_Module):
         ]
 
     def gdo_user_config(self) -> list[GDT]:
+        from gdo.date.GDT_DateTime import GDT_DateTime
         return [
             GDT_Email('email'),
             GDT_DateTime('email_approved'),

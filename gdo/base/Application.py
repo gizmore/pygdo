@@ -1,13 +1,17 @@
+import datetime
 import os
+import sys
 import threading
 import time
 import toml
 
+from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Util import Arrays
 
 
 class Application:
+    LOADER: object
     STORAGE = threading.local()
     LANG_ISO = 'en'
     TIME = time.time()
@@ -23,13 +27,14 @@ class Application:
     @classmethod
     def init(cls, path):
         from gdo.base.Database import Database
+        from gdo.base.ModuleLoader import ModuleLoader
+        cls.PATH = os.path.normpath(path) + '/'
         os.environ['TZ'] = 'UTC'
         time.tzset()
-        cls.STORAGE.mode = Mode.HTML
-        cls.STORAGE.user = None
-        cls.tick()
-        cls.PATH = os.path.normpath(path) + '/'
-        config_path = os.path.join(cls.PATH, 'protected/config.toml')
+        cls.LOADER = ModuleLoader()
+        Application.init_common()
+        config_path = 'protected/config_test.toml' if 'unittest' in sys.modules.keys() else 'protected/config.toml'
+        config_path = os.path.join(cls.PATH, config_path)
         if os.path.isfile(config_path):
             with open(config_path, 'r') as f:
                 cls.CONFIG = toml.load(f)
@@ -57,6 +62,12 @@ class Application:
         cls.STORAGE.user = user
 
     @classmethod
+    def fresh_page(cls):
+        from gdo.ui.GDT_Page import GDT_Page
+        cls.STORAGE.page = GDT_Page()
+        return cls.get_page()
+
+    @classmethod
     def get_page(cls):
         from gdo.ui.GDT_Page import GDT_Page
         if not hasattr(cls.STORAGE, 'page'):
@@ -80,15 +91,65 @@ class Application:
         return Arrays.walk(cls.CONFIG, path) or default
 
     @classmethod
-    def storage(cls, key: str, default: str = '') -> str:
-        return cls.STORAGE.__getattribute__(key) or default
-
-    @classmethod
-    def init_web(cls, request):
-        cls.STORAGE.ip = request.get_remote_host()
-        pass
+    def storage(cls, key: str, default: any) -> str:
+        return cls.STORAGE.__getattribute__(key) if hasattr(cls.STORAGE, key) else default
 
     @classmethod
     def init_cli(cls):
         cls.STORAGE.ip = '::1'
-        pass
+        cls.STORAGE.cookies = {}
+        cls.STORAGE.time_start = datetime.datetime.now().time()
+
+    @classmethod
+    def init_web(cls, environ):
+        cls.STORAGE.time_start = float(environ.get('mod_wsgi.request_start')) / 1000.0
+        cls.STORAGE.environ = environ
+        cls.STORAGE.headers = {}
+        cls.init_cookies(environ)
+        cls.STORAGE.ip = environ.get('REMOTE_ADDR')
+
+    @classmethod
+    def init_common(cls):
+        cls.tick()
+        Logger.init()
+        cls.STORAGE.mode = Mode.HTML
+        cls.STORAGE.user = None
+        cls.STORAGE.db_reads = 0
+        cls.STORAGE.db_writes = 0
+        cls.STORAGE.db_queries = 0
+
+    @classmethod
+    def init_cookies(cls, environ):
+        cookies = {}
+        cookies_str = environ.get('HTTP_COOKIE', '')
+        # if cookies_str:
+        for cookie in cookies_str.split(';'):
+            parts = cookie.strip().split('=', 1)
+            if len(parts) == 2:
+                name, value = cookie.split('=', 1)
+                cookies[name] = value
+        cls.STORAGE.cookies = cookies
+
+    @classmethod
+    def status(cls, status: int):
+        cls.STORAGE.status = str(status) + " PyGDO"
+
+    @classmethod
+    def get_status(cls):
+        return cls.storage('status', "200 OK")
+
+    @classmethod
+    def header(cls, name: str, value: str):
+        headers = cls.storage('headers', {})
+        headers[name] = value
+        cls.STORAGE.headers = headers
+
+    @classmethod
+    def get_headers(cls):
+        headers_dict = cls.storage('headers', {})
+        return [(key, value) for key, value in headers_dict.items()]
+
+    @classmethod
+    def get_cookie(cls, name: str, default: str = ''):
+        c = cls.STORAGE.cookies
+        return c[name] if name in c else default

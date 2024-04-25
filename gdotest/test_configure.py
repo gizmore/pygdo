@@ -16,7 +16,7 @@ class ConfigureTestCase(unittest.TestCase):
         ModuleLoader.instance().init_modules()
         date1 = Application.CONFIG['gen']['date']
         data = Config.data(Application.CONFIG)
-        Config.rewrite(Application.file_path('protected/config.toml'), data)
+        Config.rewrite(Application.file_path('protected/config_test.toml'), data)
         Application.init(Application.PATH)
         date2 = Application.CONFIG['gen']['date']
         self.assertNotEqual(date1, date2, "Cannot rewrite config.")

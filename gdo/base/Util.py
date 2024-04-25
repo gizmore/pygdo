@@ -1,13 +1,40 @@
 from __future__ import annotations
 
 import getpass
+import json
 import mimetypes
 import os.path
 import secrets
+import sys
 from collections import OrderedDict
 from typing import Sequence
 
 from gdo.base.Render import Mode
+
+
+def html(s: str, mode: Mode = Mode.HTML):
+    return Strings.html(s, mode)
+
+
+class GDOJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        return str(obj)
+
+
+def jsn(obj: any):
+    from gdo.base.Application import Application
+    indent = Application.config('core.json_debug', '0')
+    indent = 4 if indent != '0' else 0
+    return json.dumps(obj, cls=GDOJSONEncoder, indent=indent, sort_keys=True)
+
+
+def bytelen(s: str, encoding: str = 'utf-8') -> int:
+    """
+    Get size of a string in bytes without codecs
+    By ChatGPT and gizmore :)
+    """
+    return len(s.encode(encoding))
+    # return sys.getsizeof(s) - sys.getsizeof("") does not work!
 
 
 def err(key: str, args: list[str] = None, title: str = 'PyGDO'):
@@ -17,11 +44,20 @@ def err(key: str, args: list[str] = None, title: str = 'PyGDO'):
     Application.get_page()._top_bar.add_field(error)
 
 
+def err_raw(message: str, title: str = 'PyGDO'):
+    err('%s', [message])
+
+
 def msg(key: str, args: list[str] = None, title: str = 'PyGDO'):
     from gdo.base.Application import Application
     from gdo.ui.GDT_Success import GDT_Success
     message = GDT_Success().text(key, args).title_raw(title)
     Application.get_page()._top_bar.add_field(message)
+
+
+def dump(*obj: any):
+    for o in obj:
+        err_raw(jsn(o))
 
 
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
@@ -107,20 +143,20 @@ class Files:
     def exists(cls, path: str) -> bool:
         return os.path.exists(path)
 
-    @classmethod
-    def serve_filename(cls, file_path: str, request) -> bool:
-        from gdo.base.Application import Application
-        mime_type, _ = mimetypes.guess_type(file_path)
-        if mime_type:
-            request.content_type = mime_type
-        with open(file_path, 'rb') as file:
-            chunk_size = int(Application.config('file.block_size', '4096'))
-            while True:
-                chunk = file.read(chunk_size)
-                if not chunk:
-                    break
-                request.write(chunk)
-        return True
+    # @classmethod
+    # def serve_filename(cls, file_path: str, request) -> bool:
+    #     from gdo.base.Application import Application
+    #     mime_type, _ = mimetypes.guess_type(file_path)
+    #     if mime_type:
+    #         request.content_type = mime_type
+    #     with open(file_path, 'rb') as file:
+    #         chunk_size = int(Application.config('file.block_size', '4096'))
+    #         while True:
+    #             chunk = file.read(chunk_size)
+    #             if not chunk:
+    #                 break
+    #             request.write(chunk)
+    #     return True
 
     @classmethod
     def human_file_size(cls, num: int, div: int = 1000, suffix: str = "B") -> str:
@@ -130,6 +166,14 @@ class Files:
             num /= div
         return f"{num:.1f}Yi{suffix}"
 
+    @classmethod
+    def is_file(cls, path):
+        return os.path.isfile(path)
+
+    @classmethod
+    def create_dir(cls, path: str) -> bool:
+        os.makedirs(path, exist_ok=True)
+        return True
 
 
 class Arrays:

@@ -14,6 +14,7 @@ class CLITestCase(unittest.TestCase):
 
     def setUp(self):
         Application.init(os.path.dirname(__file__) + "/../")
+        Application.init_cli()
         ModuleLoader.instance().load_modules_db()
         ModuleLoader.instance().init_modules()
         ModuleLoader.instance().init_cli()
@@ -37,7 +38,7 @@ class CLITestCase(unittest.TestCase):
 
     def test_04_perf(self):
         result = cli_plug(None, "core.perf")
-        self.assertIn('mem', result, 'Test if CLI core.perf renders ok.')
+        self.assertIn('Memory', result, 'Test if CLI core.perf renders ok.')
 
 
 if __name__ == '__main__':

@@ -312,6 +312,8 @@ class Time:
 
     @classmethod
     def _human_duration_raw(cls, seconds: float, n_units: int, units: dict, with_millis: bool = True) -> str:
+        neg = -1 if seconds < 0 else 1
+        seconds = abs(seconds)
         calculated = {}
         ms = int(seconds * 1000) % 1000 if with_millis else 0
         duration = int(seconds)
@@ -329,7 +331,6 @@ class Time:
             return f"0{next(iter(units))}"
 
         calculated = Arrays.reverse_dict(calculated)
-        # calculated = calculated.values().__reversed__()
         i = 0
         for key in list(calculated.keys()):
             i += 1

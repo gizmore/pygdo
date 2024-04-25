@@ -1,3 +1,4 @@
+from gdo.base.Render import Mode
 from gdo.core.GDT_Field import GDT_Field
 
 
@@ -22,3 +23,9 @@ class WithProxy:
 
     def get_val(self):
         return self._proxy.get_val()
+
+    def validate(self, value: any) -> bool:
+        return self._proxy.validate(value)
+
+    def render(self, mode: Mode):
+        return self._proxy.render(mode)

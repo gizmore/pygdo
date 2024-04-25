@@ -1,7 +1,9 @@
+import json
 from enum import Enum
 
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t
+from gdo.base.Util import jsn
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.WithLabel import WithLabel
@@ -114,5 +116,15 @@ class GDT_String(WithLabel, GDT_Field):
     ##########
     # Render #
     ##########
+
+    def render_txt(self):
+        return self.get_val()
+
+    def render_json(self):
+        dic = {
+            self.get_name(): self.get_val(),
+        }
+        return jsn(dic)
+
     def render_form(self):
         return GDT_Template.python('core', 'form_string.html', {'field': self})

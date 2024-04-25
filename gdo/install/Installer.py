@@ -34,7 +34,10 @@ class Installer:
         return sorted(deps, key=lambda m: m._priority)
 
     @classmethod
-    def install_module(cls, module: GDO_Module):
+    def install_module(cls, module: GDO_Module) -> bool:
+        if not module.is_installable():
+            return False
+
         Logger.debug(f'Installing module {module.get_name()}')
         classes = module.gdo_classes()
         for classname in classes:
@@ -46,6 +49,7 @@ class Installer:
         if module.get_name() != 'base':
             from gdo.core import module_core
             Installer.migrate_module(module_core.instance())
+        return True
 
     @classmethod
     def install_module_entry(cls, module: GDO_Module):
@@ -58,7 +62,7 @@ class Installer:
             'module_id': mid,
             'module_name': module.get_name(),
             'module_enabled': '1',
-        }).soft_replace()
+        }, db is None).soft_replace()
 
     @classmethod
     def install_gdo(cls, classname):

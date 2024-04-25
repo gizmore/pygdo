@@ -1,14 +1,15 @@
 import argparse
+import importlib
 import json
 import re
 from urllib.parse import parse_qs
 
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOModuleException
+from gdo.base.Exceptions import GDOModuleException, GDOParamNameException
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, err, err_raw, dump
 from gdo.core.GDT_Repeat import GDT_Repeat
 from gdo.core.GDO_Session import GDO_Session
 
@@ -16,11 +17,13 @@ from gdo.core.GDO_Session import GDO_Session
 class Parser:
     _line: str
     _user: object
+    _is_web: bool
 
     def __init__(self, line: str, user):
         super().__init__()
         self._line = line
         self._user = user
+        self._is_web = False
 
     def parse(self):
         lines = self.split_commands(self._line)
@@ -28,7 +31,7 @@ class Parser:
         for line in lines:
             method = self.parse_line(line)
             methods.append(method)
-        return methods[0]
+        return methods[0] if len(methods) else None
 
     def split_commands(self, input_string):
         commands = []
@@ -59,21 +62,18 @@ class Parser:
             raise GDOModuleException(tokens[0])
         method.user(self._user)
         self.start_session(method)
-        parser = argparse.ArgumentParser(description=method.gdo_render_descr(), usage=method.gdo_render_usage())
+        parser = method.get_arg_parser(self._is_web)
+        # try:
+        args, unknown_args = parser.parse_known_args(tokens[1:])
         for gdt in method.parameters().values():
-            if gdt.is_positional():
-                parser.add_argument(gdt.get_name())
-            else:
-                parser.add_argument(f'--{gdt.get_name()}', default=gdt.get_initial())
-        try:
-            args, unknown_args = parser.parse_known_args(tokens[1:])
-            for gdt in method.parameters().values():
-                val = args.__dict__[gdt.get_name()]
-                if isinstance(gdt, GDT_Repeat):
-                    val += " " + " ".join(unknown_args)
-                gdt.val(val)
-        except Exception as ex:
-            method.error('%s', [str(ex)])
+            val = args.__dict__[gdt.get_name()]
+            if isinstance(gdt, GDT_Repeat):
+                val += " " + " ".join(unknown_args)
+            gdt.val(val.rstrip())
+        # except SystemExit as ex:
+        #     err('%s', [str(ex)])
+        # except Exception as ex:
+        #     err('%s', [str(ex)])
         return method
 
     def tokenize(self, line: str):
@@ -100,8 +100,15 @@ class Parser:
 
         return tokens
 
-    def get_method(self, cmd: str) -> Method:
-        return ModuleLoader.instance()._methods[cmd]
+    def get_method(self, cmd: str) -> Method | None:
+        try:
+            fqn = ModuleLoader.instance()._methods[cmd]
+            module_name, class_name = fqn.rsplit('.', 1)
+            module = importlib.import_module(module_name)
+            class_object = getattr(module, class_name)
+            return class_object()
+        except Exception:
+            return None
 
     def start_session(self, method: Method):
         method.cli_session()
@@ -113,14 +120,14 @@ class WebParser(Parser):
     _request: object
     _session: GDO_Session
 
-    def __init__(self, req, url):
+    def __init__(self, url):
         self._url = url
-        self._request = req
-        self._session = GDO_Session.start(req)
+        self._session = GDO_Session.start()
         self._user = self._session.get_user()
         Application.set_current_user(self._user)
         Application.mode(Mode.HTML)
         super().__init__(self.build_line(self._url), self._session.get_user())
+        self._is_web = True
 
     def build_line(self, url: str) -> str:
         """
@@ -129,20 +136,25 @@ class WebParser(Parser):
         qa = url.split('?', 1)
         line = qa[0]
         ext = Strings.rsubstr_from(line, '.')
-        Application.mode(Mode[ext.upper()])
+        try:
+            Application.mode(Mode[ext.upper()])
+        except KeyError as ex:
+            err('err_render_mode', [ext.upper()])
         line = Strings.rsubstr_to(line, '.')  # remove extension
         parts = line.split(';')
         cmd = parts[0]  # command part
+        self.get_method(cmd)  # Check early, else 404 is not shown -.-
         for part in parts[1:]:
             try:
-                param_name, param_value = part.split('.', 1)
+                parts = part.split('.', 1)
+                param_name, param_value = parts
                 cmd += f" --{param_name}=\"{param_value}\""
             except ValueError:
-                pass
+                raise GDOParamNameException(cmd, line)
         return cmd
 
-    def write(self, s):
-        self._request.write(s)
+    # def write(self, s):
+    #     self._request.write(s)
 
     def get_method(self, cmd: str) -> Method | None:
         try:
@@ -152,6 +164,7 @@ class WebParser(Parser):
             method_name = Strings.substr_from(mod_method, '.')
             return loader._cache[module_name].get_method(method_name)
         except KeyError:
+            err_raw('Unknown Module ' + cmd)
             return None
 
     def start_session(self, method: Method):

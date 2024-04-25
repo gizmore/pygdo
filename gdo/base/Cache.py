@@ -12,7 +12,6 @@ class Cache:
         cn = gdo
         if cn not in cls.CACHE:
             cls.CACHE[cn] = gdo()
-            cls.CACHE[cn]._is_table = True
             cls.CCACHE[cn] = cls.build_ccache(gdo)
             cls.OCACHE[cn] = {}
         return cls.CACHE[gdo]

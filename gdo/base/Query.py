@@ -190,18 +190,22 @@ class Query:
         return f'LIMIT {self._limit, self._offset}'
 
     def exec(self, use_dict: bool = True):
-        if Application.config('db.debug') != '0':
+        if Application.config('db.debug') != '1':
             self.debug()
         query = self.build_query()
         try:
             if self._debug:
-                Logger.debug(query)
+                Logger.debug("#" + str(Application.STORAGE.db_queries + 1) + ": " + query)
             if self.is_insert():
                 cursor = Application.DB.cursor()
+                Application.STORAGE.db_writes += 1
+                Application.STORAGE.db_queries += 1
                 cursor.execute(query)
                 return cursor.lastrowid
             if self.is_select():
                 cursor = Application.DB.cursor(use_dict)
+                Application.STORAGE.db_reads += 1
+                Application.STORAGE.db_queries += 1
                 cursor.execute(query)
                 return Result(cursor, self._gdo)
             if self.is_update():

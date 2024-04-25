@@ -26,5 +26,3 @@ class WithIcon:
         self._icon_size = size
         return self
 
-    def render(self):
-        pass

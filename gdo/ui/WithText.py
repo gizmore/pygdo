@@ -9,10 +9,10 @@ class WithText:
     _text_args: list
     _text_escaped: bool
 
-    def text(self, key, args: list = None, title_escaped: bool = False):
+    def text(self, key, args: list = None, escaped: bool = False):
         self._text_key = key
         self._text_args = args
-        return self.text_escaped(title_escaped)
+        return self.text_escaped(escaped)
 
     def text_raw(self, text: str, escaped=True):
         return self.text('%s', [text]).text_escaped(escaped)

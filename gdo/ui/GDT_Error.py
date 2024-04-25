@@ -5,6 +5,7 @@ import traceback
 from gdo.base.Logger import Logger
 from gdo.base.Render import Render, Mode
 from gdo.base.Trans import t
+from gdo.base.Util import html
 from gdo.ui.GDT_Panel import GDT_Panel
 
 
@@ -25,4 +26,5 @@ class GDT_Error(GDT_Panel):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         file = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         line = exc_tb.tb_lineno
+        exc_type = html(str(exc_type))
         return cls().title_raw(title).text_raw(str(ex) + f"{exc_type} in {file} line {line}\n<pre>Backtrace:\n{traceback.format_exc()}\n</pre>", False)

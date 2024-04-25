@@ -47,7 +47,7 @@ class WithModuleConfig:
                     'mv_module': self.get_id(),
                     'mv_key': key,
                     'mv_val': val,
-                }).soft_replace()
+                }).replace()
                 gdt.val(val)
         else:
             raise GDOValidationException(self.get_name(), key, val)

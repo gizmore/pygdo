@@ -26,16 +26,18 @@ def sitename() -> str:
 
 
 class Trans:
+    BASES = []
     CACHE = {
         'en': {},
         'de': {},
     }
 
-    BASES = []
-    LOADED = False
-
-    def __init__(self):
-        pass
+    @classmethod
+    def reload(cls):
+        cls.CACHE = {
+            'en': {},
+            'de': {},
+        }
 
     @classmethod
     def add_language(cls, base_path):
@@ -51,7 +53,6 @@ class Trans:
                     with open(file_path, 'r') as f:
                         more = toml.load(f)
                         cls.CACHE[iso].update(more)
-            cls.LOADED = True
         return cls.CACHE[iso]
 
     @classmethod

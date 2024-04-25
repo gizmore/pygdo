@@ -59,3 +59,12 @@ md_core_echo = "The echo command replies it's rest of text parameter."
 mt_core_version = "Version"
 md_core_version = "Print python and GDO version."
 msg_version = "Python %s - GDOv%s"
+
+############
+### Perf ###
+############
+perf_version = "Version: %s"
+perf_cpu = "CPU %s%%"
+perf_mem = "Memory: %s"
+perf_db = "DB (%sR/%sW/#%s)"
+perf_code = "%s GDTs / %s GDOs"

@@ -1,0 +1,17 @@
+"%s" = "%s" # Do not delete :)
+
+err_web_param_wrong = "A method parameter could not parse for cmd %s. In context '%s'"
+
+################
+# Server Error #
+################
+mt_base_server_error = "Server Error"
+md_base_server_error = "The server made a booboo... probably broken code or a configuration error."
+
+##############
+### Reload ###
+##############
+mt_core_reload = "Reload"
+md_core_reload = "Reloads the application code, except the base module. Useful for long living gdo applications like chatbots or cli repl."
+err_reload_module = "Cannot reload module %s: %s"
+msg_modules_reloaded = "All modules have been reloaded."

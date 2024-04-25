@@ -43,6 +43,10 @@ class GDT_Page(GDT):
         self._result = result
         return self
 
+    def method(self, method: Method):
+        self._method = method
+        return self
+
     def add_css(self, url: str):
         self._css.append(url)
 

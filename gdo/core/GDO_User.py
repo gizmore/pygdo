@@ -27,6 +27,12 @@ class GDO_User(GDO):
         return cls.SYSTEM
 
     @classmethod
+    def ghost(cls):
+        return cls.blank({
+            'user_type': GDT_UserType.GHOST,
+        })
+
+    @classmethod
     def current(cls):
         return Application.STORAGE.user or cls.system()
 

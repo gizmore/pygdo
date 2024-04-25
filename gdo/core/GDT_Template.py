@@ -147,6 +147,7 @@ class GDT_Template(GDT):
             data = {
                 "modules": ModuleLoader.instance()._cache,
                 "Mode": Mode,
+                "Application": Application,
             }
             data.update(vals)
             path = cls.get_path(modulename, filename)

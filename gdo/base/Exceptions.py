@@ -38,3 +38,12 @@ class GDOValidationException(Exception):
 
     def __init__(self, module_name: str, key: str, val: str):
         super().__init__(t('err_gdt_validation', [module_name, key, val]))
+
+
+class GDOParamNameException(GDOException):
+
+    def __init__(self, cmd: str, line: str):
+        super().__init__(t('err_web_param_wrong', [cmd, line]))
+
+
+
