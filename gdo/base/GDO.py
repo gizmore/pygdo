@@ -227,7 +227,6 @@ class GDO(WithBulk, GDT):
         pass
 
     def after_create(self):
-        self._is_persisted = True
         for gdt in self.columns():
             gdt.gdo_after_create(self)
         self.gdo_after_create(self)
@@ -241,7 +240,4 @@ class GDO(WithBulk, GDT):
         for gdt in self.columns():
             gdt.gdo_after_update(self)
         self.gdo_after_update(self)
-
-
-
-
+        Cache.obj_for(self).set_vals(self._vals, False)  # After a blanked update this is required.

@@ -106,7 +106,7 @@ class Application:
     def init_cli(cls):
         cls.STORAGE.ip = '::1'
         cls.STORAGE.cookies = {}
-        cls.STORAGE.time_start = datetime.datetime.now().time()
+        cls.STORAGE.time_start = time.time()
 
     @classmethod
     def init_web(cls, environ):

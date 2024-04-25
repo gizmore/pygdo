@@ -30,7 +30,7 @@ class Cache:
         return cache
 
     @classmethod
-    def obj_for(cls, gdo: GDO):
+    def obj_for(cls, gdo: GDO) -> GDO:
         gid = gdo.get_id()
         cn = gdo.__class__
         if gid not in cls.OCACHE[cn]:

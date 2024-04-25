@@ -16,8 +16,15 @@ class EventsTestCase(unittest.TestCase):
         return self
 
     def test_01_events(self):
-        Application.EVENTS.subscribe()
-        pass
+        y = 0
+
+        def foo(x):
+            nonlocal y
+            y = x
+
+        Application.EVENTS.subscribe('test_event', foo)
+        Application.EVENTS.publish('test_event', 1)
+        self.assertEqual(y, 1, 'basic event publishing does not work')
 
 
 if __name__ == '__main__':

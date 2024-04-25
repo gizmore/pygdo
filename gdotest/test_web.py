@@ -68,11 +68,11 @@ class WebTestCase(unittest.TestCase):
     def test_10_perf(self):
         core = module_core.instance()
         self.assertTrue(core.should_show_perf(), "Perf is not wanted but it should be")
-        req = WebPlug("core.echo;text.This.is.a.test.txt")
+        req = WebPlug("core.echo;text.This.is.a.test.html")
         out = req.exec()
         self.assertIn('Memory', out, "Perf does not contain Memory section.")
-        self.assertNotIn('0 GDTs', out, "Perf did not count GDTs")
-        self.assertNotIn('0 GDOs', out, "Perf did not count GDOs")
+        self.assertNotIn('>0 GDTs', out, "Perf did not count GDTs")
+        self.assertNotIn('/ 0 GDOs', out, "Perf did not count GDOs")
 
 
 if __name__ == '__main__':

@@ -34,7 +34,6 @@ def install_modules(modules):
 def install_module_b(name):
     module = ModuleLoader.instance().load_module_fs(name)
     Installer.install_module(module)
-    # subprocess.run(["/bin/python3", "gdoadm.py", "install", "--module", name], capture_output=True)
 
 
 class WebPlug:
@@ -55,19 +54,9 @@ class WebPlug:
         self._ip = ip
         return self
 
-    # def write(self, s):
-    #     if s is not None:
-    #         if isinstance(s, bytes):
-    #             s = s.decode('utf-8')
-    #         self._out += s
-
     def post(self, dic: dict):
         self._post = dic
         return self
-
-    # def read(self):
-    #     s = urllib.parse.urlencode(self._post)
-    #     return s.encode('UTF-8')
 
     def exec(self):
         parts = self._url.split('?')
