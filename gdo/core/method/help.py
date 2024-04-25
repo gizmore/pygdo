@@ -1,8 +1,12 @@
+from line_profiler_pycharm import profile
+
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render
+from gdo.base.Util import jsn
+from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_NotImplemented import GDT_NotImplemented
 from gdo.core.GDT_String import GDT_String
 
@@ -33,11 +37,30 @@ class help(Method):
         mode = Application.get_mode()
         return GDT_String('help').text('msg_help_form', [Render.bold(trigger, mode), method.gdo_render_usage()])
 
+    @profile
     def show_all_commands(self):
         loader = ModuleLoader.instance()
         grouped = {}
-        for cmd, fqn in loader._methods.items():
-            if not fqn in grouped:
-                grouped[fqn] = cmd
-        return GDT_NotImplemented()
+        mode = Application.get_mode()
+        user = GDO_User.current()
+        for cmd, method in loader._methods.items():
+            module_name = method.module().render_name()
+            trigger = method.user(user).cli_trigger()
+            if module_name not in grouped:
+                grouped[module_name] = []
+            if method.prepare():
+                trigger_colored = Render.green(trigger, mode)
+            else:
+                trigger_colored = Render.red(trigger, mode)
+            grouped[module_name].append([trigger, trigger_colored])
 
+        grouped_sorted = {module: sorted(triggers, key=lambda x: x[0]) for module, triggers in sorted(grouped.items())}
+
+        group_part_one = {}
+        for module, triggers in grouped_sorted.items():
+            module_bold = Render.bold(module, mode)
+            group_part_one[module_bold] = ", ".join(trigger_colored for _, trigger_colored in triggers)
+
+        group_rendered = ", ".join(f"{module}: {triggers}" for module, triggers in group_part_one.items())
+
+        return GDT_String('help').text('msg_help_all_commands', [group_rendered])

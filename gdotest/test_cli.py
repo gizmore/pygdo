@@ -27,7 +27,7 @@ class CLITestCase(unittest.TestCase):
         self.assertIn('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
 
     def test_02_version(self):
-        result = CLI.parse("core.version").execute().render_cli()
+        result = CLI.parse("version").execute().render_cli()
         self.assertIn(str(module_base.instance().CORE_VERSION), result, 'Test if CLI version contains version number.')
         self.assertIn('GDO', result, 'Test if CLI version contains version number.')
         self.assertIn('Python', result, 'Test if CLI version contains version number.')
@@ -42,8 +42,7 @@ class CLITestCase(unittest.TestCase):
 
     def test_05_help_overview(self):
         result = cli_plug(None, "help")
-
-
+        self.assertIn("Core", result, "Help does not contain Core commands.")
 
 
 if __name__ == '__main__':

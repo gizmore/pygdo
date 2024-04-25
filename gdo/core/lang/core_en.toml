@@ -72,3 +72,18 @@ perf_cpu = "CPU %s%%"
 perf_mem = "Memory: %s"
 perf_db = "DB (%sR/%sW/#%s)"
 perf_code = "%s GDTs / %s GDOs"
+
+############
+### Help ###
+############
+mt_core_help = "Command Overview"
+md_core_help = "List all available commands for this PyGDO installation."
+msg_help_all_commands = "Commands: %s."
+
+##############
+### Reload ###
+##############
+mt_core_reload = "Reload"
+md_core_reload = "Reloads the application code, except the base module. Useful for long living gdo applications like chatbots or cli repl."
+err_reload_module = "Cannot reload module %s: %s"
+msg_modules_reloaded = "All modules have been reloaded."

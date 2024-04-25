@@ -40,7 +40,8 @@ class ModuleLoader:
 
     def get_method(self, method_trigger: str) -> Method:
         try:
-            fqn = self._methods[method_trigger]
+            method = self._methods[method_trigger]
+            fqn = method.fqn()
             module_name, class_name = fqn.rsplit('.', 1)
             module = importlib.import_module(module_name)
             class_object = getattr(module, class_name)
@@ -144,7 +145,6 @@ class ModuleLoader:
             for method in module.get_methods():
                 trigger = method.cli_trigger()
                 if trigger:
-                    fqn = method.__module__ + '.' + method.__class__.__qualname__
-                    self._methods[trigger] = fqn
+                    self._methods[trigger] = method
 
 

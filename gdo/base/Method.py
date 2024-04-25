@@ -1,5 +1,5 @@
 import argparse
-
+from line_profiler_pycharm import profile
 from gdo.base.Exceptions import GDOError
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t, thas
@@ -34,6 +34,9 @@ class Method(WithEnv, WithInput, WithError, GDT):
 
     def get_name(self):
         return self.__class__.__name__
+
+    def fqn(self):
+        return self.__module__ + '.' + self.__class__.__qualname__
 
     ############
     # Abstract #

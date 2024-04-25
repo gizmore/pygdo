@@ -7,8 +7,8 @@ from gdo.core.GDT_String import GDT_String
 
 class version(Method):
 
-    def __init__(self):
-        super().__init__()
+    def cli_trigger(self) -> str:
+        return 'version'
 
     def execute(self):
         return GDT_String('result').text('msg_version', [sys.version, str(module_base.instance().CORE_VERSION)])
