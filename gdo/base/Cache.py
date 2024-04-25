@@ -44,3 +44,15 @@ class Cache:
         for gdt in cls.columns_for(gdo):
             if gdt.get_name() == key:
                 return gdt
+
+    @classmethod
+    def obj_search(cls, gdo: GDO, vals: dict):
+        cn = gdo.__class__
+        for obj in cls.OCACHE[cn].values():
+            found = True
+            for key, val in vals.items():
+                if obj.gdo_val(key) != val:
+                    found = False
+                    break
+            if found:
+                return obj

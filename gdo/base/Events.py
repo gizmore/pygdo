@@ -6,12 +6,12 @@ class Events:
         self._subscribers = {}
         self._timers = []
 
-    def subscribe(self, event_type, subscriber):
+    def subscribe(self, event_type: str, subscriber: callable):
         if event_type not in self._subscribers:
             self._subscribers[event_type] = []
         self._subscribers[event_type].append(subscriber)
 
-    def unsubscribe(self, event_type, subscriber):
+    def unsubscribe(self, event_type: str, subscriber: callable):
         if event_type in self._subscribers:
             self._subscribers[event_type].remove(subscriber)
 
@@ -19,6 +19,10 @@ class Events:
         if event_type in self._subscribers:
             for subscriber in self._subscribers[event_type]:
                 subscriber(*args, **kwargs)
+
+    #########
+    # Timer #
+    #########
 
     def add_timer(self, duration: float, callback: callable, repeat: bool = False):
         from gdo.base.Application import Application

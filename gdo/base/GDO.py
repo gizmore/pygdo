@@ -145,6 +145,9 @@ class GDO(WithBulk, GDT):
         return " AND ".join(map(lambda gdt: f"{gdt.get_name()}={GDT.quote(gdt._val)}", cols))
 
     def get_by_vals(self, vals: dict[str, str]):
+        cached = Cache.obj_search(self, vals)
+        if cached:
+            return cached
         where = []
         for k, v in vals.items():
             where.append(f'{k}={self.quote(v)}')

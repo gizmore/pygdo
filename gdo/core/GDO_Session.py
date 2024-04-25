@@ -19,7 +19,9 @@ class GDO_Session(GDO):
         self._data = {}
 
     @classmethod
-    def instance(cls):
+    def instance(cls, refresh: bool = False):
+        if refresh and Application.storage('session', None):
+            del Application.STORAGE.session
         sess = Application.storage('session', None)
         return sess or Application.storage('session', cls.start())
 

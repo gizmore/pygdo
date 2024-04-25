@@ -8,12 +8,12 @@ import toml
 from gdo.base.Events import Events
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
-from gdo.base.Util import Arrays
+from gdo.base.Util import Arrays, dump
 
 
 class Application:
     LOADER: object
-    EVENTS: object
+    EVENTS: 'Events'
     STORAGE = threading.local()
     LANG_ISO = 'en'
     TIME = time.time()
@@ -110,7 +110,7 @@ class Application:
 
     @classmethod
     def init_web(cls, environ):
-        cls.STORAGE.time_start = float(environ.get('mod_wsgi.request_start')) / 1000.0
+        cls.STORAGE.time_start = float(environ.get('mod_wsgi.request_start')) / 1000000.0
         cls.STORAGE.environ = environ
         cls.STORAGE.headers = {}
         cls.init_cookies(environ)
@@ -161,3 +161,8 @@ class Application:
     def get_cookie(cls, name: str, default: str = ''):
         c = cls.STORAGE.cookies
         return c[name] if name in c else default
+
+    @classmethod
+    def request_time(cls) -> float:
+        dump(time.time() - cls.STORAGE.time_start)
+        return time.time() - cls.STORAGE.time_start

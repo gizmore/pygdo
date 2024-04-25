@@ -76,7 +76,7 @@ class WebPlug:
             'REMOTE_ADDR': self._ip,
             'QUERY_STRING': f"_url={url}",
             'REQUEST_METHOD': 'POST' if len(self._post.items()) else 'GET',
-            'mod_wsgi.request_start': str(round(time.time() * 1000)),
+            'mod_wsgi.request_start': str(round(time.time())),
         }
         if len(self._post.items()):
             post_bytes = urlencode(self._post).encode('UTF-8')

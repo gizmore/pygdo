@@ -6,6 +6,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Util import Files
 from gdo.core.GDT_String import GDT_String
+from gdo.date.GDT_Duration import GDT_Duration
 from gdo.ui.GDT_Bar import GDT_Bar
 from gdo.ui.GDT_Divider import GDT_Divider
 from gdo.ui.GDT_Panel import GDT_Panel
@@ -28,6 +29,8 @@ class GDT_Perf(GDT_Panel):
             GDT_String('db').text('perf_db', [Application.STORAGE.db_reads, Application.STORAGE.db_writes, Application.STORAGE.db_queries]),
             GDT_Divider(),
             GDT_String('code').text('perf_code', [GDT.GDT_MAX, GDO.GDO_MAX]),
+            GDT_Divider(),
+            GDT_Duration('time').initial_value(Application.request_time()),
         )
 
     def render_html(self):

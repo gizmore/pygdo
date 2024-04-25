@@ -37,7 +37,7 @@ def application(environ, start_response):
             Application.init_web(environ)
             loader = ModuleLoader.instance()
             Application.fresh_page()
-        session = GDO_Session.instance()
+        session = GDO_Session.instance(True)
         qs = parse_qs(environ['QUERY_STRING'])
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))

@@ -19,7 +19,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     _hidden: bool
 
     def __init__(self, name):
-        super().__init__()
+        super(GDT_Field, self).__init__()
         self._name = name
         self._not_null = False
         self._val = ''
@@ -64,6 +64,9 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     def initial(self, val: str):
         self._initial = val
         return self.val(val)
+
+    def initial_value(self, value: any):
+        return self.initial(self.to_val(value))
 
     def is_primary(self):
         return self._primary

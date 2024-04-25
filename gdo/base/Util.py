@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import getpass
 import json
-import mimetypes
 import os.path
 import secrets
-import sys
 from collections import OrderedDict
 from typing import Sequence
 
@@ -56,8 +54,12 @@ def msg(key: str, args: list[str] = None, title: str = 'PyGDO'):
 
 
 def dump(*obj: any):
+    from gdo.base.Logger import Logger
     for o in obj:
-        err_raw(jsn(o))
+        msg = jsn(o)
+        Logger.debug(msg)
+        err_raw(msg)
+
 
 
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):

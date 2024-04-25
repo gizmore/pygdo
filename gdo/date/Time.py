@@ -327,8 +327,8 @@ class Time:
             if duration == 0:
                 break
 
-        if len(calculated) == 0:
-            return f"0{next(iter(units))}"
+        # if len(calculated) == 0:
+        #     return f"0{next(iter(units))}"
 
         calculated = Arrays.reverse_dict(calculated)
         i = 0
@@ -338,7 +338,7 @@ class Time:
                 del calculated[key]
         calculated = list(calculated.values())
         if len(calculated) < n_units and with_millis:
-            calculated.append(f"%03dms" % ms)
+            calculated.append(f"%3dms" % ms)
         return ' '.join(calculated)
 
     @classmethod

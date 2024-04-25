@@ -68,6 +68,9 @@ class WebTestCase(unittest.TestCase):
     def test_10_perf(self):
         core = module_core.instance()
         self.assertTrue(core.should_show_perf(), "Perf is not wanted but it should be")
+        req = WebPlug("core.echo;text.This.is.a.test.txt")
+        out = req.exec()
+        self.assertIn('Memory', out, "Perf does not contain Memory section.")
 
 
 if __name__ == '__main__':

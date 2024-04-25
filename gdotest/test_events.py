@@ -16,6 +16,7 @@ class EventsTestCase(unittest.TestCase):
         return self
 
     def test_01_events(self):
+        Application.EVENTS.subscribe()
         pass
 
 
