@@ -26,6 +26,10 @@ tt_login = "Use your username or your email."
 password = "Password"
 tt_password = "A password has to be at least 4 characters"
 submit = "Submit"
+username = "Username"
+tt_username = "Your username has to start with a letter"
+email = "E-Mail"
+tt_email = "Your email should be valid and has to be approved first, to be marked as in-use."
 
 ##################
 ### GDT_Select ###

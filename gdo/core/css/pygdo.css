@@ -19,7 +19,7 @@
 }
 
 .gdt-divider.gdt-horizontal {
-    padding: 0 16px;
+    padding: 0 8px;
 }
 .gdt-divider.gdt-horizontal:BEFORE {
     content: "|";

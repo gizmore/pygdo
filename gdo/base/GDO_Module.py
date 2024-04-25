@@ -154,3 +154,9 @@ class GDO_Module(WithModuleConfig, GDO):
         from gdo.ui.GDT_Page import GDT_Page
         GDT_Page.instance()._js_inline += f"<script>{code}</script>\n"
         return self
+
+    ##########
+    # Events #
+    ##########
+    def subscribe(self, event_name: str, callback: callable, times: int = 2_000_000_000):
+        Application.EVENTS.subscribe_times(event_name, callback, times)

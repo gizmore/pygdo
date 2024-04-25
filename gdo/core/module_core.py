@@ -33,6 +33,7 @@ class module_core(GDO_Module):
 
     def gdo_module_config(self) -> list[GDT]:
         return [
+            GDT_Bool('guest_system').initial('1'),
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
             GDT_Enum('show_perf').choices({"never": "Never", "always": "Always", "staff": "Staff"}).initial('always'),
@@ -46,6 +47,9 @@ class module_core(GDO_Module):
 
     def cfg_show_perf(self) -> str:
         return self.get_config_val('show_perf')
+
+    def cfg_guest_system(self) -> bool:
+        return self.get_config_value('guest_system')
 
     def gdo_classes(self):
         return [

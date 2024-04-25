@@ -40,6 +40,11 @@ class CLITestCase(unittest.TestCase):
         result = cli_plug(None, "core.perf")
         self.assertIn('Memory', result, 'Test if CLI core.perf renders ok.')
 
+    def test_05_help_overview(self):
+        result = cli_plug(None, "help")
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

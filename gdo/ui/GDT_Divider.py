@@ -19,7 +19,7 @@ class GDT_Divider(WithTitle, WithFlow, GDT):
         self.horizontal()
 
     def render_html(self) -> str:
-        return '<span class="gdt-divider gdt-horizontal"></span>'
+        return ' <span class="gdt-divider gdt-horizontal"></span> '
 
     def render_cli(self):
         title = self.render_title(Mode.CLI)

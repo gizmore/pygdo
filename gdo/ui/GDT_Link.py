@@ -13,6 +13,9 @@ class GDT_Link(WithHREF, WithTitle, WithText, WithName, GDT):
     def __init__(self):
         super().__init__()
 
+    def render_form(self):
+        return self.render_html()
+
     def render_html(self) -> str:
         return GDT_Template.python('ui', 'link.html', {'field': self})
 

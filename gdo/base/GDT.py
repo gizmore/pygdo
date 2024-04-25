@@ -117,6 +117,9 @@ class GDT:
     def is_hidden(self) -> bool:
         return False
 
+    def error(self, key: str, args: list[str] = None) -> bool:
+        return False
+
     ##########
     # Render #
     ##########
@@ -136,6 +139,9 @@ class GDT:
 
     def render_html(self) -> str:
         return Strings.html(self.get_val())
+
+    def render_form(self) -> str:
+        return ''
 
     def render_cli(self) -> str:
         return self.get_val()

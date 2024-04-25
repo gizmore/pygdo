@@ -16,12 +16,17 @@ class WithPermissionCheck:
 
 class Method(WithEnv, WithInput, WithError, GDT):
     _parameters: dict[str, GDT]
+    _server: object
 
     def __init__(self):
         super().__init__()
         self._params = {}
         self._next = None
         self._input = {}
+
+    def server(self, server):
+        self._server = server
+        return self
 
     def cli_trigger(self) -> str:
         module = self.module()

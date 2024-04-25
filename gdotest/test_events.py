@@ -1,4 +1,5 @@
 import os
+import time
 import unittest
 
 from gdo.base.Application import Application
@@ -20,11 +21,38 @@ class EventsTestCase(unittest.TestCase):
 
         def foo(x):
             nonlocal y
-            y = x
+            y += x
 
         Application.EVENTS.subscribe('test_event', foo)
         Application.EVENTS.publish('test_event', 1)
-        self.assertEqual(y, 1, 'basic event publishing does not work')
+        Application.EVENTS.publish('test_event', 1)
+        self.assertEqual(y, 2, 'basic event publishing does not work')
+
+        Application.EVENTS.reset_all()
+
+        Application.EVENTS.subscribe_once('test_event', foo)
+        Application.EVENTS.publish('test_event', 1)
+        Application.EVENTS.publish('test_event', 1)
+        self.assertEqual(y, 3, 'basic event once publishing does not work')
+
+        Application.EVENTS.reset_all()
+
+    def test_02_timers(self):
+        y = 0
+
+        def foo():
+            nonlocal y
+            y += 1
+
+        Application.EVENTS.add_timer(0.5, foo, 2)
+        Application.tick()
+        time.sleep(0.5)
+        Application.tick()
+        time.sleep(0.5)
+        Application.tick()
+        time.sleep(0.5)
+        Application.tick()
+        self.assertEqual(y, 2, 'Timers do not fire correctly')
 
 
 if __name__ == '__main__':

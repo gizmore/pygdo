@@ -7,6 +7,7 @@ import os
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException, GDODBException
 from gdo.base.GDO_ModuleVar import GDO_ModuleVar
+from gdo.base.Method import Method
 from gdo.base.Result import IterType
 from gdo.base.Trans import Trans
 
@@ -36,6 +37,16 @@ class ModuleLoader:
 
     def get_module(self, module_name):
         return self._cache[module_name]
+
+    def get_method(self, method_trigger: str) -> Method:
+        try:
+            fqn = self._methods[method_trigger]
+            module_name, class_name = fqn.rsplit('.', 1)
+            module = importlib.import_module(module_name)
+            class_object = getattr(module, class_name)
+            return class_object()
+        except Exception:
+            return None
 
     def sort_cache(self):
         cc = sorted(self._cache.items(), key=lambda mod: mod[1]._priority)
@@ -131,7 +142,9 @@ class ModuleLoader:
         self._methods = {}
         for module in self._cache.values():
             for method in module.get_methods():
-                fqn = method.__module__ + '.' + method.__class__.__qualname__
-                self._methods[method.cli_trigger()] = fqn
+                trigger = method.cli_trigger()
+                if trigger:
+                    fqn = method.__module__ + '.' + method.__class__.__qualname__
+                    self._methods[trigger] = fqn
 
 

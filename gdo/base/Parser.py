@@ -96,14 +96,7 @@ class Parser:
         return tokens
 
     def get_method(self, cmd: str) -> Method | None:
-        try:
-            fqn = ModuleLoader.instance()._methods[cmd]
-            module_name, class_name = fqn.rsplit('.', 1)
-            module = importlib.import_module(module_name)
-            class_object = getattr(module, class_name)
-            return class_object()
-        except Exception:
-            return None
+        return ModuleLoader.instance().get_method(cmd)
 
     def start_session(self, method: Method):
         method.cli_session()
