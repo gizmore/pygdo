@@ -52,7 +52,13 @@ class InstallTestCase(unittest.TestCase):
         self.assertIsInstance(GDO_User.system(), GDO_User, 'Test if system user exists')
         self.assertEqual(GDO_User.system().get_id(), '1', 'Test if system user has ID#1')
 
-    def test_06_install_all_modules(self):
+    def test_06_install_single_modules(self):
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "--module", "date", '-u'], capture_output=True)
+        self.assertIn('All Done!', result.stdout.decode('UTF-8'), "Install one single module")
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "--modules", "date", '-u'], capture_output=True)
+        self.assertIn('All Done!', result.stdout.decode('UTF-8'), "Install some modules")
+
+    def test_07_install_all_modules(self):
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "--all", '-u'], capture_output=True)
         self.assertIsNotNone(result, "Install all")
 

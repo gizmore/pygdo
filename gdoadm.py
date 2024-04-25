@@ -112,6 +112,7 @@ class App:
             modules = Installer.modules_with_deps([module])
         elif args.modules:
             modules = ModuleLoader.instance().load_modules_fs(args.modules, reinstall)
+            modules = list(modules.values())
         else:
             modules = []
         loader.init_modules()
