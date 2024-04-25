@@ -168,7 +168,10 @@ class Method(WithEnv, WithInput, WithError, GDT):
         parser = argparse.ArgumentParser(description=self.gdo_render_descr(), usage=self.gdo_render_usage())
         for gdt in self.parameters().values():
             if gdt.is_positional() and not is_web:
-                parser.add_argument(gdt.get_name())
+                if gdt.is_not_null():
+                    parser.add_argument(gdt.get_name())
+                else:
+                    parser.add_argument(gdt.get_name(), nargs='?')
             else:
                 parser.add_argument(f'--{gdt.get_name()}', default=gdt.get_initial())
         return parser

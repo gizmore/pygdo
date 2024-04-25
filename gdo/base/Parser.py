@@ -50,8 +50,6 @@ class Parser:
 
     def parse_line(self, line: str) -> Method:
         tokens = self.tokenize(line)
-        # command = Strings.substr_to(line, ' ', line)
-        # argline = Strings.substr_from(line, ' ', '')
         method = self.get_method(tokens[0])
         if not method:
             raise GDOModuleException(tokens[0])
@@ -61,7 +59,7 @@ class Parser:
         # try:
         args, unknown_args = parser.parse_known_args(tokens[1:])
         for gdt in method.parameters().values():
-            val = args.__dict__[gdt.get_name()]
+            val = args.__dict__[gdt.get_name()] or ''
             if isinstance(gdt, GDT_Repeat):
                 val += " " + " ".join(unknown_args)
             gdt.val(val.rstrip())

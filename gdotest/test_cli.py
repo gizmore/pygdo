@@ -44,6 +44,11 @@ class CLITestCase(unittest.TestCase):
         result = cli_plug(None, "help")
         self.assertIn("Core", result, "Help does not contain Core commands.")
 
+    def test_06_help_single_command(self):
+        result = cli_plug(None, "help version")
+        self.assertIn("version", result, "Help does not contain Core commands.")
+
+
 
 if __name__ == '__main__':
     unittest.main()

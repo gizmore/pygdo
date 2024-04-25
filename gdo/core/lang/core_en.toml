@@ -79,6 +79,7 @@ perf_code = "%s GDTs / %s GDOs"
 mt_core_help = "Command Overview"
 md_core_help = "List all available commands for this PyGDO installation."
 msg_help_all_commands = "Commands: %s."
+msg_help_for = "%s: Usage: %s. %s"
 
 ##############
 ### Reload ###

@@ -17,6 +17,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     _unique: bool
     _writable: bool
     _hidden: bool
+    _positional: bool | None
 
     def __init__(self, name):
         super(GDT_Field, self).__init__()
@@ -30,6 +31,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         self._unique = False
         self._writable = True
         self._hidden = False
+        self._positional = None
 
     def get_name(self):
         return self._name
@@ -79,8 +81,17 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         self._unique = unique
         return self
 
+    def positional(self, positional: bool = True):
+        self._positional = positional
+        return self
+
     def is_positional(self) -> bool:
+        if self._positional is not None:
+            return self._positional
         return self._not_null and self._initial is None
+
+    def is_not_null(self) -> bool:
+        return self._not_null
 
     def is_writable(self) -> bool:
         return self._writable

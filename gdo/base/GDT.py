@@ -86,6 +86,9 @@ class GDT:
     def get_val(self):
         return self.EMPTY_STRING
 
+    def is_not_null(self) -> bool:
+        return False
+
     def get_value(self):
         return None
 
