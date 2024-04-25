@@ -64,7 +64,7 @@ class Database:
 
     def query(self, query):
         if Application.config('db.debug') != '0':
-            Logger.debug("#" + str(Application.STORAGE.db_queries) + ": " + query)
+            Logger.debug("#" + str(Application.STORAGE.db_queries + 1) + ": " + query)
         try:
             Application.STORAGE.db_writes += 1
             Application.STORAGE.db_queries += 1

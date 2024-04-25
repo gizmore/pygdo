@@ -18,11 +18,12 @@ class SessionTestCase(unittest.TestCase):
         return self
 
     def test_cli_session(self):
+        from gdo.core.GDO_Session import GDO_Session
         user = CLI.get_current_user()
         method = Parser("echo hi", user).parse()
         result = method.execute().render_cli()
         self.assertIn('hi', result, 'echo does not work for session test.')
-        session = method._session.set('tea', 'hot')
+        session = GDO_Session.instance().set('tea', 'hot')
         sat = 'hot'
         got = session.get('tea')
         session.save()
@@ -31,7 +32,7 @@ class SessionTestCase(unittest.TestCase):
         method = Parser("echo hi", user).parse()
         result = method.execute().render_cli()
         self.assertIn('hi', result, 'echo does not work for session test2.')
-        got = method._session.get('tea')
+        got = GDO_Session.instance().get('tea')
         self.assertEqual(sat, got, 'session does not work across processes')
 
 

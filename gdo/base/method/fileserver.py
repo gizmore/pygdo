@@ -15,6 +15,9 @@ class fileserver(Method):
             GDT_Url('_url').not_null(),
         ]
 
+    def cli_trigger(self) -> str:
+        return ""
+
     def get_path(self):
         return self.param_val('_url')
 

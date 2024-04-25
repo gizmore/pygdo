@@ -5,6 +5,7 @@ import threading
 import time
 import toml
 
+from gdo.base.Events import Events
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Util import Arrays
@@ -12,6 +13,7 @@ from gdo.base.Util import Arrays
 
 class Application:
     LOADER: object
+    EVENTS: object
     STORAGE = threading.local()
     LANG_ISO = 'en'
     TIME = time.time()
@@ -23,6 +25,7 @@ class Application:
     @classmethod
     def tick(cls):
         cls.TIME = time.time()
+        cls.EVENTS.update_timers(cls.TIME)
 
     @classmethod
     def init(cls, path):
@@ -32,6 +35,7 @@ class Application:
         os.environ['TZ'] = 'UTC'
         time.tzset()
         cls.LOADER = ModuleLoader()
+        cls.EVENTS = Events()
         Application.init_common()
         config_path = 'protected/config_test.toml' if 'unittest' in sys.modules.keys() else 'protected/config.toml'
         config_path = os.path.join(cls.PATH, config_path)
@@ -92,7 +96,11 @@ class Application:
 
     @classmethod
     def storage(cls, key: str, default: any) -> str:
-        return cls.STORAGE.__getattribute__(key) if hasattr(cls.STORAGE, key) else default
+        if hasattr(cls.STORAGE, key):
+            return cls.STORAGE.__getattribute__(key)
+        elif default:
+            cls.STORAGE.__setattr__(key, default)
+        return default
 
     @classmethod
     def init_cli(cls):

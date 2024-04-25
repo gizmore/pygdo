@@ -1,8 +1,4 @@
-import argparse
 import importlib
-import json
-import re
-from urllib.parse import parse_qs
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOModuleException, GDOParamNameException
@@ -11,7 +7,6 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.base.Util import Strings, err, err_raw, dump
 from gdo.core.GDT_Repeat import GDT_Repeat
-from gdo.core.GDO_Session import GDO_Session
 
 
 class Parser:
@@ -116,17 +111,14 @@ class Parser:
 
 class WebParser(Parser):
     _url: str
-    _user: object
-    _request: object
-    _session: GDO_Session
 
-    def __init__(self, url):
+    def __init__(self, url, user):
         self._url = url
-        self._session = GDO_Session.start()
-        self._user = self._session.get_user()
-        Application.set_current_user(self._user)
+        # self._session = GDO_Session.start()
+        # self._user = self._session.get_user()
+        # Application.set_current_user(self._user)
         Application.mode(Mode.HTML)
-        super().__init__(self.build_line(self._url), self._session.get_user())
+        super().__init__(self.build_line(self._url), user)
         self._is_web = True
 
     def build_line(self, url: str) -> str:
@@ -168,4 +160,4 @@ class WebParser(Parser):
             return None
 
     def start_session(self, method: Method):
-        pass
+        pass  # Do nothing in web parser

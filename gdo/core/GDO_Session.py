@@ -19,6 +19,11 @@ class GDO_Session(GDO):
         self._data = {}
 
     @classmethod
+    def instance(cls):
+        sess = Application.storage('session', None)
+        return sess or Application.storage('session', cls.start())
+
+    @classmethod
     def start(cls):
         cookie = Application.get_cookie(cls.COOKIE_NAME)
         if cookie == cls.DEFAULT_COOKIE:
@@ -113,3 +118,7 @@ class GDO_Session(GDO):
         })
         cls.set_default_header()
         return instance
+
+    @classmethod
+    def init_cli(cls, user):
+        return Application.storage('session', cls.for_user(user))

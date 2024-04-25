@@ -4,6 +4,7 @@ from gdotest.test_cli import CLITestCase
 from gdotest.test_configure import ConfigureTestCase
 from gdotest.test_date import DateTestCase
 from gdotest.test_db import DBTestCase
+from gdotest.test_events import EventsTestCase
 from gdotest.test_forms import FormTestCase
 from gdotest.test_install import InstallTestCase
 from gdotest.test_mail import MailTestCase
@@ -25,6 +26,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(DateTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DBTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(FormTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(EventsTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(UITestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(UtilityTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(CLITestCase))

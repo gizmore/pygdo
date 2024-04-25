@@ -37,12 +37,12 @@ def application(environ, start_response):
             Application.init_web(environ)
             loader = ModuleLoader.instance()
             Application.fresh_page()
+        session = GDO_Session.instance()
         qs = parse_qs(environ['QUERY_STRING'])
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
             if not url:
                 url = 'core.welcome.html'
-        session = GDO_Session.start()
         if Files.is_file(Application.file_path(url)):
             gdt = fileserver().user(session.get_user()).inputs({'_url': Application.file_path(url)}).execute()
             headers = Application.get_headers()
@@ -51,7 +51,7 @@ def application(environ, start_response):
                 yield chunk
         else:
             Application.status(200)
-            parser = WebParser(url)
+            parser = WebParser(url, session.get_user())
             method = parser.parse()
             if not method:
                 method = not_found().user(session.get_user()).inputs({'_url': url})

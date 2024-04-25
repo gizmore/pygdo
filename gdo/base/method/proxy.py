@@ -5,6 +5,9 @@ from gdo.net.GDT_Url import GDT_Url
 
 class proxy(Method):
 
+    def cli_trigger(self) -> str:
+        return ""
+
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Url('_url').not_null(),
