@@ -111,7 +111,8 @@ class Time:
         """
         if time is None:
             time = Application.TIME
-        return datetime.utcfromtimestamp(time).replace(tzinfo=timezone.utc)
+
+        return datetime.fromtimestamp(time, tz=timezone.utc)
 
     @classmethod
     def get_date_sec(cls, time: float = None) -> str:

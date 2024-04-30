@@ -67,10 +67,16 @@ class GDT:
     def has_error(self) -> bool:
         return False
 
+    def render_error(self) -> str:
+        return ''
+
     def gdo_column_define(self) -> str:
         return self.EMPTY_STRING
 
-    def is_primary(self):
+    def is_primary(self) -> bool:
+        return False
+
+    def is_unique(self) -> bool:
         return False
 
     def gdo(self, gdo):

@@ -208,6 +208,7 @@ class Query:
         return f'LIMIT {self._limit, self._offset}'
 
     def exec(self, use_dict: bool = True):
+        Application.DB.get_link()
         if Application.config('db.debug') in ('1', '2'):
             self.debug()
         query = self.build_query()

@@ -1,8 +1,8 @@
 class WithEnv:
     _env_user: object
-    _session: object
     _env_server: object
     _env_channel: object
+    _env_session: object
 
     def env_user(self, user):
         self._env_user = user
@@ -21,5 +21,3 @@ class WithEnv:
         GDO_Session.init_cli(self._env_user)
         return self
 
-    def gdo_permission(self):
-        pass

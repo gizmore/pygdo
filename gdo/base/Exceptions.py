@@ -3,9 +3,15 @@ from gdo.base.Trans import t
 
 class GDOError(Exception):
 
-    def __init__(self, key, args=None):
+    def __init__(self, key: str, args: list[str] = None):
         from gdo.base.Trans import t
         super().__init__(t(key, args))
+
+
+class GDOParamError(GDOError):
+
+    def __init__(self, key: str, args: list[str] = None):
+        super().__init__(key, args)
 
 
 class GDOException(Exception):

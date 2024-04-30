@@ -15,7 +15,8 @@ class DateInstall:
         cls.install_timezone('USRT', 0)
         cls.install_timezone('FAMT', 0)
         for tz in pytz.all_timezones:
-            cls.install_timezone(tz)
+            if tz != 'UTC':
+                cls.install_timezone(tz)
         GDO_Timezone.table().bulk_insert_gdo(cls.BULK)
 
     @classmethod

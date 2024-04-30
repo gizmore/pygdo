@@ -58,7 +58,8 @@ class launch(Method):
             self.mainloop_step_server(server)
 
     def mainloop_step_server(self, server: GDO_Server):
-        if not server.is_connected():
+        conn = server.get_connector()
+        if not conn.is_connected():
             self.connect_server(server)
 
     def connect_server(self, server) -> bool:
@@ -71,3 +72,4 @@ class launch(Method):
                 return True
             else:
                 return False
+        return True

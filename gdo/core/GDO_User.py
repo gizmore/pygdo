@@ -48,8 +48,11 @@ class GDO_User(GDO):
             GDT_Deleted('user_deleted'),
         ]
 
-    def get_mail(self) -> str:
+    def get_mail(self, confirmed: bool = True) -> str:
         return self.get_setting_val('email')
+
+    def get_user_type(self) -> str:
+        return self.gdo_val('user_type')
 
     ############
     # Settings #

@@ -10,9 +10,14 @@ from gdo.core.GDT_Repeat import GDT_Repeat
 
 
 class Parser:
+    """
+    Parse a CLI line into PyGDO Method.
+    Syntax: echo 1 & sleep 5ms & echo 2 will execute in a single thread chaining
+    Syntax: echo 1 $(echo 2) will print 12
+    """
     _line: str
     _user: object
-    _is_web: bool
+    _is_web: bool  # Do not care yet
 
     def __init__(self, line: str, user):
         super().__init__()
@@ -26,6 +31,7 @@ class Parser:
         for line in lines:
             method = self.parse_line(line)
             methods.append(method)
+        # TODO: make method chain. methods have method._next_method to chain
         return methods[0] if len(methods) else None
 
     def split_commands(self, input_string):
@@ -63,10 +69,6 @@ class Parser:
             if isinstance(gdt, GDT_Repeat):
                 val += " " + " ".join(unknown_args)
             gdt.val(val.rstrip())
-        # except SystemExit as ex:
-        #     err('%s', [str(ex)])
-        # except Exception as ex:
-        #     err('%s', [str(ex)])
         return method
 
     def tokenize(self, line: str):

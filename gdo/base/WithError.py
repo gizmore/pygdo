@@ -11,7 +11,7 @@ class WithError:
     def error_raw(self, error_message: str):
         return self.error('%s', [error_message])
 
-    def render_error(self):
+    def render_error(self) -> str:
         return t(self._errkey, self._errargs)
 
     def error(self, key: str, args: list = None):

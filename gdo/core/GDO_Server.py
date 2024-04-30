@@ -26,7 +26,7 @@ class GDO_Server(GDO):
         from gdo.core.GDT_Creator import GDT_Creator
         return [
             GDT_AutoInc('serv_id'),
-            GDT_Name('serv_name'),
+            GDT_Name('serv_name').unique(),
             GDT_Url('serv_url'),
             GDT_Name('serv_username'),
             GDT_Secret('serv_password'),
@@ -37,9 +37,6 @@ class GDO_Server(GDO):
 
     def get_url(self) -> dict:
         return self.gdo_value('serv_url')
-
-    def get_host(self):
-        return self.get_url()['host']
 
     def get_connector(self):
         if not hasattr(self, '_connector'):
@@ -69,8 +66,3 @@ class GDO_Server(GDO):
             'user_server': self.get_id(),
         }).insert()
 
-    def is_connected(self):
-        return self.get_connector().is_connected()
-
-    def is_connecting(self):
-        return self.get_connector().is_connecting()

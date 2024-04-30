@@ -50,6 +50,10 @@ class CLITestCase(unittest.TestCase):
         result = cli_plug(None, "help add_server")
         self.assertNotIn('--connector', result, "Help has problems with notnull parameters.")
 
+    def test_07_nested_commands(self):
+        result = cli_plug(None, "echo $(echo 1) $(echo 2) $(echo 3) $(echo 5)")
+        self.assertIn("1235", result, "Command nesting does not work.")
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -16,7 +16,7 @@ class NetTestCase(unittest.TestCase):
         loader.init_cli()
 
     def test_01_urls_basic(self):
-        gdt = GDT_Url('url').initial('https://not_existing_domain_name_in_dns').exists()
+        gdt = GDT_Url('url').initial('https://not_existing_domain_name_in_dns').reachable()
         url = gdt.get_value()
         self.assertEqual(url['port'], 443, "Cannot parse https port for quite invalid url.")
         self.assertEqual(url['host'], 'not_existing_domain_name_in_dns', "Cannot parse https host for quite invalid url.")
@@ -24,11 +24,11 @@ class NetTestCase(unittest.TestCase):
         self.assertEqual(gdt._errkey, 'err_http_url_available', 'URL should be err_url_available.')
 
     def test_02_working_website_url(self):
-        gdt = GDT_Url('url').initial('https://www.wechall.net').exists()
+        gdt = GDT_Url('url').initial('https://www.wechall.net').reachable()
         self.assertIsNotNone(gdt.validated(), "Cannot validate existing IRC URL")
 
     def test_03_ircs_urls(self):
-        gdt = GDT_Url('url').initial('ircs://irc.wechall.net').all_schemes().exists()
+        gdt = GDT_Url('url').initial('ircs://irc.wechall.net').all_schemes().reachable()
         self.assertIsNotNone(gdt.validated(), "Cannot validate existing IRC URL")
         url = gdt.get_value()
         self.assertEqual(url['port'], 6697, "Cannot parse ircs url for IRC url.")

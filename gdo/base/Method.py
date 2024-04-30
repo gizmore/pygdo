@@ -1,21 +1,18 @@
 import argparse
-from gdo.base.Exceptions import GDOError
+from gdo.base.Exceptions import GDOError, GDOParamError
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t, thas
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, href, module_enabled, Arrays
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
 from gdo.base.WithInput import WithInput
 
 
-class WithPermissionCheck:
-    def has_permission(self, user) -> bool:
-        return True
-
 
 class Method(WithEnv, WithInput, WithError, GDT):
     _parameters: dict[str, GDT]
     _server: object
+    _next_method: object  # Method chaining
 
     def __init__(self):
         super().__init__()
@@ -44,8 +41,14 @@ class Method(WithEnv, WithInput, WithError, GDT):
     def gdo_parameters(self) -> [GDT]:
         return []
 
-    def gdo_permission(self) -> str:
+    def gdo_user_type(self) -> str | None:
+        """
+        Comma separated list of applicable user types
+        """
         return 'member'
+
+    def gdo_user_permission(self) -> str | None:
+        return None
 
     def gdo_execute(self):
         raise GDOError('err_stub')
@@ -98,12 +101,14 @@ class Method(WithEnv, WithInput, WithError, GDT):
             return self._parameters[name]
         return None
 
-    def param_val(self, key):
+    def param_val(self, key: str, throw: bool = True):
         for name, gdt in self.parameters().items():
             if key == name:
                 value = gdt.to_value(gdt.get_val())
                 if gdt.validate(value):
                     return gdt.get_val()
+                elif throw:
+                    raise GDOParamError('err_param', [name, gdt.render_error()])
         return None
 
     def param_value(self, key):
@@ -176,5 +181,3 @@ class Method(WithEnv, WithInput, WithError, GDT):
             else:
                 parser.add_argument(f'--{name}', default=gdt.get_initial())
         return parser
-
-

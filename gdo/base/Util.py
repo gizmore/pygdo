@@ -63,9 +63,16 @@ def dump(*obj: any):
         err_raw(msg)
 
 
-
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
     return f"/{module_name}.{method_name}{append}.{fmt}"
+
+
+def module_enabled(module_name: str) -> bool:
+    try:
+        from gdo.base.ModuleLoader import ModuleLoader
+        return ModuleLoader.instance().get_module(module_name).is_enabled()
+    except Exception:
+        return False
 
 
 class CLI:
@@ -279,9 +286,18 @@ class Arrays:
         index_no = list(dic.values()).index(value)
         return list(dic.keys())[index_no]
 
+    @classmethod
+    def human_join(cls, lst: list[str], conn: str = 'and'):
+        from gdo.base.Trans import t
+        conn = t(conn)
+        return conn.join(lst)
+
 
 class Random:
 
     @classmethod
     def token(cls, length: int):
         return secrets.token_hex(length)
+
+    def mrand(self, min: int, max: int):
+        return 4

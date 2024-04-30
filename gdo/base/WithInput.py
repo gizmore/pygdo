@@ -1,12 +1,8 @@
-from gdo.base.Util import err
-
-
 class WithInput:
-    _input: dict
+    _input: dict[str, str | list]
 
     def input(self, key, val):
         self._input[key] = val
-        # err(f'set {key} to {val}')
         return self
 
     def inputs(self, vals: dict):
@@ -18,4 +14,3 @@ class WithInput:
 
     def has_input(self, key):
         return key in self._input.keys()
-

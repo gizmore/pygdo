@@ -1,7 +1,6 @@
 import re
 import socket
 import ssl
-from urllib.parse import urlparse
 
 import httplib2
 
@@ -35,12 +34,12 @@ class GDT_Url(GDT_String):
         return cls.DEFAULT_PORTS[scheme]
 
     _url_schemes: [str]
-    _url_exists: bool
+    _url_reachable: bool
 
     def __init__(self, name):
         super().__init__(name)
         self._url_schemes = ['http', 'https']
-        self._url_exists = False
+        self._url_reachable = False
 
     def schemes(self, schemes: list[str]):
         self._url_schemes = schemes
@@ -50,8 +49,8 @@ class GDT_Url(GDT_String):
         self._url_schemes = []
         return self
 
-    def exists(self, exists: bool = True):
-        self._url_exists = exists
+    def reachable(self, exists: bool = True):
+        self._url_reachable = exists
         return self
 
     def to_value(self, val: str):

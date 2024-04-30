@@ -19,7 +19,9 @@ class FinishTestCase(unittest.TestCase):
         loader.init_cli()
 
     def test_01_no_translation_errors(self):
-        self.assertEqual(len(Trans.FAILURES), 0, 'There are Translation errors left.')
+        count = len(Trans.FAILURES)
+        missing = ', '.join(Trans.FAILURES.keys())
+        self.assertEqual(count, 0, f'There are Translation errors left: {missing}.')
 
 
 if __name__ == '__main__':

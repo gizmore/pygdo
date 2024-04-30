@@ -12,6 +12,8 @@ err_not_null = "This field may not be left empty."
 err_int_min = "may not be smaller than %s."
 err_int_max = "may not be larger than %s."
 err_stub = "This method is not implemented yet."
+err_type_member = "Only members are allowed to execute this method. Please, first %s and then come back."
+link_login_before_continue = "authenticate"
 
 ################
 ### Messages ###

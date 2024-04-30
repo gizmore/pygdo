@@ -70,8 +70,11 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     def initial_value(self, value: any):
         return self.initial(self.to_val(value))
 
-    def is_primary(self):
+    def is_primary(self) -> bool:
         return self._primary
+
+    def is_unique(self) -> bool:
+        return self._unique
 
     def primary(self, primary=True):
         self._primary = primary

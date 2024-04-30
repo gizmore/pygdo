@@ -83,14 +83,20 @@ class Database:
     def create_table(self, gdo):
         cols = []
         prim = []
+        uniq = []
         for gdt in gdo.columns():
             define = gdt.gdo_column_define()
             cols.append(define)
             if gdt.is_primary():
                 prim.append(gdt.get_name())
+            if gdt.is_unique():
+                uniq.append(gdt.get_name())
         if prim:
             primary = ",".join(prim)
             cols.append(f"PRIMARY KEY ({primary})")
+        if uniq:
+            unique = ",".join(uniq)
+            cols.append(f"CONSTRAINT {gdo.gdo_table_name()}_UNIQUE UNIQUE ({unique})")
         query = f"CREATE TABLE IF NOT EXISTS {gdo.gdo_table_name()} (" + ",\n".join(cols) + ")\n"
         self.query(query)
 
