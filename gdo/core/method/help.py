@@ -1,5 +1,3 @@
-from line_profiler_pycharm import profile
-
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
@@ -33,9 +31,11 @@ class help(Method):
         loader = ModuleLoader.instance()
         method = loader.get_method(trigger)
         mode = Application.get_mode()
-        return GDT_String('help').text('msg_help_for', [Render.bold(trigger, mode), method.gdo_render_usage(), method.gdo_render_descr()])
+        parser = method.get_arg_parser(False)
+        usage = parser.format_usage().rstrip()
+        usage = usage.replace('[-h] ', '')
+        return GDT_String('help').text('msg_help_for', [Render.bold(trigger, mode), method.gdo_render_descr(), usage])
 
-    @profile
     def show_all_commands(self):
         loader = ModuleLoader.instance()
         grouped = {}
@@ -43,7 +43,7 @@ class help(Method):
         user = GDO_User.current()
         for cmd, method in loader._methods.items():
             module_name = method.module().render_name()
-            trigger = method.user(user).cli_trigger()
+            trigger = method.env_user(user).cli_trigger()
             if module_name not in grouped:
                 grouped[module_name] = []
             if method.prepare():

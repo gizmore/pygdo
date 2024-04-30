@@ -44,7 +44,7 @@ def application(environ, start_response):
             if not url:
                 url = 'core.welcome.html'
         if Files.is_file(Application.file_path(url)):
-            gdt = fileserver().user(session.get_user()).inputs({'_url': Application.file_path(url)}).execute()
+            gdt = fileserver().env_user(session.get_user()).inputs({'_url': Application.file_path(url)}).execute()
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
             for chunk in gdt:
@@ -54,7 +54,7 @@ def application(environ, start_response):
             parser = WebParser(url, session.get_user())
             method = parser.parse()
             if not method:
-                method = not_found().user(session.get_user()).inputs({'_url': url})
+                method = not_found().env_user(session.get_user()).inputs({'_url': url})
 
             if environ['REQUEST_METHOD'] == 'POST':
                 content_length = int(environ.get('CONTENT_LENGTH', 0))

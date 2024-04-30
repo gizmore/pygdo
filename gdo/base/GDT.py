@@ -16,6 +16,8 @@ class GDT:
     GDT_MAX = 0
     GDT_COUNT = 0
 
+    __slots__ = ()
+
     @classmethod
     def escape(cls, val: str) -> str:
         if val is None:
@@ -104,6 +106,7 @@ class GDT:
         return True
 
     def validated(self):
+        self.reset_error()
         if self.validate(self.get_value()):
             return self
         return None
@@ -122,6 +125,9 @@ class GDT:
 
     def error(self, key: str, args: list[str] = None) -> bool:
         return False
+
+    def reset_error(self):
+        return self
 
     ##########
     # Render #

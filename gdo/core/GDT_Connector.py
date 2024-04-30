@@ -9,4 +9,9 @@ class GDT_Connector(GDT_Select):
 
     def gdo_choices(self) -> dict:
         return Connector.AVAILABLE
+
+    def to_value(self, val: str):
+        if val is None:
+            return None
+        return Connector.get_by_name(val)
     

@@ -4,7 +4,6 @@ from gdo.core.GDT_String import GDT_String
 
 
 class GDT_Float(GDT_String):
-
     _min: float
     _max: float
 

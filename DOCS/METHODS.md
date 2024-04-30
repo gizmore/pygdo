@@ -8,6 +8,5 @@ and decorate the form.
 
 ### List of methods
 
- - [core.echo](../gdo/core/method/echo.py) - Print the paramters back
- - [core.ping](../gdo/core/method/ping.py) - Get a pong response
+ - [core.echo](../gdo/core/method/echo.py) - Print the parameters back
  - [core.health](../gdo/core/method/health.py) - Print server statistics

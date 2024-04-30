@@ -1,5 +1,4 @@
 import argparse
-from line_profiler_pycharm import profile
 from gdo.base.Exceptions import GDOError
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t, thas
@@ -57,11 +56,11 @@ class Method(WithEnv, WithInput, WithError, GDT):
     def gdo_render_descr(self) -> str:
         return t(self._mome_tkey('md'))
 
-    def gdo_render_usage(self) -> str:
-        key = self._mome_tkey('mu')
-        if thas(key):
-            return t(key)
-        return "unknown usage"#self._generate_usage()
+    # def gdo_render_usage(self) -> str:
+    #     key = self._mome_tkey('mu')
+    #     if thas(key):
+    #         return t(key)
+    #     return "unknown usage"#self._generate_usage()
 
     def gdo_render_keywords(self) -> str:
         kw = self.site_keywords()
@@ -79,8 +78,8 @@ class Method(WithEnv, WithInput, WithError, GDT):
     def _mome_tkey(self, key: str) -> str:
         return f'{key}_{self.module().get_name()}_{self.get_name()}'
 
-    def _generate_usage(self) -> str:
-        return self.get_arg_parser().format_usage()
+    # def _generate_usage(self) -> str:
+    #     return self.get_arg_parser().format_usage()
 
     ##############
     # Parameters #
@@ -165,15 +164,17 @@ class Method(WithEnv, WithInput, WithError, GDT):
         return True
 
     def get_arg_parser(self, is_web: bool = True):
-        parser = argparse.ArgumentParser(description=self.gdo_render_descr(), usage=self.gdo_render_usage())
+        prog = self.get_name() if is_web else self.cli_trigger()
+        parser = argparse.ArgumentParser(prog=prog, description=self.gdo_render_descr())
         for gdt in self.parameters().values():
+            name = gdt.get_name()
             if gdt.is_positional() and not is_web:
                 if gdt.is_not_null():
-                    parser.add_argument(gdt.get_name())
+                    parser.add_argument(name)
                 else:
-                    parser.add_argument(gdt.get_name(), nargs='?')
+                    parser.add_argument(name, nargs='?')
             else:
-                parser.add_argument(f'--{gdt.get_name()}', default=gdt.get_initial())
+                parser.add_argument(f'--{name}', default=gdt.get_initial())
         return parser
 
 

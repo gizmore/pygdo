@@ -174,7 +174,7 @@ class App:
         print("All done!")
 
 
-def launch():
+def run_pygdo_admin():
     try:
         path = os.path.dirname(__file__) + "/"
         Application.init(path)
@@ -187,4 +187,4 @@ def launch():
 
 
 if __name__ == "__main__":
-    launch()
+    run_pygdo_admin()

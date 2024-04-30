@@ -4,7 +4,7 @@ from gdo.base.GDO import GDO
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.base.Result import IterType
+from gdo.base.Result import ResultType
 from gdo.base.Util import Arrays
 
 
@@ -129,14 +129,14 @@ class Installer:
                  f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{temptable}'"
                  )
         result = db.select(query)
-        rows = result.iter(IterType.ROW).fetch_all()
+        rows = result.iter(ResultType.ROW).fetch_all()
         old = map(lambda c: c[0], rows)
 
         # New column names
         query = ("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
                  f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{gdo.gdo_table_name()}'")
         result = db.select(query)
-        rows = result.iter(IterType.ROW).fetch_all()
+        rows = result.iter(ResultType.ROW).fetch_all()
         new = map(lambda c: c[0], rows)
         if old and new:
             return list(set(old).intersection(new))

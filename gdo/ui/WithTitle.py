@@ -4,7 +4,6 @@ from gdo.base.Util import Strings
 
 
 class WithTitle:
-
     _title_key: str
     _title_args: list
     _title_escaped: bool

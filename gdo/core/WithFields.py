@@ -4,6 +4,7 @@ from gdo.base.Util import Arrays
 class WithFields:
     _fields: list
 
+
     def add_field(self, *fields):
         if not hasattr(self, '_fields'):
             self._fields = []

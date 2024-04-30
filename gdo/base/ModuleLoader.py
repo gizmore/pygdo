@@ -8,7 +8,7 @@ from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException, GDODBException
 from gdo.base.GDO_ModuleVar import GDO_ModuleVar
 from gdo.base.Method import Method
-from gdo.base.Result import IterType
+from gdo.base.Result import ResultType
 from gdo.base.Trans import Trans
 
 
@@ -128,7 +128,7 @@ class ModuleLoader:
             module.gdo_init()
 
     def load_module_vars(self):
-        result = GDO_ModuleVar.table().select('module_name, mv_key, mv_val').join_object('mv_module').all().exec().iter(IterType.ROW)
+        result = GDO_ModuleVar.table().select('module_name, mv_key, mv_val').join_object('mv_module').all().exec().iter(ResultType.ROW)
         for config in result:
             module_name, key, val = config
             self.get_module(module_name).config_column(key).initial(val)

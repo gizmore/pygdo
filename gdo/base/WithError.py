@@ -19,3 +19,9 @@ class WithError:
         self._errargs = args
         return self
 
+    def reset_error(self):
+        delattr(self, '_errkey') if hasattr(self, '_errkey') else None
+        delattr(self, '_errargs') if hasattr(self, '_errargs') else None
+        return self
+
+

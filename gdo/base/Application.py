@@ -12,6 +12,7 @@ from gdo.base.Util import Arrays, dump
 
 
 class Application:
+    RUNNING = True
     LOADER: object
     EVENTS: 'Events'
     STORAGE = threading.local()

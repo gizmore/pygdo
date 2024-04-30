@@ -4,7 +4,6 @@ from gdo.core.GDT_Template import tpl
 
 
 class GDT_Select(GDT_ComboBox):
-    _choices: dict
 
     def __init__(self, name):
         super().__init__(name)

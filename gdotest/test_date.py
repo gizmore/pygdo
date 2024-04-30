@@ -57,6 +57,8 @@ class DateTestCase(unittest.TestCase):
         self.assertAlmostEqual(output, 5.120, 3, 'human_to_seconds() does not work.')
         reverse = Time.human_duration(output)
         self.assertEqual("5s 120ms", reverse, 'human_duration() does not work.')
+        output = Time.human_to_seconds('1ms')
+        self.assertAlmostEqual(output, 0.001, 3, 'human_to_seconds() does not work for 1ms.')
 
 
 if __name__ == '__main__':

@@ -1,1 +1,1 @@
-{"profiledFunctions": [{"file": "/home/gizmore/PycharmProjects/pygdo/gdo/core/method/help.py", "lineNo": 38, "functionName": "show_all_commands", "profiledLines": []}], "unit": 1e-09}
+{"profiledFunctions": [{"file": "/home/gizmore/PycharmProjects/pygdo/gdo/core/method/help.py", "lineNo": 41, "functionName": "show_all_commands", "profiledLines": []}], "unit": 1e-09}

@@ -1,0 +1,7 @@
+bcrypt
+httplib2
+mysql-connector
+packaging
+psutil
+pytz
+toml

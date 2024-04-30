@@ -9,9 +9,12 @@ from gdo.base.Util import Files
 from gdo.install.Installer import Installer
 from gdotest.test_cli import CLITestCase
 from gdotest.test_configure import ConfigureTestCase
+from gdotest.test_core import CoreTestCase
 from gdotest.test_date import DateTestCase
 from gdotest.test_db import DBTestCase
+from gdotest.test_dog import DogTestCase
 from gdotest.test_events import EventsTestCase
+from gdotest.test_finish import FinishTestCase
 from gdotest.test_forms import FormTestCase
 from gdotest.test_install import InstallTestCase
 from gdotest.test_mail import MailTestCase
@@ -30,6 +33,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(InstallTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(ConfigureTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(ModuleConfigTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(CoreTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DateTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DBTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(FormTestCase))
@@ -41,16 +45,26 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(SessionTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(WebTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(MailTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(DogTestCase))
+    return mysuite
+
+def finisher():
+    mysuite = unittest.TestSuite()
+    unittest.TestLoader.sortTestMethodsUsing = None
+    loader = unittest.TestLoader()
+    mysuite.addTests(loader.loadTestsFromTestCase(FinishTestCase))
     return mysuite
 
 
 def run_tests():
     Application.init(os.path.dirname(__file__) + '/')
 
+    # Core
     test_runner = unittest.TextTestRunner()
     test_runner.verbosity = 3
     test_runner.run(suite())
 
+    # Extensions
     loader = ModuleLoader.instance()
     modules = list(loader.load_modules_fs().values())
     Installer.install_modules(modules)
@@ -63,6 +77,11 @@ def run_tests():
             test_runner = unittest.TextTestRunner()
             test_runner.verbosity = 3
             test_runner.run(test_suite)
+
+    # Finish
+    test_runner = unittest.TextTestRunner()
+    test_runner.verbosity = 3
+    test_runner.run(finisher())
 
 
 if __name__ == '__main__':

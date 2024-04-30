@@ -3,6 +3,8 @@ from __future__ import annotations
 import traceback
 from typing import TYPE_CHECKING
 
+from gdo.base.Result import ResultType
+
 if TYPE_CHECKING:
     from _typeshed import Self
 
@@ -20,6 +22,11 @@ class GDO(WithBulk, GDT):
 
     _vals: dict
     _dirty: list
+
+    __slots__ = (
+        '_vals',
+        '_dirty',
+    )
 
     def __init__(self):
         super().__init__()
@@ -94,11 +101,11 @@ class GDO(WithBulk, GDT):
     def gdo_table_name(self) -> str:
         return self.get_name().lower()
 
-    def gdo_cached(self) -> bool:
-        """
-        Indicate if this table should build an object cache
-        """
-        return True
+    # def gdo_cached(self) -> bool:
+    #     """
+    #     Indicate if this table should build an object cache
+    #     """
+    #     return True
 
     @classmethod
     def get_name(cls):
@@ -190,19 +197,9 @@ class GDO(WithBulk, GDT):
 
     def dirty_vals(self) -> dict:
         return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns() if gdt.get_name() in self._dirty}
-        # vals = {}
-        # for gdt in self.columns():
-        #     name = gdt.get_name()
-        #     if name in self._dirty:
-        #         vals[name] = self.gdo_val(gdt.get_name())
-        # return vals
 
     def insert_vals(self):
         return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns()}
-        # vals = {}
-        # for gdt in self.columns():
-        #     vals[gdt.get_name()] = self.gdo_val(gdt.get_name())
-        # return vals
 
     def save(self):
         if not self.is_persisted():
@@ -241,3 +238,7 @@ class GDO(WithBulk, GDT):
             gdt.gdo_after_update(self)
         self.gdo_after_update(self)
         Cache.obj_for(self).set_vals(self._vals, False)  # After a blanked update this is required.
+
+    def all(self, where: str = '1', result_type: ResultType = ResultType.OBJECT):
+        return self.table().select().type(result_type).where(where).exec().fetch_all()
+

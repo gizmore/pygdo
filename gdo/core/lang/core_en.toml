@@ -81,7 +81,7 @@ perf_code = "%s GDTs / %s GDOs"
 mt_core_help = "Command Overview"
 md_core_help = "List all available commands for this PyGDO installation."
 msg_help_all_commands = "Commands: %s."
-msg_help_for = "%s: Usage: %s. %s"
+msg_help_for = "%s: %s %s"
 
 ##############
 ### Reload ###
@@ -90,3 +90,17 @@ mt_core_reload = "Reload"
 md_core_reload = "Reloads the application code, except the base module. Useful for long living gdo applications like chatbots or cli repl."
 err_reload_module = "Cannot reload module %s: %s"
 msg_modules_reloaded = "All modules have been reloaded."
+
+##############
+### Launch ###
+##############
+mt_core_launch = "Launch Chatbot Daemon"
+md_core_launch = "This method launches the dog chatbot."
+err_dog_already_running = "The bot is already running. You can force a new process with the --force parameter."
+
+##################
+### Add Server ###
+##################
+mt_core_add_server = "Add Server"
+md_core_add_server = "Add a new Server with a connector."
+msg_added_dog_server = "A new %s server has been added: %s ID#%s."

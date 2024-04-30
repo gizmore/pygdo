@@ -1,8 +1,63 @@
+from gdo.base.Application import Application
+
+
 class Connector:
-    AVAILABLE = {}
+    AVAILABLE = {}  # Static all
+    _server: object # single server
+    _connected: bool
+    _connecting: bool
+    _connect_failures: int
+    _next_connect_time: float
 
     @classmethod
     def register(cls, klass):
-        cls.AVAILABLE[klass.__name__] = klass
+        cls.AVAILABLE[klass.__name__.lower()] = klass
 
+    @classmethod
+    def get_by_name(cls, name: str):
+        return cls.AVAILABLE[name.lower()]()
+
+    ############
+    # Instance #
+    ############
+    def __init__(self):
+        super().__init__()
+        self._connected = False
+        self._connecting = False
+        self._connect_failures = 0
+
+    def gdo_connect(self) -> bool:
+        return True
+
+    def get_name(self):
+        return self.__class__.__name__
+
+    def is_connected(self) -> bool:
+        return self._connected
+
+    def is_connecting(self) -> bool:
+        return self._connecting
+
+    def should_connect_now(self) -> bool:
+        return Application.TIME >= self._next_connect_time
+
+    def connect(self) -> bool:
+        self._connecting = True
+        if self.gdo_connect():
+            self.connect_success()
+        return self._connected
+
+    def connect_failed(self):
+        self._connect_failures += 1
+        self._next_connect_time = Application.TIME + (self._connect_failures * 10)
+        self._connecting = False
+
+    def connect_success(self):
+        self._connected = True
+        self._connecting = False
+        self._connect_failures = 0
+
+    def server(self, server):
+        self._server = server
+        self._next_connect_time = Application.TIME
 

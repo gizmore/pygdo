@@ -3,8 +3,10 @@ from __future__ import annotations
 import getpass
 import json
 import os.path
+import re
 import secrets
 from collections import OrderedDict
+from html import unescape
 from typing import Sequence
 
 from gdo.base.Render import Mode
@@ -138,6 +140,17 @@ class Strings:
             case _:
                 return s
 
+    @classmethod
+    def html_to_text(cls, html: str):
+        html = re.sub(r'<a\s*href="([^"]+)">([^"]+)</a>', r'\1 (\2)', html)
+        html = cls.br2nl(html)
+        html = re.sub(r'<[^>]*>', '', html)
+        return unescape(html)
+
+    @classmethod
+    def br2nl(cls, s):
+        return re.sub(r'<\s*br\s*/?\s*>', '\n', s)
+
 
 class Files:
 
@@ -169,12 +182,28 @@ class Files:
         return f"{num:.1f}Yi{suffix}"
 
     @classmethod
-    def is_file(cls, path):
+    def is_file(cls, path: str) -> bool:
         return os.path.isfile(path)
+
+    @classmethod
+    def is_dir(cls, path: str) -> bool:
+        return os.path.isdir(path)
 
     @classmethod
     def create_dir(cls, path: str) -> bool:
         os.makedirs(path, exist_ok=True)
+        return True
+
+    @classmethod
+    def remove(cls, path: str) -> bool:
+        os.remove(path)
+        return True
+
+    @classmethod
+    def touch(cls, path: str) -> bool:
+        from gdo.base.Application import Application
+        time = Application.TIME
+        os.utime(path, (time, time))
         return True
 
 

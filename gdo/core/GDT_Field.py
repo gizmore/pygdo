@@ -88,7 +88,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     def is_positional(self) -> bool:
         if self._positional is not None:
             return self._positional
-        return self._not_null and self._initial is None
+        return self._not_null and not self._initial
 
     def is_not_null(self) -> bool:
         return self._not_null

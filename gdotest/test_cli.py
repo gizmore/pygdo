@@ -47,7 +47,8 @@ class CLITestCase(unittest.TestCase):
     def test_06_help_single_command(self):
         result = cli_plug(None, "help version")
         self.assertIn("version", result, "Help does not contain Core commands.")
-
+        result = cli_plug(None, "help add_server")
+        self.assertNotIn('--connector', result, "Help has problems with notnull parameters.")
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 /.idea/
 /.venv/
 __pycache__/
+*|prof
 /files/
 /files_test/
 /protected/

@@ -1,6 +1,8 @@
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.core.Connector import Connector
+from gdo.core.GDO_Channel import GDO_Channel
+from gdo.core.GDO_File import GDO_File
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_Session import GDO_Session
@@ -11,6 +13,7 @@ from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.InstallUser import InstallUser
 from gdo.core.connector.Bash import Bash
+from gdo.core.connector.Web import Web
 
 
 class module_core(GDO_Module):
@@ -21,6 +24,7 @@ class module_core(GDO_Module):
 
     def gdo_init(self):
         Connector.register(Bash)
+        Connector.register(Web)
 
     def gdo_dependencies(self) -> list:
         return [
@@ -54,11 +58,13 @@ class module_core(GDO_Module):
     def gdo_classes(self):
         return [
             GDO_Server,
+            GDO_Channel,
             GDO_User,
             GDO_Permission,
             GDO_UserPermission,
             GDO_Session,
             GDO_UserSetting,
+            GDO_File,
         ]
 
     def gdo_install(self):

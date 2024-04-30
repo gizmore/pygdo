@@ -1,6 +1,7 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Query import Query
+from gdo.core.Connector import Connector
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_AutoInc import GDT_AutoInc
@@ -12,13 +13,14 @@ from gdo.net.GDT_Url import GDT_Url
 
 
 class GDO_Server(GDO):
+    _connector: Connector
 
     def __init__(self):
         super().__init__()
 
     @classmethod
     def get_by_connector(cls, name: str):
-        return cls.table().select().where(f"serv_connector={GDT.quote(name)}").first().exec().fetch_object()
+        return cls.table().get_by_vals({"serv_connector": name})
 
     def gdo_columns(self) -> list[GDT]:
         from gdo.core.GDT_Creator import GDT_Creator
@@ -32,6 +34,18 @@ class GDO_Server(GDO):
             GDT_Created('serv_created'),
             GDT_Creator('serv_creator'),
         ]
+
+    def get_url(self) -> dict:
+        return self.gdo_value('serv_url')
+
+    def get_host(self):
+        return self.get_url()['host']
+
+    def get_connector(self):
+        if not hasattr(self, '_connector'):
+            self._connector = self.gdo_value('serv_connector')
+            self._connector.server(self)
+        return self._connector
 
     def get_or_create_user(self, username: str, displayname: str = None):
         user = self.get_user_by_name(username)
@@ -54,3 +68,9 @@ class GDO_Server(GDO):
             'user_displayname': username or displayname,
             'user_server': self.get_id(),
         }).insert()
+
+    def is_connected(self):
+        return self.get_connector().is_connected()
+
+    def is_connecting(self):
+        return self.get_connector().is_connecting()

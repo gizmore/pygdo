@@ -7,7 +7,7 @@ from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 
 
-class IterType(Enum):
+class ResultType(Enum):
     ROW = 1
     ASSOC = 2
     OBJECT = 3
@@ -16,7 +16,7 @@ class IterType(Enum):
 class Result:
     _result: MySQLCursorDict
     _table: object
-    _iter = IterType.OBJECT
+    _iter = ResultType.OBJECT
 
     def __init__(self, result, gdo=None):
         self._result = result
@@ -30,7 +30,7 @@ class Result:
                 pass
             delattr(self, '_result')
 
-    def iter(self, iter_type: IterType):
+    def iter(self, iter_type: ResultType):
         self._iter = iter_type
         return self
 
@@ -38,9 +38,9 @@ class Result:
         return self
 
     def __next__(self):
-        if self._iter == IterType.ROW:
+        if self._iter == ResultType.ROW:
             data = self.fetch_row()
-        elif self._iter == IterType.ASSOC:
+        elif self._iter == ResultType.ASSOC:
             data = self.fetch_assoc()
         else:
             data = self.fetch_object()

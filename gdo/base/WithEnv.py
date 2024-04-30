@@ -1,11 +1,19 @@
-
-
 class WithEnv:
     _env_user: object
     _session: object
+    _env_server: object
+    _env_channel: object
 
-    def user(self, user):
+    def env_user(self, user):
         self._env_user = user
+        return self
+
+    def env_server(self, server):
+        self._env_server = server
+        return self
+
+    def env_channel(self, channel):
+        self._env_channel = channel
         return self
 
     def cli_session(self):

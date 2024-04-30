@@ -29,6 +29,7 @@ class Query:
     _columns: str
     _vals: dict[str, str]
     _where: str
+    _order: str
     _offset: int
     _limit: int
     _join: str
@@ -61,8 +62,8 @@ class Query:
     def is_type(self, _type):
         return self._type == _type
 
-    def type(self, type: Type):
-        self._type = type
+    def type(self, type_: Type):
+        self._type = type_
         return self
 
     def raw(self, query: str):
@@ -111,6 +112,17 @@ class Query:
             self._where += f" {op} {where}"
         else:
             self._where = where
+        return self
+
+    def order(self, order: str):
+        if hasattr(self, '_order'):
+            self._order += f" {order}"
+        else:
+            self._order = order
+        return self
+
+    def no_order(self):
+        delattr(self, '_order')
         return self
 
     def first(self):
@@ -180,8 +192,13 @@ class Query:
             return f"UPDATE {self._table} SET {set_string} WHERE {self._where}"
         if self.is_select():
             return (
-                f"SELECT {self._columns} FROM {self._table} {self._join} WHERE {self._where} {self.buildLimit()}"
+                f"SELECT {self._columns} FROM {self._table} {self._join} WHERE {self._where}{self._build_order()} {self.buildLimit()}"
             )
+
+    def _build_order(self):
+        if hasattr(self, '_order'):
+            return f" ORDER BY {self._order}"
+        return ''
 
     def buildLimit(self):
         if not hasattr(self, '_limit'):

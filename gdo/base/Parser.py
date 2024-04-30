@@ -53,7 +53,7 @@ class Parser:
         method = self.get_method(tokens[0])
         if not method:
             raise GDOModuleException(tokens[0])
-        method.user(self._user)
+        method.env_user(self._user)
         self.start_session(method)
         parser = method.get_arg_parser(self._is_web)
         # try:

@@ -25,6 +25,7 @@ class GDT_String(WithLabel, GDT_Field):
 
     _input_type: str
 
+
     def __init__(self, name):
         super(GDT_String, self).__init__(name)
         self._encoding = Encoding.UTF8

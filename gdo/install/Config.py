@@ -27,6 +27,7 @@ class Config:
             cls.data_str('core.sitename', 'GDO'),
             cls.data_str('core.web_root', '/'),
             cls.data_str('core.domain', 'localhost'),
+            cls.data_int('core.force_tls', '0'),
             cls.data_int('core.json_debug', 0),
             cls.data_int('core.event_debug', 0),
             cls.data_int('core.gdt_debug', 0),

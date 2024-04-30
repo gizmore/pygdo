@@ -26,6 +26,7 @@ def sitename() -> str:
 
 
 class Trans:
+    FAILURES = {}
     BASES = []
     CACHE = {
         'en': {},
@@ -69,8 +70,10 @@ class Trans:
                 return fmt % tuple(args)
             return fmt
         except KeyError:
+            cls.FAILURES[key] = 1
             return f"__{key}: {json.dumps(args)}"
         except TypeError:
+            cls.FAILURES[key] = 2
             return f"____{key}: {json.dumps(args)}"
 
     @classmethod

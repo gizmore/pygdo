@@ -9,6 +9,7 @@ from gdo.base.Parser import Parser
 from gdo.base.Render import Mode
 from gdo.core.connector.Web import Web
 from gdo.install.Installer import Installer
+from gdo.ui.GDT_Page import GDT_Page
 from index import application
 
 
@@ -95,4 +96,10 @@ def cli_plug(user, command) -> str:
     if user is None:
         user = Web.get_server().get_or_create_user('gizmore')
     Application.mode(Mode.CLI)
-    return Parser(command, user).parse().execute().render_cli()
+    result = Parser(command, user).parse().execute()
+    out = GDT_Page.instance()._top_bar.render_cli() + result.render_cli()
+    return out
+
+
+def get_gizmore():
+    return Web.get_server().get_or_create_user('gizmore')
