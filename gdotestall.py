@@ -48,6 +48,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(DogTestCase))
     return mysuite
 
+
 def finisher():
     mysuite = unittest.TestSuite()
     unittest.TestLoader.sortTestMethodsUsing = None

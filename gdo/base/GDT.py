@@ -40,8 +40,8 @@ class GDT:
         GDT.GDT_COUNT += 1
         GDT.GDT_MAX = max(GDT.GDT_COUNT, GDT.GDT_MAX)
 
-    def __del__(self):
-        GDT.GDT_COUNT -= 1
+    # def __del__(self):
+    #     GDT.GDT_COUNT -= 1
 
     def gdo_before_create(self, gdo):
         pass

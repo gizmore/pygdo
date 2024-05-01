@@ -1,5 +1,3 @@
-import importlib
-
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOModuleException, GDOParamNameException
 from gdo.base.Method import Method
@@ -12,8 +10,8 @@ from gdo.core.GDT_Repeat import GDT_Repeat
 class Parser:
     """
     Parse a CLI line into PyGDO Method.
-    Syntax: echo 1 & sleep 5ms & echo 2 will execute in a single thread chaining
-    Syntax: echo 1 $(echo 2) will print 12
+    Syntax: echo 1 $(echo $(sum 2 3) will print 15
+    TODO: Method nesting!
     """
     _line: str
     _user: object
@@ -62,13 +60,16 @@ class Parser:
         method.env_user(self._user)
         self.start_session(method)
         parser = method.get_arg_parser(self._is_web)
-        # try:
         args, unknown_args = parser.parse_known_args(tokens[1:])
         for gdt in method.parameters().values():
             val = args.__dict__[gdt.get_name()] or ''
-            if isinstance(gdt, GDT_Repeat):
-                val += " " + " ".join(unknown_args)
-            gdt.val(val.rstrip())
+            val = val.rstrip()
+            if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
+                vals = [val]
+                vals.extend(unknown_args)
+                gdt.val(vals)
+            else:
+                gdt.val(val)
         return method
 
     def tokenize(self, line: str):

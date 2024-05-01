@@ -22,9 +22,9 @@ class CLITestCase(unittest.TestCase):
 
     def test_01_echo(self):
         result = CLI.parse("echo \"Hello world\"").execute().render_cli()
-        self.assertIn('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
+        self.assertEqual('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
         result = CLI.parse("echo Hello world").execute().render_cli()
-        self.assertIn('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
+        self.assertEqual('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
 
     def test_02_version(self):
         result = CLI.parse("version").execute().render_cli()
@@ -50,9 +50,13 @@ class CLITestCase(unittest.TestCase):
         result = cli_plug(None, "help add_server")
         self.assertNotIn('--connector', result, "Help has problems with notnull parameters.")
 
-    def test_07_nested_commands(self):
-        result = cli_plug(None, "echo $(echo 1) $(echo 2) $(echo 3) $(echo 5)")
-        self.assertIn("1235", result, "Command nesting does not work.")
+    def test_07_sum(self):
+        result = cli_plug(None, "sum 1 2 3 4")
+        self.assertEqual("10", result, "Sum does not work with repeat params.")
+
+    def test_08_nested_commands(self):
+        result = cli_plug(None, "echo $(echo 1) $(echo 4 $(echo 2)) $(echo 3)")
+        self.assertIn("1423", result, "Command nesting does not work.")
 
 
 if __name__ == '__main__':

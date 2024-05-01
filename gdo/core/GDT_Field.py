@@ -1,6 +1,6 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, dump
 from gdo.base.WithError import WithError
 from gdo.ui.WithIcon import WithIcon
 from gdo.ui.WithTooltip import WithTooltip
@@ -39,7 +39,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     def get_val(self):
         if not self._val:
             return None
-        return str(self._val)
+        return self._val
 
     def get_value(self):
         if not self._converted:
@@ -130,7 +130,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         self._errargs = errargs
         return False
 
-    def validate(self, value):
+    def validate(self, value: any) -> bool:
         if value is None:
             if self._not_null:
                 return self.error('err_not_null')
@@ -147,6 +147,8 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     # Render #
     ##########
     def render_val(self):
+        if isinstance(self._val, list):
+            dump(self)
         return Strings.html(self._val)
 
     def render_html(self) -> str:

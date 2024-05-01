@@ -1,4 +1,5 @@
 from gdo.base.GDT import GDT
+from gdo.base.WithInput import WithInput
 from gdo.base.WithName import WithName
 from gdo.ui.WithText import WithText
 

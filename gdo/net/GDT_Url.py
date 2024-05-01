@@ -33,8 +33,10 @@ class GDT_Url(GDT_String):
     def default_port(cls, scheme: str) -> int:
         return cls.DEFAULT_PORTS[scheme]
 
-    _url_schemes: [str]
+    _url_schemes: list[str]
     _url_reachable: bool
+    _url_external: bool
+    _url_internal: bool
 
     def __init__(self, name):
         super().__init__(name)

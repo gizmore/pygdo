@@ -4,7 +4,7 @@ from gdo.ui.GDT_Button import GDT_Button
 
 class GDT_Submit(GDT_Button):
 
-    def __init__(self, name='submit'):
+    def __init__(self, name: str = 'submit'):
         super().__init__()
         self.name(name)
         self.text('submit')

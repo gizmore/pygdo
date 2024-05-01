@@ -13,6 +13,7 @@ class Method(WithEnv, WithInput, WithError, GDT):
     _parameters: dict[str, GDT]
     _server: object
     _next_method: object  # Method chaining
+    _result: str
 
     def __init__(self):
         super().__init__()
@@ -33,6 +34,9 @@ class Method(WithEnv, WithInput, WithError, GDT):
 
     def fqn(self):
         return self.__module__ + '.' + self.__class__.__qualname__
+
+    def is_processed(self) -> bool:
+        return hasattr(self, '_result')
 
     ############
     # Abstract #
@@ -111,12 +115,14 @@ class Method(WithEnv, WithInput, WithError, GDT):
                     raise GDOParamError('err_param', [name, gdt.render_error()])
         return None
 
-    def param_value(self, key):
+    def param_value(self, key: str, throw: bool = True):
         for name, gdt in self.parameters().items():
             if key == name:
                 value = gdt.to_value(gdt.get_val())
                 if gdt.validate(value):
                     return value
+                elif throw:
+                    raise GDOParamError('err_param', [name, gdt.render_error()])
         return None
 
     def init_params(self, params: dict):

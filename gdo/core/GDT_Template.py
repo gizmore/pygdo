@@ -129,7 +129,6 @@ class GDT_Template(GDT):
     _t_file: str
     _t_vals: str
 
-
     def __init__(self):
         super().__init__()
 

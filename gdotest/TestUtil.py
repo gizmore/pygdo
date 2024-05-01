@@ -94,7 +94,7 @@ def web_plug(url):
 
 def cli_plug(user, command) -> str:
     if user is None:
-        user = Web.get_server().get_or_create_user('gizmore')
+        user = get_gizmore()
     Application.mode(Mode.CLI)
     result = Parser(command, user).parse().execute()
     out = GDT_Page.instance()._top_bar.render_cli() + result.render_cli()

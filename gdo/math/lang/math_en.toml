@@ -1,0 +1,8 @@
+module_math = "Math"
+
+#######
+# Sum #
+#######
+mt_math_sum = "Sum"
+md_math_sum = "Sum a list of numbers."
+
