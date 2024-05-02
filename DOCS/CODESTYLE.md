@@ -1,6 +1,15 @@
 # PyGDOv8 Coding guidelines
 
-PyGDO coding styles and guidelines
+PyGDO coding styles and guidelines.
+
+## Type hinting
+
+I do not annotate anything, especially return values.
+Return -> Self is always omitted, because somehow it does not work in PyCharm nicely :(
+
+PyGDO has a lot of circular references in the core and base modules,
+in extension modules it got better.
+
 
 ## Class inheritance
 

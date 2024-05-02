@@ -75,7 +75,7 @@ perf_version = "Version: %s"
 perf_cpu = "CPU %s%%"
 perf_mem = "Memory: %s"
 perf_db = "DB (%sR/%sW/#%s)"
-perf_code = "%s GDTs / %s GDOs"
+perf_code = "%s tot(%s max) GDTs / %s tot(%s max) GDOs"
 
 ############
 ### Help ###

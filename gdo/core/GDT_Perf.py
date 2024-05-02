@@ -28,7 +28,7 @@ class GDT_Perf(GDT_Panel):
             GDT_Divider(),
             GDT_String('db').text('perf_db', [Application.STORAGE.db_reads, Application.STORAGE.db_writes, Application.STORAGE.db_queries]),
             GDT_Divider(),
-            GDT_String('code').text('perf_code', [GDT.GDT_MAX, GDO.GDO_MAX]),
+            GDT_String('code').text('perf_code', [GDT.GDT_COUNT, GDT.GDT_MAX, GDO.GDO_COUNT, GDO.GDO_MAX]),
             GDT_Divider(),
             GDT_Duration('time').initial_value(Application.request_time()),
         )

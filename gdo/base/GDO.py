@@ -16,9 +16,10 @@ from gdo.base.WithBulk import WithBulk
 
 
 class GDO(WithBulk, GDT):
-    GDO_COUNT = 0
-    GDO_MAX = 0
     ID_SEPARATOR = ':'
+    GDO_COUNT = 0
+    GDO_ALIVE = 0
+    GDO_MAX = 0
 
     _vals: dict
     _dirty: list
@@ -31,7 +32,8 @@ class GDO(WithBulk, GDT):
     def __init__(self):
         super().__init__()
         GDO.GDO_COUNT += 1
-        GDO.GDO_MAX = max(GDO.GDO_MAX, GDO.GDO_COUNT)
+        GDO.GDO_ALIVE += 1
+        GDO.GDO_MAX = max(GDO.GDO_MAX, GDO.GDO_ALIVE)
         from gdo.base.Application import Application
         if Application.config('core.gdo_debug') == '2':
             from gdo.base.Logger import Logger
@@ -41,7 +43,7 @@ class GDO(WithBulk, GDT):
         self._last_id = None
 
     def __del__(self):
-        GDO.GDO_COUNT -= 1
+        GDO.GDO_ALIVE -= 1
 
     @classmethod
     def table(cls) -> Self:

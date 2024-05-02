@@ -42,6 +42,7 @@ class Application:
         Application.init_common()
         config_path = 'protected/config_test.toml' if 'unittest' in sys.modules.keys() else 'protected/config.toml'
         config_path = os.path.join(cls.PATH, config_path)
+        cls.get_page().init()
         if os.path.isfile(config_path):
             with open(config_path, 'r') as f:
                 cls.CONFIG = toml.load(f)
@@ -50,7 +51,6 @@ class Application:
         else:
             from gdo.install.Config import Config
             cls.CONFIG = Config.defaults()
-        cls.get_page().init()
 
     @classmethod
     def reset(cls):
@@ -119,6 +119,7 @@ class Application:
         cls.STORAGE.headers = {}
         cls.init_cookies(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
+        cls.PROTOCOL = environ['REQUEST_SCHEME']
         cls.mode(Mode.HTML)
 
     @classmethod

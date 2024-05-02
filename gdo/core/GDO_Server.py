@@ -17,6 +17,11 @@ class GDO_Server(GDO):
     _connector: Connector
     _channels: list
 
+    __slots__ = (
+        '_connector',
+        '_channels',
+    )
+
     def __init__(self):
         super().__init__()
         _channels = []

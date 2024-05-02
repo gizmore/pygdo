@@ -3,6 +3,8 @@ from urllib.parse import parse_qs, unquote
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException, GDOParamNameException
+from gdo.base.GDO import GDO
+from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import WebParser
@@ -25,6 +27,8 @@ def application(environ, start_response):
     url = 'core.welcome.html'
     try:
         global FRESH
+        GDT.GDT_ALIVE = 0
+        GDO.GDO_ALIVE = 0
         if FRESH:
             FRESH = False
             Application.init(os.path.dirname(__file__))
@@ -39,8 +43,6 @@ def application(environ, start_response):
             Application.fresh_page()
 
         #dump(environ)
-
-        Application.PROTOCOL = environ['REQUEST_SCHEME']
 
         session = GDO_Session.instance(True)
         qs = parse_qs(environ['QUERY_STRING'])
@@ -104,7 +106,7 @@ def application(environ, start_response):
         yield error_page(ex, start_response, client_error().exception(ex), '409 User Error', False)
     except Exception as ex:
         try:
-            yield error_page(ex, start_response, server_error())
+            yield error_page(ex, start_response, server_error(), "500 Fatal Error")
         except Exception as ex:
             msg = str(ex)
             response_headers = [

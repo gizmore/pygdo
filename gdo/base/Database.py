@@ -6,6 +6,7 @@ from gdo.base.Application import Application
 from gdo.base.Exceptions import GDODBException
 from gdo.base.Logger import Logger
 from gdo.base.Result import Result
+from gdo.base.Util import dump
 
 
 class NopeConverter(MySQLConverter):
