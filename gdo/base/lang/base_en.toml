@@ -12,6 +12,9 @@ thousands_sep = ','
 # Method permissions #
 ######################
 err_type = "This method is restricted to %s."
+err_stub = "This method is not implemented yet."
+err_type_member = "Only members are allowed to execute this method. Please %s first, and then come back here."
+link_login_before_continue = "authenticate"
 
 ################
 # Server Error #
@@ -22,5 +25,5 @@ md_base_server_error = "The server made a booboo... probably broken code or a co
 ##############
 # Fileserver #
 ##############
-mt_base_fileserver = "File Download"
-md_base_fileserver = "Download a file from this website."
+mt_base_file_server = "File Download"
+md_base_file_server = "Download a file from this website."

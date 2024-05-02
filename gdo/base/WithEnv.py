@@ -1,4 +1,5 @@
 from gdo.base.Render import Mode
+from gdo.base.Util import dump
 
 
 class WithEnv:
@@ -35,7 +36,3 @@ class WithEnv:
     def env_session(self, session):
         self._env_session = session
         return self
-
-    def cli_session(self):
-        from gdo.core.GDO_Session import GDO_Session
-        return self.env_session(GDO_Session.init_cli(self._env_user))

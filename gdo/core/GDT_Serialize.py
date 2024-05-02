@@ -23,12 +23,16 @@ class GDT_Serialize(GDT_Text):
         self._mode = mode
         return self
 
-    def to_val(self, value) -> bytes | str:
+    def to_val(self, value) -> bytes | str | None:
+        if not value:
+            return None
         if self._mode == Mode.JSON:
             return json.dumps(value)
         return pickle.dumps(value)
 
     def to_value(self, val: bytes | str):
+        if val is None:
+            return None
         if self._mode == Mode.JSON:
             return json.loads(val)
         return pickle.loads(val)

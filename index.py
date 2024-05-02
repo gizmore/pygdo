@@ -11,9 +11,10 @@ from gdo.base.Parser import WebParser
 from gdo.base.Render import Mode
 from gdo.base.Util import (Strings, Files, dump, bytelen)
 from gdo.base.method.client_error import client_error
-from gdo.base.method.fileserver import fileserver
+from gdo.base.method.file_server import file_server
 from gdo.base.method.server_error import server_error
 from gdo.core.GDO_Session import GDO_Session
+from gdo.core.GDT_NotImplemented import GDT_NotImplemented
 from gdo.core.method.not_found import not_found
 from gdo.ui.GDT_Error import GDT_Error
 
@@ -27,6 +28,8 @@ def application(environ, start_response):
     url = 'core.welcome.html'
     try:
         global FRESH
+        GDT.GDT_COUNT = 0
+        GDO.GDO_COUNT = 0
         GDT.GDT_ALIVE = 0
         GDO.GDO_ALIVE = 0
         if FRESH:
@@ -42,9 +45,8 @@ def application(environ, start_response):
             loader = ModuleLoader.instance()
             Application.fresh_page()
 
-        #dump(environ)
+        # dump(environ)
 
-        session = GDO_Session.instance(True)
         qs = parse_qs(environ['QUERY_STRING'])
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
@@ -52,7 +54,8 @@ def application(environ, start_response):
             if not url:
                 url = 'core.welcome.html'
         if Files.is_file(Application.file_path(url)):
-            method = fileserver().env_user(session.get_user()).input('_url', Application.file_path(url))
+            session = GDO_Session.start(False)
+            method = file_server().input('_url', Application.file_path(url))
             gdt = method.execute()
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
@@ -60,7 +63,9 @@ def application(environ, start_response):
                 yield chunk
             return None
         else:
-            Application.status(200)
+            session = GDO_Session.start(True)
+            Application.set_current_user(session.get_user())
+            Application.status("200 OK")
             user = session.get_user()
             server = user.get_server()
             channel = None
@@ -98,9 +103,7 @@ def application(environ, start_response):
             headers.extend([('Content-Length', str(bytelen(response)))])
             start_response(Application.get_status(), headers)
             yield response.encode('utf-8')
-    except GDOModuleException as ex:
-        yield error_page(ex, start_response, not_found().input('_url', url), '404 Not Found', False)
-    except GDOMethodException as ex:
+    except (GDOModuleException, GDOMethodException) as ex:
         yield error_page(ex, start_response, not_found().input('_url', url), '404 Not Found', False)
     except GDOParamNameException as ex:
         yield error_page(ex, start_response, client_error().exception(ex), '409 User Error', False)
@@ -113,7 +116,7 @@ def application(environ, start_response):
                 ('Content-Type', 'text/html; Charset=UTF-8'),
                 ('Content-Length', str(bytelen(msg)))
             ]
-            status = '500 PyGDO Fatal Error'
+            status = '500 PyGDO Totally Fatal Error'
             start_response(status, response_headers)
             yield msg.encode('UTF-8')
 

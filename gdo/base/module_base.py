@@ -1,8 +1,10 @@
 from packaging.version import Version
 
+from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDO_ModuleVar import GDO_ModuleVar
 from gdo.base.GDT import GDT
+from gdo.base.Util import Files
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_User import GDT_User
 from gdo.date.GDT_DateTime import GDT_DateTime
@@ -20,7 +22,25 @@ class module_base(GDO_Module):
             GDO_ModuleVar,
         ]
 
+    def gdo_install(self):
+        Files.create_dir(Application.file_path('assets'))
+        Files.create_dir(Application.file_path('files'))
+        Files.create_dir(Application.file_path('files_test'))
+
+    ##########
+    # Config #
+    ##########
+
     def gdo_module_config(self) -> list[GDT]:
         return [
             GDT_Bool('500_mails').initial('1'),
+            GDT_Bool('serve_dotfiles').initial('0'),
+            GDT_Bool('serve_gdo_assets').initial('0')
         ]
+
+    def cfg_serve_dot_files(self) -> bool:
+        return self.get_config_value('serve_dotfiles')
+
+    def cfg_serve_gdo_assets(self) -> bool:
+        return self.get_config_value('serve_dotfiles')
+

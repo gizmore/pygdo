@@ -2,6 +2,7 @@ from gdo.base.Util import module_enabled, href, Arrays
 
 
 class WithPermissionCheck:
+
     def has_permission(self, user) -> bool:
         types = self.gdo_user_type().split(',')
         type = user.get_user_type()

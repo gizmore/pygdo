@@ -6,6 +6,7 @@ from gdo.core.GDT_Server import GDT_Server
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_UserType import GDT_UserType
 from gdo.date.Time import Time
+from gdo.net.GDT_IP import GDT_IP
 
 
 class GDO_User(GDO):
@@ -75,8 +76,15 @@ class GDO_User(GDO):
     ###############
     # Permissions #
     ###############
-    def authenticate(self, bind_ip: bool = False):
+    def authenticate(self, session: object, bind_ip: bool = False):
         self._authenticated = True
+        Application.set_current_user(self)
+        self.save_setting('last_login_ip', GDT_IP.current())
+        self.save_setting('last_login_datetime', Time.get_date())
+        session.set_val('sess_user', self.get_id())
+        if bind_ip:
+            session.set_val('sess_ip', GDT_IP.current())
+        session.save()
         return self
 
     def logout(self):

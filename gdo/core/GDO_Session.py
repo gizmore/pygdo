@@ -19,27 +19,25 @@ class GDO_Session(GDO):
         self._data = {}
 
     @classmethod
-    def instance(cls, refresh: bool = False):
-        if refresh and Application.storage('session', None):
-            del Application.STORAGE.session
-        sess = Application.storage('session', None)
-        return sess or Application.storage('session', cls.start())
-
-    @classmethod
-    def start(cls):
+    def start(cls, create_session: bool):
+        """
+        Start a HTTP session.
+        :param create_session: If False, do not create a session, only load an existing one. If True, turn  16 byte cookie into real session and save.
+        """
         cookie = Application.get_cookie(cls.COOKIE_NAME)
         if cookie == cls.DEFAULT_COOKIE:
             token = GDT_Token.random()
             instance = cls.blank({
                 'sess_token': token,
             })
-            instance.save()
-            instance.set_header()
-            return instance
+            if create_session:  # Only create a session if wanted. We do not want to create sessions on file_server()
+                instance.save()
+                instance.set_header()
         elif cookie:
-            return cls.for_cookie(cookie)
+            instance = cls.for_cookie(cookie)
         else:
-            return cls.blank_error()
+            instance = cls.blank_error()
+        return Application.storage('session', instance)
 
     @classmethod
     def set_default_header(cls):
@@ -49,21 +47,27 @@ class GDO_Session(GDO):
     def set_cookie_header(cls, cookie: str):
         Application.header('Set-Cookie', f"{cls.COOKIE_NAME}={cookie}; Path=/")
 
-    def set_header(self):
-        self.set_cookie_header(self.cookie_value())
+    @classmethod
+    def blank_error(cls):
+        instance = cls.blank({
+            'sess_token': cls.DEFAULT_COOKIE,
+        })
+        cls.set_default_header()
+        return instance
 
     @classmethod
     def for_cookie(cls, cookie: str):
         parts = cookie.split(':')
-        if len(parts) != 3:
+        if len(parts) != 2:
             return cls.blank_error()
-        id_, uid, token = parts
+        id_, token = parts
         instance = cls.table().get_by_id(id_)
         if not instance:
             return cls.blank_error()
-        if instance.get_uid() != uid:
-            return cls.blank_error()
         if instance.get_token() != token:
+            return cls.blank_error()
+        ip = instance.get_ip()
+        if ip and ip != GDT_IP.current():
             return cls.blank_error()
         return instance
 
@@ -88,39 +92,33 @@ class GDO_Session(GDO):
             GDT_Serialize('sess_data'),
         ]
 
-    def get_user(self) -> GDO_User:
-        user = self.gdo_value('sess_user')
-        return GDO_User.ghost() if not user else user
+    def save(self):
+        self.set_value('sess_data', self._data)
+        return super().save()
+
+    def set_header(self):
+        self.set_cookie_header(self.cookie_value())
+
+    def cookie_value(self) -> str:
+        return f"{self.get_id()}:{self.get_token()}"
+
+    def get(self, key: str, default: str = None):
+        return self._data[key] if key in self._data else default
 
     def set(self, key: str, value):
         self._data[key] = value
         return self
 
-    def get(self, key: str, default: str = None):
-        return self._data[key] if key in self._data else default
-
-    def save(self):
-        self.set_value('sess_data', self._data)
-        return super().save()
-
     def get_token(self) -> str:
         return self.gdo_val('sess_token')
-
-    def cookie_value(self) -> str:
-        return f"{self.get_id()}:{self.get_uid()}:{self.get_token()}"
 
     def get_uid(self) -> str:
         uid = self.gdo_val('sess_user')
         return '0' if not uid else uid
 
-    @classmethod
-    def blank_error(cls):
-        instance = cls.blank({
-            'sess_token': cls.DEFAULT_COOKIE,
-        })
-        cls.set_default_header()
-        return instance
+    def get_ip(self) -> str | None:
+        return self.gdo_val('sess_ip')
 
-    @classmethod
-    def init_cli(cls, user):
-        return Application.storage('session', cls.for_user(user))
+    def get_user(self) -> GDO_User:
+        user = self.gdo_value('sess_user')
+        return user or GDO_User.ghost()

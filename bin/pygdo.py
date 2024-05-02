@@ -5,7 +5,7 @@ import readline
 import sys
 
 
-def run():
+def pygdo():
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
     Application.init(__file__ + "/../../")
@@ -30,7 +30,7 @@ def get_parser():
     user = CLI.get_current_user()
     server = user.get_server()
     channel = None
-    session = GDO_Session.init_cli(user)
+    session = GDO_Session.for_user(user)
     return Parser(Mode.CLI, user, server, channel, session)
 
 
@@ -69,4 +69,4 @@ def repl():
 if __name__ == '__main__':
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))
     sys.path.append(parent_dir)
-    run()
+    pygdo()

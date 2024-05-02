@@ -1,6 +1,6 @@
 import traceback
 from enum import Enum
-from mysql.connector import ProgrammingError, DataError, DatabaseError
+from mysql.connector import ProgrammingError, DataError, DatabaseError, InterfaceError
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDODBException
@@ -235,9 +235,5 @@ class Query:
                 return Application.DB.query(query)
         except AttributeError as ex:
             raise GDODBException(str(ex), query)
-        except ProgrammingError as ex:
-            raise GDODBException(ex.msg, query)
-        except DataError as ex:
-            raise GDODBException(ex.msg, query)
-        except DatabaseError as ex:
+        except (InterfaceError, ProgrammingError, DataError, DatabaseError) as ex:
             raise GDODBException(ex.msg, query)

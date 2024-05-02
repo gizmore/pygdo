@@ -3,6 +3,9 @@
 /.venv/
 __pycache__/
 *.pclprof
+/assets/
+/cache/
+/cache_test/
 /files/
 /files_test/
 /protected/

@@ -8,6 +8,12 @@ class Cache:
     OCACHE: dict[str, dict[str, GDO]] = {}
 
     @classmethod
+    # def init(cls):
+    #     cls.CACHE = {}
+    #     cls.CCACHE = {}
+    #     cls.OCACHE = {}
+
+    @classmethod
     def table_for(cls, gdo: GDO):
         cn = gdo
         if cn not in cls.CACHE:

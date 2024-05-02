@@ -3,7 +3,6 @@ import argparse
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError, GDOParamError
 from gdo.base.GDT import GDT
-from gdo.base.Render import Mode
 from gdo.base.Trans import t, thas
 from gdo.base.Util import Strings, href, module_enabled, Arrays
 from gdo.base.WithEnv import WithEnv
@@ -166,13 +165,6 @@ class Method(WithEnv, WithInput, WithError, GDT):
     ########
     # Exec #
     ########
-    # def input(self, key, val):
-    #     super().input(key, val)
-    #     param = self.parameter(key)
-    #     if param:
-    #         param.val(val)
-    #     return self
-
     def execute(self):
         """
         Check method environment and if allowed, gdo_execute() on permission
@@ -182,8 +174,6 @@ class Method(WithEnv, WithInput, WithError, GDT):
         return self._nested_execute(self, True)
 
     def prepare(self):
-        if not self._prepare_nested_permissions(self):
-            return False
         return True
 
     def _nested_execute(self, method, return_gdt: bool = False):

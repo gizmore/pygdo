@@ -1,4 +1,3 @@
-import datetime
 import os
 import sys
 import threading
@@ -32,8 +31,10 @@ class Application:
 
     @classmethod
     def init(cls, path):
+        from gdo.base.Cache import Cache
         from gdo.base.Database import Database
         from gdo.base.ModuleLoader import ModuleLoader
+        # Cache.init()
         cls.PATH = os.path.normpath(path) + '/'
         os.environ['TZ'] = 'UTC'
         time.tzset()
@@ -145,8 +146,8 @@ class Application:
         cls.STORAGE.cookies = cookies
 
     @classmethod
-    def status(cls, status: int):
-        cls.STORAGE.status = str(status) + " PyGDO"
+    def status(cls, status: str):
+        cls.STORAGE.status = status
 
     @classmethod
     def get_status(cls):
@@ -162,6 +163,11 @@ class Application:
     def get_headers(cls):
         headers_dict = cls.storage('headers', {})
         return [(key, value) for key, value in headers_dict.items()]
+
+    @classmethod
+    def get_client_header(cls, name: str, default: str = None):
+        pass
+
 
     @classmethod
     def get_cookie(cls, name: str, default: str = ''):

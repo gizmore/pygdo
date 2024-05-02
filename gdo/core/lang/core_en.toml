@@ -11,9 +11,6 @@ err_not_found = "File not found: %s"
 err_not_null = "This field may not be left empty."
 err_int_min = "may not be smaller than %s."
 err_int_max = "may not be larger than %s."
-err_stub = "This method is not implemented yet."
-err_type_member = "Only members are allowed to execute this method. Please, first %s and then come back."
-link_login_before_continue = "authenticate"
 
 ################
 ### Messages ###
@@ -72,6 +69,7 @@ msg_version = "Python %s - GDOv%s"
 mt_core_perf = "Performance"
 md_core_perf = "Print PyGDO performance metrics."
 perf_version = "Version: %s"
+perf_user = "User: %s(%s)"
 perf_cpu = "CPU %s%%"
 perf_mem = "Memory: %s"
 perf_db = "DB (%sR/%sW/#%s)"

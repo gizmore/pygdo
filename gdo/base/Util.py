@@ -13,6 +13,11 @@ from typing import Sequence
 from gdo.base.Render import Mode
 
 
+def hdr(name: str, value: str):
+    from gdo.base.Application import Application
+    Application.header(name, value)
+
+
 def html(s: str, mode: Mode = Mode.HTML):
     return Strings.html(s, mode)
 
