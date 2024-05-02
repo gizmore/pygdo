@@ -146,7 +146,7 @@ class GDO_Module(WithModuleConfig, GDO):
 
     def add_js(self, filename: str):
         from gdo.ui.GDT_Page import GDT_Page
-        path = self.www_path(filename)
+        path = f"{self.www_path(filename)}?v={self.CORE_REV}"
         GDT_Page.instance()._js.append(path)
         return self
 

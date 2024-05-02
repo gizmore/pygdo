@@ -151,7 +151,7 @@ class Application:
 
     @classmethod
     def get_status(cls):
-        return cls.storage('status', "200 OK")
+        return cls.storage('status', "200 GDO OK")
 
     @classmethod
     def header(cls, name: str, value: str):
@@ -165,9 +165,9 @@ class Application:
         return [(key, value) for key, value in headers_dict.items()]
 
     @classmethod
-    def get_client_header(cls, name: str, default: str = None):
-        pass
-
+    def get_client_header(cls, name: str, default: str = None) -> str | None:
+        env = cls.STORAGE.environ
+        return env[name] if name in env else default
 
     @classmethod
     def get_cookie(cls, name: str, default: str = ''):
