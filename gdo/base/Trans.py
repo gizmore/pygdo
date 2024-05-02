@@ -42,8 +42,8 @@ class Trans:
 
     @classmethod
     def add_language(cls, base_path):
-        if base_path not in cls.BASES:
-            cls.BASES.append(base_path)
+        # if base_path not in cls.BASES:
+        cls.BASES.append(base_path)
 
     @classmethod
     def _load(cls, iso: str):

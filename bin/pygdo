@@ -1,5 +1,4 @@
 #!/bin/bash
 set -euo pipefail
 gdopath="$(dirname "$0")/pygdo.py"
-#export PYTHONDONTWRITEBYTECODE=1
-python3 $gdopath $@
+python3 $gdopath "$@"

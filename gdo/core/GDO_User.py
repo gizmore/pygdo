@@ -1,16 +1,18 @@
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.core.GDT_AutoInc import GDT_AutoInc
-from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Server import GDT_Server
 from gdo.core.GDT_String import GDT_String
-from gdo.date.GDT_Created import GDT_Created
 from gdo.core.GDT_UserType import GDT_UserType
-from gdo.date.GDT_Deleted import GDT_Deleted
+from gdo.date.Time import Time
 
 
 class GDO_User(GDO):
+    """
+    The holy user object. It should be very slim as users will be scattered around hopefully.
+    Attributes are stored in GDO_UserSetting.
+    """
     SYSTEM: GDO
     _authenticated: bool
 
@@ -23,7 +25,7 @@ class GDO_User(GDO):
             })
             if cls.SYSTEM is None:
                 delattr(cls, 'SYSTEM')
-                return None
+                return cls.ghost()
         return cls.SYSTEM
 
     @classmethod
@@ -43,9 +45,6 @@ class GDO_User(GDO):
             GDT_Name('user_name').not_null(),
             GDT_String('user_displayname').not_null(),
             GDT_Server('user_server').not_null(),
-            GDT_Created('user_created'),
-            GDT_Creator('user_creator').not_null(False),
-            GDT_Deleted('user_deleted'),
         ]
 
     def get_mail(self, confirmed: bool = True) -> str:
@@ -53,6 +52,9 @@ class GDO_User(GDO):
 
     def get_user_type(self) -> str:
         return self.gdo_val('user_type')
+
+    def get_server(self):
+        return self.gdo_value('user_server')
 
     ############
     # Settings #
@@ -85,5 +87,20 @@ class GDO_User(GDO):
     def is_authenticated(self) -> bool:
         return hasattr(self, '_authenticated')
 
+    ##########
+    # Render #
+    ##########
+
     def render_name(self):
         return self.gdo_val('user_displayname')
+
+    #########
+    # Hooks #
+    #########
+    def gdo_after_create(self, gdo):
+        self.save_setting('created', Time.get_date())
+        self.save_setting('creator', self.current().get_id())
+
+    def gdo_after_delete(self, gdo):
+        self.save_setting('deleted', Time.get_date())
+        self.save_setting('deletor', self.current().get_id())

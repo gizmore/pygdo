@@ -1,5 +1,9 @@
 from gdo.base.Trans import t
 
+"""
+All GDO Errors and Exceptions
+"""
+
 
 class GDOError(Exception):
 
@@ -23,21 +27,21 @@ class GDOException(Exception):
 class GDODBException(Exception):
 
     def __init__(self, error, query):
-        super().__init__(f"DB-Error: {error}\nQuery:\n{query}")
+        super().__init__(f"DB-Error: {error}\nQuery:\n{query}\n")
 
 
 class GDOModuleException(Exception):
     _module: str
 
     def __init__(self, module_name: str):
-        super().__init__(f"Unknown module: {module_name}")
+        super().__init__(f"Unknown module: {module_name}\n")
         self._module = module_name
 
 
 class GDOMethodException(Exception):
 
     def __init__(self, module_name: str, method_name: str):
-        super().__init__(f"Unknown method: {module_name} / {method_name}")
+        super().__init__(f"Unknown method: {module_name} / {method_name}\n")
 
 
 class GDOValidationException(Exception):
@@ -50,6 +54,3 @@ class GDOParamNameException(GDOException):
 
     def __init__(self, cmd: str, line: str):
         super().__init__(t('err_web_param_wrong', [cmd, line]))
-
-
-

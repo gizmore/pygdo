@@ -111,7 +111,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
 
     def gdo_column_define_null(self) -> str:
         if self._not_null:
-            return 'NOT NULL'
+            return ' NOT NULL'
         return ''
 
     def gdo_column_define_default(self) -> str:
@@ -146,13 +146,13 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     ##########
     # Render #
     ##########
-    def render_val(self):
-        if isinstance(self._val, list):
-            dump(self)
-        return Strings.html(self._val)
+    # def render_val(self):
+    #     if isinstance(self._val, list):
+    #         dump(self)
+    #     return Strings.html(self._val)
 
-    def render_html(self) -> str:
-        return Strings.html(self._val)
-
-    def render_cli(self) -> str:
-        return self._val
+    # def render_html(self) -> str:
+    #     return Strings.html(self._val)
+    #
+    # def render_cli(self) -> str:
+    #     return self._val

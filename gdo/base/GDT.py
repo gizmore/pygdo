@@ -15,6 +15,7 @@ class GDT:
     EMPTY_STRING = ''
     GDT_MAX = 0
     GDT_COUNT = 0
+    GDT_ALIVE = 0
 
     __slots__ = ()
 
@@ -38,10 +39,15 @@ class GDT:
             from gdo.base.Logger import Logger
             Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
         GDT.GDT_COUNT += 1
-        GDT.GDT_MAX = max(GDT.GDT_COUNT, GDT.GDT_MAX)
+        GDT.GDT_ALIVE += 1
+        GDT.GDT_MAX = max(GDT.GDT_ALIVE, GDT.GDT_MAX)
 
-    # def __del__(self):
-    #     GDT.GDT_COUNT -= 1
+    def __del__(self):
+        GDT.GDT_ALIVE -= 1
+
+    #############
+    ### Hooks ###
+    #############
 
     def gdo_before_create(self, gdo):
         pass
@@ -61,14 +67,23 @@ class GDT:
     def gdo_after_delete(self, gdo):
         pass
 
-    def get_name(self):
-        return self.__class__.__name__ + "#" + str(id(self))
-
+    ##########
+    # Errors #
+    ##########
     def has_error(self) -> bool:
         return False
 
     def render_error(self) -> str:
         return ''
+
+    def error(self, key: str, args: list[str] = None) -> bool:
+        return False
+
+    def reset_error(self):
+        return self
+
+    def get_name(self):
+        return self.__class__.__name__ + "#" + str(id(self))
 
     def gdo_column_define(self) -> str:
         return self.EMPTY_STRING
@@ -129,15 +144,25 @@ class GDT:
     def is_hidden(self) -> bool:
         return False
 
-    def error(self, key: str, args: list[str] = None) -> bool:
-        return False
+    def fields(self) -> list:
+        return []
 
-    def reset_error(self):
-        return self
+    def all_fields(self):
+        return []
 
-    ##########
-    # Render #
-    ##########
+    ###################
+    # Render HTML TPL #
+    ###################
+
+    def html_value(self):
+        return Strings.html(self.get_val())
+
+    def html_class(self):
+        return self.__class__.__name__.lower().replace('_', '-')
+
+    ##############
+    # Render GDO #
+    ##############
     def render(self, mode: Mode = Mode.HTML):
         """
         Call the appropriate render method
@@ -145,9 +170,6 @@ class GDT:
         method_name = f'render_{mode.name.lower()}'
         method = getattr(self, method_name)
         return method()
-
-    def html_class(self):
-        return self.__class__.__name__.lower().replace('_', '-')
 
     def render_toml(self) -> str:
         return f"{self.get_name()} = \"{self.get_val()}\"\n"
@@ -159,8 +181,8 @@ class GDT:
         return ''
 
     def render_cli(self) -> str:
-        return self.get_val()
+        return self.render_txt()
 
-    def fields(self) -> list:
-        return []
+    def render_txt(self):
+        return self.get_val()
 

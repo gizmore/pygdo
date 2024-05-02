@@ -4,6 +4,8 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDO_ModuleVar import GDO_ModuleVar
 from gdo.base.GDT import GDT
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.core.GDT_User import GDT_User
+from gdo.date.GDT_DateTime import GDT_DateTime
 
 
 class module_base(GDO_Module):

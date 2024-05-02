@@ -1,6 +1,9 @@
 import argparse
+
+from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError, GDOParamError
 from gdo.base.GDT import GDT
+from gdo.base.Render import Mode
 from gdo.base.Trans import t, thas
 from gdo.base.Util import Strings, href, module_enabled, Arrays
 from gdo.base.WithEnv import WithEnv
@@ -8,18 +11,21 @@ from gdo.base.WithError import WithError
 from gdo.base.WithInput import WithInput
 
 
-
 class Method(WithEnv, WithInput, WithError, GDT):
     _parameters: dict[str, GDT]
     _server: object
     _next_method: object  # Method chaining
     _result: str
+    _parser: object
 
     def __init__(self):
         super().__init__()
         self._params = {}
         self._next = None
         self._input = {}
+        self._args = []
+        self._env_mode = Application.get_mode()
+        self._env_http = True
 
     def server(self, server):
         self._server = server
@@ -48,11 +54,21 @@ class Method(WithEnv, WithInput, WithError, GDT):
     def gdo_user_type(self) -> str | None:
         """
         Comma separated list of applicable user types
+        Use this to restrict to members or guests.
         """
         return 'member'
 
     def gdo_user_permission(self) -> str | None:
+        """
+        return a permission name here from GDO_Permission table to restrict
+        """
         return None
+
+    def gdo_has_permission(self, user):
+        """
+        Completely free and flexible permission check
+        """
+        return True
 
     def gdo_execute(self):
         raise GDOError('err_stub')
@@ -150,12 +166,12 @@ class Method(WithEnv, WithInput, WithError, GDT):
     ########
     # Exec #
     ########
-    def input(self, key, val):
-        super().input(key, val)
-        param = self.parameter(key)
-        if param:
-            param.val(val)
-        return self
+    # def input(self, key, val):
+    #     super().input(key, val)
+    #     param = self.parameter(key)
+    #     if param:
+    #         param.val(val)
+    #     return self
 
     def execute(self):
         """
@@ -163,27 +179,67 @@ class Method(WithEnv, WithInput, WithError, GDT):
         """
         if not self.prepare():
             return self
-        return self.gdo_execute()
+        return self._nested_execute(self, True)
 
     def prepare(self):
-        if not self.has_permission(self._env_user):
-            self.error('err_permission')
+        if not self._prepare_nested_permissions(self):
             return False
         return True
 
-    def has_permission(self, user):
+    def _nested_execute(self, method, return_gdt: bool = False):
+        i = 0
+        for arg in method._args:
+            if isinstance(arg, Method):
+                method._args[i] = self._nested_execute(arg)
+                pass
+            i += 1
+        gdt = method._nested_execute_parse()
+        if return_gdt:
+            return gdt
+        else:
+            return gdt.render_txt()
+
+    def _nested_execute_parse(self):
+        from gdo.core.GDT_Repeat import GDT_Repeat
+        parser = self.get_arg_parser(self._env_http)
+        args, unknown_args = parser.parse_known_args(self._args)
+        for gdt in self.parameters().values():
+            val = args.__dict__[gdt.get_name()] or ''
+            val = val.rstrip()
+            if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
+                vals = [val]
+                vals.extend(unknown_args)
+                gdt.val(vals)
+            else:
+                gdt.val(val)
+        return self.gdo_execute()
+
+    def _prepare_nested_permissions(self, method) -> bool:
+        if not method.has_permission(method._env_user):
+            self.error('err_permission')
+            return False
+        for arg in method._args:
+            if isinstance(arg, Method):
+                if not self._prepare_nested_permissions(arg):
+                    return False
         return True
 
-    def get_arg_parser(self, is_web: bool = True):
-        prog = self.get_name() if is_web else self.cli_trigger()
+    def has_permission(self, user):
+        return self.gdo_has_permission(user)
+
+    def get_arg_parser(self, is_http: bool):
+        if hasattr(self, '_parser'):
+            return self._parser
+        prog = self.get_name() if is_http else self.cli_trigger()
         parser = argparse.ArgumentParser(prog=prog, description=self.gdo_render_descr())
         for gdt in self.parameters().values():
             name = gdt.get_name()
-            if gdt.is_positional() and not is_web:
+            if gdt.is_positional() and not is_http:
                 if gdt.is_not_null():
                     parser.add_argument(name)
                 else:
                     parser.add_argument(name, nargs='?')
             else:
                 parser.add_argument(f'--{name}', default=gdt.get_initial())
+        self._parser = parser
         return parser

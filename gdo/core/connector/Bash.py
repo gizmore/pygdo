@@ -8,3 +8,5 @@ class Bash(Connector):
     def get_server(cls):
         return GDO_Server.get_by_connector('Bash')
 
+    def gdo_needs_authentication(self) -> bool:
+        return False

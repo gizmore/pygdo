@@ -9,4 +9,4 @@ class GDT_Hidden(GDT_Field):
         self._writable = False
 
     def render_form(self):
-        return f'<input type="hidden" name="{self._name}" value="{Strings.html(self._val)}" />'
+        return f'<input type="hidden" name="{self._name}" value="{Strings.html(self._val)}" />\n'

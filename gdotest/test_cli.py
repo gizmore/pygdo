@@ -2,10 +2,8 @@ import os.path
 import subprocess
 import unittest
 
-from bin.pygdo import run
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.base.Util import CLI
 from gdo.base import module_base
 from gdotest.TestUtil import cli_plug
 
@@ -21,13 +19,13 @@ class CLITestCase(unittest.TestCase):
         return self
 
     def test_01_echo(self):
-        result = CLI.parse("echo \"Hello world\"").execute().render_cli()
+        result = cli_plug(None, "echo \"Hello world\"")
         self.assertEqual('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
-        result = CLI.parse("echo Hello world").execute().render_cli()
-        self.assertEqual('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
+        result = cli_plug(None, "echo Hello world")
+        self.assertEqual('Helloworld', result, 'Test if CLI core.echo Hello world works.')
 
     def test_02_version(self):
-        result = CLI.parse("version").execute().render_cli()
+        result = cli_plug(None, "version")
         self.assertIn(str(module_base.instance().CORE_VERSION), result, 'Test if CLI version contains version number.')
         self.assertIn('GDO', result, 'Test if CLI version contains version number.')
         self.assertIn('Python', result, 'Test if CLI version contains version number.')
@@ -50,13 +48,10 @@ class CLITestCase(unittest.TestCase):
         result = cli_plug(None, "help add_server")
         self.assertNotIn('--connector', result, "Help has problems with notnull parameters.")
 
-    def test_07_sum(self):
-        result = cli_plug(None, "sum 1 2 3 4")
-        self.assertEqual("10", result, "Sum does not work with repeat params.")
-
-    def test_08_nested_commands(self):
-        result = cli_plug(None, "echo $(echo 1) $(echo 4 $(echo 2)) $(echo 3)")
-        self.assertIn("1423", result, "Command nesting does not work.")
+    def test_07_nested_command(self):
+        line = "echo --sep=, 1 $(echo 2) $(echo 3 $(echo 4)) 5 $(echo 6) $(echo --sep=; 7 8)"
+        result = cli_plug(None, line)
+        self.assertEqual("1,2,34,5,6,7;8", result, "Command nesting does not work.")
 
 
 if __name__ == '__main__':

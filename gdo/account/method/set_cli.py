@@ -17,6 +17,6 @@ class set_cli(Method):
         ]
 
     def gdo_execute(self):
-        user = GDO_User.current()
+        user = self._env_user
         name = self.param_val('name')
 

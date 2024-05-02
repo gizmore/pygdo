@@ -44,13 +44,15 @@ class EventsTestCase(unittest.TestCase):
             nonlocal y
             y += 1
 
-        Application.EVENTS.add_timer(0.5, foo, 2)
+        Application.EVENTS.add_timer(0.25, foo, 2)
         Application.tick()
-        time.sleep(0.5)
+        time.sleep(0.25)
         Application.tick()
-        time.sleep(0.5)
+        time.sleep(0.25)
         Application.tick()
-        time.sleep(0.5)
+        time.sleep(0.25)
+        Application.tick()
+        time.sleep(0.25)
         Application.tick()
         self.assertEqual(y, 2, 'Timers do not fire correctly')
 

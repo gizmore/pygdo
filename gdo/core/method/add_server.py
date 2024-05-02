@@ -19,7 +19,7 @@ class add_server(WithPermissionCheck, Method):
             GDT_Password('password'),
             GDT_Name('name').not_null(),
             GDT_Connector('connector').not_null(),
-            GDT_Url('url').all_schemes().reachable().positional(),
+            GDT_Url('url').all_schemes().in_and_external().reachable().positional(),
         ]
 
     def get_server_name(self):

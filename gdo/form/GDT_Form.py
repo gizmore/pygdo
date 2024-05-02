@@ -17,18 +17,15 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def __init__(self):
         super().__init__()
         self._href = '?'
+        self._actions = GDT_Menu()
 
     def actions(self):
-        if not hasattr(self, '_actions'):
-            self._actions = GDT_Menu()
         return self._actions
 
     def validate(self, value) -> bool:
         for gdt in self.fields():
             self.validate_gdt(gdt)
         return not self.has_error()
-
-
 
     ##########
     # Render #
@@ -40,5 +37,6 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def validate_gdt(self, gdt: GDT):
         if not gdt.validated():
             self.error('err_form')
-        for gdt2 in gdt.fields():
-            self.validate_gdt(gdt2)
+        if gdt.has_fields():
+            for gdt2 in gdt.all_fields():
+                self.validate_gdt(gdt2)

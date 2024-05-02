@@ -7,7 +7,7 @@ I hereby gift all my PyGDO Projects to the wechall.net admins, in ownership rank
 - [dloser](https://www.wechall.net/profile/dloser)
 - tehron
 - spaceone
-- livinskull (he hates python
+- livinskull (he hates python)
 
 SIGNED,
 

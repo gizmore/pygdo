@@ -3,6 +3,7 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.connector.Web import Web
 from gdotest.TestUtil import cli_plug, get_gizmore
@@ -27,7 +28,8 @@ class DogTestCase(unittest.TestCase):
         self.assertIsInstance(conn, Web, "Cannot get initial Web connector")
 
     def test_02_connector_add(self):
-        out = cli_plug(get_gizmore(), "add_server web02 web http://localhost")
+        num_servers = GDO_Server.table().count_where()
+        out = cli_plug(None, f"add_server web_{num_servers + 1} web http://localhost")
         self.assertIn("Web server has been added", out, "Cannot add second Web Connector Server")
 
 

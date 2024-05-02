@@ -13,7 +13,7 @@ class InstallUser:
 
     @classmethod
     def install_system(cls):
-        if not GDO_User.system():
+        if not GDO_User.system().get_id():
             GDO_User.blank({
                 'user_type': GDT_UserType.SYSTEM,
                 'user_name': 'System',

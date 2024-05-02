@@ -8,15 +8,18 @@ from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Secret import GDT_Secret
+from gdo.core.GDT_UserType import GDT_UserType
 from gdo.date.GDT_Created import GDT_Created
 from gdo.net.GDT_Url import GDT_Url
 
 
 class GDO_Server(GDO):
     _connector: Connector
+    _channels: list
 
     def __init__(self):
         super().__init__()
+        _channels = []
 
     @classmethod
     def get_by_connector(cls, name: str):
@@ -27,7 +30,7 @@ class GDO_Server(GDO):
         return [
             GDT_AutoInc('serv_id'),
             GDT_Name('serv_name').unique(),
-            GDT_Url('serv_url'),
+            GDT_Url('serv_url').in_and_external(),
             GDT_Name('serv_username'),
             GDT_Secret('serv_password'),
             GDT_Connector('serv_connector'),
@@ -50,19 +53,25 @@ class GDO_Server(GDO):
             user = self.create_user(username, displayname or username)
         return user
 
-    def get_user_by_name(self, username):
-        return GDO_User.table().get_by_vals({
-            'user_server': self.get_id(),
-            'user_name': username,
-        })
-
-    def get_users_with_setting(self, key: str, val: str, op: str = '=') -> Query:
-        return GDO_UserSetting.get_users_with_setting(self.get_id(), key, val, op)
-
     def create_user(self, username: str, displayname: str = None):
         return GDO_User.blank({
+            'user_type': GDT_UserType.MEMBER,
             'user_name': username,
             'user_displayname': username or displayname,
             'user_server': self.get_id(),
         }).insert()
 
+    def get_user_by_name(self, username) -> GDO_User:
+        return GDO_User.table().get_by_vals({
+            'user_server': self.get_id(),
+            'user_name': username,
+        })
+
+    def get_user_by_login(self, login: str) -> GDO_User | None:
+        user = self.get_user_by_name(login)
+        if not user:
+            user = self.get_user_with_settings([('email', '=', login), ('email_confirmed', 'IS NOT', None)])
+        return user
+
+    def get_user_with_settings(self, vals: list[tuple]) -> GDO_User | None:
+        return GDO_UserSetting.get_user_with_settings(self.get_id(), vals)

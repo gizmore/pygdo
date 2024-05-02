@@ -5,15 +5,15 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Result import ResultType
-from gdo.base.Util import Arrays
+from gdo.base.Util import Arrays, msg
 
 
 class Installer:
 
     @classmethod
-    def install_modules(cls, modules: list[GDO_Module]):
+    def install_modules(cls, modules: list[GDO_Module], verbose: bool = False):
         for module in cls.modules_with_deps(modules):
-            cls.install_module(module)
+            cls.install_module(module, verbose)
 
     @classmethod
     def modules_with_deps(cls, modules: list) -> [GDO_Module]:
@@ -34,21 +34,25 @@ class Installer:
         return sorted(deps, key=lambda m: m._priority)
 
     @classmethod
-    def install_module(cls, module: GDO_Module) -> bool:
+    def install_module(cls, module: GDO_Module, verbose: bool = False) -> bool:
+        if verbose:
+            print(f"Installing module {module.get_name()}")
         if not module.is_installable():
             return False
-
-        Logger.debug(f'Installing module {module.get_name()}')
         classes = module.gdo_classes()
         for classname in classes:
-            # Logger.debug(f'Installing module class {classname}')
+            if verbose:
+                print(f"Installing table {str(classname.__name__).lower()}")
             cls.install_gdo(classname)
         cls.install_module_entry(module)
-        module.gdo_install()
+        ModuleLoader.instance().init_user_settings()
         module.init()
         if module.get_name() != 'base':
             from gdo.core import module_core
+            if verbose:
+                print("Migrating core for user settings...")
             Installer.migrate_module(module_core.instance())
+        module.gdo_install()
         return True
 
     @classmethod
@@ -144,8 +148,6 @@ class Installer:
 
     @classmethod
     def wipe(cls, module: GDO_Module):
-        # Logger.debug(f"Wiping {module.get_name()}")
         for klass in reversed(module.gdo_classes()):
             Application.DB.drop_table(klass.table().gdo_table_name())
         module.delete()
-

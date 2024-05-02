@@ -25,8 +25,7 @@ class Cache:
     def build_ccache(cls, gdo: GDO):
         cache = []
         columns = cls.CACHE[gdo].gdo_columns()
-        for gdt in columns:
-            cache.append(gdt)
+        cache.extend(columns)
         return cache
 
     @classmethod

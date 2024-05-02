@@ -1,0 +1,2 @@
+msg_form_submitted = "Your form has been sent successfully."
+err_form_invalid = "The form you have sent is errorneous: %s"

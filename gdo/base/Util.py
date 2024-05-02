@@ -5,6 +5,7 @@ import json
 import os.path
 import re
 import secrets
+import shutil
 from collections import OrderedDict
 from html import unescape
 from typing import Sequence
@@ -83,11 +84,11 @@ class CLI:
         name = getpass.getuser()
         return Bash.get_server().get_or_create_user(name)
 
-    @classmethod
-    def parse(cls, line):
-        from gdo.base.Parser import Parser
-        method = Parser(line, cls.get_current_user()).parse()
-        return method
+    # @classmethod
+    # def parse(cls, line):
+    #     from gdo.base.Parser import Parser
+    #     method = Parser(line, cls.get_current_user()).parse()
+    #     return method
 
 
 class Strings:
@@ -165,21 +166,6 @@ class Files:
     def exists(cls, path: str) -> bool:
         return os.path.exists(path)
 
-    # @classmethod
-    # def serve_filename(cls, file_path: str, request) -> bool:
-    #     from gdo.base.Application import Application
-    #     mime_type, _ = mimetypes.guess_type(file_path)
-    #     if mime_type:
-    #         request.content_type = mime_type
-    #     with open(file_path, 'rb') as file:
-    #         chunk_size = int(Application.config('file.block_size', '4096'))
-    #         while True:
-    #             chunk = file.read(chunk_size)
-    #             if not chunk:
-    #                 break
-    #             request.write(chunk)
-    #     return True
-
     @classmethod
     def human_file_size(cls, num: int, div: int = 1000, suffix: str = "B") -> str:
         for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
@@ -211,6 +197,17 @@ class Files:
         from gdo.base.Application import Application
         time = Application.TIME
         os.utime(path, (time, time))
+        return True
+
+    @classmethod
+    def append_content(cls, path: str, content: str) -> bool:
+        with open(path, 'a') as f:
+            f.write(content)
+        return True
+
+    @classmethod
+    def copy(cls, src: str, dst: str) -> bool:
+        shutil.copy(src, dst)
         return True
 
 

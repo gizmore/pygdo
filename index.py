@@ -37,32 +37,46 @@ def application(environ, start_response):
             Application.init_web(environ)
             loader = ModuleLoader.instance()
             Application.fresh_page()
+
+        #dump(environ)
+
+        Application.PROTOCOL = environ['REQUEST_SCHEME']
+
         session = GDO_Session.instance(True)
         qs = parse_qs(environ['QUERY_STRING'])
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
+            del qs['_url']
             if not url:
                 url = 'core.welcome.html'
         if Files.is_file(Application.file_path(url)):
-            gdt = fileserver().env_user(session.get_user()).inputs({'_url': Application.file_path(url)}).execute()
+            method = fileserver().env_user(session.get_user()).input('_url', Application.file_path(url))
+            gdt = method.execute()
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
             for chunk in gdt:
                 yield chunk
+            return None
         else:
             Application.status(200)
-            parser = WebParser(url, session.get_user())
-            method = parser.parse()
+            user = session.get_user()
+            server = user.get_server()
+            channel = None
+            parser = WebParser(user, server, channel, session)
+            method = parser.parse(url)
             if not method:
-                method = not_found().env_user(session.get_user()).inputs({'_url': url})
+                method = not_found().env_user(session.get_user()).input('_url', url)
 
-            if environ['REQUEST_METHOD'] == 'POST':
+            method.inputs(qs)  # GET PARAMS
+
+            if environ['REQUEST_METHOD'] == 'POST':  # POST PARAMS
                 content_length = int(environ.get('CONTENT_LENGTH', 0))
                 post_data = environ['wsgi.input'].read(content_length)
                 post_data_decoded = post_data.decode('utf-8')
                 post_variables = parse_qs(post_data_decoded)
                 method.inputs(post_variables)
 
+            # Execute the method
             result = method.execute()
 
             if Application.is_html():
@@ -83,11 +97,11 @@ def application(environ, start_response):
             start_response(Application.get_status(), headers)
             yield response.encode('utf-8')
     except GDOModuleException as ex:
-        yield error_page(ex, start_response, not_found().inputs({'_url': url}), False)
+        yield error_page(ex, start_response, not_found().input('_url', url), '404 Not Found', False)
     except GDOMethodException as ex:
-        yield error_page(ex, start_response, not_found().inputs({'_url': url}), False)
+        yield error_page(ex, start_response, not_found().input('_url', url), '404 Not Found', False)
     except GDOParamNameException as ex:
-        yield error_page(ex, start_response, client_error().exception(ex), False)
+        yield error_page(ex, start_response, client_error().exception(ex), '409 User Error', False)
     except Exception as ex:
         try:
             yield error_page(ex, start_response, server_error())
@@ -102,21 +116,20 @@ def application(environ, start_response):
             yield msg.encode('UTF-8')
 
 
-def error_page(ex, start_response, method: Method, trace: bool = True):
+def error_page(ex, start_response, method: Method, status: str, trace: bool = True):
     loader = ModuleLoader.instance()
     if trace:
         result = GDT_Error.from_exception(ex)
     else:
         result = GDT_Error().title_raw('PyGDO').text_raw(str(ex))
     page = Application.get_page()
-    response_body = page.method(method).result(result).render(Mode.HTML)
     for module in loader._cache.values():
         module.gdo_load_scripts(page)
         module.gdo_init_sidebar(page)
+    response_body = page.method(method).result(result).render(Mode.HTML)
     response_headers = [
         ('Content-Type', 'text/html; Charset=UTF-8'),
         ('Content-Length', str(bytelen(response_body)))
     ]
-    status = '500 PyGDO Fatal Error'
     start_response(status, response_headers)
     return response_body.encode('UTF-8')

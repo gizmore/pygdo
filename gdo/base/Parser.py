@@ -1,30 +1,34 @@
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOModuleException, GDOParamNameException
+from gdo.base.Exceptions import GDOModuleException, GDOParamNameException, GDOError
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.base.Util import Strings, err, err_raw, dump
-from gdo.core.GDT_Repeat import GDT_Repeat
 
 
 class Parser:
     """
     Parse a CLI line into PyGDO Method.
     Syntax: echo 1 $(echo $(sum 2 3) will print 15
-    TODO: Method nesting!
     """
-    _line: str
     _user: object
-    _is_web: bool  # Do not care yet
+    _server: object
+    _channel: object
+    _session: object
+    _is_http: bool
 
-    def __init__(self, line: str, user):
+    def __init__(self, mode, user, server, channel, session):
         super().__init__()
-        self._line = line
+        self._mode = mode
         self._user = user
-        self._is_web = False
+        self._server = server
+        self._channel = channel
+        self._session = session
+        self._is_http = False
 
-    def parse(self):
-        lines = self.split_commands(self._line)
+    def parse(self, line: str):
+        line = line.strip()
+        lines = self.split_commands(line)
         methods = []
         for line in lines:
             method = self.parse_line(line)
@@ -32,88 +36,114 @@ class Parser:
         # TODO: make method chain. methods have method._next_method to chain
         return methods[0] if len(methods) else None
 
-    def split_commands(self, input_string):
+    def split_commands(self, line):
         commands = []
         current_command = ''
         inside_quotes = False
-
-        for char in input_string:
+        i = 0
+        ln = len(line)
+        while i < ln:
+            char = line[i]
+            i += 1
             if char == '"':
                 inside_quotes = not inside_quotes
-            elif char == '&' and not inside_quotes:
-                if current_command.strip() != '':
-                    commands.append(current_command.strip())
-                    current_command = ''
-                continue
-            current_command += char
-
-        if current_command.strip() != '':
-            commands.append(current_command.strip())
-
+                current_command += char
+            elif char == '&' and line[i] == '&' and not inside_quotes:
+                i += 1
+                commands.append(current_command.strip())
+                current_command = ''
+            else:
+                current_command += char
+        commands.append(current_command)
         return commands
 
     def parse_line(self, line: str) -> Method:
         tokens = self.tokenize(line)
-        method = self.get_method(tokens[0])
-        if not method:
-            raise GDOModuleException(tokens[0])
-        method.env_user(self._user)
-        self.start_session(method)
-        parser = method.get_arg_parser(self._is_web)
-        args, unknown_args = parser.parse_known_args(tokens[1:])
-        for gdt in method.parameters().values():
-            val = args.__dict__[gdt.get_name()] or ''
-            val = val.rstrip()
-            if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
-                vals = [val]
-                vals.extend(unknown_args)
-                gdt.val(vals)
-            else:
-                gdt.val(val)
-        return method
-
-    def tokenize(self, line: str):
-        tokens = []
-        current_token = ''
-        inside_quotes = False
-
-        for char in line:
-            if char == ' ' and not inside_quotes:
-                # If not inside quotes and encounter a space, finish the current token
-                if current_token:
-                    tokens.append(current_token)
-                    current_token = ''
-            elif char == '"':
-                # Toggle inside_quotes flag when encountering a quote
-                inside_quotes = not inside_quotes
-            else:
-                # Add character to the current token
-                current_token += char
-
-        # Add the last token if there is any
-        if current_token:
-            tokens.append(current_token)
-
+        tokens = self.methodize(tokens)
         return tokens
 
-    def get_method(self, cmd: str) -> Method | None:
-        return ModuleLoader.instance().get_method(cmd)
+    def tokenize(self, line: str):
+        """
+        Parse a line into nested tokens.
+        """
+        inside_quotes = False
+        bracket_open = 0
+        token_level = 0
+        curr_tokens = []
+        tokens = [curr_tokens]
+        current_token = '\x00'
+        i = 0
+        j = len(line)
+        while i < j:
+            char = line[i]
+            i += 1
+            if char == ' ' and not inside_quotes:
+                if current_token:
+                    curr_tokens.append(current_token)
+                    current_token = ''
+            elif char == '"':
+                inside_quotes = not inside_quotes
+            elif char == ')' and not inside_quotes and bracket_open:
+                if current_token:
+                    curr_tokens.append(current_token)
+                current_token = ''
+                new = curr_tokens
+                del tokens[token_level]
+                token_level -= 1
+                curr_tokens = tokens[token_level]
+                curr_tokens.append(new)
+                bracket_open -= 1
+            elif char == '$' and not inside_quotes and current_token == '' and line[i] == '(':
+                bracket_open += 1
+                token_level += 1
+                i += 1
+                current_token = '\x00'
+                curr_tokens = []
+                tokens.append(curr_tokens)
+            else:
+                current_token += char
 
-    def start_session(self, method: Method):
-        method.cli_session()
+        if current_token:
+            curr_tokens.append(current_token)
+
+        if token_level != 0:
+            raise GDOError('err_parse_token_depth')
+
+        return curr_tokens
+
+    def methodize(self, tokens: list) -> Method:
+        """
+        Turn the tokens into a method tree and apply args
+        """
+        tokens[0] = self.get_method(tokens[0][1:])
+        for t in tokens[1:]:
+            if isinstance(t, list):
+                tokens[0].arg(self.methodize(t))
+            else:
+                tokens[0].arg(t)
+        return tokens[0]
+
+    def get_method(self, cmd: str) -> Method | None:
+        method = ModuleLoader.instance().get_method(cmd)
+        if not method:
+            raise GDOModuleException(cmd)
+        return self.decorate_method(method)
+
+    def decorate_method(self, method: Method):
+        if method is None:
+            return None
+        return (method.env_user(self._user).env_server(self._server).env_channel(self._channel).env_session(self._session).
+                env_mode(self._mode).env_http(self._is_http))
 
 
 class WebParser(Parser):
-    _url: str
 
-    def __init__(self, url, user):
-        self._url = url
-        # self._session = GDO_Session.start()
-        # self._user = self._session.get_user()
-        # Application.set_current_user(self._user)
-        Application.mode(Mode.HTML)
-        super().__init__(self.build_line(self._url), user)
-        self._is_web = True
+    def __init__(self, user, server, channel, session):
+        super().__init__(Mode.HTML, user, server, channel, session)
+        self._is_http = True
+
+    def parse(self, url: str):
+        return super().parse(self.build_line(url))
 
     def build_line(self, url: str) -> str:
         """
@@ -123,7 +153,9 @@ class WebParser(Parser):
         line = qa[0]
         ext = Strings.rsubstr_from(line, '.')
         try:
-            Application.mode(Mode[ext.upper()])
+            mode = Mode[ext.upper()]
+            self._mode = mode
+            Application.mode(mode)
         except KeyError as ex:
             err('err_render_mode', [ext.upper()])
         line = Strings.rsubstr_to(line, '.')  # remove extension
@@ -134,13 +166,10 @@ class WebParser(Parser):
             try:
                 parts = part.split('.', 1)
                 param_name, param_value = parts
-                cmd += f" --{param_name}=\"{param_value}\""
+                cmd += f' --{param_name} "{param_value}"'
             except ValueError:
                 raise GDOParamNameException(cmd, line)
         return cmd
-
-    # def write(self, s):
-    #     self._request.write(s)
 
     def get_method(self, cmd: str) -> Method | None:
         try:
@@ -148,10 +177,7 @@ class WebParser(Parser):
             mod_method = Strings.substr_to(cmd, ';', cmd)
             module_name = Strings.substr_to(mod_method, '.')
             method_name = Strings.substr_from(mod_method, '.')
-            return loader._cache[module_name].get_method(method_name)
+            method = loader._cache[module_name].get_method(method_name)
+            return super().decorate_method(method)
         except KeyError:
-            err_raw('Unknown Module ' + cmd)
-            return None
-
-    def start_session(self, method: Method):
-        pass  # Do nothing in web parser
+            raise GDOModuleException(Strings.html(cmd))

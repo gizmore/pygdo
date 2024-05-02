@@ -1,3 +1,5 @@
+import functools
+import json
 import os
 import readline
 import sys
@@ -13,24 +15,34 @@ def run():
     ModuleLoader.instance().init_cli()
 
     if len(sys.argv) > 1:
+        sys.argv = [f'"{arg}"' for arg in sys.argv]
         process_line(" ".join(sys.argv[1:]))
     else:
         repl()
 
 
+@functools.lru_cache
+def get_parser():
+    from gdo.base.Parser import Parser
+    from gdo.base.Render import Mode
+    from gdo.base.Util import CLI
+    from gdo.core.GDO_Session import GDO_Session
+    user = CLI.get_current_user()
+    server = user.get_server()
+    channel = None
+    session = GDO_Session.init_cli(user)
+    return Parser(Mode.CLI, user, server, channel, session)
+
+
 def process_line(line: str) -> None:
     from gdo.base.Application import Application
-    from gdo.base.Util import CLI
-    from gdo.base.Trans import t
-    method = CLI.parse(line)
-    if method:
-        Application.fresh_page()
-        gdt = method.execute()
-        txt = gdt.render_cli()
-        txt = Application.get_page()._top_bar.render_cli() + txt
-        print(txt)
-    else:
-        print(t('err_method', sys.argv[1] or t('none')))
+    parser = get_parser()
+    method = parser.parse_line(line)
+    Application.fresh_page()
+    gdt = method.execute()
+    txt = gdt.render_cli()
+    txt = Application.get_page()._top_bar.render_cli() + txt
+    print(txt)
 
 
 def repl():

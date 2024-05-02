@@ -1,8 +1,9 @@
 <div class="gdt-form-field">
     <label for="<%=field.get_name()%>"><%=field.render_label(Mode.HTML)%></label>
     <input id="<%=field.get_name()%>" name="<%=field.get_name()%>" type="<%=field._input_type%>"
+           <%=field.html_pattern()%>
            aria-label="<%=field.render_label(Mode.HTML)%>"
-           value="<%=field.render_val()%>"/>
+           value="<%=field.html_value()%>"/>
     <% if field.has_error():
         write(f'<div class="form-field-error">%s</div>' % field.render_error())
     %>

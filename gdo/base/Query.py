@@ -109,9 +109,9 @@ class Query:
 
     def where(self, where: str, op='AND'):
         if hasattr(self, '_where'):
-            self._where += f" {op} {where}"
+            self._where += f" {op} ({where})"
         else:
-            self._where = where
+            self._where = f"({where})"
         return self
 
     def order(self, order: str):

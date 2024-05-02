@@ -1,14 +1,12 @@
-from gdo.base.GDT import GDT
-from gdo.base.WithInput import WithInput
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.WithProxy import WithProxy
 
 
 class GDT_Repeat(WithProxy, GDT_Field):
 
-    def __init__(self, name: str = None):
-        super().__init__(name or f'GDT#{GDT.GDT_COUNT}')
-        self._converted = False
+    def __init__(self, proxy: GDT_Field):
+        super().__init__(proxy.get_name())
+        self.proxy(proxy)
 
     def is_positional(self) -> bool:
         return True

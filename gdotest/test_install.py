@@ -9,6 +9,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_User import GDO_User
 
+
 class InstallTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -32,14 +33,14 @@ class InstallTestCase(unittest.TestCase):
         loader.init_modules(False)
         self.assertGreater(len(modules), 5, 'Some modules can be loaded')
 
-        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), "install", "-u", "--module", "Core"], capture_output=True)
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), "install", "-u", "Core"], capture_output=True)
         if result.stderr:
             print(result.stderr)
         mc_one = GDO_Module.table().count_where()
         need = len(module_core.instance().gdo_dependencies())
         self.assertGreater(mc_one, need, "Test if core module is installed with dependencies")
 
-        subprocess.run(["python3", Application.file_path("gdoadm.py"), "install", "--module", "Core", "-u"], capture_output=True)
+        subprocess.run(["python3", Application.file_path("gdoadm.py"), "install", "Core", "-u"], capture_output=True)
         mc_two = GDO_Module.table().count_where()
         self.assertEqual(mc_one, mc_two, "Test if no more modules are installed on a second run")
 
@@ -53,9 +54,9 @@ class InstallTestCase(unittest.TestCase):
         self.assertEqual(GDO_User.system().get_id(), '1', 'Test if system user has ID#1')
 
     def test_06_install_single_modules(self):
-        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "--module", "date", '-u'], capture_output=True)
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "date", '-u'], capture_output=True)
         self.assertIn('All Done!', result.stdout.decode('UTF-8'), "Install one single module")
-        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "--modules", "date", '-u'], capture_output=True)
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "ma*,date", '-u'], capture_output=True)
         self.assertIn('All Done!', result.stdout.decode('UTF-8'), "Install some modules")
 
     def test_07_install_all_modules(self):

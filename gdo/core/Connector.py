@@ -27,6 +27,15 @@ class Connector:
         self._connecting = False
         self._connect_failures = 0
 
+    def gdo_has_channels(self) -> bool:
+        return False
+
+    def gdo_needs_authentication(self) -> bool:
+        """
+        Overwrite this if a connector needs explicit authentication. For example Web or IRC. Bash and Telegram is treated as authenticated already.
+        """
+        return True
+
     def gdo_connect(self) -> bool:
         return True
 

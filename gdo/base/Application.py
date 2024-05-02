@@ -13,6 +13,7 @@ from gdo.base.Util import Arrays, dump
 
 class Application:
     RUNNING = True
+    PROTOCOL = 'http'
     LOADER: object
     EVENTS: 'Events'
     STORAGE = threading.local()
@@ -118,6 +119,7 @@ class Application:
         cls.STORAGE.headers = {}
         cls.init_cookies(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
+        cls.mode(Mode.HTML)
 
     @classmethod
     def init_common(cls):

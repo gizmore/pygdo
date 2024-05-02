@@ -11,9 +11,11 @@ from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Enum import GDT_Enum
+from gdo.core.GDT_User import GDT_User
 from gdo.core.InstallUser import InstallUser
 from gdo.core.connector.Bash import Bash
 from gdo.core.connector.Web import Web
+from gdo.date.GDT_DateTime import GDT_DateTime
 
 
 class module_core(GDO_Module):
@@ -41,6 +43,14 @@ class module_core(GDO_Module):
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
             GDT_Enum('show_perf').choices({"never": "Never", "always": "Always", "staff": "Staff"}).initial('always'),
+        ]
+
+    def gdo_user_config(self) -> list[GDT]:
+        return [
+            GDT_DateTime("created"),
+            GDT_User("creator"),
+            GDT_DateTime("deleted"),
+            GDT_User("deletor"),
         ]
 
     def cfg_403_mails(self) -> bool:

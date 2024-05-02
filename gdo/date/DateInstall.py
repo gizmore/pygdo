@@ -20,7 +20,7 @@ class DateInstall:
         GDO_Timezone.table().bulk_insert_gdo(cls.BULK)
 
     @classmethod
-    def install_timezone(cls, tz_name, offset=None):
+    def install_timezone(cls, tz_name: str, offset=None):
         if offset is None:
             offset = cls.get_timezone_offset(tz_name)
         if not GDO_Timezone.get_by_name(tz_name):

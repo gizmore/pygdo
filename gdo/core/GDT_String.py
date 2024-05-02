@@ -7,6 +7,7 @@ from gdo.base.Util import jsn
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.WithLabel import WithLabel
+from gdo.form.GDT_Hidden import GDT_Hidden
 
 
 class Encoding(Enum):
@@ -24,7 +25,6 @@ class GDT_String(WithLabel, GDT_Field):
     _pattern: str
 
     _input_type: str
-
 
     def __init__(self, name):
         super(GDT_String, self).__init__(name)
@@ -118,8 +118,10 @@ class GDT_String(WithLabel, GDT_Field):
     # Render #
     ##########
 
-    def render_txt(self):
-        return self.get_val()
+    def html_pattern(self):
+        if self._pattern:
+            return f' pattern="{self._pattern}"'
+        return ''
 
     def render_json(self):
         dic = {
@@ -128,4 +130,6 @@ class GDT_String(WithLabel, GDT_Field):
         return jsn(dic)
 
     def render_form(self):
+        if self.is_hidden():
+            return GDT_Hidden(self._name).val(self._val).render_form()
         return GDT_Template.python('core', 'form_string.html', {'field': self})

@@ -12,6 +12,7 @@ class GDT_Link(WithHREF, WithTitle, WithText, WithName, GDT):
 
     def __init__(self):
         super().__init__()
+        self._name = self.generate_name()
 
     def render_form(self):
         return self.render_html()

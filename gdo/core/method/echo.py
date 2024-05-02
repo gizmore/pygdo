@@ -11,10 +11,14 @@ class echo(Method):
 
     def gdo_parameters(self) -> [GDT]:
         return [
+            GDT_String('sep'),
             GDT_RestOfText('text').not_null(),
         ]
 
+    def get_separator(self) -> str:
+        return self.param_val('sep') or ''
+
     def gdo_execute(self) -> GDT:
         vals_ = self.param_val('text')
-        value = ' '.join(vals_)
+        value = self.get_separator().join(vals_)
         return GDT_String('text').val(value)

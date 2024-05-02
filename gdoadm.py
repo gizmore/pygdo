@@ -19,11 +19,12 @@ class App:
             description='PyGdo admin utility.',
             usage='''gdo_adm.sh <command> [<args>]
         The Commands are:
-           configure -i [path] Re-create the protected config.toml
-           webconfig -a or -n  Show apache or nginx config
-           install -a or -m    Install modules. Example: gdoadm.sh install -m Dog,*Comment*,DogIRC*
-           wipe -a or -m       Remove modules from the database
-           migrate -a or -m    Migrate the database for a single module or all of them.
+           configure   Re-/Create the protected/config.toml.
+           webconfig   Show apache or nginx config.
+           install     Install modules.
+           wipe        Remove modules from the database.
+           migrate     Auto-Migrate the database for modules.
+           skeleton    Create a module skeleton inside an empty module folder
         ''')
         parser.add_argument('command', help='subcommand to run')
         args = parser.parse_args(sys.argv[1:2])
@@ -90,45 +91,38 @@ class App:
 
     def install(self):
         loader = ModuleLoader.instance()
-        parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all')
+        parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all or ./gdo_adm.sh install Core|Dog*')
         parser.add_argument('--reinstall', action='store_true')
         parser.add_argument('-a', '--all', action='store_true')
         parser.add_argument('--unittests', '-u', action='store_true')
-        parser.add_argument('--module')
-        parser.add_argument('--modules')
+        parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
         reinstall = args.reinstall
 
         if args.unittests:
-            import unittest
+            import unittest  # Required for unittest detection later
             Application.init(os.path.dirname(__file__))
 
         if args.all:
             modules = list(loader.load_modules_fs('*', reinstall).values())
         elif args.module:
-            module = loader.load_module_fs(args.module.lower(), reinstall)
-            if not module:
-                raise GDOError('err_module', [args.module])
-            modules = Installer.modules_with_deps([module])
-        elif args.modules:
-            modules = ModuleLoader.instance().load_modules_fs(args.modules, reinstall)
+            modules = ModuleLoader.instance().load_modules_fs(args.module, reinstall)
             modules = list(modules.values())
         else:
             modules = []
         loader.init_modules()
-        Installer.install_modules(modules)
+        Installer.install_modules(modules, True)
         print("All Done!")
 
     def wipe(self):
-        parser = argparse.ArgumentParser(description='Remove modules. Example: ./gdo_adm.sh wipe --all')
+        parser = argparse.ArgumentParser(description='Remove modules. Example: ./gdo_adm.sh wipe --all OR ./gdo_adm.sh wipe ma*,irc ')
         parser.add_argument('--all', '-a', action='store_true')
         parser.add_argument('--unittests', '-u', action='store_true')
-        parser.add_argument('--module')
-        parser.add_argument('--modules')
+        parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
 
         if args.unittests:
-            import unittest
+            import unittest  # Required when init shall detect unit tests
             Application.init(os.path.dirname(__file__))
 
         if args.all:
@@ -137,40 +131,56 @@ class App:
             print("All Done!")
             exit(0)
         elif args.module:
-            module = ModuleLoader.instance().load_module_fs(args['module'], True)
-            modules = [module]
-        elif args.modules:
-            modules = ModuleLoader.instance().load_modules_fs(args['modules'], True)
+            modules = ModuleLoader.instance().load_modules_fs(args.module, True)
+            modules = list(modules.values())
         else:
-            modules = []
+            parser.print_help()
+            exit(0)
 
-        for module in Installer.modules_with_deps(modules):
+        for module in modules:
+            print(f"Wiping module {module.get_name()}")
             Installer.wipe(module)
+
+        print("All Done!")
 
     def migrate(self):
         parser = argparse.ArgumentParser(
             description='Migrate the database for a single module or all of them.')
-        # prefixing the argument with -- means it's optional
-        parser.add_argument('--all', '-a', action='all modules')
-        parser.add_argument('--module', action='modulename')
-        parser.add_argument('--modules', action='modulename pattern or list')
+        parser.add_argument('--all', '-a')
         parser.add_argument('--unittests', '-u', action='store_true')
+        parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
 
         if args.unittests:
-            import unittest
+            import unittest  # Required for init with unit tests
             Application.init(os.path.dirname(__file__))
 
         if args['all']:
             modules = ModuleLoader.instance().load_modules_fs('*', True)
-            Installer.migrate_modules(modules)
+        elif args.module:
+            modules = ModuleLoader.instance().load_modules_fs(args.module, True)
         else:
-            if args['module']:
-                module = ModuleLoader.instance().load_module_fs(args['module'])
-                Installer.migrate_module(module)
-            if args['modules']:
-                modules = ModuleLoader.instance().load_modules_fs(args['modules'], True)
-                Installer.migrate_modules(modules)
+            parser.print_help()
+            exit(0)
+        modules = list(modules.values())
+        Installer.migrate_modules(modules)
+        print("All done!")
+
+    def skeleton(self):
+        parser = argparse.ArgumentParser(
+            description='Create a module skeleton because we are lazy. Example: ./gdo_adm.sh skeleton foo_module')
+        parser.add_argument('modulename')
+        args = parser.parse_args(sys.argv[2:])
+        name = args.modulename
+        base = Application.file_path(f'gdo/{name}/')
+        Files.append_content(f"{base}__init__.py", f'from gdo.{name}.module_{name} import module_{name}\n')
+        Files.append_content(f"{base}module_{name}.py", f'from gdo.base.GDO_Module import GDO_Module\n\n\nclass module_{name}(GDO_Module):\n    pass\n')
+        Files.copy(Application.file_path('LICENSE'), f"{base}LICENSE")
+        Files.create_dir(f"{base}lang/")
+        Files.append_content(f"{base}lang/{name}_en.toml", f'module_{name} = "{name.title()}"\n')
+        Files.create_dir(f"{base}method/")
+        Files.append_content(f"{base}method/__init__.py", '\n')
+        Files.append_content(f"{base}.gitignore", '__pycache__/\n')
         print("All done!")
 
 

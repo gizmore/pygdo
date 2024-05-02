@@ -7,7 +7,9 @@ from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import Parser
 from gdo.base.Render import Mode
+from gdo.core.GDO_Session import GDO_Session
 from gdo.core.connector.Web import Web
+from gdo.core.connector.Bash import Bash
 from gdo.install.Installer import Installer
 from gdo.ui.GDT_Page import GDT_Page
 from index import application
@@ -68,6 +70,7 @@ class WebPlug:
             'QUERY_STRING': f"_url={url}",
             'REQUEST_METHOD': 'POST' if len(self._post.items()) else 'GET',
             'mod_wsgi.request_start': str(round(time.time())),
+            'REQUEST_SCHEME': 'http',
         }
         if len(self._post.items()):
             post_bytes = urlencode(self._post).encode('UTF-8')
@@ -94,11 +97,18 @@ def web_plug(url):
 
 def cli_plug(user, command) -> str:
     if user is None:
-        user = get_gizmore()
+        user = cli_gizmore()
+    server = user.get_server()
+    channel = None
+    session = GDO_Session.for_user(user)
     Application.mode(Mode.CLI)
-    result = Parser(command, user).parse().execute()
+    result = Parser(Mode.CLI, user, server, channel, session).parse(command).execute()
     out = GDT_Page.instance()._top_bar.render_cli() + result.render_cli()
     return out
+
+
+def cli_gizmore():
+    return Bash.get_server().get_or_create_user('gizmore')
 
 
 def get_gizmore():
