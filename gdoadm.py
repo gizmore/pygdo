@@ -180,7 +180,7 @@ class App:
         Files.append_content(f"{base}lang/{name}_en.toml", f'module_{name} = "{name.title()}"\n')
         Files.create_dir(f"{base}method/")
         Files.append_content(f"{base}method/__init__.py", '\n')
-        Files.append_content(f"{base}.gitignore", '__pycache__/\n')
+        Files.append_content(f"{base}.gitignore", '__pycache__/\n*.pclprof\n')
         print("All done!")
 
 

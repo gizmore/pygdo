@@ -2,7 +2,7 @@
 /.idea/
 /.venv/
 __pycache__/
-*|prof
+*.pclprof
 /files/
 /files_test/
 /protected/
