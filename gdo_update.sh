@@ -32,7 +32,7 @@ find ./gdo -maxdepth 2 -type d -iname '.git' -print0 | xargs $XARGS_OPTIONS bash
 cd "$(dirname "$0")"
 
 echo "Triggering 'gdo_adm.sh configure'."
-bash gdo_adm.sh confgrade
+bash gdo_adm.sh configure
 
 #echo "Triggering 'gdo_adm.sh update'."
 #bash gdo_adm.sh update
