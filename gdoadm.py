@@ -365,6 +365,7 @@ def run_pygdo_admin():
     try:
         path = os.path.dirname(__file__) + "/"
         Application.init(path)
+        Application.init_cli()
         Logger.init()
         Application.init_cli()
         App().argparser()
