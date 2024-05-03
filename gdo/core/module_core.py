@@ -32,9 +32,11 @@ class module_core(GDO_Module):
         return [
             'base',
             'date',
+            'form',
             'language',
             'mail',
             'net',
+            'table',
             'ui',
         ]
 

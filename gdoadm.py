@@ -36,7 +36,7 @@ class App:
             admin       Create a user that is admin
             wipe        Remove modules from the database.
             migrate     Auto-Migrate the database for modules.
-            skeleton    Create a module skeleton inside an empty module folder
+            skel        Create a module skeleton inside an existing module folder.
         ''')
         parser.add_argument('command', help='subcommand to run')
         args = parser.parse_args(sys.argv[1:2])
@@ -343,9 +343,9 @@ class App:
         Installer.migrate_modules(modules)
         print("All done!")
 
-    def skeleton(self):
+    def skel(self):
         parser = argparse.ArgumentParser(
-            description='Create a module skeleton because we are lazy. Example: ./gdo_adm.sh skeleton foo_module')
+            description='Create a module skeleton because we are lazy. Example: ./gdo_adm.sh skel module_name. The folder gdo/module_name has to exist.')
         parser.add_argument('modulename')
         args = parser.parse_args(sys.argv[2:])
         name = args.modulename

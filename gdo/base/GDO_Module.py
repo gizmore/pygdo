@@ -50,6 +50,9 @@ class GDO_Module(WithModuleConfig, GDO):
     def gdo_load_scripts(self, page):
         pass
 
+    def gdo_is_site_module(self) -> bool:
+        return False
+
     @classmethod
     def get_name(cls):
         return cls.__name__[7:]
