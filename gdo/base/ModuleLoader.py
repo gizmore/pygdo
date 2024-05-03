@@ -79,10 +79,11 @@ class ModuleLoader:
 
     def module_installed(self, modulename: str) -> bool:
         from gdo.base.GDO_Module import GDO_Module
-        if not Application.DB.is_configured():
-            raise GDOException("Database not configured!")
-        if GDO_Module.table().get_by_name(modulename, True):
-            return True
+        try:
+            if GDO_Module.table().get_by_name(modulename, True):
+                return True
+        except GDODBException:
+            pass
         return False
 
     def load_modules_db(self, enabled: None | bool = True):
