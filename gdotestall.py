@@ -7,6 +7,7 @@ from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import Files
 from gdo.install.Installer import Installer
+from gdotest.test_admin import AdminTestCase
 from gdotest.test_cli import CLITestCase
 from gdotest.test_configure import ConfigureTestCase
 from gdotest.test_core import CoreTestCase
