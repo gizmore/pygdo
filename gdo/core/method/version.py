@@ -7,7 +7,7 @@ from gdo.core.GDT_String import GDT_String
 
 class version(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return 'version'
 
     def execute(self):

@@ -7,18 +7,6 @@ from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import Files
 from gdo.install.Installer import Installer
-from gdotest.test_cli import CLITestCase
-from gdotest.test_configure import ConfigureTestCase
-from gdotest.test_date import DateTestCase
-from gdotest.test_db import DBTestCase
-from gdotest.test_forms import FormTestCase
-from gdotest.test_install import InstallTestCase
-from gdotest.test_module_config import ModuleConfigTestCase
-from gdotest.test_session import SessionTestCase
-from gdotest.test_ui import UITestCase
-from gdotest.test_users import UsersTestCase
-from gdotest.test_util import UtilityTestCase
-from gdotest.test_web import WebTestCase
 
 
 def run_tests():

@@ -10,7 +10,7 @@ from gdo.ui.GDT_Error import GDT_Error
 
 class not_found(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return ''
 
     def gdo_parameters(self) -> list[GDT]:

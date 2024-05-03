@@ -188,6 +188,16 @@ class Files:
         return os.path.isdir(path)
 
     @classmethod
+    def empty_dir(cls, path: str) -> bool:
+        cls.delete_dir(path)
+        return cls.create_dir(path)
+
+    @classmethod
+    def delete_dir(cls, path: str) -> bool:
+        shutil.rmtree(path)
+        return True
+
+    @classmethod
     def create_dir(cls, path: str) -> bool:
         os.makedirs(path, exist_ok=True)
         return True
@@ -198,15 +208,18 @@ class Files:
         return True
 
     @classmethod
-    def touch(cls, path: str) -> bool:
+    def touch(cls, path: str, create: bool = False) -> bool:
+        if create and not os.path.isfile(path):
+            with open(path, "w"):
+                return True
         from gdo.base.Application import Application
         time = Application.TIME
         os.utime(path, (time, time))
         return True
 
     @classmethod
-    def append_content(cls, path: str, content: str) -> bool:
-        with open(path, 'a') as f:
+    def append_content(cls, path: str, content: str, create: bool = False) -> bool:
+        with open(path, "a") as f:
             f.write(content)
         return True
 
@@ -214,6 +227,17 @@ class Files:
     def copy(cls, src: str, dst: str) -> bool:
         shutil.copy(src, dst)
         return True
+
+    @classmethod
+    def put_contents(cls, path: str, contents: str) -> bool:
+        with open(path, 'w') as f:
+            f.write(contents)
+        return True
+
+    @classmethod
+    def get_contents(cls, path: str):
+        with open(path, 'r') as f:
+            return f.read()
 
 
 class Arrays:

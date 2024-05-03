@@ -1,6 +1,5 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
-from gdo.base.Query import Query
 from gdo.core.Connector import Connector
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserSetting import GDO_UserSetting
@@ -52,6 +51,10 @@ class GDO_Server(GDO):
             self._connector.server(self)
         return self._connector
 
+    ########
+    # User #
+    ########
+
     def get_or_create_user(self, username: str, displayname: str = None):
         user = self.get_user_by_name(username)
         if not user:
@@ -80,3 +83,9 @@ class GDO_Server(GDO):
 
     def get_user_with_settings(self, vals: list[tuple]) -> GDO_User | None:
         return GDO_UserSetting.get_user_with_settings(self.get_id(), vals)
+
+    ###########
+    # Message #
+    ###########
+    def send_to_user(self, user: GDO_User, key: str, args: list = None):
+        self.get_connector().send_to_user(user, key, args)

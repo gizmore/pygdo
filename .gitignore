@@ -12,6 +12,7 @@ __pycache__/
 /.htaccess
 /gdo/*
 !/gdo/account/
+!/gdo/admin/
 !/gdo/base/
 !/gdo/core/
 !/gdo/date/

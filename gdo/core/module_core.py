@@ -26,7 +26,7 @@ class module_core(GDO_Module):
 
     def gdo_init(self):
         Connector.register(Bash)
-        Connector.register(Web)
+        Connector.register(Web, False)
 
     def gdo_dependencies(self) -> list:
         return [

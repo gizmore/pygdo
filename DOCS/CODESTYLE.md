@@ -57,10 +57,31 @@ Dirs end with a slash (/)
 Files do not.
 This way you can distinguish quicker, and it's nice to have this rule.
 
+## Variable naming
+
+- All class attributes are prefixed with "_" regardless of visibility.
+  This is because else some of the names would shadow builtins.
+
+- Static class variables are UPPERCASE without a prefix.
+
+## Method naming
+
+- Private methods have a "_" prefix.
+
+- Methods prefixed with "**gdo_**" are intended to be overwritten by child classes.
+Example: _gdo_columns()_ in GDO to specify db columns.
+
+- Setters are named like the attribute without any prefix.
+  Example __env_server()__ in [WithEnv](../gdo/base/WithEnv.py).
+  Setters should return self.
+
+- There are no getters, unless you would need to compute a value to get.
+  Those getters are prefixed with "get_".
+
 
 ## Module structure
 
-**All** Modules have to reside in the [pygdo/gdo/](../gdo/) folder.
+**All** Modules have to reside in the [pygdo/gdo/](../gdo) folder.
 Core and extensions are mixed there,
 and you can only distinguish them by the absence of the `.git` folder.
 All modules are shipped with source, and to add a module you clone it under its name inside `gdo/`.

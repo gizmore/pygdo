@@ -12,7 +12,7 @@ from gdo.date.GDT_Duration import GDT_Duration
 
 class launch(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return 'launch'
 
     def gdo_parameters(self) -> [GDT]:

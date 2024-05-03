@@ -12,7 +12,6 @@ from gdo.base.WithInput import WithInput
 
 class Method(WithEnv, WithInput, WithError, GDT):
     _parameters: dict[str, GDT]
-    _server: object
     _next_method: object  # Method chaining
     _result: str
     _parser: object
@@ -25,14 +24,6 @@ class Method(WithEnv, WithInput, WithError, GDT):
         self._args = []
         self._env_mode = Application.get_mode()
         self._env_http = True
-
-    def server(self, server):
-        self._server = server
-        return self
-
-    def cli_trigger(self) -> str:
-        module = self.module()
-        return f"{module.get_name()}.{self.get_name()}"
 
     def get_name(self):
         return self.__class__.__name__
@@ -47,7 +38,26 @@ class Method(WithEnv, WithInput, WithError, GDT):
     # Abstract #
     ############
 
+    def gdo_trigger(self) -> str:
+        """
+        The CLI/Text trigger for non Web connectors. Return an empty string to disable all CLI connectors.
+        """
+        module = self.module()
+        return f"{module.get_name()}.{self.get_name()}"
+
     def gdo_parameters(self) -> [GDT]:
+        return []
+
+    def gdo_method_config_bot(self) -> [GDT]:
+        return []
+
+    def gdo_method_config_server(self) -> [GDT]:
+        return []
+
+    def gdo_method_config_channel(self) -> [GDT]:
+        return []
+
+    def gdo_method_config_user(self) -> [GDT]:
         return []
 
     def gdo_user_type(self) -> str | None:
@@ -56,6 +66,30 @@ class Method(WithEnv, WithInput, WithError, GDT):
         Use this to restrict to members or guests.
         """
         return 'member'
+
+    def gdo_connectors(self) -> str:
+        """
+        Comma separated list of supported connectors. An empty string means all
+        :return:
+        :rtype:
+        """
+        return ''
+
+    def gdo_in_private(self) -> bool:
+        """
+        Indicate if a command works in private.
+        :return:
+        :rtype:
+        """
+        return True
+
+    def gdo_in_channels(self) -> bool:
+        """
+        Indicate if a method works in channels. Only affects server connectors that support channels.
+        :return:
+        :rtype:
+        """
+        return True
 
     def gdo_user_permission(self) -> str | None:
         """
@@ -78,18 +112,16 @@ class Method(WithEnv, WithInput, WithError, GDT):
     def gdo_render_descr(self) -> str:
         return t(self._mome_tkey('md'))
 
-    # def gdo_render_usage(self) -> str:
-    #     key = self._mome_tkey('mu')
-    #     if thas(key):
-    #         return t(key)
-    #     return "unknown usage"#self._generate_usage()
-
     def gdo_render_keywords(self) -> str:
         kw = self.site_keywords()
         key = self._mome_tkey('mk')
         if thas(key):
             return f"{kw},{t(key)}"
         return kw
+
+    ###########
+    # Private #
+    ###########
 
     def site_keywords(self):
         return t('keywords') if thas('keywords') else 'PyGDO,Website,HTTP Handler,WSGI'
@@ -99,9 +131,6 @@ class Method(WithEnv, WithInput, WithError, GDT):
 
     def _mome_tkey(self, key: str) -> str:
         return f'{key}_{self.module().get_name()}_{self.get_name()}'
-
-    # def _generate_usage(self) -> str:
-    #     return self.get_arg_parser().format_usage()
 
     ##############
     # Parameters #
@@ -150,10 +179,12 @@ class Method(WithEnv, WithInput, WithError, GDT):
     ###########
 
     def msg(self, key, args: list = None):
-        return self.module().msg(key, args)
+        self.module().msg(key, args)
+        return self
 
     def err(self, key, args: list = None):
-        return self.module().err(key, args)
+        self.module().err(key, args)
+        return self
 
     def module(self):
         from gdo.base.ModuleLoader import ModuleLoader
@@ -171,9 +202,14 @@ class Method(WithEnv, WithInput, WithError, GDT):
         """
         if not self.prepare():
             return self
+        if not self._prepare_nested_permissions(self):
+            return self
         return self._nested_execute(self, True)
 
     def prepare(self):
+        """
+        This is overwritten in WithPermissionCheck.
+        """
         return True
 
     def _nested_execute(self, method, return_gdt: bool = False):
@@ -208,6 +244,9 @@ class Method(WithEnv, WithInput, WithError, GDT):
         if not method.has_permission(method._env_user):
             self.error('err_permission')
             return False
+        if not method.allows_connector():
+            self.error('err_method_connector_not_supported')
+            return False
         for arg in method._args:
             if isinstance(arg, Method):
                 if not self._prepare_nested_permissions(arg):
@@ -217,10 +256,16 @@ class Method(WithEnv, WithInput, WithError, GDT):
     def has_permission(self, user):
         return self.gdo_has_permission(user)
 
+    def allows_connector(self):
+        connectors = self.gdo_connectors()
+        if not connectors:
+            return True
+        return self._env_server.get_connector().get_name().lower() in connectors
+
     def get_arg_parser(self, is_http: bool):
         if hasattr(self, '_parser'):
             return self._parser
-        prog = self.get_name() if is_http else self.cli_trigger()
+        prog = self.get_name() if is_http else self.gdo_trigger()
         parser = argparse.ArgumentParser(prog=prog, description=self.gdo_render_descr())
         for gdt in self.parameters().values():
             name = gdt.get_name()
@@ -233,3 +278,12 @@ class Method(WithEnv, WithInput, WithError, GDT):
                 parser.add_argument(f'--{name}', default=gdt.get_initial())
         self._parser = parser
         return parser
+
+    ##########
+    # Render #
+    ##########
+    def render_cli(self) -> str:
+        if self.has_error():
+            return self.render_error()
+        else:
+            return self.gdo_render_descr()

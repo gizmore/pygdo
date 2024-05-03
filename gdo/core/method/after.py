@@ -5,7 +5,7 @@ from gdo.date.GDT_Duration import GDT_Duration
 
 class after(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return 'in'
 
     def gdo_parameters(self) -> [GDT]:

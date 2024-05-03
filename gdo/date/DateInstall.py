@@ -13,7 +13,7 @@ class DateInstall:
     def now(cls, module: module_date):
         cls.install_timezone('UTC', 0)
         cls.install_timezone('USRT', 0)
-        cls.install_timezone('FAMT', 0)
+        cls.install_timezone('FAMT', 31337)
         for tz in pytz.all_timezones:
             if tz != 'UTC':
                 cls.install_timezone(tz)

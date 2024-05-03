@@ -6,7 +6,7 @@ from gdo.ui.GDT_Section import GDT_Section
 
 class settings(MethodForm):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return ''
 
     def gdo_create_form(self, form: GDT_Form) -> None:

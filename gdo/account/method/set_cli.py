@@ -7,7 +7,7 @@ from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 class set_cli(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return 'set'
 
     def gdo_parameters(self) -> [GDT]:

@@ -20,38 +20,38 @@ class Events:
     # Events #
     ##########
 
-    def subscribe(self, event_type: str, subscriber: callable):
-        self.subscribe_times(event_type, subscriber, 2_000_000_000)
+    def subscribe(self, event_name: str, subscriber: callable):
+        self.subscribe_times(event_name, subscriber, 2_000_000_000)
 
-    def subscribe_once(self, event_type: str, subscriber: callable):
-        self.subscribe_times(event_type, subscriber, 1)
+    def subscribe_once(self, event_name: str, subscriber: callable):
+        self.subscribe_times(event_name, subscriber, 1)
 
-    def subscribe_times(self, event_type: str, subscriber: callable, times: int):
+    def subscribe_times(self, event_name: str, subscriber: callable, times: int):
         event_sub = {
             "count": times,
             "callback": subscriber,
         }
-        if event_type not in self._subscribers:
-            self._subscribers[event_type] = []
-        self._subscribers[event_type].append(event_sub)
+        if event_name not in self._subscribers:
+            self._subscribers[event_name] = []
+        self._subscribers[event_name].append(event_sub)
 
-    def unsubscribe(self, event_type: str, subscriber: callable):
-        if event_type in self._subscribers:
-            self._subscribers[event_type] = [sub for sub in self._subscribers[event_type] if sub['callback'] != subscriber]
-#            self._subscribers[event_type].remove(subscriber)
+    def unsubscribe(self, event_name: str, subscriber: callable):
+        if event_name in self._subscribers:
+            self._subscribers[event_name] = [sub for sub in self._subscribers[event_name] if sub['callback'] != subscriber]
+#            self._subscribers[event_name].remove(subscriber)
 
-    def publish(self, event_type, *args, **kwargs):
+    def publish(self, event_name, *args, **kwargs):
         to_delete = []
 
-        if event_type in self._subscribers:
-            for subscriber in self._subscribers[event_type]:
+        if event_name in self._subscribers:
+            for subscriber in self._subscribers[event_name]:
                 subscriber['callback'](*args, **kwargs)
                 subscriber['count'] -= 1
                 if subscriber['count'] == 0:
                     to_delete.append(subscriber['callback'])
 
         for callback in to_delete:
-            self.unsubscribe(event_type, callback)
+            self.unsubscribe(event_name, callback)
 
     #########
     # Timer #

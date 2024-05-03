@@ -3,14 +3,18 @@ from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render
+from gdo.core.Connector import Connector
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_String import GDT_String
 
 
 class help(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return 'help'
+
+    def gdo_connectors(self) -> str:
+        return Connector.text_connectors()
 
     def gdo_parameters(self) -> [GDT]:
         return [
@@ -43,7 +47,7 @@ class help(Method):
         user = GDO_User.current()
         for cmd, method in loader._methods.items():
             module_name = method.module().render_name()
-            trigger = method.env_user(user).cli_trigger()
+            trigger = method.env_user(user).gdo_trigger()
             if module_name not in grouped:
                 grouped[module_name] = []
             if method.prepare():

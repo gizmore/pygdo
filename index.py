@@ -28,6 +28,8 @@ def application(environ, start_response):
     url = 'core.welcome.html'
     try:
         global FRESH
+        GDT.GDT_MAX = 0
+        GDO.GDO_MAX = 0
         GDT.GDT_COUNT = 0
         GDO.GDO_COUNT = 0
         GDT.GDT_ALIVE = 0
@@ -45,7 +47,7 @@ def application(environ, start_response):
             loader = ModuleLoader.instance()
             Application.fresh_page()
 
-        # dump(environ)
+        #dump(environ)
 
         qs = parse_qs(environ['QUERY_STRING'])
         if '_url' in qs:

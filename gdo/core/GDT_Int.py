@@ -83,6 +83,8 @@ class GDT_Int(GDT_String):
     def validate(self, value):
         if not super().validate(value):
             return False
+        if value is None:
+            return True
         return self.validate_min_max(value)
 
     def validate_min_max(self, value):

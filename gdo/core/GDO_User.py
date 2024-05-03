@@ -57,6 +57,22 @@ class GDO_User(GDO):
     def get_server(self):
         return self.gdo_value('user_server')
 
+    ##########
+    # Groups #
+    ##########
+    @classmethod
+    def admins(cls):
+        return cls.with_permission('admin')
+
+    @classmethod
+    def staff(cls):
+        return cls.with_permission('staff')
+
+    @classmethod
+    def with_permission(cls, perm_name: str):
+        from gdo.core.GDO_Permission import GDO_Permission
+        return GDO_Permission.get_by_name(perm_name).users()
+
     ############
     # Settings #
     ############
@@ -112,3 +128,9 @@ class GDO_User(GDO):
     def gdo_after_delete(self, gdo):
         self.save_setting('deleted', Time.get_date())
         self.save_setting('deletor', self.current().get_id())
+
+    #############
+    # Messaging #
+    #############
+    def send(self, key: str, args: list = None):
+        self.get_server().send_to_user(key, args)

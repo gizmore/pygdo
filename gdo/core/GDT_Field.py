@@ -78,7 +78,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
 
     def primary(self, primary=True):
         self._primary = primary
-        return self
+        return self.not_null()
 
     def unique(self, unique=True):
         self._unique = unique

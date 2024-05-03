@@ -8,7 +8,7 @@ from gdo.core.GDT_Repeat import GDT_Repeat
 
 class sum(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return 'sum'
 
     def gdo_parameters(self) -> [GDT]:

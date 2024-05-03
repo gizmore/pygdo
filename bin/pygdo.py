@@ -1,8 +1,8 @@
 import functools
-import json
 import os
 import readline
 import sys
+import traceback
 
 
 def pygdo():
@@ -36,6 +36,7 @@ def get_parser():
 
 def process_line(line: str) -> None:
     from gdo.base.Application import Application
+    append_to_history(line)
     parser = get_parser()
     method = parser.parse_line(line)
     Application.fresh_page()
@@ -45,9 +46,34 @@ def process_line(line: str) -> None:
     print(txt)
 
 
+def append_to_history(line: str):
+    from gdo.base.Util import CLI
+    from gdo.base.Application import Application
+    from gdo.base.Util import Files
+    user = CLI.get_current_user()
+    path = Application.file_path(f'cache/{user.get_id()}.repl.log')
+    Files.append_content(path, f"{line}\n", create=True)
+
+
+def reload_history():
+    from gdo.base.Util import CLI
+    from gdo.base.Application import Application
+    from gdo.base.Util import Files
+    user = CLI.get_current_user()
+    path = Application.file_path(f'cache/{user.get_id()}.repl.log')
+    try:
+        with open(path, "r") as file:
+            for line in file:
+                readline.add_history(line.strip())
+    except FileNotFoundError:
+        print(f"First Run? - Creating repl history at {path}")
+        Files.touch(path, True)
+
+
 def repl():
     from gdo.base.Application import Application
     from gdo.base.Exceptions import GDOModuleException
+    reload_history()
     while True:
         try:
             input_line = input(">>> ")
@@ -64,6 +90,7 @@ def repl():
             break
         except Exception as ex:
             print(str(ex))
+            traceback.print_exception(ex)
 
 
 if __name__ == '__main__':

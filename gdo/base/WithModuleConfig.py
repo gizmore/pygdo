@@ -39,11 +39,11 @@ class WithModuleConfig:
         return self.config_column(key).get_value()
 
     def save_config_val(self, key: str, val: str):
-        from gdo.base.GDO_ModuleVar import GDO_ModuleVar
+        from gdo.base.GDO_ModuleVal import GDO_ModuleVal
         gdt = self.config_column(key)
         if gdt.validate(gdt.to_value(val)):
             if val != self.get_config_val(key):
-                GDO_ModuleVar.blank({
+                GDO_ModuleVal.blank({
                     'mv_module': self.get_id(),
                     'mv_key': key,
                     'mv_val': val,

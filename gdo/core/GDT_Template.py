@@ -117,7 +117,7 @@ class Templite(object):
 
         namespace['Time'] = Time
         namespace['t'] = Trans.t
-        namespace['tiso'] = Trans.tiso
+        # namespace['tiso'] = Trans.tiso
 
         # execute template code
         exec(self._code, namespace)
@@ -127,12 +127,18 @@ class Templite(object):
 class GDT_Template(GDT):
     _t_module: str
     _t_file: str
-    _t_vals: str
+    _t_vals: dict
+
+    __slots__ = (
+        '_t_module',
+        '_t_file',
+        '_t_vals',
+    )
 
     def __init__(self):
         super().__init__()
 
-    def template(self, modulename: str, filename: str, vals=None):
+    def template(self, modulename: str, filename: str, vals: dict = None):
         self._t_module = modulename
         self._t_file = filename
         self._t_vals = vals

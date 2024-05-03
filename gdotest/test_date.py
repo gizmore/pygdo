@@ -1,5 +1,4 @@
 import os.path
-import re
 import unittest
 
 from gdo.base.Application import Application

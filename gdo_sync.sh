@@ -11,12 +11,11 @@ git submodule foreach git reset --hard
 git submodule foreach git pull
 echo
 
-echo "Are you sure?"
-sleep 5
-
 echo "Creating module provider mappings..."
-#sleep 1
-#php provider_update.php
+python3 gdoproviders.py
+
+echo "Are you sure? Press Enter!"
+read
 
 echo "Syncing repositories..."
 echo "Do: git commit & push all repos"

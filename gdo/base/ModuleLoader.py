@@ -6,7 +6,7 @@ import os
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException, GDODBException
-from gdo.base.GDO_ModuleVar import GDO_ModuleVar
+from gdo.base.GDO_ModuleVal import GDO_ModuleVal
 from gdo.base.Method import Method
 from gdo.base.Result import ResultType
 from gdo.base.Trans import Trans
@@ -60,8 +60,9 @@ class ModuleLoader:
         for pattern in patterns:
             path = Application.file_path('gdo/')
             for dirname in glob.glob(pattern, root_dir=path):
-                if Files.is_dir(path + dirname):
-                    self.load_module_fs(dirname, installed)
+                if not dirname.startswith('_'):
+                    if Files.is_dir(path + dirname):
+                        self.load_module_fs(dirname, installed)
         self.sort_cache()
         return self._cache
 
@@ -126,11 +127,10 @@ class ModuleLoader:
         for module in self._cache.values():
             if enabled and not module.is_enabled():
                 continue
-            # module.init_language()
             module.init()
 
     def load_module_vars(self):
-        result = GDO_ModuleVar.table().select('module_name, mv_key, mv_val').join_object('mv_module').all().exec().iter(ResultType.ROW)
+        result = GDO_ModuleVal.table().select('module_name, mv_key, mv_val').join_object('mv_module').all().exec().iter(ResultType.ROW)
         for config in result:
             module_name, key, val = config
             self.get_module(module_name).config_column(key).initial(val)
@@ -145,7 +145,7 @@ class ModuleLoader:
         self._methods = {}
         for module in self._cache.values():
             for method in module.get_methods():
-                trigger = method.cli_trigger()
+                trigger = method.gdo_trigger()
                 if trigger:
                     self._methods[trigger] = method
 

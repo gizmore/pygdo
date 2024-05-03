@@ -10,7 +10,7 @@ class client_error(Method):
     """
     _exception: Exception
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return ""
 
     def exception(self, exception: Exception):

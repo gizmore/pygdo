@@ -74,6 +74,10 @@ class WebTestCase(unittest.TestCase):
         self.assertNotIn('>0 GDTs', out, "Perf did not count GDTs")
         self.assertNotIn('/ 0 GDOs', out, "Perf did not count GDOs")
 
+    def test_11_connector_not_allowed(self):
+        result = WebPlug("core.help.cli").exec()
+        self.assertIn("not supported", result, "A non Web Method is executing in HTTP.")
+
 
 if __name__ == '__main__':
     unittest.main()

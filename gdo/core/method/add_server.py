@@ -10,7 +10,7 @@ from gdo.net.GDT_Url import GDT_Url
 
 class add_server(WithPermissionCheck, Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return "add_server"
 
     def gdo_parameters(self) -> [GDT]:

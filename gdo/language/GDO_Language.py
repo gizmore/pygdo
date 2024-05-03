@@ -8,5 +8,5 @@ class GDO_Language(GDO):
     def gdo_columns(self):
         return [
             GDT_AutoInc('lang_id'),
-            GDT_Char('lang_iso'),
+            GDT_Char('lang_iso').not_null().ascii().maxlen(2),
         ]

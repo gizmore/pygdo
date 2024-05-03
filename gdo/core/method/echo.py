@@ -6,7 +6,7 @@ from gdo.core.GDT_String import GDT_String
 
 class echo(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return 'echo'
 
     def gdo_parameters(self) -> [GDT]:

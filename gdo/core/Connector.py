@@ -3,6 +3,7 @@ from gdo.base.Application import Application
 
 class Connector:
     AVAILABLE = {}  # Static all
+    TEXT_CONNECTORS = []  # Static without web
 
     _server: object  # instance server
     _connected: bool
@@ -11,8 +12,16 @@ class Connector:
     _next_connect_time: float
 
     @classmethod
-    def register(cls, klass):
-        cls.AVAILABLE[klass.__name__.lower()] = klass
+    def text_connectors(cls) -> str:
+        return ",".join(cls.TEXT_CONNECTORS)
+
+    @classmethod
+    def register(cls, klass, is_text: bool = True):
+        name = klass.__name__.lower()
+        if name not in cls.AVAILABLE:
+            cls.AVAILABLE[name] = klass
+            if is_text:
+                cls.TEXT_CONNECTORS.append(name)
 
     @classmethod
     def get_by_name(cls, name: str):

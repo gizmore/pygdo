@@ -20,7 +20,7 @@ class file_server(Method):
             GDT_Path('_url').existing_file(),
         ]
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return ""
 
     def get_path(self):

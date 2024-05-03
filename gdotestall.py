@@ -34,6 +34,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(InstallTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(ConfigureTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(ModuleConfigTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(AdminTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(CoreTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DateTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(MathTestCase))

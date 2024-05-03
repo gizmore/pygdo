@@ -1,5 +1,7 @@
 from gdo.base import GDO
+from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.Util import Files
 
 
 class Cache:
@@ -8,10 +10,11 @@ class Cache:
     OCACHE: dict[str, dict[str, GDO]] = {}
 
     @classmethod
-    # def init(cls):
-    #     cls.CACHE = {}
-    #     cls.CCACHE = {}
-    #     cls.OCACHE = {}
+    def clear(cls):
+        cls.CACHE = {}
+        cls.CCACHE = {}
+        cls.OCACHE = {}
+        Files.empty_dir(Application.file_path('cache/'))
 
     @classmethod
     def table_for(cls, gdo: GDO):

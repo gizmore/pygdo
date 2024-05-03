@@ -8,7 +8,7 @@ class GDT_Object(GDT_UInt):
     def __init__(self, name):
         super().__init__(name)
 
-    def table(self, gdo):
+    def table(self, gdo: GDO):
         self._table = gdo
         return self
 
@@ -21,3 +21,10 @@ class GDT_Object(GDT_UInt):
         define = define.replace(' AUTO_INCREMENT', '')
         #$define = preg_replace('#,FOREIGN KEY .* ON UPDATE (?:CASCADE|RESTRICT|SET NULL)#', '', $define);
         return define
+
+    def to_val(self, value) -> str:
+        return value.get_id() if value is not None else None
+
+    def to_value(self, val: str):
+        return self._table.get_by_id(val) if val is not None else None
+

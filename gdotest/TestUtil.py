@@ -1,6 +1,8 @@
 import io
+import json
 import time
 import urllib
+from http.cookies import SimpleCookie
 from urllib.parse import urlencode
 
 from gdo.base.Application import Application
@@ -42,6 +44,8 @@ def install_module_b(name):
 
 class WebPlug:
 
+    COOKIES = {}
+
     def __init__(self, url):
         self._headers = {}
         self._status = "100 CONTINUE"
@@ -72,6 +76,10 @@ class WebPlug:
             'mod_wsgi.request_start': str(round(time.time())),
             'REQUEST_SCHEME': 'http',
         }
+        cookies = self.get_cookies()
+        if cookies:
+            self._environ['HTTP_COOKIE'] = cookies
+
         if len(self._post.items()):
             post_bytes = urlencode(self._post).encode('UTF-8')
             self._environ['wsgi.input'] = io.BytesIO(post_bytes)
@@ -85,7 +93,25 @@ class WebPlug:
     def start_request(self, status, headers):
         self._status = status
         self._headers = headers
+        for name, value in headers:
+            if name == 'Set-Cookie':
+                self.parse_cookie(value)
         return True
+
+    @classmethod
+    def parse_cookie(cls, value):
+        cookie = SimpleCookie()
+        cookie.load(value)
+        cls.COOKIES = {key: morsel.value for key, morsel in cookie.items()}
+
+    @classmethod
+    def get_cookies(self) -> str:
+        back = ''
+        for key, value in self.COOKIES.items():
+            back += f"{key}={value}"
+        return back
+
+
 
     def get_remote_host(self):
         return '::1'

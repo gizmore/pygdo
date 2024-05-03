@@ -5,7 +5,7 @@ from gdo.net.GDT_Url import GDT_Url
 
 class wget(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return 'wget'
 
     def gdo_parameters(self):

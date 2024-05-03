@@ -6,7 +6,7 @@ from gdo.ui.GDT_Error import GDT_Error
 
 class server_error(Method):
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return ""
 
     def gdo_execute(self):

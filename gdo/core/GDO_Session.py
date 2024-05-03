@@ -37,7 +37,7 @@ class GDO_Session(GDO):
             instance = cls.for_cookie(cookie)
         else:
             instance = cls.blank_error()
-        return Application.storage('session', instance)
+        return instance
 
     @classmethod
     def set_default_header(cls):

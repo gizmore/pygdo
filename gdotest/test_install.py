@@ -63,6 +63,14 @@ class InstallTestCase(unittest.TestCase):
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), 'install', "--all", '-u'], capture_output=True)
         self.assertIsNotNone(result, "Install all")
 
+    def test_08_install_admin_user(self):
+        subprocess.run(["python3", Application.file_path("gdoadm.py"), 'admin', '-u', "gizmore", "11111111", "gizmore@gizmore.org"], capture_output=True)
+        admins = GDO_User.admins()
+        self.assertEqual(1, len(admins), "Cannot install admin user")
+        subprocess.run(["python3", Application.file_path("gdoadm.py"), 'admin', '-u', "gizmore", "11111111", "gizmore@gizmore.org"], capture_output=True)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

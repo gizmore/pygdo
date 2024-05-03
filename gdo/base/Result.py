@@ -49,10 +49,7 @@ class Result:
         return data
 
     def fetch_all(self):
-        back = []
-        for row in self:
-            back.append(row)
-        return back
+        return [row for row in self]
 
     def fetch_row(self) -> list[str] | None:
         row = self._result.fetchone()
@@ -61,21 +58,22 @@ class Result:
         if isinstance(row, dict):
             return list(row.values())
         return row
-        # return list(map(lambda val: val.decode() if isinstance(val, bytearray) else val, row))
 
     def fetch_assoc(self):
         row = self._result.fetchone()
-        if row is None:
-            return None
-        return row
+        return row if row is not None else None
 
     def fetch_val(self):
+        """
+        Fetch the first column of the next row.
+        """
         row = self.fetch_row()
-        if row is None:
-            return None
-        return row[0]
+        return None if row is None else row[0]
 
     def fetch_object(self):
+        """
+        Fetch the next row as an object piped through the cache
+        """
         row = self.fetch_assoc()
         if row is None:
             return None

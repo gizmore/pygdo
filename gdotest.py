@@ -1,5 +1,6 @@
 import unittest
 
+from gdotest.test_admin import AdminTestCase
 from gdotest.test_cli import CLITestCase
 from gdotest.test_configure import ConfigureTestCase
 from gdotest.test_core import CoreTestCase
@@ -28,6 +29,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(ConfigureTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(CoreTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(ModuleConfigTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(AdminTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DateTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(MathTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DBTestCase))

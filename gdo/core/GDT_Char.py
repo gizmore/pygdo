@@ -8,4 +8,10 @@ class GDT_Char(GDT_String):
 
     def maxlen(self, maxlen: int):
         super().maxlen(maxlen)
-        return self.minlen(maxlen)
+        super().minlen(maxlen)
+        return self
+
+    def minlen(self, minlen: int):
+        super().maxlen(minlen)
+        super().minlen(minlen)
+        return self

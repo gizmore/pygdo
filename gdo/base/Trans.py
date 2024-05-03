@@ -1,5 +1,5 @@
 import json
-import toml
+import tomlkit
 
 from gdo.base.Application import Application
 from gdo.base.Util import Files
@@ -52,7 +52,7 @@ class Trans:
                 file_path = f"{path}_{iso}.toml"  # Construct the file path
                 if Files.exists(file_path):
                     with open(file_path, 'r') as f:
-                        more = toml.load(f)
+                        more = tomlkit.load(f)
                         cls.CACHE[iso].update(more)
         return cls.CACHE[iso]
 

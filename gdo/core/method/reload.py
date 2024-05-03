@@ -10,7 +10,7 @@ class reload(Method):
     Reload all gdo modules.
     """
 
-    def cli_trigger(self) -> str:
+    def gdo_trigger(self) -> str:
         return 'reload'
 
     def gdo_execute(self):

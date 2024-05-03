@@ -4,6 +4,8 @@ As this is based on phpgdo7 i introduce pygdo8.
 
 Listed are changes in the gdo behaviour compared to phpgdo7.
 
+- The naming convention "var" for db str and "value" for the converted values has been changed.
+  It is now "val" and "value", because var is a builtin keyword in python.
 - ~~GDT_Response~~ has been removed because it is not required anymore. Simply return any GDT
 - ~~GDT_Method~~ has been removed because Method now inherits GDT
 - The methods input dictionaries got removed because input is now directly stored in the GDTs.

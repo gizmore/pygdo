@@ -1,7 +1,7 @@
 from gdo.base.GDO import GDO
 
 
-class GDO_ModuleVar(GDO):
+class GDO_ModuleVal(GDO):
 
     def gdo_columns(self):
         from gdo.base.GDO_Module import GDO_Module

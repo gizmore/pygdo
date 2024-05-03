@@ -2,7 +2,7 @@ import os
 import sys
 import threading
 import time
-import toml
+import tomlkit
 
 from gdo.base.Events import Events
 from gdo.base.Logger import Logger
@@ -46,7 +46,7 @@ class Application:
         cls.get_page().init()
         if os.path.isfile(config_path):
             with open(config_path, 'r') as f:
-                cls.CONFIG = toml.load(f)
+                cls.CONFIG = tomlkit.load(f)
                 cfg = cls.CONFIG['db']
                 cls.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
         else:
@@ -62,7 +62,7 @@ class Application:
         return cls.DB is not None
 
     @classmethod
-    def file_path(cls, path: str):
+    def file_path(cls, path: str = ''):
         return os.path.join(cls.PATH, path)
 
     @classmethod

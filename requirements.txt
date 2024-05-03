@@ -4,4 +4,4 @@ mysql-connector
 packaging
 psutil
 pytz
-toml
+tomlkit
