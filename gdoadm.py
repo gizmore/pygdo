@@ -170,6 +170,7 @@ class App:
             for name in providers.keys():
                 bold = not (name in on_disk and on_disk[name].is_core_module())
                 green = loader.module_installed(name)
+                name = Render.underline(name, Mode.CLI) if on_disk[name].gdo_is_site_module() else name
                 name = Render.bold(name, Mode.CLI) if bold else name
                 name = Render.green(name, Mode.CLI) if green else name
                 decorated.append(name)
