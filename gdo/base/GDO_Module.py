@@ -34,6 +34,10 @@ class GDO_Module(WithModuleConfig, GDO):
         self._priority = 50
         self._inited = False
 
+    def is_core_module(self) -> bool:
+        from gdo.core.module_core import module_core
+        return self.get_name() in module_core.instance().gdo_dependencies()
+
     def gdo_install(self):
         pass
 

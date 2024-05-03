@@ -38,10 +38,11 @@ def create_providers():
     modules = loader.load_modules_fs()
     data = {}
     for module in modules.values():
-        data[module.get_name()] = [
-            [get_git_remote(module.file_path())],
-            module.gdo_dependencies(),
-        ]
+        if module.is_installable():
+            data[module.get_name()] = [
+                [get_git_remote(module.file_path())],
+                module.gdo_dependencies(),
+            ]
     # Overwrite with multi providers.
     for name, value in MULTI_PROVIDERS.items():
         data[name] = [value[0], value[1]]

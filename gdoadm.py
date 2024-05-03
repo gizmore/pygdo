@@ -9,6 +9,7 @@ from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Render import Render, Mode
 from gdo.base.Util import Files, module_enabled, Arrays
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
@@ -159,15 +160,22 @@ class App:
         parser.add_argument('-s', '--ssh', action='store_true')
         args = parser.parse_args(sys.argv[2:])
 
+        loader = ModuleLoader.instance()
+        on_disk = loader.load_modules_fs()
         providers = self._load_provider_toml()
 
         if not args.modules:
             print(f"There are {len(providers.keys())} modules known to me:")
-            print(', '.join(providers.keys()))
+            decorated = []
+            for name in providers.keys():
+                bold = not (name in on_disk and on_disk[name].is_core_module())
+                green = loader.module_installed(name)
+                name = Render.bold(name, Mode.CLI) if bold else name
+                name = Render.green(name, Mode.CLI) if green else name
+                decorated.append(name)
+            print(', '.join(decorated))
             exit(0)
 
-        loader = ModuleLoader.instance()
-        on_disk = loader.load_modules_fs()
         wanted = args.modules.lower().split(',')
         unknown = []
         for name in wanted:

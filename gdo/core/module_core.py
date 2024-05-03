@@ -35,6 +35,7 @@ class module_core(GDO_Module):
             'language',
             'mail',
             'net',
+            'ui',
         ]
 
     def gdo_module_config(self) -> list[GDT]:

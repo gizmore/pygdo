@@ -7,20 +7,24 @@ You might want to skip to [Install PyGDOv8](#install-pygdov8)
 
 ## Dependencies
 
-- Linux
+Required:
+
 - git
-- Apache 2.4 **WSGI** (nginx unknown)
+- Linux or Windows (untested)
 - MariaDB or MySQL
-- Python 3.10 (not exactly known)
+- Python 3.10
 - Some python libraries ([requirements.txt](../requirements.txt))
 
-Optionally i recommend PyCharm from JetBrains.
+Optionally:
+
+- PyCharm
+- Apache 2.4 **WSGI**
+- nginx (untested)
 
 
 ## Install Pre-Requisites
 
 This section describes installing the required system software.
-
 
 ### Install linux
 
@@ -28,13 +32,20 @@ A debian based linux distribution is used during development.
 
 ### Install git
 
-`aptitude install git`
+Windows users have to install [git4windows](https://git-scm.com/download/win).
+They will not regret this.
+TODO: Tell them nice git4win setup settings.
+
+```
+aptitude install git
+```
 
 ### Install apache2.4
 
 I highly can recommend mpm_itk.
 Required is mod_wsgi.
 
+Windows users should try [wampserver]()
 
 ### Install MariaDB
 
@@ -49,57 +60,135 @@ but first you need to download pygdo.
 
 ### Download pygdo
 
-`cd webroot`
-
-`git clone https://github.com/gizmore/pygdo`
-
-`cd pygdo`
+```
+cd webroot
+git clone https://github.com/gizmore/pygdo
+cd pygdo
+```
 
 ### Create protected/config.toml
 
 Create a default config in `protected/config` and edit the file afterwards.
 
-`cd pygdo`
+```
+cd pygdo
+./gdo_adm.sh configure
+```
 
-`./gdo_adm.sh configure` or `./gdo_adm.sh configure --interactive`
+Planned: `./gdo_adm.sh configure --interactive`
 
 ### Create a database
 
-`cd pygdo`
-
-`./gdo_adm.sh database`
-
-Follow the instructions.
+```
+./gdo_adm.sh database --mysql # This will only print a little help.
+```
 
 ### Download more modules
 
-(TODO)
+To get an overview of available extension modules, and to clone them,
+you can use the gdo_adm provide command:
 
-Example: `./gdo_adm.sh provide login,irc
+```
+./gdo_adm.sh provide # To list all modules
+```
+
+```
+./gdo_adm.sh provide login,irc # To clone more modules
+```
+
+This will clone the modules and their dependencies.
 
 ### Install modules
 
-`./gdo_adms.h install --all`
+After you cloned everything, you can install modules with the install command:
+
+```
+./gdo_adms.sh install --all
+```
+
+This will install all modules available on the file system.
+If you want to omit some modules, specify them.
+Dependencies are resolved.
+
+```
+./gdo_adm.sh install irc,log*
+```
+
+### PyGDO WSGI
+
+PyGDO supports WSGI for the HTML render mode.
+All requests are routed through [index.py](../index.py).
+
+#### Apache2.4
+
+```
+./gdo_adm.sh webserver --apache
+```
+
+Follow the instructions
+
+My localhost config:
+
+```
+<VirtualHost *:80>
+	WSGIScriptReloading Off
+	WSGIProcessGroup pygdo
+	WSGIDaemonProcess pygdo user=gizmore group=gizmore threads=5 python-home=/usr/ home=/home/gizmore/PycharmProjects/pygdo/
+        WSGIScriptAlias / /home/gizmore/PycharmProjects/pygdo/index.py  process-group=pygdo application-group=%{GLOBAL}
+        ServerName py.giz.org
+        AllowEncodedSlashes NoDecode
+        DocumentRoot /home/gizmore/PycharmProjects/pygdo/
+	<Directory "/home/gizmore/PycharmProjects/pygdo/">
+                Options +FollowSymLinks +Indexes +ExecCGI
+                AllowOverride All
+                Require all granted
+        </Directory>
+        ErrorLog /home/gizmore/www/pygdo.error.log
+        CustomLog /home/gizmore/www/pygdo.access.log combined
+</VirtualHost>
+```
+
+TODO: NGINX
+
+---
 
 ## Optional installation process
 
-### Setup pygdo PATH variable
+### Setup pygdo command
 
-Optional:
+**Optional**:
 
-Follow the instructions of `./gdo_adm.sh setenv` or use `./gdo_adm.sh setenv -x`.
+Add `pygdo/bin/` to your PATH environment variables.
 
+TODO: Windows users explaination.
+
+Follow the instructions of
+
+```
+./gdo_adm.sh setenv
+```
+
+There is an `-x` switch to just do it.
 
 ### Test the installation
 
-Optional:
+**Optional**:
 
 Test with:
 
-`python3 bin/pygdo.py echo Hello world`
+```
+python3 bin/pygdo.py echo Hello world
+```
 
 With environment PATH enabled:
 
-`pygdo echo 1`
+```
+pygdo echo Hello World
+```
+
+---
 
 ## Test more
+
+Read the TESTING chapter of this documentation.
+
