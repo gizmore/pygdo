@@ -15,6 +15,7 @@ class Application:
     PROTOCOL = 'http'
     LOADER: object
     EVENTS: 'Events'
+    SERVER: object  # This server instance is the server for the GHOST user :/
     STORAGE = threading.local()
     LANG_ISO = 'en'
     TIME = time.time()
@@ -115,12 +116,14 @@ class Application:
 
     @classmethod
     def init_web(cls, environ):
+        from gdo.core.GDO_Server import GDO_Server
         cls.STORAGE.time_start = float(environ.get('mod_wsgi.request_start')) / 1000000.0
         cls.STORAGE.environ = environ
         cls.STORAGE.headers = {}
         cls.init_cookies(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
         cls.PROTOCOL = environ['REQUEST_SCHEME']
+        cls.SERVER = GDO_Server.get_by_connector('Web')
         cls.mode(Mode.HTML)
 
     @classmethod

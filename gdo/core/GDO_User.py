@@ -32,6 +32,7 @@ class GDO_User(GDO):
     @classmethod
     def ghost(cls):
         return cls.blank({
+            'user_server': Application.SERVER.get_id(),
             'user_type': GDT_UserType.GHOST,
         })
 
