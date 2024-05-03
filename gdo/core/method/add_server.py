@@ -13,6 +13,9 @@ class add_server(WithPermissionCheck, Method):
     def gdo_trigger(self) -> str:
         return "add_server"
 
+    def gdo_user_permission(self) -> str | None:
+        return 'staff'
+
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Name('username'),
