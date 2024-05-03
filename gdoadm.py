@@ -201,9 +201,12 @@ class App:
                         print(f"{name} has multiple providers:")
                         for url in multi:
                             n += 1
-                            print(f"{n}) {url}")
+                            print(f"{n}) {git_remote_url(url, args.ssh)}")
                         choice = input(f"Please enter a choice from 1 to {n} (1): ")
-                        n = int(choice)
+                        if choice == '':
+                            n = 1
+                        else:
+                            n = int(choice)
                         choices[name] = git_remote_url(multi[n - 1], args.ssh)
                         break
                     except KeyboardInterrupt:

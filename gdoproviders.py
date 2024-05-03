@@ -3,11 +3,11 @@ import subprocess
 import tomlkit
 
 from gdo.base.Application import Application
-from gdo.base.GDO_Module import GDO_Module
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import Files
 
 # Multi Providers are treated in a special way... :(
+# You have to define them manually here.
 MULTI_PROVIDERS = {
     'captcha': (['https://github.com/gizmore/pygdo-captcha', 'https://github.com/gizmore/pygdo-recaptcha'], ['ui']),
 }
@@ -37,13 +37,14 @@ def create_providers():
     loader = ModuleLoader.instance()
     modules = loader.load_modules_fs()
     data = {}
-    for name, value in MULTI_PROVIDERS.items():
-        data[name] = [value[0], value[1]]
     for module in modules.values():
         data[module.get_name()] = [
             [get_git_remote(module.file_path())],
             module.gdo_dependencies(),
         ]
+    # Overwrite with multi providers.
+    for name, value in MULTI_PROVIDERS.items():
+        data[name] = [value[0], value[1]]
     file_contents = tomlkit.dumps(dict(sorted(data.items())))
     print("------------ PROVIDERS -----------")
     print(file_contents)
