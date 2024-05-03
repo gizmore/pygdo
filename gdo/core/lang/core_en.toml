@@ -104,3 +104,10 @@ err_dog_already_running = "The bot is already running. You can force a new proce
 mt_core_add_server = "Add Server"
 md_core_add_server = "Add a new Server with a connector."
 msg_added_dog_server = "A new %s server has been added: %s ID#%s."
+
+###################
+### Clear Cache ###
+###################
+mt_core_clear_cache = "Clear Cache"
+md_core_clear_cache = "Clear all caches."
+msg_cache_cleared = "Caches have been cleared."

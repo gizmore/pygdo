@@ -6,6 +6,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_MD5 import GDT_MD5
 from gdo.core.GDT_Path import GDT_Path
+from gdotest.TestUtil import cli_plug
 
 
 class CoreTestCase(unittest.TestCase):
@@ -39,6 +40,9 @@ class CoreTestCase(unittest.TestCase):
         self.assertEqual(gdt.render_txt(), "31,337.142", "Float renders not nice Tryout #1")
         self.assertEqual(gdt.precision(6).render_txt(), "31,337.141569", "Float renders not nice Tryout #1")
         self.assertEqual(gdt.no_thousands().render_txt(), "31337.141569", "Float renders not nice Tryout #1")
+
+    def test_05_clear_cache(self):
+        cli_plug(None, "cc")
 
 
 if __name__ == '__main__':

@@ -11,6 +11,7 @@ from gdo.base.Parser import WebParser
 from gdo.base.Render import Mode
 from gdo.base.Util import (Strings, Files, dump, bytelen)
 from gdo.base.method.client_error import client_error
+from gdo.base.method.dir_server import dir_server
 from gdo.base.method.file_server import file_server
 from gdo.base.method.server_error import server_error
 from gdo.core.GDO_Session import GDO_Session
@@ -55,15 +56,17 @@ def application(environ, start_response):
             del qs['_url']
             if not url:
                 url = 'core.welcome.html'
-        if Files.is_file(Application.file_path(url)):
+
+        path = Application.file_path(url)
+
+        if Files.is_file(path):
             session = GDO_Session.start(False)
-            method = file_server().input('_url', Application.file_path(url))
+            method = file_server().input('_url', path)
             gdt = method.execute()
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
             for chunk in gdt:
                 yield chunk
-            return None
         else:
             session = GDO_Session.start(True)
             Application.set_current_user(session.get_user())
@@ -71,8 +74,12 @@ def application(environ, start_response):
             user = session.get_user()
             server = user.get_server()
             channel = None
-            parser = WebParser(user, server, channel, session)
-            method = parser.parse(url)
+            if Files.is_dir(path):
+                session = GDO_Session.start(False)
+                method = dir_server().input('_url', path)
+            else:
+                parser = WebParser(user, server, channel, session)
+                method = parser.parse(url)
             if not method:
                 method = not_found().env_user(session.get_user()).input('_url', url)
 

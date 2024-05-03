@@ -72,7 +72,7 @@ def reload_history():
 
 def repl():
     from gdo.base.Application import Application
-    from gdo.base.Exceptions import GDOModuleException
+    from gdo.base.Exceptions import GDOModuleException, GDOError
     reload_history()
     while True:
         try:
@@ -83,7 +83,7 @@ def repl():
                 break
             Application.tick()
             process_line(input_line)
-        except GDOModuleException as ex:
+        except (GDOModuleException, GDOError) as ex:
             print(str(ex))
         except KeyboardInterrupt:
             print("\nExiting...")

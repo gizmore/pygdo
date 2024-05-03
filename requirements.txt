@@ -1,5 +1,6 @@
 bcrypt
 httplib2
+mysql
 mysql-connector
 packaging
 psutil

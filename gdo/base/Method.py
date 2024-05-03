@@ -3,8 +3,9 @@ import argparse
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError, GDOParamError
 from gdo.base.GDT import GDT
+from gdo.base.Render import Mode
 from gdo.base.Trans import t, thas
-from gdo.base.Util import Strings, href, module_enabled, Arrays
+from gdo.base.Util import Strings, href, module_enabled, Arrays, err
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
 from gdo.base.WithInput import WithInput
@@ -178,11 +179,15 @@ class Method(WithEnv, WithInput, WithError, GDT):
     # Message #
     ###########
 
-    def msg(self, key, args: list = None):
+    def reply(self, key: str, args: list = None):
+        from gdo.core.GDT_String import GDT_String
+        return GDT_String('reply').text(key, args)
+
+    def msg(self, key: str, args: list = None):
         self.module().msg(key, args)
         return self
 
-    def err(self, key, args: list = None):
+    def err(self, key: str, args: list = None):
         self.module().err(key, args)
         return self
 
@@ -253,14 +258,15 @@ class Method(WithEnv, WithInput, WithError, GDT):
                     return False
         return True
 
-    def has_permission(self, user):
+    def has_permission(self, user) -> bool:
         return self.gdo_has_permission(user)
 
-    def allows_connector(self):
+    def allows_connector(self) -> bool:
         connectors = self.gdo_connectors()
         if not connectors:
             return True
-        return self._env_server.get_connector().get_name().lower() in connectors
+        connector = self._env_server.get_connector()
+        return connector.get_name().lower() in connectors
 
     def get_arg_parser(self, is_http: bool):
         if hasattr(self, '_parser'):
@@ -282,8 +288,9 @@ class Method(WithEnv, WithInput, WithError, GDT):
     ##########
     # Render #
     ##########
-    def render_cli(self) -> str:
+    def render(self, mode: Mode = Mode.HTML):
+        from gdo.ui.GDT_Error import GDT_Error
         if self.has_error():
-            return self.render_error()
+            return GDT_Error().text(self._errkey, self._errargs).render()
         else:
             return self.gdo_render_descr()

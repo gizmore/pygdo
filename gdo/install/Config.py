@@ -3,7 +3,7 @@ import shutil
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
-from gdo.base.Util import Arrays
+from gdo.base.Util import Arrays, Files
 from gdo.core.GDT_Template import GDT_Template
 
 
@@ -37,6 +37,7 @@ class Config:
             cls.data_str('file.directory', 'files/'),
             GDT_Section().title_raw('Database'),
             cls.data_str('db.host', 'localhost'),
+            cls.data_int('db.port', 3306),
             cls.data_str('db.name', 'pygdo'),
             cls.data_str('db.user', 'pygdo'),
             cls.data_str('db.pass', 'pygdo'),
@@ -80,7 +81,8 @@ class Config:
 
     @classmethod
     def rewrite(cls, path: str, data: dict[str, GDT]):
-        shutil.copyfile(path, path + ".OLD")
+        if Files.is_file(path):
+            Files.copy(path, path + ".OLD")
         out = GDT_Template.python('install', 'config.toml.html', {'data': data})
         if out:
             with open(path, 'w') as fo:

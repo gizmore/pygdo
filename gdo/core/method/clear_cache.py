@@ -7,6 +7,7 @@ class clear_cache(Method):
     """
     Clear all caches. Uses an Event to allow others to clean up as well
     """
+
     def gdo_user_permission(self) -> str | None:
         return 'admin'
 
