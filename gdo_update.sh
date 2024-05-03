@@ -18,6 +18,8 @@ if [ $(uname -s) == "FreeBSD" ]; then
         XARGS_OPTIONS="-S 1024 -R 2 $XARGS_OPTIONS"
 fi
 
+mkdir temp/git_pull
+
 echo "Resetting sourcecode to factory defaults for preprocessor."
 bash gdo_reset.sh
 

@@ -9,6 +9,7 @@ __pycache__/
 /files/
 /files_test/
 /protected/
+/temp/*
 /.htaccess
 /gdo/*
 !/gdo/account/
