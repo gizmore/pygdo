@@ -109,9 +109,11 @@ class Application:
 
     @classmethod
     def init_cli(cls):
+        from gdo.core.GDO_Server import GDO_Server
         cls.STORAGE.ip = '::1'
         cls.STORAGE.cookies = {}
         cls.STORAGE.time_start = time.time()
+        cls.SERVER = GDO_Server.get_by_connector('Bash')
         cls.mode(Mode.CLI)
 
     @classmethod
