@@ -46,7 +46,7 @@ def create_providers():
             ]
     # Overwrite with multi providers.
     for name, value in MULTI_PROVIDERS.items():
-        data[name] = [value[0], value[1]]
+        data[name] = [value[0], value[1], value[2]]
     file_contents = tomlkit.dumps(dict(sorted(data.items())))
     print("------------ PROVIDERS -----------")
     print(file_contents)
