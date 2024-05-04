@@ -42,6 +42,7 @@ def create_providers():
             data[module.get_name()] = [
                 [get_git_remote(module.file_path())],
                 module.gdo_dependencies(),
+                module.gdo_is_site_module(),
             ]
     # Overwrite with multi providers.
     for name, value in MULTI_PROVIDERS.items():
