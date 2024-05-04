@@ -129,7 +129,8 @@ def cli_plug(user, command) -> str:
     session = GDO_Session.for_user(user)
     Application.mode(Mode.CLI)
     result = Parser(Mode.CLI, user, server, channel, session).parse(command).execute()
-    out = GDT_Page.instance()._top_bar.render_cli() + result.render_cli()
+    out = GDT_Page.instance()._top_bar.render()
+    out += result.render(Mode.CLI)
     return out
 
 

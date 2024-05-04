@@ -20,6 +20,9 @@ msg_back_to = "You can now get back to %s."
 ##############
 ### Fields ###
 ##############
+id = "ID"
+name = "Name"
+enabled = "Enabled"
 login = "Login"
 tt_login = "Use your username or your email."
 password = "Password"

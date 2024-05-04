@@ -5,7 +5,7 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_UserType import GDT_UserType
 
 
-class InstallUser:
+class InstallCore:
 
     @classmethod
     def now(cls):

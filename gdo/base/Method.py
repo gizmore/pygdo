@@ -291,6 +291,6 @@ class Method(WithEnv, WithInput, WithError, GDT):
     def render(self, mode: Mode = Mode.HTML):
         from gdo.ui.GDT_Error import GDT_Error
         if self.has_error():
-            return GDT_Error().text(self._errkey, self._errargs).render()
+            return GDT_Error().text(self._errkey, self._errargs).render(self._env_mode)
         else:
             return self.gdo_render_descr()

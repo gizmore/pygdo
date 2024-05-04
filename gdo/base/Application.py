@@ -15,7 +15,7 @@ class Application:
     PROTOCOL = 'http'
     LOADER: object
     EVENTS: 'Events'
-    SERVER: object  # This server instance is the server for the GHOST user :/
+    # SERVER: object  # This server instance is the server for the GHOST user :/
     STORAGE = threading.local()
     LANG_ISO = 'en'
     TIME = time.time()
@@ -113,7 +113,7 @@ class Application:
         cls.STORAGE.ip = '::1'
         cls.STORAGE.cookies = {}
         cls.STORAGE.time_start = time.time()
-        cls.SERVER = GDO_Server.get_by_connector('Bash')
+        # cls.SERVER = GDO_Server.get_by_connector('Bash')
         cls.mode(Mode.CLI)
 
     @classmethod
@@ -125,7 +125,7 @@ class Application:
         cls.init_cookies(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
         cls.PROTOCOL = environ['REQUEST_SCHEME']
-        cls.SERVER = GDO_Server.get_by_connector('Web')
+        # cls.SERVER = GDO_Server.get_by_connector('Web')
         cls.mode(Mode.HTML)
 
     @classmethod

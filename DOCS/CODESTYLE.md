@@ -75,8 +75,14 @@ Example: _gdo_columns()_ in GDO to specify db columns.
   Example __env_server()__ in [WithEnv](../gdo/base/WithEnv.py).
   Setters should return self.
 
+- Getters for module config variables are prefixed with 'cfg_'.
+
 - There are no getters, unless you would need to compute a value to get.
   Those getters are prefixed with "get_".
+
+- Display functions are prefixed with "render_" if they render itself.
+  Display functions are prefixed with "display_" if they render a parameter.
+
 
 
 ## Module structure

@@ -7,16 +7,19 @@ You might want to skip to [Install PyGDOv8](#install-pygdov8)
 
 ## Dependencies
 
-Required:
+**REQUIRED**:
 
 - git
 - Linux or Windows (untested)
-- MariaDB or MySQL
-- Python 3.10
+- MariaDB or MySQL (planned Postgres and SQLite)
+- Python 3.10 (3.13 segfaulted here)
 - Some python libraries ([requirements.txt](../requirements.txt))
 
-Optionally:
+_Optionally_:
 
+- NodeJS
+- NPM
+- Yarn
 - PyCharm
 - Apache 2.4 **WSGI**
 - nginx (untested)
@@ -53,6 +56,23 @@ Windows users should try [wampserver]()
 
 ### Install required Python3 packages
 
+---
+
+## Install Optional packages
+
+These packages are optional
+
+### Install NodeJS, NPM and yarn
+
+I use yarn to manage asset and js libraries.
+This will install it globally.
+
+```
+sudo aptitude install nodejs npm
+sudo npm install -g yarn
+```
+
+
 ## Install PyGDOv8
 
 To install this software you should use the `./gdo_adm.sh` utility,
@@ -64,6 +84,12 @@ but first you need to download pygdo.
 cd webroot
 git clone https://github.com/gizmore/pygdo
 cd pygdo
+```
+
+### Install Python Requirements
+
+```
+pip3 install -r requirements.txt
 ```
 
 ### Create protected/config.toml
@@ -190,5 +216,9 @@ pygdo echo Hello World
 
 ## Test more
 
-Read the TESTING chapter of this documentation.
+```
+pip3 install unittest
+python3 gdotestall.py
+```
 
+For more information, read the [TESTING](./TESTING.md) chapter of this documentation.

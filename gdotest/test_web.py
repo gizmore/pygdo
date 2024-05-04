@@ -76,8 +76,7 @@ class WebTestCase(unittest.TestCase):
 
     def test_11_connector_not_allowed(self):
         result = WebPlug("core.help.cli").exec()
-        self.assertIn("not supported", result, "A non Web Method is executing in HTTP.")
-
+        self.assertIn("does not work inside this connector", result, "A non Web Method is executing in HTTP.")
 
 if __name__ == '__main__':
     unittest.main()

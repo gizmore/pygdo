@@ -21,6 +21,11 @@ class ModuleLoader:
     def instance(cls):
         return Application.LOADER
 
+    def enabled(self):
+        for module in self._cache.values():
+            if module.is_enabled():
+                yield module
+
     def reset(self):
         self._cache = {}
 

@@ -14,6 +14,7 @@ from gdo.base.Util import Files, module_enabled, Arrays
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_UserPermission import GDO_UserPermission
+from gdo.core.method.clear_cache import clear_cache
 from gdo.install.Config import Config
 from gdo.install.Installer import Installer
 from gdo.mail import module_mail
@@ -36,6 +37,7 @@ class App:
             admin       Create a user that is admin
             wipe        Remove modules from the database.
             migrate     Auto-Migrate the database for modules.
+            update      Triggers after update hooks.
             skel        Create a module skeleton inside an existing module folder.
         ''')
         parser.add_argument('command', help='subcommand to run')
@@ -257,27 +259,32 @@ class App:
         if args.all:
             modules = list(loader.load_modules_fs('*', reinstall).values())
         elif args.module:
-            modules = ModuleLoader.instance().load_modules_fs(args.module, reinstall)
+            modules = ModuleLoader.instance().load_modules_fs(args.module.lower(), reinstall)
             modules = list(modules.values())
         else:
             modules = []
 
         if not modules:
-            print("No modules found!")
+            print("No modules found!", file=sys.stderr)
             exit(-1)
 
         loader.init_modules()
         Installer.install_modules(modules, True)
+        self._run_yarn_script()
         print("All Done!")
 
     def admin(self):
         parser = argparse.ArgumentParser(description='Create / assign an admin user for a connector (web by default).'
                                                      'Example: ./gdo_adm.sh admin gizmore 11111111 gizmore@gizmore.org')
         parser.add_argument('--connector', default='web')
+        parser.add_argument('--unittests', '-u', action='store_true')
         parser.add_argument('username')
         parser.add_argument('password')
         parser.add_argument('email', nargs='?')
         args = parser.parse_args(sys.argv[2:])
+        if args.unittests:
+            import unittest  # Required for unittest detection later
+            Application.init(os.path.dirname(__file__))
 
         server = GDO_Server.get_by_connector(args.connector)
         user = server.get_or_create_user(args.username)
@@ -291,6 +298,7 @@ class App:
         if email:
             if module_enabled('mail'):
                 module_mail.instance().set_email_for(user, email)
+        print("All Done!")
 
     def wipe(self):
         parser = argparse.ArgumentParser(description='Remove modules. Example: ./gdo_adm.sh wipe --all OR ./gdo_adm.sh wipe ma*,irc ')
@@ -344,6 +352,16 @@ class App:
         Installer.migrate_modules(modules)
         print("All done!")
 
+    def update(self):
+        parser = argparse.ArgumentParser(description='Execute functions required after an update like clear_cache')
+        args = parser.parse_args(sys.argv[2:])
+        loader = ModuleLoader.instance()
+        loader.load_modules_db()
+        loader.init_modules()
+        self._run_yarn_script()
+        clear_cache().gdo_execute()
+        print("All done!")
+
     def skel(self):
         parser = argparse.ArgumentParser(
             description='Create a module skeleton because we are lazy. Example: ./gdo_adm.sh skel module_name. The folder gdo/module_name has to exist.')
@@ -358,17 +376,35 @@ class App:
         Files.append_content(f"{base}lang/{name}_en.toml", f'module_{name} = "{name.title()}"\n')
         Files.create_dir(f"{base}method/")
         Files.append_content(f"{base}method/__init__.py", '\n')
-        Files.append_content(f"{base}.gitignore", '__pycache__/\n*.pclprof\n')
+        ignore = [
+            '__pycache__/',
+            '*.pclprof',
+            'node_modules/',
+            'yarn.lock',
+        ]
+        Files.append_content(f"{base}.gitignore", "\n".join(ignore) + '\n')
+        Files.touch(f"{base}requirements.txt", True)
         print("All done!")
+
+    def _run_yarn_script(self):
+        print("Running ./gdo_yarn.sh ")
+        result = subprocess.run(['./gdo_yarn.sh'], capture_output=True, text=True)
+        print(result.stdout)
+        print(result.stderr, file=sys.stderr)
+        print("Done.")
+
+    def _run_requirement_scripts(self):
+        pass
 
 
 def run_pygdo_admin():
     try:
         path = os.path.dirname(__file__) + "/"
         Application.init(path)
-        Application.init_cli()
-        Logger.init()
-        Application.init_cli()
+        try:
+            Application.init_cli()
+        except:
+            pass
         App().argparser()
     except Exception as ex:
         Logger.exception(ex)

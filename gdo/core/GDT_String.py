@@ -37,6 +37,12 @@ class GDT_String(WithLabel, GDT_Field):
         self._input_type = 'text'
         self.label(name)
 
+    def is_orderable(self) -> bool:
+        return True
+
+    ##############
+    # Attributes #
+    ##############
     def minlen(self, minlen: int):
         self._minlen = minlen
         return self

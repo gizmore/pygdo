@@ -9,6 +9,11 @@ and = "and"
 decimal_point = '.'
 thousands_sep = ','
 
+##############
+# GDO_Module #
+##############
+module_priority = "Priority"
+
 ######################
 # Method permissions #
 ######################

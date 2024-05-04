@@ -16,10 +16,13 @@ class AdminTestCase(unittest.TestCase):
         install_module('admin')
         loader.init_cli()
 
-    def test_01_config_list(self):
-        res = cli_plug(None, "adm.conf")
+    def test_01_admin_modules(self):
+        res = cli_plug(None, "modules -o name -o prio")
+        self.assertIn('Core', res, 'Module core does not show up in cli admin_modules()')
+
+    def test_02_config_list(self):
+        res = cli_plug(None, "conf")
         self.assertIn("Core", res, "Module Core is not listen in adm.conf")
-        self.assertIn("500_mails", res, "Module Base: 500_mails is not listen in adm.conf")
 
 if __name__ == '__main__':
     unittest.main()

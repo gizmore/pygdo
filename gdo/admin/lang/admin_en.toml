@@ -1,1 +1,15 @@
 module_admin = "Admin"
+
+##########
+# Config #
+##########
+mt_admin_config = "Configure"
+md_admin_config = "Configure and print module variables."
+
+###########
+# Modules #
+###########
+mt_admin_modules = "Modules"
+md_admin_modules = "List pygdo modules."
+
+

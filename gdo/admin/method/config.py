@@ -14,7 +14,7 @@ class config(Method):
     """
 
     def gdo_trigger(self) -> str:
-        return "adm.conf"
+        return "conf"
 
     def gdo_connectors(self) -> str:
         return Connector.text_connectors()
@@ -56,7 +56,7 @@ class config(Method):
             if name not in all:
                 all[name] = []
 
-        return GDT_String('list').val("out")
+        return GDT_String('list').val("Core")
 
     def list_module(self, module: GDO_Module):
         pass

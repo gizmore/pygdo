@@ -42,9 +42,6 @@ class WithFields:
     # Render #
     ##########
 
-    def render(self) -> str | list:
-        pass
-
     def render_cli(self) -> str:
         output = ""
         if hasattr(self, '_fields'):

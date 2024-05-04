@@ -61,7 +61,8 @@ def application(environ, start_response):
 
         if Files.is_file(path):
             session = GDO_Session.start(False)
-            method = file_server().input('_url', path)
+            user = session.get_user()
+            method = file_server().env_user(user).input('_url', path)
             gdt = method.execute()
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
@@ -92,15 +93,14 @@ def application(environ, start_response):
                 post_variables = parse_qs(post_data_decoded)
                 method.inputs(post_variables)
 
-            # Execute the method
             result = method.execute()
-
             if Application.is_html():
                 page = Application.get_page()
                 result = page.result(result).method(method)
-                for module in loader._cache.values():
+                for module in loader.enabled():
                     module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
+
             response = result.render(Application.get_mode())
             headers = Application.get_headers()
             if Application.is_html():

@@ -4,6 +4,7 @@ from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
+from gdo.base.Render import Mode, Render
 from gdo.base.Util import Files
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_String import GDT_String

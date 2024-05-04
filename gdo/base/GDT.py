@@ -138,6 +138,9 @@ class GDT:
     def has_fields(self) -> bool:
         return False
 
+    def writable(self, writable: bool = True):
+        pass
+
     def is_writable(self) -> bool:
         return False
 
@@ -150,6 +153,12 @@ class GDT:
     def all_fields(self):
         return []
 
+    def is_orderable(self) -> bool:
+        return False
+
+    def default_order(self) -> str:
+        return 'ASC'
+
     ###################
     # Render HTML TPL #
     ###################
@@ -160,10 +169,16 @@ class GDT:
     def html_class(self):
         return self.__class__.__name__.lower().replace('_', '-')
 
+    def filter_type(self) -> str:
+        return 'text'
+
     ##############
     # Render GDO #
     ##############
     def render(self, mode: Mode = Mode.HTML):
+        return self.render_gdt(mode)
+
+    def render_gdt(self, mode: Mode):
         """
         Call the appropriate render method
         """
@@ -180,9 +195,11 @@ class GDT:
     def render_form(self) -> str:
         return ''
 
+    def render_cell(self) -> str:
+        return self.render_html()
+
     def render_cli(self) -> str:
         return self.render_txt()
 
-    def render_txt(self):
+    def render_txt(self) -> str:
         return self.get_val()
-

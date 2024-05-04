@@ -13,11 +13,17 @@ from gdo.ui.WithTitle import WithTitle
 
 class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container):
     _actions: GDT_Menu
+    _slim: bool
 
     def __init__(self):
         super().__init__()
         self._href = '?'
         self._actions = GDT_Menu()
+        self._slim = False
+
+    def slim(self, slim: bool = True):
+        self._slim = slim
+        return self
 
     def actions(self):
         return self._actions

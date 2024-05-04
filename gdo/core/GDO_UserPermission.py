@@ -24,7 +24,7 @@ class GDO_UserPermission(GDO):
 
     @classmethod
     def users_with_perm_id(cls, perm_id: str):
-        return cls.table().select('pu_user_t.*').where(f'pu_perm={GDT.quote(perm_id)}').exec().fetch_all()
+        return cls.table().select('pu_user_t.*').join_object('pu_user').where(f'pu_perm={GDT.quote(perm_id)}').exec().fetch_all()
 
     def gdo_columns(self) -> list[GDT]:
         return [

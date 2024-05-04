@@ -2,6 +2,8 @@
 /.idea/
 /.venv/
 __pycache__/
+/node_modules/
+/yarn.lock
 *.pclprof
 /assets/
 /cache/

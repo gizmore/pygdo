@@ -1,3 +1,5 @@
+import functools
+
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.form.GDT_CSRF import GDT_CSRF
@@ -74,6 +76,7 @@ class MethodForm(Method):
     #             return gdt.to_value(gdt.get_val())
     #     return super().param_value(key)
 
+    @functools.cache
     def parameters(self) -> dict[str, GDT]:
         if hasattr(self, '_parameters'):
             return self._parameters

@@ -2,13 +2,13 @@ from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Util import Strings, dump
 from gdo.base.WithError import WithError
+from gdo.core.WithGDO import WithGDO
 from gdo.ui.WithIcon import WithIcon
 from gdo.ui.WithTooltip import WithTooltip
 
 
-class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
+class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
     _name: str
-    _gdo: GDO
     _not_null: bool
     _val: str
     _initial: str
@@ -18,6 +18,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
     _writable: bool
     _hidden: bool
     _positional: bool | None
+    _multiple: bool
 
     def __init__(self, name):
         super(GDT_Field, self).__init__()
@@ -32,6 +33,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         self._writable = True
         self._hidden = False
         self._positional = None
+        self._multiple = False
 
     def get_name(self):
         return self._name
@@ -48,7 +50,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         return self._value
 
     def val(self, val: str | list):
-        self._val = val[0] if isinstance(val, list) else val
+        self._val = val[0] if isinstance(val, list) and not self._multiple else val
         self._converted = False
         return self
 
@@ -60,8 +62,7 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
 
     def gdo(self, gdo: GDO):
         self._gdo = gdo
-        self._val = gdo.gdo_val(self._name)
-        return self
+        return self.val(gdo.gdo_val(self._name))
 
     def initial(self, val: str):
         self._initial = val
@@ -84,6 +85,10 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         self._unique = unique
         return self
 
+    def multiple(self, multiple: bool = True):
+        self._multiple = multiple
+        return self
+
     def positional(self, positional: bool = True):
         self._positional = positional
         return self
@@ -95,6 +100,10 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
 
     def is_not_null(self) -> bool:
         return self._not_null
+
+    def writable(self, writable: bool = True):
+        self._writable = writable
+        return self
 
     def is_writable(self) -> bool:
         return self._writable
@@ -129,6 +138,10 @@ class GDT_Field(WithTooltip, WithIcon, WithError, GDT):
         self._errkey = errkey
         self._errargs = errargs
         return False
+
+    ############
+    # Validate #
+    ############
 
     def validate(self, value: any) -> bool:
         if value is None:

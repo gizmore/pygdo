@@ -9,7 +9,7 @@ from gdo.base.Util import Files
 # Multi Providers are treated in a special way... :(
 # You have to define them manually here.
 MULTI_PROVIDERS = {
-    'captcha': (['https://github.com/gizmore/pygdo-captcha', 'https://github.com/gizmore/pygdo-recaptcha'], ['ui'], False),
+    'captcha': (['https://github.com/gizmore/pygdo-captcha', 'https://github.com/gizmore/pygdo-recaptcha'], [], False),
 }
 
 

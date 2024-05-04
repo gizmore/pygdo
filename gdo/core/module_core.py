@@ -12,7 +12,7 @@ from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_User import GDT_User
-from gdo.core.InstallUser import InstallUser
+from gdo.core.InstallCore import InstallCore
 from gdo.core.connector.Bash import Bash
 from gdo.core.connector.Web import Web
 from gdo.date.GDT_DateTime import GDT_DateTime
@@ -27,6 +27,10 @@ class module_core(GDO_Module):
     def gdo_init(self):
         Connector.register(Bash)
         Connector.register(Web, False)
+        self.subscribe('clear_cache', self.on_cc)
+
+    def on_cc(self):
+        delattr(GDO_User, 'SYSTEM')
 
     def gdo_dependencies(self) -> list:
         return [
@@ -46,6 +50,7 @@ class module_core(GDO_Module):
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
             GDT_Enum('show_perf').choices({"never": "Never", "always": "Always", "staff": "Staff"}).initial('always'),
+            GDT_Enum('minify').choices({"no": 'No', 'yes': 'Yes', 'concat': 'Concat'}).initial('no'),
         ]
 
     def gdo_user_config(self) -> list[GDT]:
@@ -68,6 +73,12 @@ class module_core(GDO_Module):
     def cfg_guest_system(self) -> bool:
         return self.get_config_value('guest_system')
 
+    def cfg_minify(self) -> str:
+        return self.get_config_value('minify')
+
+    def get_minify_append(self) -> str:
+        return '.min' if self.cfg_minify() != 'no' else ''
+
     def gdo_classes(self):
         return [
             GDO_Server,
@@ -81,7 +92,7 @@ class module_core(GDO_Module):
         ]
 
     def gdo_install(self):
-        InstallUser.now()
+        InstallCore.now()
 
     def gdo_load_scripts(self, page):
         self.add_css('css/pygdo.css')

@@ -19,10 +19,12 @@ class GDO_Module(WithModuleConfig, GDO):
 
     _priority: int
     _inited: bool
+    _license: str
 
     __slots__ = (
         '_priority',
         '_inited',
+        '_license',
     )
 
     @classmethod
@@ -33,10 +35,14 @@ class GDO_Module(WithModuleConfig, GDO):
         super().__init__()
         self._priority = 50
         self._inited = False
+        self._license = 'PyGDOv8'
 
     def is_core_module(self) -> bool:
         from gdo.core.module_core import module_core
         return self.get_name() in module_core.instance().gdo_dependencies()
+
+    def gdo_licenses(self) -> list[str]:
+        return ['LICENSE']
 
     def gdo_install(self):
         pass
@@ -67,10 +73,12 @@ class GDO_Module(WithModuleConfig, GDO):
         from gdo.core.GDT_AutoInc import GDT_AutoInc
         from gdo.core.GDT_Bool import GDT_Bool
         from gdo.core.GDT_Name import GDT_Name
+        from gdo.core.GDT_UInt import GDT_UInt
         return [
             GDT_AutoInc('module_id'),
-            GDT_Name('module_name').not_null(),
-            GDT_Bool('module_enabled').not_null().initial('1')
+            GDT_Name('module_name').not_null().writable(False).label('name'),
+            GDT_Bool('module_enabled').not_null().initial('1').label('enabled'),
+            GDT_UInt('module_priority').not_null().initial('50').writable(False),
         ]
 
     def gdo_classes(self):
@@ -150,11 +158,18 @@ class GDO_Module(WithModuleConfig, GDO):
     ##########
     # Assets #
     ##########
+    def get_minify_append(self) -> str:
+        from gdo.core.module_core import module_core
+        return '.min' if module_core.instance().cfg_minify() != 'no' else ''
+
     def add_css(self, filename: str):
         from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"
         GDT_Page.instance()._css.append(path)
         return self
+
+    def add_bower_css(self, filename: str):
+        return self.add_css(f'node_modules/{filename}')
 
     def add_js(self, filename: str):
         from gdo.ui.GDT_Page import GDT_Page
@@ -162,9 +177,12 @@ class GDO_Module(WithModuleConfig, GDO):
         GDT_Page.instance()._js.append(path)
         return self
 
+    def add_bower_js(self, filename: str):
+        return self.add_js(f'node_modules/{filename}')
+
     def add_js_inline(self, code: str):
         from gdo.ui.GDT_Page import GDT_Page
-        GDT_Page.instance()._js_inline += f"<script>{code}</script>\n"
+        GDT_Page.instance()._js_inline += f"<script>{code}\n</script>\n"
         return self
 
     ##########
@@ -172,3 +190,4 @@ class GDO_Module(WithModuleConfig, GDO):
     ##########
     def subscribe(self, event_name: str, callback: callable, times: int = 2_000_000_000):
         Application.EVENTS.subscribe_times(event_name, callback, times)
+

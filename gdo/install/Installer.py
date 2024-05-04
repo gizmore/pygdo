@@ -66,6 +66,7 @@ class Installer:
             'module_id': mid,
             'module_name': module.get_name(),
             'module_enabled': '1',
+            'module_priority': module._priority,
         }, db is None).soft_replace()
 
     @classmethod
