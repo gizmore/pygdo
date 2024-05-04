@@ -1,7 +1,6 @@
 module_net = "Networking"
 
 err_url_scheme = "Unsupported Protocol: %s"
-err_url_available = "This URL is not reachable: %s:%s."
 err_url_available = "This URL is not reachable: %s."
 err_http_url_available = "This URL is not reachable: %s. Code %s."
 err_url_pattern = "This URL looks invalid."
