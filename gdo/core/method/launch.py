@@ -32,7 +32,7 @@ class launch(Method):
             Files.remove(self.lock_path())
         if self.is_running():
             return self.err('err_dog_already_running')
-        Files.touch(self.lock_path())
+        Files.touch(self.lock_path(), True)
         self.mainloop()
 
     def lock_path(self) -> str:
@@ -68,8 +68,8 @@ class launch(Method):
             return True
         elif conn.should_connect_now():
             if conn.connect():
-                conn.connect_failed()
                 return True
             else:
+                conn.connect_failed()
                 return False
         return True

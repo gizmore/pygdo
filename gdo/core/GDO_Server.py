@@ -42,6 +42,9 @@ class GDO_Server(GDO):
             GDT_Creator('serv_creator'),
         ]
 
+    def get_username(self):
+        return self.gdo_val('serv_username') or 'Dog'
+
     def get_url(self) -> dict:
         return self.gdo_value('serv_url')
 

@@ -100,6 +100,10 @@ class GDO(WithBulk, GDT):
             self.set_val(key, val, dirty)
         return self
 
+    def save_vals(self, vals: dict):
+        self.set_vals(vals)
+        return self.save()
+
     def gdo_table_name(self) -> str:
         return self.get_name().lower()
 
@@ -242,5 +246,5 @@ class GDO(WithBulk, GDT):
         Cache.obj_for(self).set_vals(self._vals, False)  # After a blanked update this is required.
 
     def all(self, where: str = '1', result_type: ResultType = ResultType.OBJECT):
-        return self.table().select().type(result_type).where(where).exec().fetch_all()
+        return self.table().select().where(where).exec().iter(result_type).fetch_all()
 

@@ -6,20 +6,19 @@ from gdo.ui.WithTitle import WithTitle
 
 
 class GDT_Divider(WithTitle, WithFlow, GDT):
-
-    DIV_CLI_CHAR = '='
-    MAX_CLI_WIDTH = 96
-
     """
     A flow aware horizontal or vertical divider. Little gray line.
     """
+
+    DIV_CLI_CHAR = '='
+    MAX_CLI_WIDTH = 96
 
     def __init__(self):
         super().__init__()
         self.horizontal()
 
     def render_html(self) -> str:
-        return ' <span class="gdt-divider gdt-horizontal"></span> '
+        return '\n<span class="gdt-divider gdt-horizontal"></span>\n'
 
     def render_cli(self):
         title = self.render_title(Mode.CLI)

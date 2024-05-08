@@ -104,9 +104,15 @@ class GDO_User(GDO):
         session.save()
         return self
 
-    def logout(self):
+    def logout(self, session: object):
         if self.is_authenticated():
             delattr(self, '_authenticated')
+            session._data = {}
+            session.save_vals({
+                'sess_user': None,
+                'sess_ip': None,
+                'sess_data': None,
+            })
         return self
 
     def is_authenticated(self) -> bool:

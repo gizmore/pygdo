@@ -13,9 +13,9 @@ class WithIcon:
     _icon_color: str
     _icon_size: str
 
-    def icon(self, name: str, alt: str, color: str = None, size='14px'):
+    def icon(self, name: str, alt: str = None, color: str = None, size='14px'):
         self._icon_name = name
-        self._icon_alt = alt
+        self._icon_alt = alt or f"{name} icon"
         self._icon_color = color
         self._icon_size = size
         return self

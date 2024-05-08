@@ -11,6 +11,7 @@ from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Enum import GDT_Enum
+from gdo.core.GDT_UInt import GDT_UInt
 from gdo.core.GDT_User import GDT_User
 from gdo.core.InstallCore import InstallCore
 from gdo.core.connector.Bash import Bash
@@ -51,6 +52,7 @@ class module_core(GDO_Module):
             GDT_Bool('send_404_mails').initial('1'),
             GDT_Enum('show_perf').choices({"never": "Never", "always": "Always", "staff": "Staff"}).initial('always'),
             GDT_Enum('minify').choices({"no": 'No', 'yes': 'Yes', 'concat': 'Concat'}).initial('no'),
+            GDT_UInt('asset_version').initial('1'),
         ]
 
     def gdo_user_config(self) -> list[GDT]:

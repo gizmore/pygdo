@@ -71,6 +71,14 @@ class GDT_String(WithLabel, GDT_Field):
         self._encoding = Encoding.BINARY
         return self
 
+    def pattern(self, pattern: str):
+        self._pattern = pattern
+        return self
+
+    #######
+    # DBA #
+    #######
+
     def gdo_column_define(self) -> str:
         return (f"{self._name} VARCHAR({self._maxlen}) "
                 f"CHARSET {self.gdo_column_define_charset()} {self.gdo_column_define_collate()} "

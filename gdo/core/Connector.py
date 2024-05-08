@@ -1,4 +1,5 @@
 from gdo.base.Application import Application
+from gdo.base.Logger import Logger
 
 
 class Connector:
@@ -76,6 +77,7 @@ class Connector:
         """
         Actively disconnect
         """
+        Logger.debug(f"disconnect({quit_message})")
         self.gdo_disconnect(quit_message or "PyGDO QUIT without further message")
         self._connected = False
         self._connecting = False

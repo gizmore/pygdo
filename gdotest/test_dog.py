@@ -32,6 +32,10 @@ class DogTestCase(unittest.TestCase):
         out = cli_plug(None, f"add_server web_{num_servers + 1} web http://localhost")
         self.assertIn("Web server has been added", out, "Cannot add second Web Connector Server")
 
+    def test_03_get_all_servers(self):
+        servers = GDO_Server.table().all()
+        self.assertGreater(len(servers), 1, "Cannot get servers.")
+
 
 if __name__ == '__main__':
     unittest.main()
