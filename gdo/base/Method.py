@@ -243,7 +243,7 @@ class Method(WithEnv, WithInput, WithError, GDT):
         else:
             return gdt.render_txt()
 
-    def _nested_execute_parse(self):
+    def _nested_parse(self):
         from gdo.core.GDT_Repeat import GDT_Repeat
         parser = self.get_arg_parser(self._env_http)
         args, unknown_args = parser.parse_known_args(self._args)
@@ -256,6 +256,9 @@ class Method(WithEnv, WithInput, WithError, GDT):
                 gdt.val(vals)
             else:
                 gdt.val(val)
+
+    def _nested_execute_parse(self):
+        self._nested_parse()
         return self.gdo_execute()
 
     def _prepare_nested_permissions(self, method) -> bool:

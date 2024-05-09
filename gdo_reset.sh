@@ -9,6 +9,7 @@ if [ $# -gt 0 ]; then
   SLEEP=$1
 fi;
 
+
 echo "Resetting all repositories with git reset --hard."
 
 find . -iname ".git" -type d -exec sh -c "cd $CORE && cd {} && cd .. && 

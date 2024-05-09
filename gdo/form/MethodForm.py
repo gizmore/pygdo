@@ -24,8 +24,10 @@ class MethodForm(Method):
         if not hasattr(self, '_form') or reset:
             self._form = GDT_Form()
             self.gdo_create_form(self._form)
-            self._nested_execute_parse()
             # self.apply_input(self._form, self._input)
+        if reset:
+            delattr(self, '_parameters')
+            self._nested_parse()
         return self._form
 
     # def execute(self):
@@ -77,7 +79,7 @@ class MethodForm(Method):
     #             return gdt.to_value(gdt.get_val())
     #     return super().param_value(key)
 
-    @functools.cache
+#    @functools.cache
     def parameters(self) -> dict[str, GDT]:
         if hasattr(self, '_parameters'):
             return self._parameters
