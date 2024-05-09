@@ -146,8 +146,9 @@ class Application:
         cls.STORAGE.user = None
         cls.STORAGE.time_start = cls.TIME
         cls.mode(Mode.HTML)
-        cfg = cls.CONFIG['db']
-        cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
+        if 'db' in cls.CONFIG:
+            cfg = cls.CONFIG['db']
+            cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
 
     @classmethod
     def db(cls):
