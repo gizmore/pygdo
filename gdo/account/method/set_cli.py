@@ -1,6 +1,5 @@
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_UserSetting import GDT_UserSetting
 

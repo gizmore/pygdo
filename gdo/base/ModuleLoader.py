@@ -31,7 +31,7 @@ class ModuleLoader:
         mn = importlib.import_module("gdo." + name)
         classname = 'module_' + name
         if classname in mn.__dict__.keys():
-            self._cache[name] = module = mn.__dict__[classname]()
+            self._cache[name] = module = mn.__dict__[classname].blank()
             module.init_language()
             return module
         return None
@@ -135,6 +135,14 @@ class ModuleLoader:
         for module in self._cache.values():
             if enabled and not module.is_enabled():
                 continue
+            module.init()
+
+    def reload_modules(self):
+        self.init_modules(True)
+        for module in self._cache.values():
+            if not module.is_enabled():
+                continue
+            module._inited = False
             module.init()
 
     def load_module_vars(self):

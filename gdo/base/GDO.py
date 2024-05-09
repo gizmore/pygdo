@@ -52,6 +52,7 @@ class GDO(WithBulk, GDT):
 
     @classmethod
     def blank(cls, vals: dict = None):
+        vals = {} if vals is None else vals
         gdo = cls.table()
         for gdt in gdo.columns():
             name = gdt.get_name()

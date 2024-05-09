@@ -2,6 +2,7 @@ import importlib
 import sys
 
 from gdo.base.Method import Method
+from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import Trans
 
 
@@ -23,4 +24,5 @@ class reload(Method):
                     self.err('err_reload_module', [module_name, str(e)])
 
         Trans.reload()
+        ModuleLoader.instance().reload_modules()
         return self.msg('msg_modules_reloaded')

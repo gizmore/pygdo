@@ -19,6 +19,7 @@ class Connector:
 
     @classmethod
     def register(cls, klass, is_text: bool = True):
+        # Logger.debug(f"Connector.register({klass.__name__})")
         name = klass.__name__.lower()
         if name not in cls.AVAILABLE:
             cls.AVAILABLE[name] = klass

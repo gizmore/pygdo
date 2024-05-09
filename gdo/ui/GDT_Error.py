@@ -15,10 +15,10 @@ class GDT_Error(GDT_Panel):
         super().__init__()
 
     def render_cli(self):
-        return Render.red(f"{t('error')}: {self.render_title(Mode.CLI)}: {self.render_text(Mode.CLI)}", Mode.CLI)
+        return Render.red(self.render_text(Mode.CLI), Mode.CLI)
 
     def render_irc(self):
-        return Render.red(f"{t('error')}: {self.render_title(Mode.IRC)}: {self.render_text(Mode.IRC)}", Mode.IRC)
+        return Render.red(self.render_text(Mode.IRC), Mode.IRC)
 
     # def render_html(self):
     #     return Render.red(f"{t('error')}: {self.render_title(Mode.HTML)}: {self.render_text(Mode.HTML)}", Mode.HTML)

@@ -8,12 +8,14 @@ import traceback
 def pygdo():
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
+    from gdo.base.Util import Files
     Application.init(__file__ + "/../../")
     Application.init_cli()
     loader = ModuleLoader.instance()
     loader.load_modules_db()
     loader.init_modules()
     loader.init_cli()
+    Files.create_dir(Application.file_path('cache/repl/'))
 
     if len(sys.argv) > 1:
         sys.argv = [f'"{arg}"' for arg in sys.argv]
@@ -32,6 +34,7 @@ def get_parser():
     server = user.get_server()
     channel = None
     session = GDO_Session.for_user(user)
+    print(session.get_id())
     return Parser(Mode.CLI, user, server, channel, session)
 
 
@@ -45,6 +48,8 @@ def process_line(line: str) -> None:
     txt = gdt.render_cli()
     txt = Application.get_page()._top_bar.render_cli() + txt
     print(txt)
+    print(method._env_session.get_id())
+    method._env_session.save()
 
 
 def append_to_history(line: str):
@@ -52,7 +57,7 @@ def append_to_history(line: str):
     from gdo.base.Application import Application
     from gdo.base.Util import Files
     user = CLI.get_current_user()
-    path = Application.file_path(f'cache/{user.get_id()}.repl.log')
+    path = Application.file_path(f'cache/repl/{user.get_id()}.repl.log')
     Files.append_content(path, f"{line}\n", create=True)
 
 
@@ -61,7 +66,7 @@ def reload_history():
     from gdo.base.Application import Application
     from gdo.base.Util import Files
     user = CLI.get_current_user()
-    path = Application.file_path(f'cache/{user.get_id()}.repl.log')
+    path = Application.file_path(f'cache/repl/{user.get_id()}.repl.log')
     try:
         with open(path, "r") as file:
             for line in file:
@@ -86,7 +91,7 @@ def repl():
             process_line(input_line)
         except (GDOModuleException, GDOError) as ex:
             print(str(ex))
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
             print("\nExiting...")
             break
         except Exception as ex:

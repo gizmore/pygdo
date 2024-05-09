@@ -11,5 +11,3 @@ class GDT_UserSetting(GDT_Enum):
 
     def gdo_choices(self) -> dict:
         return self.KNOWN
-
-
