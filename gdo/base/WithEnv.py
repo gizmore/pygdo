@@ -36,3 +36,13 @@ class WithEnv:
     def env_session(self, session):
         self._env_session = session
         return self
+
+    def env_copy(self, with_env):
+        self._env_http = with_env._env_http
+        self._env_mode = with_env._env_mode
+        self._env_server = with_env._env_server
+        self._env_channel = with_env._env_channel
+        self._env_user = with_env._env_user
+        self._env_session = with_env._env_session
+        return self
+

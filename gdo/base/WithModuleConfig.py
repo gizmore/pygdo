@@ -53,8 +53,10 @@ class WithModuleConfig:
             raise GDOValidationException(self.get_name(), key, val)
         return self
 
+    def increase_config_val(self, key: str, by: int | float):
+        old = self.get_config_value(key)
+        return self.save_config_val(key, str(old + by))
+
     ########
     # User #
     ########
-
-

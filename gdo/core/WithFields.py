@@ -1,9 +1,5 @@
-from gdo.base.Util import Arrays
-
-
 class WithFields:
     _fields: list
-
 
     def add_field(self, *fields):
         if not hasattr(self, '_fields'):
@@ -49,6 +45,13 @@ class WithFields:
                 output += gdt.render_cli()
         return output
 
+    def render_irc(self) -> str:
+        output = ""
+        if hasattr(self, '_fields'):
+            for gdt in self._fields:
+                output += gdt.render_irc()
+        return output
+
     def render_html(self) -> str:
         output = ""
         if hasattr(self, '_fields'):
@@ -62,4 +65,3 @@ class WithFields:
             for gdt in self._fields:
                 output += gdt.render_form()
         return output
-

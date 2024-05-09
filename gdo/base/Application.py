@@ -19,8 +19,10 @@ class Application:
     STORAGE = threading.local()
     LANG_ISO = 'en'
     TIME = time.time()
+    DB_READS: int = 0
+    DB_WRITES: int = 0
 
-    DB: object
+    # DB: object
     PATH: str
     CONFIG: dict[str, str] = {}
 
@@ -41,18 +43,17 @@ class Application:
         time.tzset()
         cls.LOADER = ModuleLoader()
         cls.EVENTS = Events()
-        Application.init_common()
         config_path = 'protected/config_test.toml' if 'unittest' in sys.modules.keys() else 'protected/config.toml'
         config_path = os.path.join(cls.PATH, config_path)
         cls.get_page().init()
         if os.path.isfile(config_path):
             with open(config_path, 'r') as f:
                 cls.CONFIG = tomlkit.load(f)
-                cfg = cls.CONFIG['db']
-                cls.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
+                cls.init_thread(None)
         else:
             from gdo.install.Config import Config
             cls.CONFIG = Config.defaults()
+        Application.init_common()
 
     @classmethod
     def reset(cls):
@@ -60,7 +61,7 @@ class Application:
 
     @classmethod
     def has_db(cls):
-        return cls.DB is not None
+        return cls.db() is not None
 
     @classmethod
     def file_path(cls, path: str = ''):
@@ -119,6 +120,7 @@ class Application:
     @classmethod
     def init_web(cls, environ):
         from gdo.core.GDO_Server import GDO_Server
+        cls.init_thread(None)
         cls.STORAGE.time_start = float(environ.get('mod_wsgi.request_start')) / 1000000.0
         cls.STORAGE.environ = environ
         cls.STORAGE.headers = {}
@@ -126,17 +128,30 @@ class Application:
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
         cls.PROTOCOL = environ['REQUEST_SCHEME']
         # cls.SERVER = GDO_Server.get_by_connector('Web')
-        cls.mode(Mode.HTML)
 
     @classmethod
     def init_common(cls):
+        cls.STORAGE.mode = Mode.HTML
         cls.tick()
         Logger.init()
-        cls.STORAGE.mode = Mode.HTML
+        cls.init_thread(None)
+        # Logger.debug("Application.init_common()")
         cls.STORAGE.user = None
-        cls.STORAGE.db_reads = 0
-        cls.STORAGE.db_writes = 0
-        cls.STORAGE.db_queries = 0
+
+    @classmethod
+    def init_thread(cls, thread):
+        from gdo.base.Database import Database
+        if thread:
+            Logger.debug(f'Init thread {thread.name}')
+        cls.STORAGE.user = None
+        cls.STORAGE.time_start = cls.TIME
+        cls.mode(Mode.HTML)
+        cfg = cls.CONFIG['db']
+        cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
+
+    @classmethod
+    def db(cls):
+        return cls.STORAGE.DB
 
     @classmethod
     def init_cookies(cls, environ):

@@ -67,18 +67,6 @@ md_core_version = "Print python and GDO version."
 msg_version = "Python %s - GDOv%s"
 
 ############
-### Perf ###
-############
-mt_core_perf = "Performance"
-md_core_perf = "Print PyGDO performance metrics."
-perf_version = "Version: %s"
-perf_user = "User: %s(%s)"
-perf_cpu = "CPU %s%%"
-perf_mem = "Memory: %s"
-perf_db = "DB (%sR/%sW/#%s)"
-perf_code = "%s tot(%s max) GDTs / %s tot(%s max) GDOs"
-
-############
 ### Help ###
 ############
 mt_core_help = "Command Overview"
@@ -114,3 +102,10 @@ msg_added_dog_server = "A new %s server has been added: %s ID#%s."
 mt_core_clear_cache = "Clear Cache"
 md_core_clear_cache = "Clear all caches."
 msg_cache_cleared = "Caches have been cleared."
+
+############
+### Ping ###
+############
+mt_core_ping = "Ping"
+md_core_ping = "Test if the bot is responding."
+msg_pong = "PONG"

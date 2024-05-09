@@ -72,7 +72,10 @@ class GDO_Session(GDO):
         return instance
 
     @classmethod
-    def for_user(cls, user: GDO_User):
+    def for_user(cls, user: GDO_User | object):
+        """
+        Call this for non HTTP sessions.
+        """
         session = cls.table().get_by_vals({
             'sess_user': user.get_id(),
         })

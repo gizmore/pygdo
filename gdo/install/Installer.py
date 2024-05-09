@@ -22,6 +22,12 @@ class Installer:
         deps = Arrays.unique(modules)
         before = len(deps)
         after = 0
+
+        # out = []
+        # for module in modules:
+        #     out.append(module.get_name)
+        # print(", ".join(out))
+
         while before != after:
             before = after
             for dep in deps:
@@ -62,17 +68,19 @@ class Installer:
         mid = '0'
         if db is not None:
             mid = db.get_id()
-        module.set_vals({
+        module._vals.update({
             'module_id': mid,
             'module_name': module.get_name(),
             'module_enabled': '1',
-            'module_priority': module._priority,
-        }, db is None).soft_replace()
+            'module_priority': str(module._priority),
+        })
+        module.all_dirty(db is None)
+        module.soft_replace()
 
     @classmethod
     def install_gdo(cls, classname):
         table = Cache.table_for(classname)
-        return Application.DB.create_table(table)
+        return Application.db().create_table(table)
 
     @classmethod
     def migrate_module(cls, module: GDO_Module):
@@ -83,7 +91,7 @@ class Installer:
 
     @classmethod
     def migrate_gdo(cls, gdo: GDO):
-        db = Application.DB
+        db = Application.db()
         try:
             db.foreign_keys(False)
             # Remove old temp table
@@ -92,7 +100,7 @@ class Installer:
             # create temp and copy as old
             db.drop_table(temptable)
             query = f"SHOW CREATE TABLE {tablename}"
-            result = db.select(query)
+            result = db.select(query, False)
             query = result.fetch_row()[1]
             query = query.replace(tablename, temptable)
             db.query(query)
@@ -127,20 +135,20 @@ class Installer:
     @classmethod
     def column_names(cls, gdo, temptable) -> list:
 
-        db = Application.DB
+        db = Application.db()
 
         # Old column names
         query = ('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS '
                  f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{temptable}'"
                  )
-        result = db.select(query)
+        result = db.select(query, False)
         rows = result.iter(ResultType.ROW).fetch_all()
         old = map(lambda c: c[0], rows)
 
         # New column names
         query = ("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
                  f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{gdo.gdo_table_name()}'")
-        result = db.select(query)
+        result = db.select(query, False)
         rows = result.iter(ResultType.ROW).fetch_all()
         new = map(lambda c: c[0], rows)
         if old and new:
@@ -150,5 +158,5 @@ class Installer:
     @classmethod
     def wipe(cls, module: GDO_Module):
         for klass in reversed(module.gdo_classes()):
-            Application.DB.drop_table(klass.table().gdo_table_name())
+            Application.db().drop_table(klass.table().gdo_table_name())
         module.delete()

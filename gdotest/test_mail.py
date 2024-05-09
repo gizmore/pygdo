@@ -9,7 +9,7 @@ class MailTestCase(unittest.TestCase):
         mail = Mail.from_bot()
         mail.recipient('gizmore@gizmore.org', 'gizmore')
         mail.subject('Test Mail')
-        mail.body('<a href="/test.html">')
+        mail.body('<a href="/test.html">test</a>')
         mail.send()
         mail.lazy().send()
         pass

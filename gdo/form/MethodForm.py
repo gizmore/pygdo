@@ -20,10 +20,11 @@ class MethodForm(Method):
         form.add_field(GDT_CSRF())
         form.actions().add_field(GDT_Submit().calling(self.form_submitted))
 
-    def get_form(self) -> GDT_Form:
-        if not hasattr(self, '_form'):
+    def get_form(self, reset: bool = False) -> GDT_Form:
+        if not hasattr(self, '_form') or reset:
             self._form = GDT_Form()
             self.gdo_create_form(self._form)
+            self._nested_execute_parse()
             # self.apply_input(self._form, self._input)
         return self._form
 

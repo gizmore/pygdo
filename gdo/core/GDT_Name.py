@@ -9,3 +9,4 @@ class GDT_Name(GDT_String):
         self._minlen = 2
         self._maxlen = 64
         self._case_s = True
+        self.pattern('/[a-z][a-z_0-9]/i')

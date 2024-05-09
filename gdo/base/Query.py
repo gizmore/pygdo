@@ -1,8 +1,10 @@
+import threading
 import traceback
 from enum import Enum
 from mysql.connector import ProgrammingError, DataError, DatabaseError, InterfaceError
 
 from gdo.base.Application import Application
+from gdo.base.Database import Database
 from gdo.base.Exceptions import GDODBException
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
@@ -52,6 +54,9 @@ class Query:
 
     def is_update(self):
         return self.is_type(Type.UPDATE)
+
+    def is_delete(self):
+        return self.is_type(Type.DELETE)
 
     def is_insert(self):
         return self.is_type(Type.INSERT)
@@ -179,6 +184,10 @@ class Query:
     def build_query(self):
         if self.is_raw():
             return self._raw
+        if self.is_select():
+            return f"SELECT {self._columns} FROM {self._table} {self._join} WHERE {self._where}{self._build_order()} {self.buildLimit()}"
+        if self.is_delete():
+            return f"DELETE FROM {self._table} WHERE {self._where}"
         if self.is_insert():
             keys = ",".join(map(lambda v: GDT.escape(v), self._vals.keys()))
             values = ",".join(map(lambda v: GDT.quote(v), self._vals.values()))
@@ -190,10 +199,6 @@ class Query:
         if self.is_update():
             set_string = ",".join(map(lambda kv: f"{kv[0]}={GDT.quote(kv[1])}", self._vals.items()))
             return f"UPDATE {self._table} SET {set_string} WHERE {self._where}"
-        if self.is_select():
-            return (
-                f"SELECT {self._columns} FROM {self._table} {self._join} WHERE {self._where}{self._build_order()} {self.buildLimit()}"
-            )
 
     def _build_order(self):
         if hasattr(self, '_order'):
@@ -207,33 +212,38 @@ class Query:
             return f'LIMIT {self._limit}'
         return f'LIMIT {self._limit, self._offset}'
 
+    MUTEX = threading.Lock()
+
     def exec(self, use_dict: bool = True):
-        Application.DB.get_link()
+        Application.db().get_link()
         if Application.config('db.debug') in ('1', '2'):
             self.debug()
         query = self.build_query()
         try:
+            self.MUTEX.acquire()
             if self._debug:
-                Logger.debug("#" + str(Application.STORAGE.db_queries + 1) + ": " + query)
+                Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES + 1) + ": " + query)
                 if Application.config('db.debug') == '2':
                     Logger.debug("".join(traceback.format_stack()))
             if self.is_insert():
-                cursor = Application.DB.cursor()
-                Application.STORAGE.db_writes += 1
-                Application.STORAGE.db_queries += 1
+                cursor = Application.db().cursor()
+                Application.DB_WRITES += 1
                 cursor.execute(query)
                 return cursor.lastrowid
             if self.is_select():
-                cursor = Application.DB.cursor(use_dict)
-                Application.STORAGE.db_reads += 1
-                Application.STORAGE.db_queries += 1
+                cursor = Application.db().cursor(use_dict)
+                Application.DB_READS += 1
                 cursor.execute(query)
                 return Result(cursor, self._gdo)
             if self.is_update():
-                return Application.DB.query(query)
+                return Application.db().query(query)
+            if self.is_delete():
+                return Application.db().query(query)
             else:
-                return Application.DB.query(query)
+                return Application.db().query(query)
         except AttributeError as ex:
             raise GDODBException(str(ex), query)
         except (InterfaceError, ProgrammingError, DataError, DatabaseError) as ex:
             raise GDODBException(ex.msg, query)
+        finally:
+            self.MUTEX.release()

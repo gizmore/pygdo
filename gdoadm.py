@@ -259,6 +259,7 @@ class App:
         if args.all:
             modules = list(loader.load_modules_fs('*', reinstall).values())
         elif args.module:
+            ModuleLoader.instance().load_modules_fs()
             modules = ModuleLoader.instance().load_modules_fs(args.module.lower(), reinstall)
             modules = list(modules.values())
         else:
@@ -286,6 +287,9 @@ class App:
             import unittest  # Required for unittest detection later
             Application.init(os.path.dirname(__file__))
 
+        loader = ModuleLoader.instance()
+        loader.load_modules_db()
+
         server = GDO_Server.get_by_connector(args.connector)
         user = server.get_or_create_user(args.username)
         GDO_UserPermission.grant(user, GDO_Permission.ADMIN)
@@ -312,8 +316,8 @@ class App:
             Application.init(os.path.dirname(__file__))
 
         if args.all:
-            Application.DB.query(f"DROP DATABASE IF EXISTS {Application.DB.db_name}")
-            Application.DB.query(f"CREATE DATABASE {Application.DB.db_name}")
+            Application.db().query(f"DROP DATABASE IF EXISTS {Application.db().db_name}")
+            Application.db().query(f"CREATE DATABASE {Application.db().db_name}")
             print("All Done!")
             exit(0)
         elif args.module:

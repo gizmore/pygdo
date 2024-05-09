@@ -49,6 +49,9 @@ class GDO_User(GDO):
             GDT_Server('user_server').not_null(),
         ]
 
+    def get_lang_iso(self):
+        return self.get_setting_val('language')
+
     def get_mail(self, confirmed: bool = True) -> str:
         return self.get_setting_val('email')
 
@@ -57,6 +60,9 @@ class GDO_User(GDO):
 
     def get_server(self):
         return self.gdo_value('user_server')
+
+    def get_name(self):
+        return self.gdo_val('user_name')
 
     ##########
     # Groups #
@@ -81,6 +87,10 @@ class GDO_User(GDO):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
         return GDO_UserSetting.setting_column(key, self).get_val()
 
+    def get_setting_value(self, key: str) -> any:
+        from gdo.core.GDO_UserSetting import GDO_UserSetting
+        return GDO_UserSetting.setting_column(key, self).get_value()
+
     def save_setting(self, key: str, val: str):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
         GDO_UserSetting.blank({
@@ -88,6 +98,18 @@ class GDO_User(GDO):
             'uset_key': key,
             'uset_val': val,
         }).soft_replace()
+        return self
+
+    def increase_setting(self, key: str, by: float | int):
+        old = self.get_setting_value(key)
+        return self.save_setting(key, str(old + by))
+
+    def reset_setting(self, key: str):
+        from gdo.core.GDO_UserSetting import GDO_UserSetting
+        GDO_UserSetting.table().delete_by_vals({
+            'uset_user': self.get_id(),
+            'uset_key': key,
+        })
         return self
 
     ###############
@@ -140,4 +162,4 @@ class GDO_User(GDO):
     # Messaging #
     #############
     def send(self, key: str, args: list = None):
-        self.get_server().send_to_user(key, args)
+        self.get_server().send_to_user(self, key, args)

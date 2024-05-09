@@ -192,6 +192,9 @@ class GDT:
     def render_html(self) -> str:
         return Strings.html(self.get_val())
 
+    def render_telegram(self):
+        return self.render_txt()
+
     def render_form(self) -> str:
         return ''
 
@@ -203,3 +206,6 @@ class GDT:
 
     def render_txt(self) -> str:
         return self.get_val()
+
+    def render_irc(self) -> str:
+        return self.render_txt()

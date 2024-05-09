@@ -3,12 +3,19 @@ import argparse
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError, GDOParamError
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Trans import t, thas
-from gdo.base.Util import Strings, href, module_enabled, Arrays, err
+from gdo.base.Util import Strings, err
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
 from gdo.base.WithInput import WithInput
+
+
+class MyArgParser(argparse.ArgumentParser):
+
+    def error(self, message):
+        err('%s', [message])
 
 
 class Method(WithEnv, WithInput, WithError, GDT):
@@ -25,6 +32,8 @@ class Method(WithEnv, WithInput, WithError, GDT):
         self._args = []
         self._env_mode = Application.get_mode()
         self._env_http = True
+        self._env_channel = None
+        self._env_server = None
 
     def get_name(self):
         return self.__class__.__name__
@@ -170,14 +179,18 @@ class Method(WithEnv, WithInput, WithError, GDT):
                     raise GDOParamError('err_param', [name, gdt.render_error()])
         return None
 
-    def init_params(self, params: dict):
-        for key, val in params.items():
-            self.parameter(key).val(val)
-        return self
+    # def init_params(self, params: dict):
+    #     for key, val in params.items():
+    #         self.parameter(key).val(val)
+    #     return self
 
     ###########
     # Message #
     ###########
+
+    def empty(self) -> GDT:
+        from gdo.ui.GDT_HTML import GDT_HTML
+        return GDT_HTML()
 
     def reply(self, key: str, args: list = None):
         from gdo.core.GDT_String import GDT_String
@@ -252,10 +265,21 @@ class Method(WithEnv, WithInput, WithError, GDT):
         if not method.allows_connector():
             self.error('err_method_connector_not_supported')
             return False
+        if method._env_channel and method._disabled_in_channel(method._env_channel):
+            self.error('err_method_disabled')
+        if method._disabled_in_server(method._env_server):
+            self.error('err_method_disabled')
+
         for arg in method._args:
             if isinstance(arg, Method):
                 if not self._prepare_nested_permissions(arg):
                     return False
+        return True
+
+    def _disabled_in_channel(self, channel):
+        return False
+
+    def _disabled_in_server(self, channel):
         return True
 
     def has_permission(self, user) -> bool:
@@ -272,7 +296,7 @@ class Method(WithEnv, WithInput, WithError, GDT):
         if hasattr(self, '_parser'):
             return self._parser
         prog = self.get_name() if is_http else self.gdo_trigger()
-        parser = argparse.ArgumentParser(prog=prog, description=self.gdo_render_descr())
+        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True)
         for gdt in self.parameters().values():
             name = gdt.get_name()
             if gdt.is_positional() and not is_http:
@@ -284,6 +308,116 @@ class Method(WithEnv, WithInput, WithError, GDT):
                 parser.add_argument(f'--{name}', default=gdt.get_initial())
         self._parser = parser
         return parser
+
+    ##########
+    # Config #
+    ##########
+
+    def get_fqn(self) -> str:
+        return self.__module__ + "." + self.__class__.__name__
+
+    #################
+    # Config Server #
+    #################
+
+    def _config_server(self):
+        from gdo.core.GDT_Bool import GDT_Bool
+        conf = [
+            GDT_Bool('disabled').initial('0'),
+        ]
+        conf.extend(self.gdo_method_config_server())
+        return conf
+
+    def save_config_server(self, key: str, val: str):
+        Logger.debug(f"{self.get_name()}.save_config_server({key}, {val})")
+        from gdo.core.GDO_Method import GDO_Method
+        from gdo.core.GDO_MethodValServer import GDO_MethodValServer
+        from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
+        from gdo.core.GDT_Text import GDT_Text
+        for gdt in self._config_server():
+            if gdt.get_name() == key:
+                table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
+                gdom = GDO_Method.for_method(self)
+                entry = table.get_by_id(gdom.get_id(), self._env_server.get_id(), key)
+                if entry is None:
+                    table.blank({
+                        'mv_method': gdom.get_id(),
+                        'mv_server': self._env_server.get_id(),
+                        'mv_key': key,
+                        'mv_val': val,
+                    }).insert()
+                else:
+                    entry.save_val('mv_val', val)
+
+    def get_config_server(self, key: str) -> GDT:
+        from gdo.core.GDO_Method import GDO_Method
+        from gdo.core.GDO_MethodValServer import GDO_MethodValServer
+        from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
+        from gdo.core.GDT_Text import GDT_Text
+        for gdt in self._config_server():
+            if gdt.get_name() == key:
+                table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
+                entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_server.get_id(), None, None)
+                if entry:
+                    gdt.initial(entry.get_val())
+                return gdt
+
+    def get_config_server_val(self, key: str) -> str:
+        return self.get_config_server(key).get_val()
+
+    def get_config_server_value(self, key: str):
+        return self.get_config_server(key).get_value()
+
+    ##################
+    # Config Channel #
+    ##################
+
+    def _config_channel(self):
+        from gdo.core.GDT_Bool import GDT_Bool
+        conf = [
+            GDT_Bool('disabled').initial('0'),
+        ]
+        conf.extend(self.gdo_method_config_channel())
+        return conf
+
+    def save_config_channel(self, key: str, val: str):
+        from gdo.core.GDO_Method import GDO_Method
+        from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
+        from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
+        from gdo.core.GDT_Text import GDT_Text
+        for gdt in self._config_channel():
+            if gdt.get_name() == key:
+                table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
+                gdom = GDO_Method.for_method(self)
+                entry = table.get_by_id(gdom.get_id(), self._env_channel.get_id(), key)
+                if entry is None:
+                    table.blank({
+                        'mv_method': gdom.get_id(),
+                        'mv_channel': self._env_channel.get_id(),
+                        'mv_key': key,
+                        'mv_val': val,
+                    }).insert()
+                else:
+                    entry.save_val('mv_val', val)
+
+    def get_config_channel(self, key: str) -> GDT:
+        from gdo.core.GDO_Method import GDO_Method
+        from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
+        from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
+        from gdo.core.GDT_Text import GDT_Text
+        for gdt in self._config_channel():
+            if gdt.get_name() == key:
+                table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
+                entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_channel.get_id(), None, None)
+                if entry:
+                    gdt.initial(entry.get_val())
+                return gdt
+
+    def get_config_channel_val(self, key: str) -> str:
+        return self.get_config_channel(key).get_val()
+
+    def get_config_channel_value(self, key: str):
+        return self.get_config_channel(key).get_value()
 
     ##########
     # Render #

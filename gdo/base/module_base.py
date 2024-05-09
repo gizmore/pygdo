@@ -1,15 +1,11 @@
 from packaging.version import Version
 
 from gdo.base.Application import Application
-from gdo.base.GDO_Method import GDO_Method
-from gdo.base.GDO_MethodVal import GDO_MethodVal
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDO_ModuleVal import GDO_ModuleVal
 from gdo.base.GDT import GDT
 from gdo.base.Util import Files
 from gdo.core.GDT_Bool import GDT_Bool
-from gdo.core.GDT_User import GDT_User
-from gdo.date.GDT_DateTime import GDT_DateTime
 
 
 class module_base(GDO_Module):
@@ -22,8 +18,6 @@ class module_base(GDO_Module):
         return [
             GDO_Module,
             GDO_ModuleVal,
-            GDO_Method,
-            GDO_MethodVal,
         ]
 
     def gdo_install(self):

@@ -6,3 +6,9 @@ err_http_url_available = "This URL is not reachable: %s. Code %s."
 err_url_pattern = "This URL looks invalid."
 err_url_no_internals = "URLs targetting this server are not allowed"
 err_url_no_externals = "URLs targetting third party servers are not allowed"
+
+########
+# WGet #
+########
+mt_net_wget = "wget"
+md_net_wget = "Request a page via this PyGDO server."

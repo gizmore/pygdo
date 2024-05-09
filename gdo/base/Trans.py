@@ -11,6 +11,10 @@ def t(key: str, args=None):
     return Trans.t(key, args)
 
 
+def tusr(user: object, key: str, args: list = None):
+    return Trans.tiso(user.get_lang_iso(), key, args)
+
+
 def tiso(iso: str, key: str, args=None):
     if args is None:
         args = []

@@ -44,7 +44,10 @@ class Cache:
         if gid not in cls.OCACHE[cn]:
             cls.OCACHE[cn][gid] = gdo
         else:
-            gdo = cls.OCACHE[cn][gid].set_vals(gdo._vals, False)
+            gdo2 = gdo
+            gdo = cls.OCACHE[cn][gid]
+            gdo._vals.update(gdo2._vals)
+            gdo.all_dirty(False)
         return gdo
 
     @classmethod
@@ -54,13 +57,15 @@ class Cache:
                 return gdt
 
     @classmethod
-    def obj_search(cls, gdo: GDO, vals: dict):
+    def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False):
         cn = gdo.__class__
-        for obj in cls.OCACHE[cn].values():
+        for gid, obj in cls.OCACHE[cn].items():
             found = True
             for key, val in vals.items():
                 if obj.gdo_val(key) != val:
                     found = False
                     break
             if found:
+                if delete:
+                    del cls.OCACHE[cn][gid]
                 return obj

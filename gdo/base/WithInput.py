@@ -18,3 +18,7 @@ class WithInput:
     def arg(self, arg: str):
         self._args.append(arg)
         return self
+
+    def args_copy(self, method):
+        self._args = method._args
+        return self

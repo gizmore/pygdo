@@ -2,14 +2,12 @@ from __future__ import annotations
 
 import glob
 import importlib
-import os
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException, GDODBException
 from gdo.base.GDO_ModuleVal import GDO_ModuleVal
 from gdo.base.Method import Method
 from gdo.base.Result import ResultType
-from gdo.base.Trans import Trans
 from gdo.base.Util import Files
 
 
@@ -61,15 +59,16 @@ class ModuleLoader:
         return self
 
     def load_modules_fs(self, pattern='*', installed=False):
+        loaded = {}
         patterns = pattern.split(',')
         for pattern in patterns:
             path = Application.file_path('gdo/')
             for dirname in glob.glob(pattern, root_dir=path):
                 if not dirname.startswith('_'):
                     if Files.is_dir(path + dirname):
-                        self.load_module_fs(dirname, installed)
+                        loaded[dirname] = self.load_module_fs(dirname, installed)
         self.sort_cache()
-        return self._cache
+        return loaded
 
     def load_module_fs(self, modulename, installed=False):
         if modulename in self._cache.keys():
@@ -80,6 +79,8 @@ class ModuleLoader:
         if installed and not self.module_installed(modulename):
             return None
         module = self.gdo_import(modulename)
+        if not module:
+            raise GDOException(f"Cannot import module {modulename}")
         return module
 
     def module_installed(self, modulename: str) -> bool:
@@ -100,7 +101,7 @@ class ModuleLoader:
         result = query.exec()
         for db in result:
             fs = self.gdo_import(db.gdo_val('module_name'))
-            fs.set_vals(db._vals, False)
+            fs._vals.update(db._vals)
             fs.all_dirty(False)
             back.append(fs)
         return back
@@ -110,7 +111,8 @@ class ModuleLoader:
         db = GDO_Module.table().get_by_name(modulename)
         fs = self.gdo_import(modulename)
         if db:
-            fs.set_vals(db._vals)
+            fs._vals.update(db._vals)
+            fs.all_dirty(False)
             fs._is_persisted = True
         else:
             return None

@@ -50,6 +50,21 @@ class UtilityTestCase(unittest.TestCase):
         self.assertEqual(dic['foo'], 'bar3', 'Arrays.map_dict#1 failed.')
         self.assertEqual(dic['tes']['test'], 'two3', 'Arrays.map_dict#1 failed.')
 
+    def test_chunky_strings(self):
+        maxlen = 32
+        text = "This is a long test sample sentence to split in boundaries"
+        chunks = Strings.split_boundary(text, maxlen)
+        self.assertEqual(2, len(chunks), "Chunk split does not work with normal text.")
+        text = "Thisisalongtestsamplesentencetosplitinboundaries"
+        chunks = Strings.split_boundary(text, maxlen)
+        self.assertEqual(2, len(chunks), "Chunk split does not work with normal text.")
+
+    def test_regex_first(self):
+        s = 'text/html; charset=UTF-8'
+        m = Strings.regex_first("charset=(.*)", s)
+        self.assertEqual('UTF-8', m, 'regex_first does not work.')
+
+
 
 if __name__ == '__main__':
     unittest.main()

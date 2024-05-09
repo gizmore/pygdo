@@ -1,0 +1,21 @@
+from gdo.base.GDO import GDO
+from gdo.base.GDT import GDT
+from gdo.core.GDT_Name import GDT_Name
+from gdo.core.GDT_Object import GDT_Object
+from gdo.core.GDT_String import GDT_String
+
+
+class GDO_MethodValServer(GDO):
+
+    def gdo_columns(self) -> list[GDT]:
+        from gdo.core.GDO_Method import GDO_Method
+        from gdo.core.GDO_Server import GDO_Server
+        return [
+            GDT_Object('mv_method').table(GDO_Method.table()).primary(),
+            GDT_Object('mv_server').table(GDO_Server.table()).primary(),
+            GDT_Name('mv_key').primary(),
+            GDT_String('mv_val'),
+        ]
+
+    def get_val(self):
+        return self.gdo_val('mv_val')

@@ -4,6 +4,7 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.net.GDT_Url import GDT_Url
+from gdotest.TestUtil import cli_plug
 
 
 class NetTestCase(unittest.TestCase):
@@ -32,6 +33,10 @@ class NetTestCase(unittest.TestCase):
         self.assertIsNotNone(gdt.validated(), "Cannot validate existing IRC URL")
         url = gdt.get_value()
         self.assertEqual(url['port'], 6697, "Cannot parse ircs url for IRC url.")
+
+    def test_04_wget(self):
+        out = cli_plug(None, "wget https://www.wechall.net/")
+        self.assertIn('Inferno', out, "WGET does not work")
 
 
 if __name__ == '__main__':

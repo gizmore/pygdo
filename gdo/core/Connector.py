@@ -1,5 +1,6 @@
 from gdo.base.Application import Application
 from gdo.base.Logger import Logger
+from gdo.base.Message import Message
 
 
 class Connector:
@@ -46,8 +47,9 @@ class Connector:
         """
         return True
 
-    def gdo_connect(self) -> bool:
-        return True
+    async def gdo_connect(self):
+        self._connected = True
+        return self
 
     def gdo_disconnect(self, quit_message: str):
         pass
@@ -67,10 +69,13 @@ class Connector:
     def should_connect_now(self) -> bool:
         return Application.TIME >= self._next_connect_time
 
-    def connect(self) -> bool:
+    async def connect(self) -> bool:
         self._connecting = True
-        if self.gdo_connect():
+        await self.gdo_connect()
+        if self._connected:
             self.connect_success()
+        else:
+            self.connect_failed()
         return self._connected
 
     def disconnect(self, quit_message: str = None) -> bool:
@@ -79,11 +84,15 @@ class Connector:
         """
         Logger.debug(f"disconnect({quit_message})")
         self.gdo_disconnect(quit_message or "PyGDO QUIT without further message")
+        self.disconnected()
+        return True
+
+    def disconnected(self):
         self._connected = False
         self._connecting = False
         self._connect_failures = 0
         self._next_connect_time = Application.TIME
-        return True
+
 
     def connect_failed(self):
         self._connect_failures += 1
@@ -100,4 +109,12 @@ class Connector:
             self._server = server
             self._next_connect_time = Application.TIME
         return self
+
+    def send_to_channel(self, msg: Message):
+        Logger.debug(f"{self.get_name()} has stub send_to_channel()")
+        pass
+
+    def send_to_user(self, msg: Message):
+        Logger.debug(f"{self.get_name()} has stub send_to_user()")
+        pass
 

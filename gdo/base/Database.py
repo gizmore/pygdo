@@ -2,11 +2,9 @@ import mysql.connector
 from mysql.connector import ProgrammingError
 from mysql.connector.conversion import MySQLConverterBase, MySQLConverter
 
-from gdo.base.Application import Application
 from gdo.base.Exceptions import GDODBException
 from gdo.base.Logger import Logger
 from gdo.base.Result import Result
-from gdo.base.Util import dump
 
 
 class NopeConverter(MySQLConverter):
@@ -64,17 +62,19 @@ class Database:
         return self.get_link().insert_id()
 
     def query(self, query):
+        from gdo.base.Application import Application
         if Application.config('db.debug') != '0':
-            Logger.debug("#" + str(Application.STORAGE.db_queries + 1) + ": " + query)
+            Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES + 1) + ": " + query)
         try:
-            Application.STORAGE.db_writes += 1
-            Application.STORAGE.db_queries += 1
+            Application.DB_WRITES += 1
             return self.get_link().cmd_query(query)
         except ProgrammingError as ex:
             raise GDODBException(ex.msg, query)
 
-    def select(self, query: str):
-        cursor = self.cursor()
+    def select(self, query: str, dictionary: bool = True):
+        from gdo.base.Application import Application
+        Application.DB_READS += 1
+        cursor = self.cursor(dictionary)
         cursor.execute(query)
         return Result(cursor)
 

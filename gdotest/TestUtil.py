@@ -23,7 +23,7 @@ def reinstall_module(name):
 
 
 def drop_module(name):
-    module = ModuleLoader.instance().get_module(name)
+    module = ModuleLoader.instance().load_module_fs(name)
     Installer.wipe(module)
 
 

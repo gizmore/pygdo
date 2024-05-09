@@ -15,7 +15,6 @@ from gdo.base.method.dir_server import dir_server
 from gdo.base.method.file_server import file_server
 from gdo.base.method.server_error import server_error
 from gdo.core.GDO_Session import GDO_Session
-from gdo.core.GDT_NotImplemented import GDT_NotImplemented
 from gdo.core.method.not_found import not_found
 from gdo.ui.GDT_Error import GDT_Error
 

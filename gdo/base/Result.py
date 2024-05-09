@@ -23,6 +23,9 @@ class Result:
         self._table = gdo
 
     def __del__(self):
+        self.close()
+
+    def close(self):
         if hasattr(self, '_result'):
             try:
                 self._result.close()
@@ -45,6 +48,7 @@ class Result:
         else:
             data = self.fetch_object()
         if data is None:
+            self.close()
             raise StopIteration
         return data
 
@@ -54,21 +58,27 @@ class Result:
     def fetch_row(self) -> list[str] | None:
         row = self._result.fetchone()
         if row is None:
+            self.close()
             return None
-        if isinstance(row, dict):
-            return list(row.values())
-        return row
+        # if isinstance(row, dict):
+        #     return list(row.values())
+        return list(row)
 
     def fetch_assoc(self):
         row = self._result.fetchone()
-        return row if row is not None else None
+        if row is None:
+            self.close()
+            return None
+        return row
 
     def fetch_val(self):
         """
         Fetch the first column of the next row.
         """
         row = self.fetch_row()
-        return None if row is None else row[0]
+        result = None if row is None else row[0]
+        self.close()
+        return result
 
     def fetch_object(self):
         """
@@ -78,6 +88,6 @@ class Result:
         if row is None:
             return None
         obj = self._table.__class__()
-        obj.set_vals(row)
+        obj._vals.update(row)
         obj.all_dirty(False)
         return Cache.obj_for(obj)

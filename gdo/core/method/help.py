@@ -1,5 +1,6 @@
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render
@@ -44,8 +45,9 @@ class help(Method):
         loader = ModuleLoader.instance()
         grouped = {}
         mode = Application.get_mode()
-        user = GDO_User.current()
+        user = self._env_user
         for cmd, method in loader._methods.items():
+            Logger.debug(cmd)
             module_name = method.module().render_name()
             trigger = method.env_user(user).gdo_trigger()
             if module_name not in grouped:
@@ -64,5 +66,7 @@ class help(Method):
             group_part_one[module_bold] = ", ".join(trigger_colored for _, trigger_colored in triggers)
 
         group_rendered = ", ".join(f"{module}: {triggers}" for module, triggers in group_part_one.items())
+
+        Logger.debug(group_rendered)
 
         return GDT_String('help').text('msg_help_all_commands', [group_rendered])

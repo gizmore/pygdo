@@ -27,6 +27,7 @@ class GDO(WithBulk, GDT):
     __slots__ = (
         '_vals',
         '_dirty',
+        '_last_id',
     )
 
     def __init__(self):
@@ -55,7 +56,9 @@ class GDO(WithBulk, GDT):
         for gdt in gdo.columns():
             name = gdt.get_name()
             vals[name] = vals[name] if name in vals.keys() else gdt.get_initial()
-        back = cls().set_vals(vals)
+        back = cls()
+        back._vals.update(vals)
+        back.all_dirty()
         return back
 
     def primary_key_column(self):
@@ -82,12 +85,14 @@ class GDO(WithBulk, GDT):
     def gdo_value(self, key: str):
         return self.column(key).get_value()
 
-    def set_val(self, key, val, dirty=True):
-        if key in self._vals.keys():
-            if val == self._vals[key]:
-                dirty = False
+    def set_val(self, key, val: str, dirty: bool = True):
+        # if key in self._vals.keys():
+        #     if val == self._vals[key]:
+        #         dirty = False
         if isinstance(val, bytearray):
             val = val.decode()
+        if self._vals[key] == val:
+            dirty = False
         self._vals[key] = Strings.nullstr(val)
         return self.dirty(key, dirty)
 
@@ -104,8 +109,12 @@ class GDO(WithBulk, GDT):
         self.set_vals(vals)
         return self.save()
 
+    def save_val(self, key: str, val: str):
+        self.set_val(key, val)
+        return self.save()
+
     def gdo_table_name(self) -> str:
-        return self.get_name().lower()
+        return self.__class__.__name__.lower()
 
     # def gdo_cached(self) -> bool:
     #     """
@@ -141,7 +150,7 @@ class GDO(WithBulk, GDT):
         return self.query().select(columns)
 
     def count_where(self, where='1'):
-        col = self.select('COUNT(*)').where(where).exec().fetch_val()
+        col = self.select('COUNT(*)').where(where).exec(False).iter(ResultType.ROW).fetch_val()
         if col is None:
             return 0
         return int(col)
@@ -156,11 +165,10 @@ class GDO(WithBulk, GDT):
     def get_by(self, key: str, val: str):
         return self.get_by_vals({key: val})
 
-    def get_by_id(self, id: str):
+    def get_by_id(self, *id_: str):
         cols = self.get_pk_columns()
-        ids = id.split(':')
         return self.get_by_vals({
-            col.get_name(): Strings.nullstr(val) for col, val in zip(cols, ids) if val})
+            col.get_name(): Strings.nullstr(val) for col, val in zip(cols, id_) if val})
 
     def pk_where(self) -> str:
         cols = self.get_pk_columns()
@@ -180,7 +188,7 @@ class GDO(WithBulk, GDT):
         return self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', cols))
 
     def soft_replace(self):
-        old = self.get_by_id(self.get_id())
+        old = self.get_by_id(*self.get_id().split(':'))
         if old is not None:
             return self.save()
         return self.insert()
@@ -198,8 +206,24 @@ class GDO(WithBulk, GDT):
         self.after_create()
         return self.all_dirty(False)
 
+    def delete_query(self):
+        return self.query().type(Type.DELETE)
+
     def delete(self):
-        return self
+        self.before_delete()
+        self.delete_query().where(self.pk_where()).exec()
+        self.after_delete()
+        return self.all_dirty(True)
+
+    def delete_where(self, where: str, with_hooks: bool = False):
+        self.delete_query().where(where).exec()
+
+    def delete_by_vals(self, vals: dict, with_hooks: bool = False):
+        query = self.delete_query()
+        for key, val in vals.items():
+            query.where(f"{key}={self.quote(val)}")
+        Cache.obj_search(self.table(), vals, True)
+        query.exec()
 
     def dirty_vals(self) -> dict:
         return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns() if gdt.get_name() in self._dirty}
@@ -244,6 +268,21 @@ class GDO(WithBulk, GDT):
             gdt.gdo_after_update(self)
         self.gdo_after_update(self)
         Cache.obj_for(self).set_vals(self._vals, False)  # After a blanked update this is required.
+
+    def before_delete(self):
+        for gdt in self.columns():
+            gdt.gdo_before_delete(self)
+        self.gdo_before_delete(self)
+        pass
+
+    def after_delete(self):
+        for gdt in self.columns():
+            gdt.gdo_after_delete(self)
+        self.gdo_after_delete(self)
+
+    #######
+    # All #
+    #######
 
     def all(self, where: str = '1', result_type: ResultType = ResultType.OBJECT):
         return self.table().select().where(where).exec().iter(result_type).fetch_all()

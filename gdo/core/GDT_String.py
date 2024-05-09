@@ -147,3 +147,6 @@ class GDT_String(WithLabel, GDT_Field):
         if self.is_hidden():
             return GDT_Hidden(self._name).val(self._val).render_form()
         return GDT_Template.python('core', 'form_string.html', {'field': self})
+
+    def render_irc(self) -> str:
+        return self.get_val()

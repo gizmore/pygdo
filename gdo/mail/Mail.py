@@ -14,6 +14,7 @@ from gdo.ui.GDT_HTML import GDT_HTML
 class Mail:
     SENT = 0
     _sender: str
+    _reply: str
     _recipients: list[str]
     _cc: list[str]
     _bcc: list[str]
@@ -55,6 +56,11 @@ class Mail:
     def recipient(self, email: str, name: str = None):
         self._recipients.append(self._ma(email, name))
         return self
+
+    def reply_to(self, email: str, name: str = None):
+        self._reply = self._ma(email, name)
+        return self
+
 
     def cc(self, email: str, name: str = None):
         self._cc.append(self._ma(email, name))

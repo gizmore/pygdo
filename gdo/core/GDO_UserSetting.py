@@ -21,6 +21,8 @@ class GDO_UserSetting(GDO):
         gdo = cls.get_setting(user, key)
         if gdo:
             gdt.val(gdo.get_val())
+        else:
+            gdt.val(gdt.get_initial())
         return gdt
 
     @classmethod

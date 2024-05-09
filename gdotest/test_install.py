@@ -19,7 +19,7 @@ class InstallTestCase(unittest.TestCase):
         return self
 
     def test_01_core_config(self):
-        db = Application.DB
+        db = Application.db()
         self.assertTrue(db.is_configured(), 'Database is configured')
         self.assertIsNotNone(db.get_link(), 'Database is ready')
 

@@ -1,9 +1,13 @@
+from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Message import Message
+from gdo.base.Trans import tusr
 from gdo.core.Connector import Connector
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_AutoInc import GDT_AutoInc
+from gdo.core.GDT_Char import GDT_Char
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Secret import GDT_Secret
@@ -35,12 +39,19 @@ class GDO_Server(GDO):
             GDT_AutoInc('serv_id'),
             GDT_Name('serv_name').unique(),
             GDT_Url('serv_url').in_and_external(),
+            GDT_Char('serv_trigger').initial('$'),
             GDT_Name('serv_username'),
             GDT_Secret('serv_password'),
             GDT_Connector('serv_connector'),
             GDT_Created('serv_created'),
             GDT_Creator('serv_creator'),
         ]
+
+    def get_name(self) -> str:
+        return self.gdo_val('serv_name')
+
+    def get_trigger(self) -> str:
+        return self.gdo_val('serv_trigger')
 
     def get_username(self):
         return self.gdo_val('serv_username') or 'Dog'
@@ -68,7 +79,7 @@ class GDO_Server(GDO):
         return GDO_User.blank({
             'user_type': GDT_UserType.MEMBER,
             'user_name': username,
-            'user_displayname': username or displayname,
+            'user_displayname': displayname or username,
             'user_server': self.get_id(),
         }).insert()
 
@@ -88,7 +99,36 @@ class GDO_Server(GDO):
         return GDO_UserSetting.get_user_with_settings(self.get_id(), vals)
 
     ###########
+    # Channel #
+    ###########
+    def get_or_create_channel(self, name: str, display_name: str):
+        from gdo.core.GDO_Channel import GDO_Channel
+        channel = self.get_channel_by_name(name)
+        if not channel:
+            channel = GDO_Channel.blank({
+                'chan_name': name,
+                'chan_displayname': display_name or name,
+                'chan_server': self.get_id(),
+            }).insert()
+        return channel
+
+    def get_channel_by_name(self, name: str):
+        from gdo.core.GDO_Channel import GDO_Channel
+        GDO_Channel.table().get_by_vals({
+            'chan_server': self.get_id(),
+
+        })
+
+    ###########
     # Message #
     ###########
     def send_to_user(self, user: GDO_User, key: str, args: list = None):
-        self.get_connector().send_to_user(user, key, args)
+        message = Message(tusr(user, key, args), Application.get_mode())
+        message.env_user(user).env_server(self)
+        self.get_connector().send_to_user(message)
+
+    ##########
+    # Render #
+    ##########
+    def render_name(self) -> str:
+        return f"{self.get_id()}-{self.get_name()}"

@@ -1,8 +1,13 @@
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
+from gdo.core import GDO_MethodValServerBlob
 from gdo.core.Connector import Connector
 from gdo.core.GDO_Channel import GDO_Channel
+from gdo.core.GDO_Cronjob import GDO_Cronjob
 from gdo.core.GDO_File import GDO_File
+from gdo.core.GDO_Method import GDO_Method
+from gdo.core.GDO_MethodValServer import GDO_MethodValServer
+from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_Session import GDO_Session
@@ -50,7 +55,6 @@ class module_core(GDO_Module):
             GDT_Bool('guest_system').initial('1'),
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
-            GDT_Enum('show_perf').choices({"never": "Never", "always": "Always", "staff": "Staff"}).initial('always'),
             GDT_Enum('minify').choices({"no": 'No', 'yes': 'Yes', 'concat': 'Concat'}).initial('no'),
             GDT_UInt('asset_version').initial('1'),
         ]
@@ -68,9 +72,6 @@ class module_core(GDO_Module):
 
     def cfg_404_mails(self) -> bool:
         return self.get_config_value('send_404_mails')
-
-    def cfg_show_perf(self) -> str:
-        return self.get_config_val('show_perf')
 
     def cfg_guest_system(self) -> bool:
         return self.get_config_value('guest_system')
@@ -90,7 +91,11 @@ class module_core(GDO_Module):
             GDO_UserPermission,
             GDO_Session,
             GDO_UserSetting,
+            GDO_Cronjob,
             GDO_File,
+            GDO_Method,
+            GDO_MethodValServer,
+            GDO_MethodValServerBlob,
         ]
 
     def gdo_install(self):
@@ -99,18 +104,3 @@ class module_core(GDO_Module):
     def gdo_load_scripts(self, page):
         self.add_css('css/pygdo.css')
         self.add_js('js/pygdo.js')
-
-    def should_show_perf(self) -> bool:
-        perf = self.cfg_show_perf()
-        if perf == 'always':
-            return True
-        elif perf == 'never':
-            return False
-        else:
-            return GDO_User.current().is_staff()
-
-    def gdo_init_sidebar(self, page):
-        if self.should_show_perf():
-            from gdo.core.GDT_Perf import GDT_Perf
-            page._bottom_bar.add_field(GDT_Perf())
-

@@ -3,11 +3,13 @@ from __future__ import annotations
 import getpass
 import json
 import os.path
+import random
 import re
 import secrets
 import shutil
 from collections import OrderedDict
 from html import unescape
+from itertools import product
 from typing import Sequence
 
 from gdo.base.Render import Mode
@@ -164,6 +166,43 @@ class Strings:
     def br2nl(cls, s):
         return re.sub(r'<\s*br\s*/?\s*>', '\n', s)
 
+    @classmethod
+    def split_boundary(cls, text: str, chunk_size: int):
+        """
+        (c) ChatGPT
+        """
+        # Check if the text is shorter than the chunk size
+        if len(text) <= chunk_size:
+            return [text]
+
+        # Find the nearest word boundary to the chunk size
+        boundary_index = chunk_size
+        while boundary_index > 0 and not text[boundary_index].isspace():
+            boundary_index -= 1
+
+        # If no word boundary was found, split at the chunk size
+        if boundary_index == 0:
+            return [text[:chunk_size]] + cls.split_boundary(text[chunk_size:], chunk_size)
+
+        # Otherwise, split at the word boundary
+        return [text[:boundary_index]] + cls.split_boundary(text[boundary_index:], chunk_size)
+
+    @classmethod
+    def regex_first(cls, pattern :str, string: str):
+        """
+        Get the first matching group value of a string match
+        """
+        match = re.search(pattern, string)
+        if match:
+            return match.group(1)
+        return None
+
+    @classmethod
+    def replace_all(cls, s: str, replace: dict):
+        for search, replce in replace.items():
+            s = s.replace(search, replce)
+        return s
+
 
 class Files:
 
@@ -204,8 +243,10 @@ class Files:
 
     @classmethod
     def remove(cls, path: str) -> bool:
-        os.remove(path)
-        return True
+        if os.path.isfile(path):
+            os.remove(path)
+            return True
+        return False
 
     @classmethod
     def touch(cls, path: str, create: bool = False) -> bool:
@@ -322,8 +363,41 @@ class Arrays:
 class Random:
 
     @classmethod
+    def init(cls, seed: int):
+        random.seed(seed)
+
+    @classmethod
     def token(cls, length: int):
         return secrets.token_hex(length)
 
-    def mrand(self, min: int, max: int):
-        return 4
+    @classmethod
+    def mrand(cls, min_: int, max_: int):
+        return random.randint(min_, max_)
+
+
+class Permutations:
+    def __init__(self, values):
+        self.values = values
+        self.count = self.count_permutations(values)
+        self.last_permutation = [0] * len(values)
+
+    @staticmethod
+    def count_permutations(values):
+        return len(list(product(*values)))
+
+    def generate(self):
+        yield self.get_current_permutation()
+
+        for _ in range(1, self.count):
+            self.update_next_permutation()
+            yield self.get_current_permutation()
+
+    def get_current_permutation(self):
+        return [self.values[i][self.last_permutation[i]] for i in range(len(self.values))]
+
+    def update_next_permutation(self):
+        for i in range(len(self.values)):
+            self.last_permutation[i] += 1
+            if self.last_permutation[i] < len(self.values[i]):
+                break
+            self.last_permutation[i] = 0

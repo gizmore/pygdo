@@ -6,7 +6,6 @@ class GDT_User(GDT_Object):
     _same_channel: bool
     _authenticated: bool
 
-
     def __init__(self, name):
         super().__init__(name)
         from gdo.core.GDO_User import GDO_User
@@ -23,5 +22,8 @@ class GDT_User(GDT_Object):
     def authenticated(self, authenticated: bool):
         self._authenticated = authenticated
         return self
+
+    def online(self, online: bool = True):
+        return self.authenticated(online)
 
 

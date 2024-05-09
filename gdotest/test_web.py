@@ -65,15 +65,6 @@ class WebTestCase(unittest.TestCase):
         test_string = "Totally Ö and Ü" * 1000
         self.assertEqual(bytelen(test_string), len(test_string.encode('UTF-8')), 'bytelen function does not give correct result')
 
-    def test_10_perf(self):
-        core = module_core.instance()
-        self.assertTrue(core.should_show_perf(), "Perf is not wanted but it should be")
-        req = WebPlug("core.echo;text.This.is.a.test.html")
-        out = req.exec()
-        self.assertIn('Memory', out, "Perf does not contain Memory section.")
-        self.assertNotIn('>0 GDTs', out, "Perf did not count GDTs")
-        self.assertNotIn('/ 0 GDOs', out, "Perf did not count GDOs")
-
     def test_11_connector_not_allowed(self):
         result = WebPlug("core.help.cli").exec()
         self.assertIn("does not work inside this connector", result, "A non Web Method is executing in HTTP.")

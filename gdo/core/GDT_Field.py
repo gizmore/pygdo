@@ -128,9 +128,12 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
             return " DEFAULT " + self.quote(self._initial)
         return GDT.EMPTY_STRING
 
-    def not_null(self, not_null=True):
+    def not_null(self, not_null: bool = True):
         self._not_null = not_null
         return self
+
+    def nullable(self, nullable: bool = True):
+        return self.not_null(not nullable)
 
     def error(self, errkey, errargs=None):
         if errargs is None:

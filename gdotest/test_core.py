@@ -1,8 +1,10 @@
+import json
 import os.path
 import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Util import Permutations
 from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_MD5 import GDT_MD5
 from gdo.core.GDT_Path import GDT_Path
@@ -43,6 +45,22 @@ class CoreTestCase(unittest.TestCase):
 
     def test_05_clear_cache(self):
         cli_plug(None, "cc")
+
+    def test_06_permutations(self):
+        values = [[1, 2], [3], [4, 5, 6]]
+        correct = [
+            [1, 3, 4],
+            [2, 3, 4],
+            [1, 3, 5],
+            [2, 3, 5],
+            [1, 3, 6],
+            [2, 3, 6],
+        ]
+        perms = Permutations(values)
+        i = 0
+        for gen in perms.generate():
+            self.assertEqual(gen, correct[i], f"Permutation generator failed.")
+            i += 1
 
 
 if __name__ == '__main__':

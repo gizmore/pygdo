@@ -16,3 +16,7 @@ class GDT_AutoInc(GDT_UInt):
         key = gdo.primary_key_column().get_name()
         val = gdo._last_id
         gdo.set_val(key, val, False)
+
+    def gdo_after_delete(self, gdo):
+        key = gdo.primary_key_column().get_name()
+        gdo.set_val(key, '0', False)

@@ -10,9 +10,10 @@ def pygdo():
     from gdo.base.ModuleLoader import ModuleLoader
     Application.init(__file__ + "/../../")
     Application.init_cli()
-    ModuleLoader.instance().load_modules_cached()
-    ModuleLoader.instance().init_modules()
-    ModuleLoader.instance().init_cli()
+    loader = ModuleLoader.instance()
+    loader.load_modules_db()
+    loader.init_modules()
+    loader.init_cli()
 
     if len(sys.argv) > 1:
         sys.argv = [f'"{arg}"' for arg in sys.argv]
