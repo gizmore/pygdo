@@ -36,7 +36,8 @@ class module_core(GDO_Module):
         self.subscribe('clear_cache', self.on_cc)
 
     def on_cc(self):
-        delattr(GDO_User, 'SYSTEM')
+        if hasattr(GDO_User, 'SYSTEM'):
+            delattr(GDO_User, 'SYSTEM')
 
     def gdo_dependencies(self) -> list:
         return [
