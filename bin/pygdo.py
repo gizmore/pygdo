@@ -38,16 +38,22 @@ def get_parser():
 
 
 def process_line(line: str) -> None:
+    from gdo.base.Exceptions import GDOParamError
     from gdo.base.Application import Application
-    append_to_history(line)
-    parser = get_parser()
-    method = parser.parse_line(line)
-    Application.fresh_page()
-    gdt = method.execute()
-    txt = gdt.render_cli()
-    txt = Application.get_page()._top_bar.render_cli() + txt
-    print(txt)
-    method._env_session.save()
+    from gdo.base.Render import Render, Mode
+    try:
+        append_to_history(line)
+        parser = get_parser()
+        method = parser.parse_line(line)
+        Application.fresh_page()
+        gdt = method.execute()
+        txt = gdt.render_cli()
+        txt = Application.get_page()._top_bar.render_cli() + txt
+        print(txt)
+        method._env_session.save()
+    except GDOParamError as ex:
+        print(Render.red(str(ex), Mode.CLI))
+
 
 
 def append_to_history(line: str):
