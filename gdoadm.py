@@ -196,11 +196,17 @@ class App:
             exit(0)
         need = missing
         to_process = list(need)
-        for name in to_process:
-            deps = providers[name][1]
-            for dep in deps:
-                if dep not in on_disk:
-                    need.append(name)
+        before = 0
+        after = len(to_process)
+        while before != after:
+            before = len(to_process)
+            for name in to_process:
+                deps = providers[name][1]
+                for dep in deps:
+                    if dep not in on_disk:
+                        need.append(dep)
+            to_process = Arrays.unique(need)
+            after = len(to_process)
         need = Arrays.unique(need)
         print(f"You need to clone {len(need)} modules: {', '.join(need)}. Press enter.")
         choices = {}
