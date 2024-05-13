@@ -2,6 +2,7 @@
     <label for="<%=field.get_name()%>"><%=field.render_label(Mode.HTML)%></label>
     <input id="<%=field.get_name()%>" name="<%=field.get_name()%>" type="<%=field._input_type%>"
            <%=field.html_pattern()%>
+           <%=field.html_required()%>
            aria-label="<%=field.render_label(Mode.HTML)%>"
            value="<%=field.html_value()%>"/>
     <% if field.has_error():

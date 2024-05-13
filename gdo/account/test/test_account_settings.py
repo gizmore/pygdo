@@ -3,7 +3,7 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
-from gdotest.TestUtil import cli_plug, get_gizmore, reinstall_module
+from gdotest.TestUtil import cli_plug, reinstall_module, cli_gizmore
 
 
 class AccountTest(unittest.TestCase):
@@ -17,12 +17,21 @@ class AccountTest(unittest.TestCase):
         ModuleLoader.instance().init_cli()
         return self
 
-    def test_set_language(self):
-        # user = Web.get_server().get_or_create_user('gizmore')
-        # user.authenticate()
+    def test_01_settings(self):
+        result = cli_plug(None, 'settings')
+        self.assertIn('language(en)', result, "settings cmd does not work")
+
+    def test_02_print_setting(self):
+        result = cli_plug(None, 'set language')
+        self.assertIn('language', result, 'print setting does not work')
+        self.assertIn('Your system language', result, 'print setting does not work #2')
+
+    def test_03_set_language(self):
         result = cli_plug(None, 'set language de')
-        got = get_gizmore().get_setting_val('language')
+        self.assertIn('setting for language changed', result, "Setting system language does not work #1")
+        got = cli_gizmore().get_setting_val('language')
         self.assertEqual(got, 'de', 'Cannot set language to german.')
+
 
 
 if __name__ == '__main__':

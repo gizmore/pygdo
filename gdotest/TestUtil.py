@@ -75,6 +75,7 @@ class WebPlug:
             'REQUEST_METHOD': 'POST' if len(self._post.items()) else 'GET',
             'mod_wsgi.request_start': str(round(time.time())),
             'REQUEST_SCHEME': 'http',
+            'REQUEST_URI': url,
         }
         cookies = self.get_cookies()
         if cookies:

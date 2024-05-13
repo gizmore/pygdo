@@ -15,7 +15,11 @@
 <input type="checkbox" name="gdo-left-nav" id="gdo-left-nav" class="gdo-nav"/>
 <input type="checkbox" name="gdo-right-nav" id="gdo-right-nav" class="gdo-nav"/>
 
-<nav id="gdo-left-bar" class="gdo-nav-bar"><%=field._left_bar.render()%></nav>
+<nav id="gdo-left-bar" class="gdo-nav-bar">
+    <div id="left">
+        <%=field._left_bar.render()%>
+    </div>
+</nav>
 <label for="gdo-left-nav"></label>
 
 <nav id="gdo-right-bar" class="gdo-nav-bar"><%=field._right_bar.render()%></nav>

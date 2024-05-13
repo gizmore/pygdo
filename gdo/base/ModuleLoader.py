@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing_extensions import Self
+
 import glob
 import importlib
 
@@ -16,7 +18,7 @@ class ModuleLoader:
     _methods: dict[str, any]
 
     @classmethod
-    def instance(cls):
+    def instance(cls) -> Self:
         return Application.LOADER
 
     def enabled(self):

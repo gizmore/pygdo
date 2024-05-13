@@ -1,1 +1,16 @@
 module_account = "Account"
+
+############
+# list_cli #
+############
+mt_account_list_cli = "Settings"
+md_account_list_cli = "List your module settings."
+msg_cli_settings = "Your settings: %s."
+
+###########
+# set_cli #
+###########
+mt_account_set_cli = "Set Setting"
+md_account_set_cli = "Set and display a setting"
+msg_print_cli_setting = "Your setting for %s is %s.%s for example: %s."
+msg_set_cli_setting = "Your setting for %s changed from %s to %s."

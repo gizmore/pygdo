@@ -2,11 +2,13 @@ import os.path
 import unittest
 
 from gdo.base.Application import Application
+from gdo.core.GDO_Session import GDO_Session
 from gdo.core.GDT_String import GDT_String
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.form.GDT_CSRF import GDT_CSRF
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
+from gdotest.TestUtil import get_gizmore
 
 
 class FormTestCase(unittest.TestCase):
@@ -18,6 +20,8 @@ class FormTestCase(unittest.TestCase):
         return self
 
     def test_forms(self):
+        gizmore = get_gizmore()
+        Application.set_session(GDO_Session.for_user(gizmore))
         form = GDT_Form()
         form.add_field(GDT_String("login"), GDT_CSRF(), GDT_Submit())
         form.actions().add_field(GDT_Submit())

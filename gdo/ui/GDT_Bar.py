@@ -1,8 +1,17 @@
+from gdo.base.WithName import WithName
 from gdo.core.GDT_Container import GDT_Container
+from gdo.core.GDT_Template import tpl
 from gdo.ui.WithFlow import WithFlow
 
 
-class GDT_Bar(WithFlow, GDT_Container):
+class GDT_Bar(WithFlow, WithName, GDT_Container):
 
-    def __init__(self):
-        super(GDT_Bar, self).__init__()
+    def __init__(self, name: str = None):
+        super().__init__()
+        self.name(name or self.generate_name())
+
+    def render_html(self) -> str:
+        back = f'<div id="{self.get_name()}" class="bar {self.render_class()}">'
+        back += super().render_html()
+        back += "</div>"
+        return back

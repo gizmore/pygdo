@@ -12,8 +12,10 @@ class Installer:
 
     @classmethod
     def install_modules(cls, modules: list[GDO_Module], verbose: bool = False):
+        first = True
         for module in cls.modules_with_deps(modules):
-            cls.install_module(module, verbose)
+            cls.install_module(module, verbose, first)
+            first = False
 
     @classmethod
     def modules_with_deps(cls, modules: list) -> [GDO_Module]:
@@ -40,7 +42,7 @@ class Installer:
         return sorted(deps, key=lambda m: m._priority)
 
     @classmethod
-    def install_module(cls, module: GDO_Module, verbose: bool = False) -> bool:
+    def install_module(cls, module: GDO_Module, verbose: bool = False, install_settings: bool = False) -> bool:
         if verbose:
             print(f"Installing module {module.get_name()}")
         if not module.is_installable():
@@ -53,7 +55,7 @@ class Installer:
         cls.install_module_entry(module)
         ModuleLoader.instance().init_user_settings()
         module.init()
-        if module.get_name() != 'base':
+        if module.get_name() != 'base' and install_settings:
             from gdo.core import module_core
             if verbose:
                 print("Migrating core for user settings...")

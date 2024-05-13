@@ -34,8 +34,8 @@ class GDT_Page(GDT):
         self._js_inline = ''
         self._title_bar = GDT_Bar().horizontal()
         self._top_bar = GDT_Container()
-        self._left_bar = GDT_Bar().vertical()
-        self._right_bar = GDT_Bar().vertical()
+        self._left_bar = GDT_Bar('left').vertical()
+        self._right_bar = GDT_Bar('right').vertical()
         self._bottom_bar = GDT_Container()
         return self
 

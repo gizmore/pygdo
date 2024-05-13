@@ -269,7 +269,7 @@ class App:
             print("No modules found!", file=sys.stderr)
             exit(-1)
 
-        loader.init_modules()
+#        loader.init_modules()
         Installer.install_modules(modules, True)
         self._run_yarn_script()
         print("All Done!")

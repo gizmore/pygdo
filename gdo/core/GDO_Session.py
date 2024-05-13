@@ -105,7 +105,7 @@ class GDO_Session(GDO):
     def cookie_value(self) -> str:
         return f"{self.get_id()}:{self.get_token()}"
 
-    def get(self, key: str, default: str = None):
+    def get(self, key: str, default: any = None):
         return self._data[key] if key in self._data else default
 
     def set(self, key: str, value):
@@ -124,4 +124,6 @@ class GDO_Session(GDO):
 
     def get_user(self) -> GDO_User:
         user = self.gdo_value('sess_user')
+        if user:
+            user.authenticate(self)
         return user or GDO_User.ghost()

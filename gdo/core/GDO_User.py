@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.core.GDT_AutoInc import GDT_AutoInc
@@ -17,8 +19,12 @@ class GDO_User(GDO):
     SYSTEM: GDO
     _authenticated: bool
 
+    __slots__ = (
+        '_authenticated',
+    )
+
     @classmethod
-    def system(cls):
+    def system(cls) -> Self:
         if not hasattr(cls, 'SYSTEM'):
             cls.SYSTEM = GDO_User.table().get_by_vals({
                 'user_id': '1',
@@ -37,7 +43,7 @@ class GDO_User(GDO):
         })
 
     @classmethod
-    def current(cls):
+    def current(cls) -> Self:
         return Application.STORAGE.user or cls.system()
 
     def gdo_columns(self) -> list:
@@ -139,6 +145,12 @@ class GDO_User(GDO):
 
     def is_authenticated(self) -> bool:
         return hasattr(self, '_authenticated')
+
+    def is_ghost(self) -> bool:
+        return self.is_type('ghost')
+
+    def is_type(self, type_: str) -> bool:
+        return self.get_user_type() == type_
 
     ##########
     # Render #

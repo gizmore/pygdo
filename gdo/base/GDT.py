@@ -147,6 +147,9 @@ class GDT:
     def is_hidden(self) -> bool:
         return False
 
+    def has_tooltip(self) -> bool:
+        return False
+
     def fields(self) -> list:
         return []
 
@@ -209,3 +212,12 @@ class GDT:
 
     def render_irc(self) -> str:
         return self.render_txt()
+
+    def render_var(self) -> str:
+        return self.display_val(self.get_val())
+
+    def render_suggestion(self) -> str:
+        return ''
+
+    def display_val(self, val: str) -> str:
+        return val

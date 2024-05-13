@@ -4,6 +4,11 @@ import threading
 import time
 import tomlkit
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.core.GDO_Session import GDO_Session
+
 from gdo.base.Events import Events
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
@@ -70,6 +75,7 @@ class Application:
     @classmethod
     def set_current_user(cls, user):
         cls.STORAGE.user = user
+        cls.STORAGE.lang = user.get_lang_iso()
 
     @classmethod
     def fresh_page(cls):
@@ -133,10 +139,13 @@ class Application:
     def init_common(cls):
         cls.STORAGE.mode = Mode.HTML
         cls.tick()
+        cls.DB_READS = 0
+        cls.DB_WRITES = 0
         Logger.init()
         cls.init_thread(None)
         # Logger.debug("Application.init_common()")
         cls.STORAGE.user = None
+        cls.STORAGE.lang = 'en'
 
     @classmethod
     def init_thread(cls, thread):
@@ -198,3 +207,24 @@ class Application:
     @classmethod
     def request_time(cls) -> float:
         return time.time() - cls.STORAGE.time_start
+
+    @classmethod
+    def environ(cls, key: str) -> str:
+        return cls.STORAGE.environ[key]
+
+    @classmethod
+    def current_href(cls) -> str:
+        return cls.environ('REQUEST_URI')
+
+    @classmethod
+    def set_session(cls, session: 'GDO_Session'):
+        cls.STORAGE.session = session
+
+    @classmethod
+    def get_session(cls) -> 'GDO_Session':
+        return cls.STORAGE.session
+
+    @classmethod
+    def is_unit_test(cls):
+        return 'unittest' in sys.modules.keys()
+

@@ -22,6 +22,8 @@ err_type = "This method is restricted to %s."
 err_stub = "This method is not implemented yet."
 err_type_member = "Only members are allowed to execute this method. Please %s first, and then come back here."
 link_login_before_continue = "authenticate"
+err_type_guest = "You need to %s before you execute this method. It is also possible to %s."
+link_continue_as_guest = "continue as guest"
 
 ################
 # Server Error #

@@ -70,6 +70,7 @@ def application(environ, start_response):
         else:
             session = GDO_Session.start(True)
             Application.set_current_user(session.get_user())
+            Application.set_session(session)
             Application.status("200 OK")
             user = session.get_user()
             server = user.get_server()
@@ -100,7 +101,6 @@ def application(environ, start_response):
                     module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
 
-            response = result.render(Application.get_mode())
             headers = Application.get_headers()
             if Application.is_html():
                 headers.extend([('Content-Type', 'text/html; Charset=UTF-8')])
@@ -108,6 +108,8 @@ def application(environ, start_response):
                 headers.extend([('Content-Type', 'application/json; Charset=UTF-8')])
             elif Application.get_mode() == Mode.TXT:
                 headers.extend([('Content-Type', 'text/plain; Charset=UTF-8')])
+            session.save()
+            response = result.render(Application.get_mode())
             headers.extend([('Content-Length', str(bytelen(response)))])
             start_response(Application.get_status(), headers)
             yield response.encode('utf-8')

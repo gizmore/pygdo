@@ -7,6 +7,7 @@ class GDT_UserType(GDT_Enum):
     GUEST = 'guest'
     MEMBER = 'member'
     BOT = 'bot'
+    LINK = 'link'
 
     def __init__(self, name):
         super().__init__(name)

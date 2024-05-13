@@ -10,6 +10,7 @@ from gdo.base.Util import Strings, err
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
 from gdo.base.WithInput import WithInput
+from gdo.base.WithPermissionCheck import WithPermissionCheck
 
 
 class MyArgParser(argparse.ArgumentParser):
@@ -18,7 +19,7 @@ class MyArgParser(argparse.ArgumentParser):
         err('%s', [message])
 
 
-class Method(WithEnv, WithInput, WithError, GDT):
+class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     _parameters: dict[str, GDT]
     _next_method: object  # Method chaining
     _result: str
@@ -75,7 +76,7 @@ class Method(WithEnv, WithInput, WithError, GDT):
         Comma separated list of applicable user types
         Use this to restrict to members or guests.
         """
-        return 'member'
+        return 'ghost,member,guest'
 
     def gdo_connectors(self) -> str:
         """
@@ -285,8 +286,8 @@ class Method(WithEnv, WithInput, WithError, GDT):
     def _disabled_in_server(self, channel):
         return True
 
-    def has_permission(self, user) -> bool:
-        return self.gdo_has_permission(user)
+#    def has_permission(self, user) -> bool:
+#        return self.gdo_has_permission(user)
 
     def allows_connector(self) -> bool:
         connectors = self.gdo_connectors()

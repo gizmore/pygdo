@@ -62,7 +62,7 @@ class Trans:
 
     @classmethod
     def t(cls, key: str, args: list):
-        iso = Application.LANG_ISO
+        iso = Application.STORAGE.lang
         return tiso(iso, key, args)
 
     @classmethod

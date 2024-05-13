@@ -7,6 +7,7 @@ import random
 import re
 import secrets
 import shutil
+import urllib.parse
 from collections import OrderedDict
 from html import unescape
 from itertools import product
@@ -22,6 +23,10 @@ def hdr(name: str, value: str):
 
 def html(s: str, mode: Mode = Mode.HTML):
     return Strings.html(s, mode)
+
+
+def urlencode(s: str):
+    return urllib.parse.quote_plus(s)
 
 
 class GDOJSONEncoder(json.JSONEncoder):
@@ -72,7 +77,8 @@ def dump(*obj: any):
 
 
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
-    return f"/{module_name}.{method_name}{append}.{fmt}"
+    from gdo.base.Application import Application
+    return f"/{module_name}.{method_name}.{Application.get_mode().name.lower()}?_lang={Application.STORAGE.lang}{append}"
 
 
 def module_enabled(module_name: str) -> bool:
@@ -188,7 +194,7 @@ class Strings:
         return [text[:boundary_index]] + cls.split_boundary(text[boundary_index:], chunk_size)
 
     @classmethod
-    def regex_first(cls, pattern :str, string: str):
+    def regex_first(cls, pattern: str, string: str):
         """
         Get the first matching group value of a string match
         """

@@ -1,3 +1,6 @@
+from gdo.base.Trans import t
+
+
 class WithTooltip:
     _tt_key: str
     _tt_args: list
@@ -16,3 +19,9 @@ class WithTooltip:
     def tt_escaped(self, escaped: bool):
         self._tt_escaped = escaped
         return self
+
+    def has_tooltip(self) -> bool:
+        return hasattr(self, '_tt_key')
+
+    def get_tooltip_text(self) -> str:
+        return t(self._tt_key, self._tt_args)

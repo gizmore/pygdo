@@ -1,5 +1,11 @@
 from gdo.base.Render import Mode
-from gdo.base.Util import dump
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.core.GDO_Channel import GDO_Channel
+    from gdo.core.GDO_Server import GDO_Server
+    from gdo.core.GDO_Session import GDO_Session
+    from gdo.core.GDO_User import GDO_User
 
 
 class WithEnv:
@@ -8,10 +14,10 @@ class WithEnv:
     """
     _env_http: bool
     _env_mode: Mode
-    _env_user: object
-    _env_server: object
-    _env_channel: object
-    _env_session: object
+    _env_user: 'GDO_User'
+    _env_server: 'GDO_Server'
+    _env_channel: 'GDO_Channel'
+    _env_session: 'GDO_Session'
 
     def env_http(self, http: bool):
         self._env_http = http
@@ -45,4 +51,3 @@ class WithEnv:
         self._env_user = with_env._env_user
         self._env_session = with_env._env_session
         return self
-

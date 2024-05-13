@@ -1,1 +1,3 @@
 module_language = "Language"
+
+tt_core_language = 'Your system language setting.'

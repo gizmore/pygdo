@@ -23,6 +23,7 @@ class GDT_String(WithLabel, GDT_Field):
     _minlen: int
     _maxlen: int
     _pattern: str
+    _re_options: int
 
     _input_type: str
 
@@ -33,6 +34,7 @@ class GDT_String(WithLabel, GDT_Field):
         self._minlen = 0
         self._maxlen = 192
         self._pattern = ''
+        self._re_options = 0
         self._case_s = False
         self._input_type = 'text'
         self.label(name)
@@ -71,8 +73,9 @@ class GDT_String(WithLabel, GDT_Field):
         self._encoding = Encoding.BINARY
         return self
 
-    def pattern(self, pattern: str):
+    def pattern(self, pattern: str, options: int = 0):
         self._pattern = pattern
+        self._re_options = options
         return self
 
     #######
@@ -132,9 +135,15 @@ class GDT_String(WithLabel, GDT_Field):
     # Render #
     ##########
 
+    def html_required(self):
+        if self.is_not_null():
+            return ' required="required"'
+        return ''
+
     def html_pattern(self):
         if self._pattern:
-            return f' pattern="{self._pattern}"'
+            p = self._pattern.strip('^$')
+            return f' pattern="{p}"'
         return ''
 
     def render_json(self):

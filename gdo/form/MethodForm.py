@@ -24,7 +24,6 @@ class MethodForm(Method):
         if not hasattr(self, '_form') or reset:
             self._form = GDT_Form()
             self.gdo_create_form(self._form)
-            # self.apply_input(self._form, self._input)
         if reset:
             delattr(self, '_parameters')
             self._nested_parse()

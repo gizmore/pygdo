@@ -1,5 +1,11 @@
 import importlib
 import os
+from typing_extensions import Self
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.ui import GDT_Page
 
 from packaging.version import Version
 
@@ -28,7 +34,7 @@ class GDO_Module(WithModuleConfig, GDO):
     )
 
     @classmethod
-    def instance(cls):
+    def instance(cls) -> Self:
         return ModuleLoader.instance().get_module(cls.get_name())
 
     def __init__(self):
@@ -50,10 +56,10 @@ class GDO_Module(WithModuleConfig, GDO):
     def gdo_init(self):
         pass
 
-    def gdo_init_sidebar(self, page):
+    def gdo_init_sidebar(self, page: 'GDT_Page'):
         pass
 
-    def gdo_load_scripts(self, page):
+    def gdo_load_scripts(self, page: 'GDT_Page'):
         pass
 
     def gdo_is_site_module(self) -> bool:

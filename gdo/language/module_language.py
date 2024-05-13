@@ -17,5 +17,5 @@ class module_language(GDO_Module):
 
     def gdo_user_settings(self) -> list[GDT]:
         return [
-            GDT_Language('language').initial('en'),
+            GDT_Language('language').initial('en').tooltip('tt_core_language'),
         ]

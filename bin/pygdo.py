@@ -34,7 +34,6 @@ def get_parser():
     server = user.get_server()
     channel = None
     session = GDO_Session.for_user(user)
-    print(session.get_id())
     return Parser(Mode.CLI, user, server, channel, session)
 
 
@@ -48,7 +47,6 @@ def process_line(line: str) -> None:
     txt = gdt.render_cli()
     txt = Application.get_page()._top_bar.render_cli() + txt
     print(txt)
-    print(method._env_session.get_id())
     method._env_session.save()
 
 

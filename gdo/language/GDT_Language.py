@@ -13,5 +13,6 @@ class GDT_Language(GDT_Select):
 
     def init_choices(self):
         return self.choices({
-            'en': 'English'
+            'en': 'English',
+            'de': 'Deutsch',
         })

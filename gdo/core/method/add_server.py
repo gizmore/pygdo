@@ -1,6 +1,5 @@
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.base.WithPermissionCheck import WithPermissionCheck
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.GDT_Name import GDT_Name
@@ -8,7 +7,7 @@ from gdo.core.GDT_Password import GDT_Password
 from gdo.net.GDT_Url import GDT_Url
 
 
-class add_server(WithPermissionCheck, Method):
+class add_server(Method):
 
     def gdo_trigger(self) -> str:
         return "add_server"

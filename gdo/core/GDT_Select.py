@@ -30,5 +30,11 @@ class GDT_Select(GDT_ComboBox):
     # Render #
     ##########
 
+    def render_suggestion(self) -> str:
+        self.init_choices()
+        keys = self._choices.keys()
+        examples = list(keys)[0:5]
+        return ", ".join(examples)
+
     def render_form(self):
         return tpl('core', 'form_select.html', {"field": self})
