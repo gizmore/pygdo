@@ -14,6 +14,11 @@ class module_mail(GDO_Module):
             GDO_Mail,
         ]
 
+    def gdo_friendencies(self) -> list:
+        return [
+            'gpg',
+        ]
+
     def gdo_user_config(self) -> list[GDT]:
         from gdo.date.GDT_DateTime import GDT_DateTime
         return [

@@ -22,14 +22,16 @@ class WithFields:
         return True
 
     def fields(self) -> list:
-        return self._fields
+        if hasattr(self, '_fields'):
+            return self._fields
+        return []
 
     def all_fields(self):
         """
         Returns an iterator that iterates over all nested fields.
         """
         if self.has_fields():
-            for gdt in self._fields:
+            for gdt in self.fields():
                 yield gdt
                 if gdt.has_fields():
                     yield from gdt.all_fields()

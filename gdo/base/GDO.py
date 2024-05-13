@@ -23,6 +23,7 @@ class GDO(WithBulk, GDT):
 
     _vals: dict
     _dirty: list
+    _last_id: int
 
     __slots__ = (
         '_vals',
@@ -61,6 +62,9 @@ class GDO(WithBulk, GDT):
         back._vals.update(vals)
         back.all_dirty()
         return back
+
+    def render_name(self):
+        return self.get_name()
 
     def primary_key_column(self):
         return self.columns()[0]
@@ -188,6 +192,10 @@ class GDO(WithBulk, GDT):
         cols = self.get_pk_columns()
         return self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', cols))
 
+    ####################
+    # Insert / Replace #
+    ####################
+
     def soft_replace(self):
         old = self.get_by_id(*self.get_id().split(':'))
         if old is not None:
@@ -207,6 +215,28 @@ class GDO(WithBulk, GDT):
         self.after_create()
         return self.all_dirty(False)
 
+    def dirty_vals(self) -> dict:
+        return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns() if gdt.get_name() in self._dirty}
+
+    def insert_vals(self):
+        return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns()}
+
+    def save(self):
+        if not self.is_persisted():
+            return self.insert()
+        if len(self._dirty):
+            self.before_update()
+            query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
+            query.exec()
+            self.after_update()
+            return self.all_dirty(False)
+        else:
+            return self
+
+    ##########
+    # Delete #
+    ##########
+
     def delete_query(self):
         return self.query().type(Type.DELETE)
 
@@ -225,24 +255,6 @@ class GDO(WithBulk, GDT):
             query.where(f"{key}={self.quote(val)}")
         Cache.obj_search(self.table(), vals, True)
         query.exec()
-
-    def dirty_vals(self) -> dict:
-        return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns() if gdt.get_name() in self._dirty}
-
-    def insert_vals(self):
-        return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns()}
-
-    def save(self):
-        if not self.is_persisted():
-            return self.insert()
-        if len(self._dirty):
-            self.before_update()
-            query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
-            query.exec()
-            self.after_update()
-            return self.all_dirty(False)
-        else:
-            return self
 
     ##########
     # Events #
@@ -287,4 +299,17 @@ class GDO(WithBulk, GDT):
 
     def all(self, where: str = '1', result_type: ResultType = ResultType.OBJECT):
         return self.table().select().where(where).exec().iter(result_type).fetch_all()
+
+    ########
+    # Name #
+    ########
+    def name_column(self) -> GDT:
+        from gdo.core.GDT_Name import GDT_Name
+        return self.column_of(GDT_Name)
+
+    def column_of(self, type) -> GDT:
+        for gdt in self.columns():
+            if isinstance(gdt, type):
+                return gdt
+
 

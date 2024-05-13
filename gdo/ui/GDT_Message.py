@@ -1,4 +1,3 @@
-import htmlpurifier
 
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.GDT_Text import GDT_Text

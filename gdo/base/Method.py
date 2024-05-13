@@ -1,4 +1,5 @@
 import argparse
+import functools
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError, GDOParamError
@@ -16,14 +17,14 @@ from gdo.base.WithPermissionCheck import WithPermissionCheck
 class MyArgParser(argparse.ArgumentParser):
 
     def error(self, message):
-        err('%s', [message])
+        pass
+        # err('%s', [message])
 
 
 class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     _parameters: dict[str, GDT]
     _next_method: object  # Method chaining
     _result: str
-    _parser: object
 
     def __init__(self):
         super().__init__()
@@ -219,17 +220,17 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         """
         Check method environment and if allowed, gdo_execute() on permission
         """
-        if not self.prepare():
-            return self
+#        if not self.prepare():
+#            return self
         if not self._prepare_nested_permissions(self):
             return self
         return self._nested_execute(self, True)
 
-    def prepare(self):
-        """
-        This is overwritten in WithPermissionCheck.
-        """
-        return True
+    # def prepare(self):
+    #     """
+    #     This is overwritten in WithPermissionCheck.
+    #     """
+    #     return True
 
     def _nested_execute(self, method, return_gdt: bool = False):
         i = 0
@@ -246,7 +247,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     def _nested_parse(self):
         from gdo.core.GDT_Repeat import GDT_Repeat
-        parser = self.get_arg_parser(self._env_http)
+        parser = self.get_arg_parser(False)
         args, unknown_args = parser.parse_known_args(self._args)
         for gdt in self.parameters().values():
             val = args.__dict__[gdt.get_name()] or ''
@@ -296,20 +297,35 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         connector = self._env_server.get_connector()
         return connector.get_name().lower() in connectors
 
-    def get_arg_parser(self, is_http: bool):
-        if hasattr(self, '_parser'):
-            return self._parser
-        prog = self.get_name() if is_http else self.gdo_trigger()
-        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True)
+    def get_arg_parser(self, for_usage: bool):
+        return self._get_arg_parser_http(for_usage) if self._env_http else self._get_arg_parser_cli(for_usage)
+
+    @functools.cache
+    def _get_arg_parser_cli(self, for_usage: bool):
+        from gdo.form.GDT_Submit import GDT_Submit
+        prog = self.gdo_trigger()
+        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False)
         for gdt in self.parameters().values():
             name = gdt.get_name()
-            if gdt.is_positional() and not is_http:
+            if for_usage and isinstance(gdt, GDT_Submit) and gdt._default_button:
+                continue
+            if gdt.is_positional():
                 if gdt.is_not_null():
                     parser.add_argument(name)
                 else:
                     parser.add_argument(name, nargs='?')
             else:
                 parser.add_argument(f'--{name}', default=gdt.get_initial())
+        self._parser = parser
+        return parser
+
+    @functools.cache
+    def _get_arg_parser_http(self, for_usage: bool):
+        prog = self.get_name()
+        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False)
+        for gdt in self.parameters().values():
+            name = gdt.get_name()
+            parser.add_argument(f'--{name}', default=gdt.get_initial())
         self._parser = parser
         return parser
 
@@ -427,8 +443,11 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     # Render #
     ##########
     def render(self, mode: Mode = Mode.HTML):
-        from gdo.ui.GDT_Error import GDT_Error
         if self.has_error():
-            return GDT_Error().text(self._errkey, self._errargs).render(self._env_mode)
-        else:
-            return self.gdo_render_descr()
+            if self._env_http:
+                from gdo.ui.GDT_Error import GDT_Error
+                return GDT_Error().text(self._errkey, self._errargs).render_html()
+            else:
+                parser = self.get_arg_parser(True)
+                return parser.format_usage()
+        return ''  # self.gdo_render_descr()

@@ -4,8 +4,6 @@ from gdo.base.WithName import WithName
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Template import GDT_Template
 from gdo.ui.GDT_Menu import GDT_Menu
-from gdo.ui.GDT_Paragraph import GDT_Paragraph
-from gdo.ui.GDT_Title import GDT_Title
 from gdo.ui.WithHREF import WithHREF
 from gdo.ui.WithText import WithText
 from gdo.ui.WithTitle import WithTitle
@@ -39,6 +37,9 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
 
     def render_html(self):
         return GDT_Template.python('form', 'form.html', {'field': self})
+
+    def render_cli(self):
+        return 'BLA'
 
     def validate_gdt(self, gdt: GDT):
         if not gdt.validated():

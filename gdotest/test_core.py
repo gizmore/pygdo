@@ -8,7 +8,8 @@ from gdo.base.Util import Permutations
 from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_MD5 import GDT_MD5
 from gdo.core.GDT_Path import GDT_Path
-from gdotest.TestUtil import cli_plug
+from gdo.core.GDT_User import GDT_User
+from gdotest.TestUtil import cli_plug, get_gizmore, cli_gizmore
 
 
 class CoreTestCase(unittest.TestCase):
@@ -19,6 +20,8 @@ class CoreTestCase(unittest.TestCase):
         loader.load_modules_db(True)
         loader.init_modules()
         loader.init_cli()
+        get_gizmore()
+        cli_gizmore()
 
     def test_01_md5_string(self):
         hash = GDT_MD5.hash_for_str("abc")
@@ -61,6 +64,18 @@ class CoreTestCase(unittest.TestCase):
         for gen in perms.generate():
             self.assertEqual(gen, correct[i], f"Permutation generator failed.")
             i += 1
+
+    def test_08_gdt_user(self):
+        gdt = GDT_User('test')
+        user = gdt.to_value('1')
+        self.assertEqual(user.get_id(), '1', 'get_system_user via GDT_User failed.')
+
+        giz = gdt.to_value('giz')
+        self.assertEqual('err_select_candidates', gdt._errkey, 'get gizmore user via GDT_User should be ambiguous.')
+
+        gdt.same_server()
+        giz = gdt.to_value('giz')
+        self.assertIsNotNone(giz, 'Cannot get giz on same server.')
 
 
 if __name__ == '__main__':

@@ -75,6 +75,9 @@ class GDO_Module(WithModuleConfig, GDO):
     def gdo_dependencies(self) -> list:
         return []
 
+    def gdo_friendencies(self) -> list:
+        return []
+
     def gdo_columns(self):
         from gdo.core.GDT_AutoInc import GDT_AutoInc
         from gdo.core.GDT_Bool import GDT_Bool

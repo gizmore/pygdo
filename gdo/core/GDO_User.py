@@ -1,9 +1,15 @@
 from typing_extensions import Self
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.core.GDO_Server import GDO_Server
+
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Name import GDT_Name
+from gdo.core.GDT_Object import GDT_Object
 from gdo.core.GDT_Server import GDT_Server
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_UserType import GDT_UserType
@@ -53,6 +59,7 @@ class GDO_User(GDO):
             GDT_Name('user_name').not_null(),
             GDT_String('user_displayname').not_null(),
             GDT_Server('user_server').not_null(),
+            GDT_Object('user_link').table(GDO_User.table()),
         ]
 
     def get_lang_iso(self):
@@ -64,8 +71,11 @@ class GDO_User(GDO):
     def get_user_type(self) -> str:
         return self.gdo_val('user_type')
 
-    def get_server(self):
+    def get_server(self) -> 'GDO_Server':
         return self.gdo_value('user_server')
+
+    def get_server_id(self) -> str:
+        return self.gdo_val('user_server')
 
     def get_name(self):
         return self.gdo_val('user_name')
@@ -156,8 +166,8 @@ class GDO_User(GDO):
     # Render #
     ##########
 
-    def render_name(self):
-        return self.gdo_val('user_displayname')
+    def render_name(self) -> str:
+        return self.gdo_val('user_displayname') + "{" + self.get_server().get_id() + "}"
 
     #########
     # Hooks #

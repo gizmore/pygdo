@@ -43,7 +43,6 @@ def install_module_b(name):
 
 
 class WebPlug:
-
     COOKIES = {}
 
     def __init__(self, url):
@@ -56,6 +55,7 @@ class WebPlug:
         self.args = f"_url={url}"
         self._ip = '::1'
         self._environ = {}
+        Application.mode(Mode.HTML)
         Application.reset()
 
     def ip(self, ip: str):
@@ -129,8 +129,9 @@ def cli_plug(user, command) -> str:
     channel = None
     session = GDO_Session.for_user(user)
     Application.mode(Mode.CLI)
-    result = Parser(Mode.CLI, user, server, channel, session).parse(command).execute()
-    out = GDT_Page.instance()._top_bar.render()
+    method = Parser(Mode.CLI, user, server, channel, session).parse(command)
+    result = method.execute()
+    out = GDT_Page.instance()._top_bar.render(Mode.CLI)
     out += result.render(Mode.CLI)
     return out
 

@@ -24,5 +24,6 @@ class AdminTestCase(unittest.TestCase):
         res = cli_plug(None, "conf")
         self.assertIn("Core", res, "Module Core is not listen in adm.conf")
 
+
 if __name__ == '__main__':
     unittest.main()

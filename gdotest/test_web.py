@@ -69,5 +69,6 @@ class WebTestCase(unittest.TestCase):
         result = WebPlug("core.help.cli").exec()
         self.assertIn("does not work inside this connector", result, "A non Web Method is executing in HTTP.")
 
+
 if __name__ == '__main__':
     unittest.main()

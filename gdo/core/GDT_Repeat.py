@@ -40,3 +40,9 @@ class GDT_Repeat(WithProxy, GDT_Field):
                 self.error(self._proxy._errkey, self._proxy._errargs)
                 return False
         return True
+
+    def render_cli(self) -> str:
+        out = ""
+        for val in self.get_val():
+            out += val
+        return out

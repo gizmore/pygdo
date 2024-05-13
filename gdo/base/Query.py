@@ -23,6 +23,8 @@ class Type(Enum):
 
 
 class Query:
+#    MUTEX = threading.Lock()
+
     _debug: bool
     _raw: str
     _table: str
@@ -133,15 +135,15 @@ class Query:
     def first(self):
         return self.take(1)
 
-    def limit(self, limit: int, offset: int):
+    def limit(self, limit: int, offset: int = 0):
         self._limit = limit
         return self.offset(offset)
 
-    def take(self, count):
+    def take(self, count: int):
         self._limit = count
         return self
 
-    def offset(self, offset):
+    def offset(self, offset: int):
         self._offset = offset
         return self
 
@@ -185,7 +187,7 @@ class Query:
         if self.is_raw():
             return self._raw
         if self.is_select():
-            return f"SELECT {self._columns} FROM {self._table} {self._join} WHERE {self._where}{self._build_order()} {self.buildLimit()}"
+            return f"SELECT {self._columns} FROM {self._table} {self._join} WHERE {self._where}{self._build_order()}{self.build_limit()}"
         if self.is_delete():
             return f"DELETE FROM {self._table} WHERE {self._where}"
         if self.is_insert():
@@ -205,14 +207,12 @@ class Query:
             return f" ORDER BY {self._order}"
         return ''
 
-    def buildLimit(self):
+    def build_limit(self):
         if not hasattr(self, '_limit'):
             return ''
         if not hasattr(self, '_offset'):
-            return f'LIMIT {self._limit}'
-        return f'LIMIT {self._limit, self._offset}'
-
-    MUTEX = threading.Lock()
+            return f' LIMIT {self._limit}'
+        return f' LIMIT {self._offset}, {self._limit}'
 
     def exec(self, use_dict: bool = True):
         Application.db().get_link()
@@ -220,7 +220,7 @@ class Query:
             self.debug()
         query = self.build_query()
         try:
-            self.MUTEX.acquire()
+            #self.MUTEX.acquire()
             if self._debug:
                 Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES + 1) + ": " + query)
                 if Application.config('db.debug') == '2':
@@ -245,5 +245,5 @@ class Query:
             raise GDODBException(str(ex), query)
         except (InterfaceError, ProgrammingError, DataError, DatabaseError) as ex:
             raise GDODBException(ex.msg, query)
-        finally:
-            self.MUTEX.release()
+        # finally:
+        #     self.MUTEX.release()

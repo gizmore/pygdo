@@ -1,3 +1,5 @@
+import re
+
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
@@ -36,9 +38,11 @@ class help(Method):
         loader = ModuleLoader.instance()
         method = loader.get_method(trigger)
         mode = Application.get_mode()
-        parser = method.get_arg_parser(False)
+        method.env_copy(self)
+        parser = method.get_arg_parser(True)
         usage = parser.format_usage().rstrip()
-        usage = usage.replace('[-h] ', '')
+        usage = usage.replace("\n", '')
+        usage = re.sub(r'\s+', ' ', usage)
         return GDT_String('help').text('msg_help_for', [Render.bold(trigger, mode), method.gdo_render_descr(), usage])
 
     def show_all_commands(self):
@@ -51,7 +55,7 @@ class help(Method):
             trigger = method.env_user(user).gdo_trigger()
             if module_name not in grouped:
                 grouped[module_name] = []
-            if method.prepare():
+            if self.has_permission(self._env_user):
                 trigger_colored = Render.green(trigger, mode)
             else:
                 trigger_colored = Render.red(trigger, mode)
