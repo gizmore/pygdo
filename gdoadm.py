@@ -195,7 +195,8 @@ class App:
             print(f"All wanted modules and their dependencies are on disk. You can ./gdo_adm.sh install {args.modules} now.")
             exit(0)
         need = missing
-        for name in need:
+        to_process = list(need)
+        for name in to_process:
             deps = providers[name][1]
             for dep in deps:
                 if dep not in on_disk:
