@@ -77,7 +77,7 @@ class GDO_Server(GDO):
     def get_or_create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
         user = self.get_user_by_name(username)
         if not user:
-            user = self.create_user(username, displayname or username)
+            user = self.create_user(username, displayname or username, user_type)
         return user
 
     def create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
@@ -91,7 +91,7 @@ class GDO_Server(GDO):
     def get_user_by_name(self, username) -> GDO_User:
         return GDO_User.table().get_by_vals({
             'user_server': self.get_id(),
-            'user_name': username,
+            'user_displayname': username,
         })
 
     def get_user_by_login(self, login: str) -> GDO_User | None:

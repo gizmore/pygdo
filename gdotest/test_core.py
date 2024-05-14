@@ -9,10 +9,10 @@ from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_MD5 import GDT_MD5
 from gdo.core.GDT_Path import GDT_Path
 from gdo.core.GDT_User import GDT_User
-from gdotest.TestUtil import cli_plug, get_gizmore, cli_gizmore
+from gdotest.TestUtil import cli_plug, get_gizmore, cli_gizmore, GDOTestCase
 
 
-class CoreTestCase(unittest.TestCase):
+class CoreTestCase(GDOTestCase):
 
     def setUp(self):
         Application.init(os.path.dirname(__file__) + "/../")
@@ -22,6 +22,7 @@ class CoreTestCase(unittest.TestCase):
         loader.init_cli()
         get_gizmore()
         cli_gizmore()
+        super().setUp()
 
     def test_01_md5_string(self):
         hash = GDT_MD5.hash_for_str("abc")

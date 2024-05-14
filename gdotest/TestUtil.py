@@ -1,8 +1,11 @@
+import cProfile
 import io
 import json
 import time
+import unittest
 import urllib
 from http.cookies import SimpleCookie
+from pstats import Stats
 from urllib.parse import urlencode
 
 from gdo.base.Application import Application
@@ -16,6 +19,20 @@ from gdo.install.Installer import Installer
 from gdo.ui.GDT_Page import GDT_Page
 from index import application
 
+
+class GDOTestCase(unittest.TestCase):
+    _profile: cProfile
+
+    # def setUp(self):
+    #     self._profile = cProfile.Profile()
+    #     self._profile.enable()
+    #
+    # def tearDown(self):
+    #     p = Stats(self._profile)
+    #     p.strip_dirs()
+    #     p.sort_stats('cumtime')
+    #     p.print_stats()
+    #
 
 def reinstall_module(name):
     drop_module(name)

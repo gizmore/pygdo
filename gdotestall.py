@@ -1,5 +1,7 @@
+import cProfile
 import os.path
 import unittest
+from pstats import Stats
 
 import gdotest
 from gdo.base.Application import Application
@@ -67,6 +69,10 @@ def run_tests():
     # Core
     test_runner = unittest.TextTestRunner()
     test_runner.verbosity = 3
+
+    profile = cProfile.Profile()
+    profile.enable()
+
     test_runner.run(suite())
 
     # Extensions
@@ -82,6 +88,11 @@ def run_tests():
             test_runner = unittest.TextTestRunner()
             test_runner.verbosity = 3
             test_runner.run(test_suite)
+
+    p = Stats(profile)
+    p.strip_dirs()
+    p.sort_stats('cumtime')
+    p.print_stats()
 
     # Finish
     test_runner = unittest.TextTestRunner()

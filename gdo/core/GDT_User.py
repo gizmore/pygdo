@@ -2,6 +2,7 @@ from typing_extensions import Self
 
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Util import Strings
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Object import GDT_Object
 from gdo.core.WithCompletion import WithCompletion
@@ -38,10 +39,12 @@ class GDT_User(WithCompletion, GDT_Object):
         return self.authenticated(online)
 
     def query_gdos(self, val: str) -> list[GDO]:
+        val_serv = Strings.regex_first(r'{(\d+)}$', val)
+        val = Strings.substr_to(val, '{', val)
         query = self._table.select().where(f"user_id={GDT.quote(val)} OR user_displayname LIKE '%{GDT.escape(val)}%'")
+        if val_serv:
+            query.where(f"user_server={val_serv}")
         if self._same_server:
             user = GDO_User.current()
             query.where(f'user_server={user.get_server_id()}')
         return query.limit(10).exec().fetch_all()
-
-

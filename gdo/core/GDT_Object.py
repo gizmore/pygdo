@@ -40,8 +40,10 @@ class GDT_Object(WithObject, GDT_UInt):
         gdo = self._table.table().get_by_id(val)
         return [gdo] if gdo else []
 
-    def get_by_name(self, var: str) -> GDO | None:
+    def get_by_name(self, var: str) -> list[GDO] | GDO | None:
         gdos = self.query_gdos(var)
+        if self._multiple:
+            return gdos
         if len(gdos) == 0:
             return None
         if len(gdos) == 1:
@@ -83,6 +85,8 @@ class GDT_Object(WithObject, GDT_UInt):
     ############
 
     def validate(self, value):
+        if self.has_error():
+            return False
         if value:
             return True
         if not super().validate(value):

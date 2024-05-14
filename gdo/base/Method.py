@@ -171,7 +171,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                     raise GDOParamError('err_param', [name, gdt.render_error()])
         return None
 
-    def param_value(self, key: str, throw: bool = True):
+    def param_value(self, key: str, throw: bool = True) -> any:
         for name, gdt in self.parameters().items():
             if key == name:
                 value = gdt.to_value(gdt.get_val())
