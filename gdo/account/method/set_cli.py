@@ -29,10 +29,10 @@ class set_cli(Method):
             tooltip = ''
             if gdt.has_tooltip():
                 tooltip = f" ({gdt.get_tooltip_text()})"
-            return self.reply('msg_print_cli_setting', [gdt.get_name(), Render.italic(gdt.render_var(), mode), tooltip, gdt.render_suggestion()])
+            return self.reply('msg_print_cli_setting', [gdt.get_name(), Render.italic(gdt.render_val(), mode), tooltip, gdt.render_suggestion()])
         else:
             gdt = GDO_UserSetting.setting_column(key, user)
-            old = gdt.render_var()
+            old = gdt.render_val()
             user.save_setting(key, value)
             new = user.get_setting_val(key)
             return self.reply('msg_set_cli_setting', [key, Render.italic(old, mode), Render.italic(new, mode)])

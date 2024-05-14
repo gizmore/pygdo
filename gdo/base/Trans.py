@@ -78,7 +78,7 @@ class Trans:
             return f"__{key}: {json.dumps(args)}"
         except TypeError:
             cls.FAILURES[key] = 2
-            return f"____{key}: {json.dumps(args)}"
+            return f"_xx_{key}: {json.dumps(args)}"
 
     @classmethod
     def has(cls, key: str) -> bool:

@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from typing_extensions import Self
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.base.GDO_Module import GDO_Module
+
 import glob
 import importlib
 
@@ -14,7 +19,7 @@ from gdo.base.Util import Files
 
 
 class ModuleLoader:
-    _cache: dict[str, any]
+    _cache: dict[str, 'GDO_Module']
     _methods: dict[str, any]
 
     @classmethod

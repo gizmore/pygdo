@@ -21,8 +21,10 @@ class GDT_Repeat(WithProxy, GDT_Field):
             return None
         vals = []
         for value in values:
-            vals.append(self._proxy.to_val(value))
-        return vals
+            val = self._proxy.to_val(value)
+            if val:
+                vals.append(val)
+        return vals if vals else None
 
     def to_value(self, vals: list[str]):
         if vals is None:
@@ -34,11 +36,11 @@ class GDT_Repeat(WithProxy, GDT_Field):
 
     def validate(self, values):
         if values is None:
-            return self._proxy.validate(values)
+            if not self._proxy.validate(values):
+                return self.error(self._proxy._errkey, self._proxy._errargs)
         for value in values:
             if not self._proxy.validate(value):
-                self.error(self._proxy._errkey, self._proxy._errargs)
-                return False
+                return self.error(self._proxy._errkey, self._proxy._errargs)
         return True
 
     def render_cli(self) -> str:

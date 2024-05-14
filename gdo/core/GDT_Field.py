@@ -135,7 +135,7 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
     def nullable(self, nullable: bool = True):
         return self.not_null(not nullable)
 
-    def error(self, errkey, errargs=None):
+    def error(self, errkey, errargs=None) -> bool:
         if errargs is None:
             errargs = []
         self._errkey = errkey

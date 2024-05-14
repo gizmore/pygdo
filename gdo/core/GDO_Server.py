@@ -1,3 +1,8 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.core.Connector import Connector
+
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
@@ -59,7 +64,7 @@ class GDO_Server(GDO):
     def get_url(self) -> dict:
         return self.gdo_value('serv_url')
 
-    def get_connector(self):
+    def get_connector(self) -> Connector:
         if not hasattr(self, '_connector'):
             self._connector = self.gdo_value('serv_connector')
             self._connector.server(self)

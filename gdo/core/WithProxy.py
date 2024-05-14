@@ -1,4 +1,3 @@
-from gdo.base.Render import Mode
 from gdo.core.GDT_Field import GDT_Field
 
 
@@ -17,15 +16,6 @@ class WithProxy:
         self._proxy.not_null(notnull)
         return self
 
-    # def val(self, val: str | list):
-    #     self._proxy.val(val)
-    #     return self
+    def is_not_null(self) -> bool:
+        return self._proxy.is_not_null()
 
-#    def get_val(self):
-#        return self._proxy.get_val()
-
-#   def validate(self, value: any) -> bool:
-#      return self._proxy.validate(value)
-
-#  def render(self, mode: Mode):
-#     return self._proxy.render(mode)

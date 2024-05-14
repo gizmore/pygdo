@@ -11,8 +11,8 @@ class GDT_Language(GDT_Select):
     def supported(self, supported: bool = True):
         return self
 
-    def init_choices(self):
-        return self.choices({
+    def gdo_choices(self):
+        return {
             'en': 'English',
             'de': 'Deutsch',
-        })
+        }

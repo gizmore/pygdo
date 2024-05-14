@@ -9,7 +9,7 @@ from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import WebParser
 from gdo.base.Render import Mode
-from gdo.base.Util import (Strings, Files, dump, bytelen)
+from gdo.base.Util import (Strings, Files, dump, bytelen, err)
 from gdo.base.method.client_error import client_error
 from gdo.base.method.dir_server import dir_server
 from gdo.base.method.file_server import file_server
@@ -93,7 +93,12 @@ def application(environ, start_response):
                 post_variables = parse_qs(post_data_decoded)
                 method.inputs(post_variables)
 
-            result = method.execute()
+            try:
+                result = method.execute()
+            except Exception as ex:
+                err('%s', [str(ex)])
+                result = method
+
             if Application.is_html():
                 page = Application.get_page()
                 result = page.result(result).method(method)

@@ -26,6 +26,12 @@ class GDT_Select(GDT_ComboBox):
     def to_val(self, value) -> str:
         return Arrays.dict_index(self.init_choices(), value)
 
+    def to_value(self, val: str):
+        if val is None:
+            return None
+        self.init_choices()
+        return self._choices[val]
+
     ##########
     # Render #
     ##########

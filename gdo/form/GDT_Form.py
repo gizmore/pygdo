@@ -39,7 +39,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
         return GDT_Template.python('form', 'form.html', {'field': self})
 
     def render_cli(self):
-        return 'BLA'
+        return ''
 
     def validate_gdt(self, gdt: GDT):
         if not gdt.validated():

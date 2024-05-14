@@ -3,6 +3,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Render import Render
 from gdo.base.Util import html
 from gdo.core.Connector import Connector
 from gdo.core.GDT_String import GDT_String
@@ -24,9 +25,9 @@ class config(Method):
 
     def gdo_parameters(self) -> [GDT]:
         return [
-            GDT_Module('module'),
-            GDT_String('config_name'),
-            GDT_String('config_value'),
+            GDT_Module('module').enabled().positional(),
+            GDT_String('config_name').positional(),
+            GDT_String('config_value').positional(),
         ]
 
     def get_module(self) -> GDO_Module:
@@ -50,19 +51,40 @@ class config(Method):
 
     def list_all(self):
         loader = ModuleLoader.instance()
-        all = {}
+        all_ = {}
         for module in loader._cache.values():
-            name = module.render_name()
-            if name not in all:
-                all[name] = []
+            name = Render.bold(module.get_name(), self._env_mode)
+            confs = module.gdo_module_config()
+            confs = [gdt for gdt in confs if gdt.is_writable()]
+            if confs:
+                if name not in all_:
+                    all_[name] = []
+                for gdt in confs:
+                    all_[name].append(gdt.get_name())
 
-        return GDT_String('list').val("Core")
+        sorted_modules = {k: sorted(v) for k, v in sorted(all_.items())}
+        output = ""
+        for module, attributes in sorted_modules.items():
+            output += f"{module}: {', '.join(attributes)}. "
+        return self.reply('msg_all_modules_conf', [output.strip()])
 
     def list_module(self, module: GDO_Module):
-        pass
+        name = Render.bold(module.render_name(), self._env_mode)
+        confs = module.gdo_module_config()
+        out = []
+        for conf in confs:
+            out.append(conf.get_name() + "(" + Render.italic(conf.render_val(), self._env_mode) + ")")
+        return self.reply('msg_module_conf', [name, ", ".join(out)])
 
     def show_value(self, module: GDO_Module, gdt: GDT):
-        pass
+        tt = ''
+        if gdt.has_tooltip():
+            tt = f" ({gdt.get_tooltip_text()})"
+        val = Render.italic(gdt.render_val(), self._env_mode)
+        return self.reply('msg_module_conf_options', [module.render_name(), gdt.get_name(), tt, val, gdt.render_suggestion()])
 
     def set_value(self, module: GDO_Module, gdt: GDT, value: str):
-        pass
+        old = Render.italic(gdt.render_val(), self._env_mode)
+        module.save_config_val(gdt.get_name(), value)
+        new = Render.italic(gdt.display_val(value), self._env_mode)
+        return self.reply('msg_module_conf_changed', [module.render_name(), gdt.get_name(), old, new])

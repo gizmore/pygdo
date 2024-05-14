@@ -11,7 +11,7 @@ class ConfigureTestCase(unittest.TestCase):
         Application.init(os.path.dirname(__file__) + "/../")
         return self
 
-    def test_configure(self):
+    def test_01_configure(self):
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
         date1 = Application.CONFIG['gen']['date']

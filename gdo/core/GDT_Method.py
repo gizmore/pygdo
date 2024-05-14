@@ -7,7 +7,7 @@ class GDT_Method(GDT_Select):
     def __init__(self, name):
         super().__init__(name)
 
-    def init_choices(self):
+    def gdo_choices(self):
         triggers = ModuleLoader.instance()._methods.keys()
         as_dict = {key: key for key in triggers}
-        return self.choices(as_dict)
+        return as_dict

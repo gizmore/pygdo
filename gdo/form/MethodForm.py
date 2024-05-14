@@ -30,10 +30,6 @@ class MethodForm(Method):
             self._nested_parse()
         return self._form
 
-    # def execute(self):
-    #     if not super().prepare():
-    #         return self
-
     def gdo_execute(self):
         form = self.get_form()
         for button in form.actions().fields():
@@ -65,25 +61,6 @@ class MethodForm(Method):
             self.err('%s', ['\n' + self.get_arg_parser(True).format_usage()])
         return self.get_form()
 
-    # def apply_input(self, gdt: GDT, input_: dict):
-    #     if gdt.is_writable():
-    #         gdt.val(input_.get(gdt.get_name()))
-    #     for gdt2 in gdt.fields():
-    #         self.apply_input(gdt2, input_)
-
-    # def param_val(self, key: str, throw: bool = True):
-    #     for gdt in self.get_form().all_fields():
-    #         if gdt.get_name() == key:
-    #             return gdt.get_val()
-    #     return super().param_val(key)
-    #
-    # def param_value(self, key: str, throw: bool = True):
-    #     for gdt in self.get_form().all_fields():
-    #         if gdt.get_name() == key:
-    #             return gdt.to_value(gdt.get_val())
-    #     return super().param_value(key)
-
-#    @functools.cache
     def parameters(self) -> dict[str, GDT]:
         if hasattr(self, '_parameters'):
             return self._parameters

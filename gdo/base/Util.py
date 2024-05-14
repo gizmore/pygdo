@@ -365,6 +365,10 @@ class Arrays:
         conn = t(conn)
         return conn.join(lst)
 
+    @classmethod
+    def empty(cls, vals: list[str]) -> bool:
+        return not vals or len(vals) == 0 or (len(vals) == 1 and not vals[0])
+
 
 class Random:
 

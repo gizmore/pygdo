@@ -22,7 +22,10 @@ class AdminTestCase(unittest.TestCase):
 
     def test_02_config_list(self):
         res = cli_plug(None, "conf")
-        self.assertIn("Core", res, "Module Core is not listen in adm.conf")
+        self.assertIn("core", res, "Module Core is not listen in adm.conf")
+        res = cli_plug(None, "conf core")
+        self.assertIn("send_404_mails", res, "send_404_mails is not listen in adm.conf")
+        res = cli_plug(None, "conf core send_404_mails")
 
 
 if __name__ == '__main__':

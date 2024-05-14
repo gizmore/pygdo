@@ -14,7 +14,7 @@ class DBTestCase(unittest.TestCase):
         ModuleLoader.instance().init_modules()
         return self
 
-    def test_single_identity_cache(self):
+    def test_01_single_identity_cache(self):
         user1 = GDO_User.system()
         user2 = GDO_User.table().select().where('user_id=1').first().exec().fetch_object()
         self.assertIs(user1, user2, "test if single identity cache works")

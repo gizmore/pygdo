@@ -6,3 +6,10 @@ module_math = "Math"
 mt_math_sum = "Sum"
 md_math_sum = "Sum a list of numbers."
 
+########
+# Calc #
+########
+mt_math_calc = "Calculator"
+md_math_calc = "Evaluate a math expression. Allowed functions: %s."
+expression = "Expression"
+err_expression = "Invalid Term: %s"

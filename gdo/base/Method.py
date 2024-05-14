@@ -7,7 +7,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Trans import t, thas
-from gdo.base.Util import Strings, err
+from gdo.base.Util import Strings, err, dump
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
 from gdo.base.WithInput import WithInput
@@ -220,17 +220,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         """
         Check method environment and if allowed, gdo_execute() on permission
         """
-#        if not self.prepare():
-#            return self
         if not self._prepare_nested_permissions(self):
             return self
         return self._nested_execute(self, True)
-
-    # def prepare(self):
-    #     """
-    #     This is overwritten in WithPermissionCheck.
-    #     """
-    #     return True
 
     def _nested_execute(self, method, return_gdt: bool = False):
         i = 0
@@ -285,10 +277,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return False
 
     def _disabled_in_server(self, channel):
-        return True
-
-#    def has_permission(self, user) -> bool:
-#        return self.gdo_has_permission(user)
+        return False
 
     def allows_connector(self) -> bool:
         connectors = self.gdo_connectors()
@@ -442,6 +431,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     ##########
     # Render #
     ##########
+    def render_page(self) -> GDT:
+        return self.empty()
+
     def render(self, mode: Mode = Mode.HTML):
         if self.has_error():
             if self._env_http:
@@ -450,4 +442,4 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             else:
                 parser = self.get_arg_parser(True)
                 return parser.format_usage()
-        return ''  # self.gdo_render_descr()
+        return self.render_page().render(mode)

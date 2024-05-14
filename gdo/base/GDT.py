@@ -208,12 +208,12 @@ class GDT:
         return self.render_txt()
 
     def render_txt(self) -> str:
-        return self.get_val()
+        return str(self.get_val())
 
     def render_irc(self) -> str:
         return self.render_txt()
 
-    def render_var(self) -> str:
+    def render_val(self) -> str:
         return self.display_val(self.get_val())
 
     def render_suggestion(self) -> str:
