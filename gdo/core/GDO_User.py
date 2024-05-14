@@ -159,6 +159,9 @@ class GDO_User(GDO):
     def is_ghost(self) -> bool:
         return self.is_type('ghost')
 
+    def is_user(self) -> bool:
+        return self.get_user_type() in ('member', 'guest', 'link')
+
     def is_type(self, type_: str) -> bool:
         return self.get_user_type() == type_
 
