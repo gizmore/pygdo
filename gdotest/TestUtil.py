@@ -129,6 +129,12 @@ class WebPlug:
             back += f"{key}={value}"
         return back
 
+    def user(self, username: str):
+        user = Web.get_server().get_or_create_user(username)
+        session = GDO_Session.for_user(user)
+        self.COOKIES['GDO'] = session.cookie_value()
+        return self
+
 
 
 

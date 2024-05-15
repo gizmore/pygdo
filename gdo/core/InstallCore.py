@@ -16,7 +16,7 @@ class InstallCore:
 
     @classmethod
     def install_system(cls):
-        if GDO_User.system().get_id() != '0':
+        if GDO_User.system().get_id() == '0':
             GDO_User.blank({
                 'user_type': GDT_UserType.SYSTEM,
                 'user_name': 'System',

@@ -23,7 +23,6 @@ class MethodForm(Method):
 
     def get_form(self, reset: bool = False) -> GDT_Form:
         if not hasattr(self, '_form') or reset:
-            self._nested_parse()
             self._form = GDT_Form()
             self.gdo_create_form(self._form)
         if reset:
