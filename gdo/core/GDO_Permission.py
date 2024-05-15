@@ -1,3 +1,9 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.core.GDO_User import GDO_User
+
+
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.core.GDT_AutoInc import GDT_AutoInc
@@ -14,6 +20,11 @@ class GDO_Permission(GDO):
         return GDO_Permission.table().get_by_vals({
             'perm_name': name,
         })
+
+    @classmethod
+    def has_permission(cls, user: 'GDO_User', permission: str):
+        from gdo.core.GDO_UserPermission import GDO_UserPermission
+        return GDO_UserPermission.has_permission(user, cls.get_by_name(permission))
 
     def __init__(self):
         super().__init__()

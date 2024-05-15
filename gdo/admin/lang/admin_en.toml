@@ -10,6 +10,12 @@ msg_module_conf = "%s: %s."
 msg_module_conf_options = "%s.%s%s is set to %s. Options: %s."
 msg_module_conf_changed = "%s.%s has been changed from %s to %s."
 
+#############
+# Dashboard #
+#############
+mt_admin_dashboard = "Admin Dashboard"
+md_admin_dashboard = "Admin Dashboard for your PyGDO installation."
+
 
 ###########
 # Modules #

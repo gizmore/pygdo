@@ -44,6 +44,7 @@ class GDO_User(GDO):
     @classmethod
     def ghost(cls):
         return cls.blank({
+            'user_id': '0',
             'user_server': '2',
             'user_type': GDT_UserType.GHOST,
         })
@@ -164,6 +165,13 @@ class GDO_User(GDO):
 
     def is_type(self, type_: str) -> bool:
         return self.get_user_type() == type_
+
+    def is_admin(self) -> bool:
+        return self.has_permission('admin')
+
+    def has_permission(self, permission: str) -> bool:
+        from gdo.core.GDO_Permission import GDO_Permission
+        return GDO_Permission.has_permission(self, permission)
 
     ##########
     # Render #
