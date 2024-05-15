@@ -36,6 +36,11 @@ class GDT_Select(GDT_ComboBox):
     # Render #
     ##########
 
+    def html_selected(self, key: str):
+        if key == self.get_val():
+            return ' selected="selected"'
+        return ''
+
     def render_suggestion(self) -> str:
         self.init_choices()
         keys = self._choices.keys()

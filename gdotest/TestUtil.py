@@ -131,9 +131,6 @@ class WebPlug:
 
 
 
-    def get_remote_host(self):
-        return '::1'
-
 
 def web_plug(url):
     return WebPlug(url)

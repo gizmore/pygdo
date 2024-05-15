@@ -5,6 +5,7 @@ from gdo.core.GDO_User import GDO_User
 from gdo.date.Time import Time
 from gdo.mail.GDO_Mail import GDO_Mail
 from gdo.mail.GDT_Email import GDT_Email
+from gdo.ui.GDT_Link import GDT_Link
 
 
 class module_mail(GDO_Module):
@@ -24,6 +25,7 @@ class module_mail(GDO_Module):
         return [
             GDT_Email('email'),
             GDT_DateTime('email_confirmed'),
+            GDT_Link().href(self.href('change_mail')).text('link_change_mail'),
         ]
 
     def set_email_for(self, user: GDO_User, email: str, confirmed: bool = True):

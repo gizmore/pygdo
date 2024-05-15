@@ -135,6 +135,11 @@ class GDT_String(WithLabel, GDT_Field):
     # Render #
     ##########
 
+    def html_readonly(self) -> str:
+        if not self.is_writable():
+            return ' readonly="readonly"'
+        return ''
+
     def html_required(self):
         if self.is_not_null():
             return ' required="required"'

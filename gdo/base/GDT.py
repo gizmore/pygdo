@@ -107,7 +107,7 @@ class GDT:
         return None
 
     def get_val(self):
-        return self.EMPTY_STRING
+        return None
 
     def is_not_null(self) -> bool:
         return False

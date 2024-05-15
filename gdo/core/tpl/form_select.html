@@ -5,7 +5,7 @@
         for key, gdt in field.init_choices().items():
             if not isinstance(gdt, str):
                 gdt = gdt.render_list()
-            writeln(f'<option value="{key}">{gdt}</option>')
+            writeln(f'<option{field.html_selected(key)} value="{key}">{gdt}</option>')
         %>
     </select>
     <% if field.has_error():

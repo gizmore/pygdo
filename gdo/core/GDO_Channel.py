@@ -16,9 +16,9 @@ class GDO_Channel(GDO):
         return [
             GDT_AutoInc('chan_id'),
             GDT_Object('chan_server').table(GDO_Server.table()).not_null(),
-            GDT_Name('chan_name'),
-            GDT_String('chan_displayname'),
-            GDT_Char('chan_trigger').initial('$'),
+            GDT_Name('chan_name').not_null(),
+            GDT_String('chan_displayname').not_null(),
+            GDT_Char('chan_trigger').maxlen(1).not_null().initial('$'),
             GDT_Created('chan_created'),
             GDT_Creator('chan_creator'),
         ]

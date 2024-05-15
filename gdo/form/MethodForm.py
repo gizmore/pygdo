@@ -23,6 +23,7 @@ class MethodForm(Method):
 
     def get_form(self, reset: bool = False) -> GDT_Form:
         if not hasattr(self, '_form') or reset:
+            self._nested_parse()
             self._form = GDT_Form()
             self.gdo_create_form(self._form)
         if reset:
@@ -61,10 +62,11 @@ class MethodForm(Method):
             self.err('%s', ['\n' + self.get_arg_parser(True).format_usage()])
         return self.get_form()
 
-    def parameters(self) -> dict[str, GDT]:
-        if hasattr(self, '_parameters'):
+    def parameters(self, reset: bool = False) -> dict[str, GDT]:
+        if hasattr(self, '_parameters') and not reset:
             return self._parameters
         params = super().parameters()
+        self._nested_parse()
         for gdt in self.get_form().all_fields():
             params[gdt.get_name()] = gdt
         for gdt in self.get_form().actions().all_fields():

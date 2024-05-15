@@ -32,6 +32,12 @@ link_continue_as_guest = "continue as guest"
 mt_base_server_error = "Server Error"
 md_base_server_error = "The server made a booboo... probably broken code or a configuration error."
 
+################
+# Server Error #
+################
+mt_base_client_error = "Client Error"
+md_base_client_error = "The server could not process your parameters."
+
 ##############
 # Fileserver #
 ##############

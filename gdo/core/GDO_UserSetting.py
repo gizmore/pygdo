@@ -20,9 +20,9 @@ class GDO_UserSetting(GDO):
         gdt = GDT_UserSetting.KNOWN[key]
         gdo = cls.get_setting(user, key)
         if gdo:
-            gdt.val(gdo.get_val())
+            gdt.initial(gdo.get_val())
         else:
-            gdt.val(gdt.get_initial())
+            gdt.initial(gdt.get_initial())
         return gdt
 
     @classmethod

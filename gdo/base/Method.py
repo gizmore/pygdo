@@ -148,8 +148,8 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     # Parameters #
     ##############
 
-    def parameters(self) -> dict[str, GDT]:
-        if not hasattr(self, '_parameters'):
+    def parameters(self, reset: bool = False) -> dict[str, GDT]:
+        if not hasattr(self, '_parameters') and not reset:
             self._parameters = {}
             for gdt in self.gdo_parameters():
                 self._parameters[gdt.get_name()] = gdt
@@ -443,3 +443,6 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 parser = self.get_arg_parser(True)
                 return parser.format_usage()
         return self.render_page().render(mode)
+
+    def render_html(self) -> str:
+        return self.render_page().render(Mode.HTML)

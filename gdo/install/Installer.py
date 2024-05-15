@@ -15,7 +15,8 @@ class Installer:
         first = True
         for module in cls.modules_with_deps(modules):
             cls.install_module(module, verbose, first)
-            first = False
+            if module.get_name() != 'base':
+                first = False
 
     @classmethod
     def modules_with_deps(cls, modules: list) -> [GDO_Module]:

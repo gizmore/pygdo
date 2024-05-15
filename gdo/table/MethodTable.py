@@ -22,8 +22,7 @@ class MethodTable(WithGDO, MethodForm):
     def __init__(self):
         super().__init__()
 
-    @functools.cache
-    def parameters(self) -> dict[str, GDT]:
+    def parameters(self, reset: bool = False) -> dict[str, GDT]:
         params = super().parameters()
         for gdt in self.table_parameters():
             params[gdt.get_name()] = gdt

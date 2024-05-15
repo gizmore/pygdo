@@ -1,1 +1,4 @@
 module_mail = "E-Mail"
+
+email_confirmed = "Email confirmed at"
+link_change_mail = "Change E-Mail"

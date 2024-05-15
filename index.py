@@ -47,11 +47,13 @@ def application(environ, start_response):
             loader = ModuleLoader.instance()
             Application.fresh_page()
 
-        #dump(environ)
+        # dump(environ)
 
         qs = parse_qs(environ['QUERY_STRING'])
+        get_params = {}
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
+            get_params = parse_qs(url)
             del qs['_url']
             if not url:
                 url = 'core.welcome.html'
