@@ -12,7 +12,6 @@ class GDT:
     """
 
     NULL_STRING = 'NULL'
-    EMPTY_STRING = ''
     GDT_MAX = 0
     GDT_COUNT = 0
     GDT_ALIVE = 0
@@ -22,14 +21,14 @@ class GDT:
     @classmethod
     def escape(cls, val: str) -> str:
         if val is None:
-            return cls.EMPTY_STRING
+            return ''
         return (val.replace('\\', '\\\\').
                 replace('"', '\\"').
                 replace("'", "\\'"))
 
     @classmethod
     def quote(cls, val: str) -> str:
-        if val is None or val == cls.EMPTY_STRING:
+        if val is None or val == '':
             return cls.NULL_STRING
         return f"'{cls.escape(val)}'"
 
@@ -86,7 +85,10 @@ class GDT:
         return self.__class__.__name__ + "#" + str(id(self))
 
     def gdo_column_define(self) -> str:
-        return self.EMPTY_STRING
+        return ''
+
+    def column_define_fk(self) -> str:
+        return ''
 
     def is_primary(self) -> bool:
         return False
@@ -117,7 +119,7 @@ class GDT:
 
     def to_val(self, value) -> str:
         if value is None:
-            return self.EMPTY_STRING
+            return ''
         return str(value)
 
     def to_value(self, val: str):

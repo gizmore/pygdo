@@ -115,3 +115,10 @@ msg_cache_cleared = "Caches have been cleared."
 mt_core_ping = "Ping"
 md_core_ping = "Test if the bot is responding."
 msg_pong = "PONG"
+
+########
+# Link #
+########
+mt_core_link = "Link Accounts"
+md_core_link = "Link accounts to your main account."
+

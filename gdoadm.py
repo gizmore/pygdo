@@ -343,7 +343,7 @@ class App:
     def migrate(self):
         parser = argparse.ArgumentParser(
             description='Migrate the database for a single module or all of them.')
-        parser.add_argument('--all', '-a')
+        parser.add_argument('--all', '-a', action='store_true')
         parser.add_argument('--unittests', '-u', action='store_true')
         parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
@@ -352,7 +352,7 @@ class App:
             import unittest  # Required for init with unit tests
             Application.init(os.path.dirname(__file__))
 
-        if args['all']:
+        if args.all:
             modules = ModuleLoader.instance().load_modules_fs('*', True)
         elif args.module:
             modules = ModuleLoader.instance().load_modules_fs(args.module, True)

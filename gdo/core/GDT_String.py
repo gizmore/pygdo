@@ -99,7 +99,7 @@ class GDT_String(WithLabel, GDT_Field):
 
     def gdo_column_define_collate(self) -> str:
         if self._encoding == Encoding.BINARY:
-            return GDT.EMPTY_STRING
+            return ''
         append = '_general_ci'
         if self._case_s:
             append = '_bin'

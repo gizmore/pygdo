@@ -1,5 +1,10 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.base.GDO import GDO
+
 import mysql.connector
-from mysql.connector import ProgrammingError
+from mysql.connector import ProgrammingError, DatabaseError
 from mysql.connector.conversion import MySQLConverterBase, MySQLConverter
 
 from gdo.base.Exceptions import GDODBException
@@ -68,7 +73,7 @@ class Database:
         try:
             Application.DB_WRITES += 1
             return self.get_link().cmd_query(query)
-        except ProgrammingError as ex:
+        except (ProgrammingError, DatabaseError) as ex:
             raise GDODBException(ex.msg, query)
 
     def select(self, query: str, dictionary: bool = True):
@@ -81,10 +86,11 @@ class Database:
     def cursor(self, dictionary=True):
         return self.get_link().cursor(dictionary=dictionary)
 
-    def create_table(self, gdo):
+    def create_table(self, gdo: 'GDO'):
         cols = []
         prim = []
         uniq = []
+        # fkey = []
         for gdt in gdo.columns():
             define = gdt.gdo_column_define()
             cols.append(define)
@@ -92,14 +98,27 @@ class Database:
                 prim.append(gdt.get_name())
             if gdt.is_unique():
                 uniq.append(gdt.get_name())
+            # fk = gdt.column_define_fk()
+            # if fk:
+            #     fkey.append(fk)
         if prim:
             primary = ",".join(prim)
             cols.append(f"PRIMARY KEY ({primary})")
+        # if fkey:
+        #     cols.extend(fkey)
         if uniq:
             unique = ",".join(uniq)
             cols.append(f"CONSTRAINT {gdo.gdo_table_name()}_UNIQUE UNIQUE ({unique})")
-        query = f"CREATE TABLE IF NOT EXISTS {gdo.gdo_table_name()} (" + ",\n".join(cols) + ")\n"
+        engine = 'MyISAM' if gdo.gdo_engine_fast() else 'InnoDB'
+        query = f"CREATE TABLE IF NOT EXISTS {gdo.gdo_table_name()} (" + ",\n".join(cols) + f") ENGINE = {engine}\n"
         self.query(query)
+
+    def create_table_fk(self, gdo: 'GDO'):
+        for gdt in gdo.columns():
+            fk = gdt.column_define_fk()
+            if fk:
+                query = f"ALTER TABLE {gdo.gdo_table_name()} ADD {fk}"
+                self.query(query)
 
     def is_configured(self):
         return self.db_host is not None

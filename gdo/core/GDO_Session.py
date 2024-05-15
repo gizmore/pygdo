@@ -86,6 +86,9 @@ class GDO_Session(GDO):
             }).insert()
         return session
 
+    def gdo_engine_fast(self) -> bool:
+        return True
+
     def gdo_columns(self) -> list[GDT]:
         return [
             GDT_AutoInc('sess_id'),

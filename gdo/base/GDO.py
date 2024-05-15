@@ -73,6 +73,12 @@ class GDO(WithBulk, GDT):
         id_ = self.get_id()
         return len(id_) > 0 and not id_.startswith(':')
 
+    def gdo_table_name(self) -> str:
+        return self.__class__.__name__.lower()
+
+    def gdo_engine_fast(self) -> bool:
+        return False
+
     def gdo_columns(self) -> list[GDT]:
         return []
 
@@ -117,15 +123,6 @@ class GDO(WithBulk, GDT):
     def save_val(self, key: str, val: str):
         self.set_val(key, val)
         return self.save()
-
-    def gdo_table_name(self) -> str:
-        return self.__class__.__name__.lower()
-
-    # def gdo_cached(self) -> bool:
-    #     """
-    #     Indicate if this table should build an object cache
-    #     """
-    #     return True
 
     @classmethod
     def get_name(cls):

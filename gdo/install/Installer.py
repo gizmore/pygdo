@@ -53,6 +53,8 @@ class Installer:
             if verbose:
                 print(f"Installing table {str(classname.__name__).lower()}")
             cls.install_gdo(classname)
+        for classname in classes:
+            cls.install_gdo_fk(classname)
         cls.install_module_entry(module)
         ModuleLoader.instance().init_user_settings()
         module.init()
@@ -84,6 +86,11 @@ class Installer:
     def install_gdo(cls, classname):
         table = Cache.table_for(classname)
         return Application.db().create_table(table)
+
+    @classmethod
+    def install_gdo_fk(cls, classname):
+        table = Cache.table_for(classname)
+        return Application.db().create_table_fk(table)
 
     @classmethod
     def migrate_module(cls, module: GDO_Module):
