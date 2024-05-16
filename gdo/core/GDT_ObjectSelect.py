@@ -3,4 +3,6 @@ from gdo.core.WithObject import WithObject
 
 
 class GDT_ObjectSelect(WithObject, GDT_Select):
-    pass
+
+    def gdo_choices(self) -> dict:
+        return self._table.select().exec().fetch_all_dict()

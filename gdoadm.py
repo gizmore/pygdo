@@ -399,7 +399,7 @@ class App:
 
     def _run_yarn_script(self):
         print("Running ./gdo_yarn.sh ")
-        result = subprocess.run(['./gdo_yarn.sh'], capture_output=True, text=True)
+        result = subprocess.run([Application.file_path('gdo_yarn.sh')], capture_output=True, text=True)
         print(result.stdout)
         print(result.stderr, file=sys.stderr)
         print("Done.")

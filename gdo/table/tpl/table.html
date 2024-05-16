@@ -41,10 +41,14 @@ if searched:
     for gdo in result:
         write('<tr>')
         for gdt in method.gdo_table_headers():
+            func = f'render_{gdt.get_name()}'
             write('<td>')
-            write(gdt.gdo(gdo).render_cell())
+            if hasattr(method, func):
+                write(getattr(method, func)(gdt.gdo(gdo), gdo))
+            else:
+                write(gdt.gdo(gdo).render_cell())
             write('</td>')
-        write('</tr>')
+        write('</tr>\n')
     %>
     </tbody>
 

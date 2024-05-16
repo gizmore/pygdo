@@ -1,9 +1,7 @@
 from enum import Enum
 
-from mysql.connector import InternalError
 from mysql.connector.cursor import MySQLCursorDict
 
-from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 
 
@@ -54,6 +52,19 @@ class Result:
 
     def fetch_all(self):
         return [row for row in self]
+
+    def fetch_all_dict(self) -> dict:
+        result = {}
+        if self._iter == ResultType.OBJECT:
+            for row in self:
+                result[row.get_id()] = row
+        elif self._iter == ResultType.ASSOC:
+            for row in self:
+                result[next(iter(row.keys()))] = row
+        else:
+            for row in self:
+                result[row[0]] = row
+        return result
 
     def fetch_row(self) -> list[str] | None:
         row = self._result.fetchone()

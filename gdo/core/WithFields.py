@@ -4,8 +4,7 @@ class WithFields:
     def add_field(self, *fields):
         if not hasattr(self, '_fields'):
             self._fields = []
-        for gdt in fields:
-            self._fields.append(gdt)
+        self._fields.extend(fields)
         return self
 
     def get_field(self, name: str):

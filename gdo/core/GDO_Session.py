@@ -99,6 +99,8 @@ class GDO_Session(GDO):
         ]
 
     def save(self):
+        if self.get_token() == self.DEFAULT_COOKIE:
+            return self
         self.set_value('sess_data', self._data)
         return super().save()
 

@@ -33,11 +33,12 @@
 		<label for="gdo-left-nav" id="gdo-left-nav2"></label>
 		<label for="gdo-right-nav" id="gdo-right-nav2"></label>
 		<div class="gdo-main">
-			<%=field._top_bar.render()%>
-            <%=field._result.render()%>
+            <div id="gdo-top-bar">
+                <%=field._top_bar.render()%>
+            </div>
+            <%=result%>
 		</div>
 	</div>
-
 	<footer id="gdo-footer"><%=field._bottom_bar.render()%></footer>
 </div>
 <%

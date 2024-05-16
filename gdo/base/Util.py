@@ -78,7 +78,16 @@ def dump(*obj: any):
 
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
     from gdo.base.Application import Application
-    return f"/{module_name}.{method_name}.{Application.get_mode().name.lower()}?_lang={Application.STORAGE.lang}{append}"
+    splitted = ''
+    new_append = ''
+    if append:
+        for kv in append.lstrip('&').split('&'):
+            key, val = kv.split('=')
+            if not key.startswith('_'):
+                splitted += f";{key}.{val}"
+            else:
+                new_append += f"&{kv}"
+    return f"/{module_name}.{method_name}{splitted}.{Application.get_mode().name.lower()}?_lang={Application.STORAGE.lang}{new_append}"
 
 
 def module_enabled(module_name: str) -> bool:

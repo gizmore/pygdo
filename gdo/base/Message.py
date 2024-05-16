@@ -24,7 +24,7 @@ class Message(WithEnv, threading.Thread):
         return self
 
     async def execute(self):
-        Application.fresh_page()
+        # Application.fresh_page()
         parser = Parser(self._env_mode, self._env_user, self._env_server, self._env_channel, self._env_session)
         self._method = parser.parse(self._message)
         await self.run()

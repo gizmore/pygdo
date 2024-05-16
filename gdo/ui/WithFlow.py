@@ -20,4 +20,4 @@ class WithFlow:
         return not self._flow_horz
 
     def render_class(self) -> str:
-        return 'gdt-col' if self.is_horizontal() else 'gdt-row'
+        return 'gdt-row' if self.is_horizontal() else 'gdt-col'

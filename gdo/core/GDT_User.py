@@ -2,10 +2,11 @@ from typing_extensions import Self
 
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, href
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Object import GDT_Object
 from gdo.core.WithCompletion import WithCompletion
+from gdo.ui.GDT_Link import GDT_Link
 
 
 class GDT_User(WithCompletion, GDT_Object):
@@ -48,3 +49,12 @@ class GDT_User(WithCompletion, GDT_Object):
             user = GDO_User.current()
             query.where(f'user_server={user.get_server_id()}')
         return query.limit(10).exec().fetch_all()
+
+    ##########
+    # Render #
+    ##########
+    def render_cell(self) -> str:
+        user = self.get_gdo()
+        name = user.render_name()
+        return GDT_Link().text_raw(name).href(href('core', 'profile', f'&for={name}')).render()
+

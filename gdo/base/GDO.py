@@ -88,6 +88,12 @@ class GDO(WithBulk, GDT):
     def columns(self) -> list[GDT]:
         return Cache.columns_for(self.__class__)
 
+    def columns_only(self, *names: str):
+        cols = []
+        for key in names:
+            cols.append(self.column(key))
+        return cols
+
     def gdo_val(self, key):
         if key not in self._vals:
             return None
@@ -240,6 +246,8 @@ class GDO(WithBulk, GDT):
     def delete(self):
         self.before_delete()
         self.delete_query().where(self.pk_where()).exec()
+        vals = {gdt.get_name(): gdt.get_val() for gdt in self.get_pk_columns()}
+        Cache.obj_search(self.table(), vals, True)
         self.after_delete()
         return self.all_dirty(True)
 
@@ -308,5 +316,6 @@ class GDO(WithBulk, GDT):
         for gdt in self.columns():
             if isinstance(gdt, type):
                 return gdt
+
 
 

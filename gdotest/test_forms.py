@@ -8,7 +8,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.form.GDT_CSRF import GDT_CSRF
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
-from gdotest.TestUtil import get_gizmore
+from gdotest.TestUtil import web_gizmore
 
 
 class FormTestCase(unittest.TestCase):
@@ -20,7 +20,7 @@ class FormTestCase(unittest.TestCase):
         return self
 
     def test_forms(self):
-        gizmore = get_gizmore()
+        gizmore = web_gizmore()
         Application.set_session(GDO_Session.for_user(gizmore))
         form = GDT_Form()
         form.add_field(GDT_String("login"), GDT_CSRF(), GDT_Submit())

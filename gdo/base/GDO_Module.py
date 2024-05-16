@@ -197,6 +197,9 @@ class GDO_Module(WithModuleConfig, GDO):
     ##########
     # Events #
     ##########
+    def gdo_after_delete(self, gdo):
+        ModuleLoader.instance().after_delete(gdo)
+
     def subscribe(self, event_name: str, callback: callable, times: int = 2_000_000_000):
         Application.EVENTS.subscribe_times(event_name, callback, times)
 

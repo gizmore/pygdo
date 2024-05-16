@@ -160,5 +160,5 @@ def cli_gizmore():
     return Bash.get_server().get_or_create_user('gizmore')
 
 
-def get_gizmore():
+def web_gizmore():
     return Web.get_server().get_or_create_user('gizmore')

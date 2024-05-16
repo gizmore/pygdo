@@ -49,7 +49,7 @@ class GDO_Server(GDO):
             GDT_Secret('serv_password'),
             GDT_Connector('serv_connector'),
             GDT_Created('serv_created'),
-            GDT_Creator('serv_creator'),
+            # GDT_Creator('serv_creator'),
         ]
 
     def get_name(self) -> str:

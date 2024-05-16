@@ -1,5 +1,6 @@
 from gdo.core.GDT_String import GDT_String
 from gdo.base.Trans import t
+from gdo.date.Time import Time
 
 
 class GDT_Timestamp(GDT_String):
@@ -8,11 +9,11 @@ class GDT_Timestamp(GDT_String):
 
     def __init__(self, name):
         super().__init__(name)
-        self._date_format = 'df_long'
+        self._date_format = 'long'
         self._millis = 6
 
     def gdo_column_define(self) -> str:
         return f"{self._name} DATETIME({self._millis}){self.gdo_column_define_null()}{self.gdo_column_define_default()}"
 
     def render_html(self):
-        return 'HO'
+        return Time.display_date(self.get_val(), self._date_format)

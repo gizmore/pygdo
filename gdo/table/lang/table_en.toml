@@ -1,1 +1,4 @@
 module_table = "Tables"
+
+info_search = "You can search the table globally here."
+search = 'Search'

@@ -62,6 +62,9 @@ class GDT_Object(WithObject, GDT_UInt):
         else:
             return gdo.render_name()
 
+    def render_cell(self) -> str:
+        return self.get_gdo().render_name()
+
     ############
     # Validate #
     ############

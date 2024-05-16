@@ -37,7 +37,7 @@ created = "Created at"
 creator = "Created by"
 deleted = "Deleted at"
 deletor = "Deleted by"
-
+count = "Count"
 
 ##################
 ### GDT_Select ###
@@ -122,3 +122,8 @@ msg_pong = "PONG"
 mt_core_link = "Link Accounts"
 md_core_link = "Link accounts to your main account."
 
+###########
+# Profile #
+###########
+mt_core_profile = "%s's Profile"
+md_core_profile = "%s's Profile."

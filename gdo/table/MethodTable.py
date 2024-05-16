@@ -42,7 +42,7 @@ class MethodTable(WithGDO, MethodForm):
         if self.gdo_filtered():
             params.append(GDT_Filter(self.gdo_filter_name()))
         if self.gdo_searched():
-            params.append(GDT_Search(self.gdo_search_name()))
+            params.append(GDT_Search(self.gdo_search_name()).label('search'))
         return params
 
     def table_order_field(self) -> GDT_Order:
@@ -82,6 +82,9 @@ class MethodTable(WithGDO, MethodForm):
 
     def gdo_paginated(self) -> bool:
         return True
+
+    def gdo_paginate_size(self) -> int:
+        return 10
 
     def gdo_paginate_name(self) -> str:
         return 'p'
@@ -132,3 +135,7 @@ class MethodTable(WithGDO, MethodForm):
     ##########
     def render(self, mode: Mode = Mode.HTML):
         return self.render_gdt(mode)
+
+    def render_page(self):
+        return self.get_table()
+

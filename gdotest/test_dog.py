@@ -6,7 +6,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.connector.Web import Web
-from gdotest.TestUtil import cli_plug, get_gizmore
+from gdotest.TestUtil import cli_plug, web_gizmore
 
 
 class DogTestCase(unittest.TestCase):

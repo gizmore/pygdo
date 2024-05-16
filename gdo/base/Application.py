@@ -81,7 +81,7 @@ class Application:
     def fresh_page(cls):
         from gdo.ui.GDT_Page import GDT_Page
         cls.STORAGE.page = GDT_Page()
-        return cls.get_page()
+        return cls.STORAGE.page
 
     @classmethod
     def get_page(cls):

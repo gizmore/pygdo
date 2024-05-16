@@ -5,11 +5,13 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import Permutations
+from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_MD5 import GDT_MD5
 from gdo.core.GDT_Path import GDT_Path
 from gdo.core.GDT_User import GDT_User
-from gdotest.TestUtil import cli_plug, get_gizmore, cli_gizmore, GDOTestCase
+from gdo.ui.GDT_Page import GDT_Page
+from gdotest.TestUtil import cli_plug, web_gizmore, cli_gizmore, GDOTestCase
 
 
 class CoreTestCase(GDOTestCase):
@@ -20,7 +22,7 @@ class CoreTestCase(GDOTestCase):
         loader.load_modules_db(True)
         loader.init_modules()
         loader.init_cli()
-        get_gizmore()
+        web_gizmore()
         cli_gizmore()
         super().setUp()
 
@@ -77,6 +79,11 @@ class CoreTestCase(GDOTestCase):
         gdt.same_server()
         giz = gdt.to_value('giz')
         self.assertIsNotNone(giz, 'Cannot get giz on same server.')
+
+    def test_09_db_debug(self):
+        GDO_User.table().select().first().debug().exec()
+        result = GDT_Page.instance()._top_bar.render()
+        self.assertIn('SELECT * FROM gdo_user', result, 'Database Debug output does not render.')
 
 
 if __name__ == '__main__':

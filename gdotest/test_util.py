@@ -4,7 +4,7 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import t
-from gdo.base.Util import Strings, Arrays
+from gdo.base.Util import Strings, Arrays, href
 
 
 class UtilityTestCase(unittest.TestCase):
@@ -63,6 +63,10 @@ class UtilityTestCase(unittest.TestCase):
         s = 'text/html; charset=UTF-8'
         m = Strings.regex_first("charset=(.*)", s)
         self.assertEqual('UTF-8', m, 'regex_first does not work.')
+
+    def test_href(self):
+        result = href('core', 'profile', '&for=gizmore{2}')
+        self.assertEqual('/core.profile;for.gizmore{2}.html?_lang=en', result, 'href() does not work as expected.')
 
 
 

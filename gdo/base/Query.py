@@ -9,6 +9,7 @@ from gdo.base.Exceptions import GDODBException
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Result import Result
+from gdo.base.Util import msg, dump
 
 
 class Type(Enum):
@@ -45,6 +46,7 @@ class Query:
         self._type = Type.UNKNOWN
         self._join = ''
         self._joined_objects = []
+        self._where = ''
 
     def is_select(self):
         if self.is_raw() and self._raw.startswith('SELECT'):
@@ -115,7 +117,7 @@ class Query:
         return self.where(where, 'OR')
 
     def where(self, where: str, op='AND'):
-        if hasattr(self, '_where'):
+        if self._where:
             self._where += f" {op} ({where})"
         else:
             self._where = f"({where})"
@@ -187,7 +189,7 @@ class Query:
         if self.is_raw():
             return self._raw
         if self.is_select():
-            return f"SELECT {self._columns} FROM {self._table} {self._join} WHERE {self._where}{self._build_order()}{self.build_limit()}"
+            return f"SELECT {self._columns} FROM {self._table} {self._join}{self._build_where()}{self._build_order()}{self.build_limit()}"
         if self.is_delete():
             return f"DELETE FROM {self._table} WHERE {self._where}"
         if self.is_insert():
@@ -201,6 +203,11 @@ class Query:
         if self.is_update():
             set_string = ",".join(map(lambda kv: f"{kv[0]}={GDT.quote(kv[1])}", self._vals.items()))
             return f"UPDATE {self._table} SET {set_string} WHERE {self._where}"
+
+    def _build_where(self) -> str:
+        if self._where:
+            return f' WHERE {self._where}'
+        return ''
 
     def _build_order(self):
         if hasattr(self, '_order'):
@@ -216,7 +223,7 @@ class Query:
 
     def exec(self, use_dict: bool = True):
         Application.db().get_link()
-        if Application.config('db.debug') in ('1', '2'):
+        if Application.config('db.debug') != '0':
             self.debug()
         query = self.build_query()
         try:
@@ -225,6 +232,7 @@ class Query:
                 Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES + 1) + ": " + query)
                 if Application.config('db.debug') == '2':
                     Logger.debug("".join(traceback.format_stack()))
+                msg('%s', [query])
             if self.is_insert():
                 cursor = Application.db().cursor()
                 Application.DB_WRITES += 1

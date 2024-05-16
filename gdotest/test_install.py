@@ -9,6 +9,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_User import GDO_User
 from gdo.install.Installer import Installer
+from gdotest.TestUtil import reinstall_module
 
 
 class InstallTestCase(unittest.TestCase):
@@ -87,6 +88,9 @@ class InstallTestCase(unittest.TestCase):
         subprocess.run(["python3", Application.file_path("gdoadm.py"), 'admin', '-u', "gizmore", "11111111", "gizmore@gizmore.org"], capture_output=True)
         self.assertEqual(1, len(admins), "Cannot install admin user #2")
 
+    def test_09_reinstall_module(self):
+        reinstall_module('login')
+        self.assertIn('login', ModuleLoader.instance()._cache, 'Cannot reinstall modules.')
 
 
 if __name__ == '__main__':

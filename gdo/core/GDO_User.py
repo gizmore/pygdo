@@ -29,6 +29,10 @@ class GDO_User(GDO):
         '_authenticated',
     )
 
+    def __init__(self):
+        super().__init__()
+        self._authenticated = False
+
     @classmethod
     def system(cls) -> Self:
         if not hasattr(cls, 'SYSTEM'):

@@ -99,6 +99,10 @@ class ModuleLoader:
             pass
         return False
 
+    def after_delete(self, module: GDO_Module):
+        if module.get_name() in self._cache:
+            del self._cache[module.get_name()]
+
     def load_modules_db(self, enabled: None | bool = True):
         from gdo.base.GDO_Module import GDO_Module
         back = []

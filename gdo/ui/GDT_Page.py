@@ -51,5 +51,5 @@ class GDT_Page(GDT):
         self._css.append(url)
 
     def render_html(self):
-        return GDT_Template.python('ui', 'page.html', {'field': self})
+        return GDT_Template.python('ui', 'page.html', {'field': self, 'result': self._result.render()})
 

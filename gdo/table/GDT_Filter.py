@@ -15,4 +15,4 @@ class GDT_Filter(GDT_String):
             return tpl('table', 'filter_string.html', vals)
 
     def filter_value(self, gdt: GDT):
-        return 'X'
+        return ''

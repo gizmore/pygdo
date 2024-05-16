@@ -4,7 +4,7 @@ if TYPE_CHECKING:
     from gdo.base.GDO import GDO
 
 import mysql.connector
-from mysql.connector import ProgrammingError, DatabaseError
+from mysql.connector import ProgrammingError, DatabaseError, IntegrityError
 from mysql.connector.conversion import MySQLConverterBase, MySQLConverter
 
 from gdo.base.Exceptions import GDODBException
@@ -73,7 +73,7 @@ class Database:
         try:
             Application.DB_WRITES += 1
             return self.get_link().cmd_query(query)
-        except (ProgrammingError, DatabaseError) as ex:
+        except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
 
     def select(self, query: str, dictionary: bool = True):
@@ -84,7 +84,7 @@ class Database:
         return Result(cursor)
 
     def cursor(self, dictionary=True):
-        return self.get_link().cursor(dictionary=dictionary)
+        return self.get_link().cursor(dictionary=dictionary, buffered=True)
 
     def create_table(self, gdo: 'GDO'):
         cols = []
