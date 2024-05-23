@@ -125,7 +125,7 @@ class Query:
 
     def order(self, order: str):
         if hasattr(self, '_order'):
-            self._order += f" {order}"
+            self._order += f", {order}"
         else:
             self._order = order
         return self

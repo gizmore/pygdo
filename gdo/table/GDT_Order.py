@@ -1,4 +1,8 @@
+import re
+
+from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.Query import Query
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Template import tpl
 from gdo.ui.GDT_Icon import GDT_Icon
@@ -6,16 +10,10 @@ from gdo.ui.WithHREF import WithHREF
 
 
 class GDT_Order(WithHREF, GDT_String):
-    _order_multiple: bool
 
     def __init__(self, name):
         super().__init__(name)
         self._multiple = True
-        self._order_multiple = True
-
-    def no_multiple(self, no_multiple_order: bool = True):
-        self._order_multiple = not no_multiple_order
-        return self
 
     def display_table_order(self, gdt: GDT) -> str:
         if gdt.is_orderable():
@@ -24,6 +22,28 @@ class GDT_Order(WithHREF, GDT_String):
         else:
             return ''
 
-    def href_order(self, gdt: GDT):
-        return 'xxx'
+    def order_query(self, query: Query):
+        vals = self.get_val()
+        if vals is not None:
+            for val in vals:
+                query.order(val).debug()
+
+    def href_order(self, gdt: GDT, dir: str):
+        url = Application.environ('REQUEST_URI')
+        find = f"&{self.get_name()}={gdt.get_name()}"
+        repl = f"&{self.get_name()}={gdt.get_name()}%20{dir}"
+        if url.find(f"{find}%20{dir}") >= 0:
+            url = re.sub(f"&{self.get_name()}={gdt.get_name()}%20{dir}", '', url)
+        elif url.find(find) >= 0:
+            url = re.sub(f"&{self.get_name()}={gdt.get_name()}%20(ASC|DESC)", repl, url)
+        else:
+            url += f"&{self.get_name()}={gdt.get_name()}%20{dir}"
+        return url
+
+    def html_selected(self, gdt: GDT, dir: str):
+        url = Application.environ('REQUEST_URI')
+        find = f"&{self.get_name()}={gdt.get_name()}%20{dir}"
+        if url.find(find) >= 0:
+            return ' class="active"'
+        return ''
 

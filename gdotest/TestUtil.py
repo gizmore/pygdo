@@ -86,9 +86,10 @@ class WebPlug:
     def exec(self):
         parts = self._url.split('?')
         url = urllib.parse.quote_plus('index.py/' + parts[0])
+        query = '&' + parts[1] if len(parts) > 1 else ''
         self._environ = {
             'REMOTE_ADDR': self._ip,
-            'QUERY_STRING': f"_url={url}",
+            'QUERY_STRING': f"_url={url}{query}",
             'REQUEST_METHOD': 'POST' if len(self._post.items()) else 'GET',
             'mod_wsgi.request_start': str(round(time.time())),
             'REQUEST_SCHEME': 'http',

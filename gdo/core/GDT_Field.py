@@ -142,6 +142,9 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
         self._errargs = errargs
         return False
 
+    def is_multiple(self) -> bool:
+        return self._multiple
+
     ############
     # Validate #
     ############

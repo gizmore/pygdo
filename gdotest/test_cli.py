@@ -22,7 +22,7 @@ class CLITestCase(unittest.TestCase):
         result = cli_plug(None, "echo \"Hello world\"")
         self.assertEqual('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
         result = cli_plug(None, "echo Hello world")
-        self.assertEqual('Helloworld', result, 'Test if CLI core.echo Hello world works.')
+        self.assertEqual('Hello world', result, 'Test if CLI core.echo Hello world works.')
 
     def test_02_version(self):
         result = cli_plug(None, "version")
@@ -51,7 +51,7 @@ class CLITestCase(unittest.TestCase):
     def test_07_nested_command(self):
         line = "echo --sep=, 1 $(echo 2) $(echo 3 $(echo 4)) 5 $(echo 6) $(echo --sep=; 7 8)"
         result = cli_plug(None, line)
-        self.assertEqual("1,2,34,5,6,7;8", result, "Command nesting does not work.")
+        self.assertEqual("1,2,3 4,5,6,7;8", result, "Command nesting does not work.")
 
 
 if __name__ == '__main__':

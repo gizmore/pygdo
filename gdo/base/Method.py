@@ -243,13 +243,16 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         args, unknown_args = parser.parse_known_args(self._args)
         for gdt in self.parameters().values():
             val = args.__dict__[gdt.get_name()] or ''
-            val = val.rstrip()
-            if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
-                vals = [val]
-                vals.extend(unknown_args)
-                gdt.val(vals)
-            else:
+            if isinstance(val, list):
                 gdt.val(val)
+            else:
+                # val = val.rstrip()
+                if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
+                    vals = [val]
+                    vals.extend(unknown_args)
+                    gdt.val(vals)
+                else:
+                    gdt.val(val)
 
     def _nested_execute_parse(self):
         self._nested_parse()
@@ -293,7 +296,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def _get_arg_parser_cli(self, for_usage: bool):
         from gdo.form.GDT_Submit import GDT_Submit
         prog = self.gdo_trigger()
-        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False)
+        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
         for gdt in self.parameters().values():
             name = gdt.get_name()
             if for_usage and isinstance(gdt, GDT_Submit) and gdt._default_button:
@@ -311,10 +314,13 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     @functools.cache
     def _get_arg_parser_http(self, for_usage: bool):
         prog = self.get_name()
-        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False)
+        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
         for gdt in self.parameters().values():
             name = gdt.get_name()
-            parser.add_argument(f'--{name}', default=gdt.get_initial())
+            if gdt.is_multiple():
+                parser.add_argument(f'--{name}', default=gdt.get_initial(), nargs='*')
+            else:
+                parser.add_argument(f'--{name}', default=gdt.get_initial())
         self._parser = parser
         return parser
 

@@ -9,4 +9,6 @@ class MethodQueryTable(MethodTable):
         return self.gdo_table().select()
 
     def gdo_table_result(self) -> Result:
-        return self.gdo_table_query().exec()
+        query = self.gdo_table_query()
+        self.table_order_field().order_query(query)
+        return query.exec()

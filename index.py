@@ -50,12 +50,20 @@ def application(environ, start_response):
         # dump(environ)
 
         qs = parse_qs(environ['QUERY_STRING'])
+
+        # dump(qs)
+
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
-            get_params = parse_qs(url)
+            # get_params = parse_qs(url)
             del qs['_url']
             if not url:
                 url = 'core.welcome.html'
+
+        lang = 'en'
+        if '_lang' in qs:
+            lang = qs['_lang']
+            del qs['_lang']
 
         path = Application.file_path(url)
 

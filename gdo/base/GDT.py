@@ -149,6 +149,9 @@ class GDT:
     def is_hidden(self) -> bool:
         return False
 
+    def is_multiple(self) -> bool:
+        return False
+
     def has_tooltip(self) -> bool:
         return False
 

@@ -1,4 +1,4 @@
 <div id="order_<%=gdt.get_name()%>" class="<%=field.html_class()%>">
-    <a href="<%=field.href_order('ASC')%>" rel="nofollow"><%=GDT_Icon('arrow_up').render()%></a>
-    <a href="<%=field.href_order('DESC')%>" rel="nofollow"><%=GDT_Icon('arrow_down').render()%></a>
+    <a href="<%=field.href_order(gdt, 'ASC')%>" rel="nofollow"<%=field.html_selected(gdt, 'ASC')%>><%=GDT_Icon('arrow_up').render()%></a>
+    <a href="<%=field.href_order(gdt, 'DESC')%>" rel="nofollow"<%=field.html_selected(gdt, 'DESC')%>><%=GDT_Icon('arrow_down').render()%></a>
 </div>
