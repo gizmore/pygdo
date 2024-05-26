@@ -102,6 +102,12 @@ mt_core_add_server = "Add Server"
 md_core_add_server = "Add a new Server with a connector."
 msg_added_dog_server = "A new %s server has been added: %s ID#%s."
 
+###############
+### Servers ###
+###############
+mt_core_servers = "Servers"
+md_core_servers = "List of servers"
+
 ###################
 ### Clear Cache ###
 ###################

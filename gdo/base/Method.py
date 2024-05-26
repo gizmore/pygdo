@@ -186,6 +186,16 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     #         self.parameter(key).val(val)
     #     return self
 
+    ############
+    # Redirect #
+    ############
+    def redirect(self, href: str):
+        from gdo.ui.GDT_Page import GDT_Page
+        from gdo.net.GDT_Redirect import GDT_Redirect
+        redirect = GDT_Redirect().href(href)
+        GDT_Page.instance()._top_bar.add_field(redirect)
+        return self
+
     ###########
     # Message #
     ###########
