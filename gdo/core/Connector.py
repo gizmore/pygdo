@@ -48,7 +48,7 @@ class Connector:
         """
         return True
 
-    async def gdo_connect(self):
+    def gdo_connect(self):
         self._connected = True
         return self
 
@@ -70,9 +70,10 @@ class Connector:
     def should_connect_now(self) -> bool:
         return Application.TIME >= self._next_connect_time
 
-    async def connect(self) -> bool:
+    def connect(self) -> bool:
+        Logger.debug("Connector.connect()")
         self._connecting = True
-        await self.gdo_connect()
+        self.gdo_connect()
         if self._connected:
             self.connect_success()
         else:

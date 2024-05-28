@@ -1,4 +1,5 @@
 import asyncio
+import functools
 import time
 
 from gdo.base.Application import Application
@@ -36,6 +37,8 @@ class launch(Method):
             return self.err('err_dog_already_running')
         Files.touch(self.lock_path(), True)
         asyncio.run(self.mainloop())
+        # self.mainloop()
+        # asyncio.run(self.mainloop())
         return self.reply('msg_all_done')
 
     def lock_path(self) -> str:
@@ -49,9 +52,13 @@ class launch(Method):
         sleep_ms = self.sleep_ms()
         try:
             while Application.RUNNING:
+                Logger.debug('In mainloop')
                 self.mainloop_step_timers()
-                await self.mainloop_step_servers()
-                time.sleep(sleep_ms)
+                servers = GDO_Server.table().all()
+                for server in servers:
+                    self.mainloop_step_server(server)
+                await asyncio.sleep(1.0)
+                # time.sleep(sleep_ms)
         except KeyboardInterrupt:
             Logger.debug("Exiting after Ctrl+c")
             Application.RUNNING = False
@@ -62,20 +69,22 @@ class launch(Method):
     def mainloop_step_timers(self):
         Application.tick()
 
-    async def mainloop_step_servers(self):
-        servers = GDO_Server.table().all()
-        for server in servers:
-            await self.mainloop_step_server(server)
+    # def mainloop_step_servers(self):
 
-    async def mainloop_step_server(self, server: GDO_Server):
-        conn = server.get_connector()
-        if not conn.is_connected():
-            await self.connect_server(server)
+    def mainloop_step_server(self, server: GDO_Server):
+        if not server._has_loop:
+            Logger.debug(f"step server {server.render_name()}")
+            server._has_loop = True
+            asyncio.create_task(server.loop())
+        # conn = server.get_connector()
+        # if not conn.is_connected():
+        #     # asyncio.get_event_loop_policy().get_event_loop().call_soon(functools.partial(self.connect_server, server))
+        #     self.connect_server(server)
 
-    async def connect_server(self, server) -> bool:
+    def connect_server(self, server) -> bool:
         conn = server.get_connector()
         if conn.is_connecting():
             return True
         elif conn.should_connect_now():
-            await conn.connect()
+            conn.connect()
         return True

@@ -1,4 +1,7 @@
+import asyncio
 from typing import TYPE_CHECKING
+
+from gdo.base.Logger import Logger
 
 if TYPE_CHECKING:
     from gdo.core.Connector import Connector
@@ -24,6 +27,7 @@ from gdo.net.GDT_Url import GDT_Url
 class GDO_Server(GDO):
     _connector: Connector
     _channels: list
+    _has_loop: bool
 
     __slots__ = (
         '_connector',
@@ -32,7 +36,8 @@ class GDO_Server(GDO):
 
     def __init__(self):
         super().__init__()
-        _channels = []
+        self._channels = []
+        self._has_loop = False
 
     @classmethod
     def get_by_connector(cls, name: str):
@@ -123,6 +128,21 @@ class GDO_Server(GDO):
             'chan_server': self.get_id(),
 
         })
+
+    ########
+    # Loop #
+    ########
+    async def loop(self):
+        conn = self.get_connector()
+        while Application.RUNNING:
+            Logger.debug(f"{self.get_name()} loop")
+            if not conn.is_connected():
+                if not conn.is_connecting():
+                    conn.connect()
+            await asyncio.sleep(0.5)
+
+
+
 
     ###########
     # Message #
