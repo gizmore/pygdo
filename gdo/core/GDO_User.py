@@ -198,5 +198,5 @@ class GDO_User(GDO):
     #############
     # Messaging #
     #############
-    def send(self, key: str, args: list = None):
-        self.get_server().send_to_user(self, key, args)
+    def send(self, key: str, args: list = None, reply_to: str=None):
+        self.get_server().send_to_user(self, key, args, reply_to)

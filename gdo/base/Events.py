@@ -79,3 +79,8 @@ class Events:
 
         for expired_timer in expired_timers:
             self._timers.remove(expired_timer)
+
+    #############
+    # Decorator #
+    #############
+

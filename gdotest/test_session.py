@@ -21,7 +21,7 @@ class SessionTestCase(unittest.TestCase):
     def test_cli_session(self):
         from gdo.core.GDO_Session import GDO_Session
         user = CLI.get_current_user()
-        result = cli_plug(user, "echo hi")
+        result = cli_plug(user, "$echo hi")
         self.assertIn('hi', result, 'echo does not work for session test.')
         session = GDO_Session.for_user(user).set('tea', 'hot')
         sat = 'hot'
@@ -29,7 +29,7 @@ class SessionTestCase(unittest.TestCase):
         session.save()
         self.assertEqual(sat, got, 'session does not work instantly')
         # a second process
-        result = cli_plug(user, "echo hi")
+        result = cli_plug(user, "$echo hi")
         self.assertIn('hi', result, 'echo does not work for session test2.')
         Application.fresh_page()
         session = GDO_Session.for_user(user)

@@ -40,7 +40,7 @@ def application(environ, start_response):
             Application.init_web(environ)
             loader = ModuleLoader.instance()
             loader.load_modules_db()
-            loader.init_modules()
+            loader.init_modules(True, True)
         else:
             Application.init_common()
             Application.init_web(environ)

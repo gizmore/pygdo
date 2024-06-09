@@ -1,3 +1,10 @@
+from typing import TYPE_CHECKING
+
+from gdo.base.Render import Mode
+
+if TYPE_CHECKING:
+    from gdo.core.GDO_Server import GDO_Server
+
 from gdo.base.Application import Application
 from gdo.base.Logger import Logger
 from gdo.base.Message import Message
@@ -7,7 +14,7 @@ class Connector:
     AVAILABLE = {}  # Static all
     TEXT_CONNECTORS = []  # Static without web
 
-    _server: object  # instance server
+    _server: 'GDO_Server'  # instance server
     _connected: bool
     _connecting: bool
     _connect_failures: int
@@ -39,6 +46,9 @@ class Connector:
         self._connecting = False
         self._connect_failures = 0
 
+    def get_render_mode(self) -> Mode:
+        return Mode.TXT
+
     def gdo_has_channels(self) -> bool:
         return False
 
@@ -56,6 +66,14 @@ class Connector:
         pass
 
     def gdo_disconnected(self):
+        pass
+
+    def gdo_send_to_channel(self, msg: Message):
+        Logger.debug(f"{self.get_name()} has stub send_to_channel()")
+        pass
+
+    def gdo_send_to_user(self, msg: Message):
+        Logger.debug(f"{self.get_name()} has stub send_to_user()")
         pass
 
     def get_name(self):
@@ -95,7 +113,6 @@ class Connector:
         self._connect_failures = 0
         self._next_connect_time = Application.TIME
 
-
     def connect_failed(self):
         self._connect_failures += 1
         self._next_connect_time = Application.TIME + (self._connect_failures * 10)
@@ -113,10 +130,9 @@ class Connector:
         return self
 
     def send_to_channel(self, msg: Message):
-        Logger.debug(f"{self.get_name()} has stub send_to_channel()")
-        pass
+        Application.EVENTS.publish('msg_sent', msg)
+        return self.gdo_send_to_channel(msg)
 
     def send_to_user(self, msg: Message):
-        Logger.debug(f"{self.get_name()} has stub send_to_user()")
-        pass
-
+        Application.EVENTS.publish('msg_sent', msg)
+        return self.gdo_send_to_user(msg)

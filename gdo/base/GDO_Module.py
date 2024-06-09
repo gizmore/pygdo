@@ -4,6 +4,8 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 
+from gdo.base.Logger import Logger
+
 if TYPE_CHECKING:
     from gdo.ui import GDT_Page
 
@@ -136,8 +138,11 @@ class GDO_Module(WithModuleConfig, GDO):
             for file_name in os.listdir(dirname):
                 full_path = os.path.join(dirname, file_name)
                 if not file_name.startswith('_'):
-                    method = self.instantiate_method(file_name[:-3])
-                    methods.append(method)
+                    try:
+                        method = self.instantiate_method(file_name[:-3])
+                        methods.append(method)
+                    except KeyError as ex:
+                        Logger.exception(ex)
         return methods
 
     def get_method(self, name: str) -> Method:

@@ -189,7 +189,7 @@ class GDO(WithBulk, GDT):
         where = []
         for k, v in vals.items():
             where.append(f'{k}={self.quote(v)}')
-        return self.select().where(' AND '.join(where)).first().exec().fetch_object()
+        return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
 
     def get_id(self) -> str:
         cols = self.get_pk_columns()

@@ -1,11 +1,9 @@
 import cProfile
 import io
-import json
 import time
 import unittest
 import urllib
 from http.cookies import SimpleCookie
-from pstats import Stats
 from urllib.parse import urlencode
 
 from gdo.base.Application import Application
@@ -33,6 +31,7 @@ class GDOTestCase(unittest.TestCase):
     #     p.sort_stats('cumtime')
     #     p.print_stats()
     #
+
 
 def reinstall_module(name):
     drop_module(name)
@@ -137,25 +136,31 @@ class WebPlug:
         return self
 
 
-
-
 def web_plug(url):
     return WebPlug(url)
 
 
-def cli_plug(user, command) -> str:
+def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     if user is None:
         user = cli_gizmore()
     server = user.get_server()
     channel = None
     session = GDO_Session.for_user(user)
-    Application.mode(Mode.CLI)
-    method = Parser(Mode.CLI, user, server, channel, session).parse(command)
+    Application.fresh_page()
+    Application.mode(mode)
+    method = Parser(mode, user, server, channel, session).parse(line[1:])
     result = method.execute()
-    out = GDT_Page.instance()._top_bar.render(Mode.CLI)
-    out += result.render(Mode.CLI)
-    return out
+    out = cli_top(mode)
+    out += "\n"
+    out += result.render(mode)
+    return out.strip()
 
+
+def cli_plug(user, command) -> str:
+    return text_plug(Mode.CLI, command, user)
+
+def cli_top(mode: Mode = Mode.TXT):
+    return GDT_Page.instance()._top_bar.render(mode)
 
 def cli_gizmore():
     return Bash.get_server().get_or_create_user('gizmore')

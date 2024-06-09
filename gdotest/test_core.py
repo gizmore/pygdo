@@ -50,7 +50,7 @@ class CoreTestCase(GDOTestCase):
         self.assertEqual(gdt.no_thousands().render_txt(), "31337.141569", "Float renders not nice Tryout #1")
 
     def test_05_clear_cache(self):
-        cli_plug(None, "cc")
+        cli_plug(None, "$cc")
 
     def test_06_permutations(self):
         values = [[1, 2], [3], [4, 5, 6]]

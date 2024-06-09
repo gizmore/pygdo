@@ -26,7 +26,7 @@ class Parser:
         self._session = session
         self._is_http = False
 
-    def parse(self, line: str):
+    def parse(self, line: str) -> Method:
         line = line.strip()
         lines = self.split_commands(line)
         methods = []

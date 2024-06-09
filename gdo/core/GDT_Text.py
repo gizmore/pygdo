@@ -8,6 +8,7 @@ class GDT_Text(GDT_String):
 
     def __init__(self, name):
         super().__init__(name)
+        self.maxlen(4096)
 
     def gdo_column_define(self) -> str:
         return (f"{self._name} TEXT({self._maxlen}) "

@@ -15,7 +15,7 @@ class Cronjob:
         Cronjob.FORCE = force
         loader = ModuleLoader.instance()
         modules = loader.load_modules_db()
-        loader.init_modules()
+        loader.init_modules(True, True)
         # GDO_Cronjob.cleanup()
         for name, module in loader._cache.items():
             for method in module.get_methods():

@@ -17,5 +17,5 @@ class MathTestCase(unittest.TestCase):
         loader.init_cli()
 
     def test_01_sum(self):
-        out = cli_plug(None, "sum 1 2 3 4 5")
+        out = cli_plug(None, "$sum 1 2 3 4 5")
         self.assertEqual(out, "15", "Math's Sum command does not work.")

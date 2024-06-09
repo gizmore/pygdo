@@ -30,8 +30,8 @@ class InstallCore:
             Application.SERVER = GDO_Server.blank({
                 'serv_name': 'Bash',
                 'serv_connector': 'Bash',
+                # 'serv_trigger': '.',
             }).insert()
-
 
     @classmethod
     def install_web(cls):

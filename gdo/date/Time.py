@@ -288,13 +288,13 @@ class Time:
         return cls.human_duration(Application.TIME - timestamp)
 
     @classmethod
-    def human_duration(cls, seconds: float, n_units: int = 2, with_millis: bool = True) -> str:
-        return cls.human_duration_iso(Application.LANG_ISO, seconds, n_units, with_millis)
+    def human_duration(cls, seconds: float, n_units: int = 2, with_millis: bool = True, remove_zero_units: bool = True) -> str:
+        return cls.human_duration_iso(Application.LANG_ISO, seconds, n_units, with_millis, remove_zero_units)
 
     @classmethod
-    def human_duration_iso(cls, iso: str, seconds: float, n_units: int = 2, with_millis: bool = True) -> str:
+    def human_duration_iso(cls, iso: str, seconds: float, n_units: int = 2, with_millis: bool = True, remove_zero_units: bool = True) -> str:
         factors = cls._human_duration_factors(iso)
-        return cls._human_duration_raw(seconds, n_units, factors, with_millis)
+        return cls._human_duration_raw(seconds, n_units, factors, with_millis, remove_zero_units)
 
     @classmethod
     def _human_duration_factors(cls, iso: str):
@@ -312,8 +312,7 @@ class Time:
         return back
 
     @classmethod
-    def _human_duration_raw(cls, seconds: float, n_units: int, units: dict, with_millis: bool = True) -> str:
-        neg = -1 if seconds < 0 else 1
+    def _human_duration_raw(cls, seconds: float, n_units: int, units: dict, with_millis: bool = True, remove_zero_units: bool = True) -> str:
         seconds = abs(seconds)
         calculated = {}
         ms = int(seconds * 1000) % 1000 if with_millis else 0
@@ -339,7 +338,8 @@ class Time:
                 del calculated[key]
         calculated = list(calculated.values())
         if len(calculated) < n_units and with_millis:
-            calculated.append(f"%3dms" % ms)
+            if ms > 0:
+                calculated.append(f"%3dms" % ms)
         return ' '.join(calculated)
 
     @classmethod

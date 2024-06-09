@@ -52,7 +52,7 @@ class launch(Method):
         sleep_ms = self.sleep_ms()
         try:
             while Application.RUNNING:
-                Logger.debug('In mainloop')
+                # Logger.debug('In mainloop')
                 self.mainloop_step_timers()
                 servers = GDO_Server.table().all()
                 for server in servers:

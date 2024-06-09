@@ -14,7 +14,7 @@ def run_tests():
 
     loader = ModuleLoader.instance()
     modules = list(loader.load_modules_fs().values())
-    loader.init_modules()
+    loader.init_modules(False)
     Installer.install_modules(modules)
     for module in modules:
         test_directory = module.file_path('test/')

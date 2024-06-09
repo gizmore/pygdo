@@ -29,7 +29,7 @@ class DogTestCase(unittest.TestCase):
 
     def test_02_connector_add(self):
         num_servers = GDO_Server.table().count_where()
-        out = cli_plug(None, f"add_server web_{num_servers + 1} web http://localhost")
+        out = cli_plug(None, f"$add_server web_{num_servers + 1} web http://localhost")
         self.assertIn("Web server has been added", out, "Cannot add second Web Connector Server")
 
     def test_03_get_all_servers(self):

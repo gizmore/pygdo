@@ -96,7 +96,7 @@ class GDO_Server(GDO):
     def get_user_by_name(self, username) -> GDO_User:
         return GDO_User.table().get_by_vals({
             'user_server': self.get_id(),
-            'user_displayname': username,
+            'user_name': username,
         })
 
     def get_user_by_login(self, login: str) -> GDO_User | None:
@@ -111,7 +111,7 @@ class GDO_Server(GDO):
     ###########
     # Channel #
     ###########
-    def get_or_create_channel(self, name: str, display_name: str):
+    def get_or_create_channel(self, name: str, display_name: str = None):
         from gdo.core.GDO_Channel import GDO_Channel
         channel = self.get_channel_by_name(name)
         if not channel:
@@ -135,22 +135,20 @@ class GDO_Server(GDO):
     async def loop(self):
         conn = self.get_connector()
         while Application.RUNNING:
-            Logger.debug(f"{self.get_name()} loop")
+            # Logger.debug(f"{self.get_name()} loop")
             if not conn.is_connected():
                 if not conn.is_connecting():
                     conn.connect()
             await asyncio.sleep(0.5)
 
-
-
-
     ###########
     # Message #
     ###########
-    def send_to_user(self, user: GDO_User, key: str, args: list = None):
-        message = Message(tusr(user, key, args), Application.get_mode())
-        message.env_user(user).env_server(self)
-        self.get_connector().send_to_user(message)
+    def send_to_user(self, user: GDO_User, key: str, args: list = None, reply_to: str = None):
+        text = tusr(user, key, args)
+        message = Message(text, Application.get_mode())
+        message.env_user(user).env_server(self).env_channel(None).env_reply_to(reply_to)
+        self.get_connector().send_to_user(message.result(text))
 
     ##########
     # Render #

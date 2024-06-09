@@ -36,6 +36,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         self._env_http = True
         self._env_channel = None
         self._env_server = None
+        self._env_reply_to = None
 
     def get_name(self):
         return self.__class__.__name__
@@ -382,7 +383,8 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         for gdt in self._config_server():
             if gdt.get_name() == key:
                 table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
-                entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_server.get_id(), None, None)
+                gdom = GDO_Method.for_method(self)
+                entry = table.get_by_id(gdom.get_id(), self._env_server.get_id(), key)
                 if entry:
                     gdt.initial(entry.get_val())
                 return gdt
@@ -462,3 +464,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     def render_html(self) -> str:
         return self.render_page().render(Mode.HTML)
+
+    def render_cli(self) -> str:
+        return ''
+
+    def render_txt(self) -> str:
+        return ''

@@ -35,7 +35,7 @@ class NetTestCase(unittest.TestCase):
         self.assertEqual(url['port'], 6697, "Cannot parse ircs url for IRC url.")
 
     def test_04_wget(self):
-        out = cli_plug(None, "wget https://www.wechall.net/")
+        out = cli_plug(None, "$wget https://www.wechall.net/")
         self.assertIn('Inferno', out, "WGET does not work")
 
 

@@ -42,7 +42,7 @@ class Render:
         Turn text green.
         """
         match mode:
-            case Mode.TXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN | Mode.TELEGRAM:
                 return s
             case Mode.CLI:
                 return cls._cli_color(s, '2')
@@ -59,7 +59,7 @@ class Render:
         Turn text red.
         """
         match mode:
-            case Mode.TXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN | Mode.TELEGRAM:
                 return s
             case Mode.CLI:
                 return cls._cli_color(s, '1')
@@ -79,17 +79,17 @@ class Render:
                 return cls._cli_mode('1', s)
             case Mode.IRC:
                 return f"\x02{s}\x02"
-            case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
+            case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST | Mode.TELEGRAM:
                 return f"<b>{s}</b>"
             case Mode.NIL | _:
-                return f'bold({mode.name})'
+                return f'bold({mode.name} {s})'
 
     @classmethod
     def dim(cls, s: str, mode: Mode) -> str | list:
         match mode:
             case Mode.TXT:
                 return s
-            case Mode.MARKDOWN:
+            case Mode.MARKDOWN | Mode.TELEGRAM:
                 return s
             case Mode.CLI:
                 return cls._cli_mode('2', s)
@@ -102,14 +102,14 @@ class Render:
     def italic(cls, s: str, mode: Mode) -> str | list:
         match mode:
             case Mode.TXT:
-                return "/{s}/"
+                return f"/{s}/"
             case Mode.MARKDOWN:
                 return f"**{s}**"
             case Mode.CLI:
                 return cls._cli_mode('3', s)
             case Mode.IRC:
                 return f"\x1D{s}\x1d"
-            case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
+            case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST | Mode.TELEGRAM:
                 return f"<i>{s}</i>"
             case Mode.NIL | _:
                 return f'italic({mode.name})'
@@ -123,7 +123,7 @@ class Render:
                 return cls._cli_mode('4', s)
             case Mode.IRC:
                 return f"\x1f{s}\x1f"
-            case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST:
+            case Mode.HTML | Mode.CELL | Mode.CARD | Mode.FORM | Mode.LIST | Mode.TELEGRAM:
                 return f"<u>{s}</u>"
             case Mode.NIL | _:
                 return f'underline({mode.name})'
@@ -131,7 +131,7 @@ class Render:
     @classmethod
     def strike(cls, s: str, mode: Mode) -> str | list:
         match mode:
-            case Mode.TXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN | Mode.TELEGRAM:
                 return f"~~{s}~~"
             case Mode.CLI:
                 return cls._cli_mode('9', s)
@@ -145,7 +145,7 @@ class Render:
     @classmethod
     def blink(cls, s: str, mode: Mode):
         match mode:
-            case Mode.TXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN | Mode.TELEGRAM:
                 return f"!{s}!"
             case Mode.CLI:
                 return cls._cli_mode('5', s)
@@ -157,7 +157,7 @@ class Render:
     @classmethod
     def invisible(cls, s: str, mode: Mode):
         match mode:
-            case Mode.TXT | Mode.MARKDOWN:
+            case Mode.TXT | Mode.MARKDOWN | Mode.TELEGRAM:
                 return '_' * len(s)
             case Mode.CLI:
                 return cls._cli_mode('6', s)

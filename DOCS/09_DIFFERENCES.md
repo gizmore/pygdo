@@ -38,3 +38,15 @@ This page describes differences from other frameworks you may be used to.
 - Ever wondered why composite primary keys are not supported but it would be such a blast?
   Well, in the GDO DBA, this is supported.
   But you cannot have a GDT_Object for a table with composite primary keys (yet).
+
+
+## JS and CSS assets Toolchain
+
+- There is an F5 toolchain which loads all JS and CSS from source,
+  which means you can debug and play with Code nicely.
+
+- No Typescript support
+
+- There are modules that turn the F5 into a caching of compressed and obfuscated asset files.
+  Still F5 toolchain, but **all** assets are compiled into a single JS/CSS file.
+  It is not possible to request any .js and .css file from the gdo folder then.

@@ -15,6 +15,7 @@ class WithEnv:
     _env_http: bool
     _env_mode: Mode
     _env_user: 'GDO_User'
+    _env_reply_to: str
     _env_server: 'GDO_Server'
     _env_channel: 'GDO_Channel'
     _env_session: 'GDO_Session'
@@ -35,12 +36,16 @@ class WithEnv:
         self._env_server = server
         return self
 
-    def env_channel(self, channel):
+    def env_channel(self, channel: 'GDO_Channel'):
         self._env_channel = channel
         return self
 
     def env_session(self, session):
         self._env_session = session
+        return self
+
+    def env_reply_to(self, reply_to: str):
+        self._env_reply_to = reply_to
         return self
 
     def env_copy(self, with_env):
@@ -50,4 +55,5 @@ class WithEnv:
         self._env_channel = with_env._env_channel
         self._env_user = with_env._env_user
         self._env_session = with_env._env_session
+        self._env_reply_to = with_env._env_reply_to
         return self

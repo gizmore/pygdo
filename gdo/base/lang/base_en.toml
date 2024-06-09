@@ -12,6 +12,11 @@ decimal_point = '.'
 thousands_sep = ','
 
 ##############
+# Decorators #
+##############
+err_rate_limit_exceeded = "You have exceeded the max of %s usages per %s. Please wait %s."
+err_decorate_only_instance_methods = "Can only decorate instance methods. At best gdo_execute()."
+##############
 # GDO_Module #
 ##############
 module_priority = "Priority"

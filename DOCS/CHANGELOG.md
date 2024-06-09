@@ -24,3 +24,4 @@ Listed are changes in the gdo behaviour compared to phpgdo7.
   [WithPermissionCheck](../gdo/base/WithPermissionCheck.py)
 - The hook system got changed. There are still GDO hooks for CRUD actions,
   but for events there is now a new [event system](../gdo/base/Events.py) from scratch.
+- There is now a decorator for [Rate Limiting](../gdo/base/WithRateLimit.py).

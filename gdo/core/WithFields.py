@@ -38,6 +38,12 @@ class WithFields:
     ##########
     # Render #
     ##########
+    def render_txt(self) -> str:
+        output = ""
+        if hasattr(self, '_fields'):
+            for gdt in self._fields:
+                output += gdt.render_txt()
+        return output
 
     def render_cli(self) -> str:
         output = ""

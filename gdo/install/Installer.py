@@ -57,7 +57,7 @@ class Installer:
             cls.install_gdo_fk(classname)
         cls.install_module_entry(module)
         ModuleLoader.instance().init_user_settings()
-        module.init()
+        # module.init()
         if module.get_name() != 'base' and install_settings:
             from gdo.core import module_core
             if verbose:

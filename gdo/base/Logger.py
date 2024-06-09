@@ -25,6 +25,10 @@ class Logger:
         cls.write('debug.log', content)
 
     @classmethod
+    def error(cls, content: str):
+        cls.write('error.log', content)
+
+    @classmethod
     def message(cls, content: str):
         cls.write('message.log', content)
 
@@ -39,3 +43,4 @@ class Logger:
     def write(cls, path: str, content: str):
         with open(f"{cls._base}{path}", 'a') as fo:
             fo.write(f'{content}\n')
+

@@ -105,6 +105,9 @@ class GDT:
     def value(self, value):
         return self
 
+    def initial(self, val: str | None):
+        return self
+
     def get_initial(self):
         return None
 
@@ -213,7 +216,8 @@ class GDT:
         return self.render_txt()
 
     def render_txt(self) -> str:
-        return str(self.get_val())
+        val = self.get_val()
+        return '' if val is None else val
 
     def render_irc(self) -> str:
         return self.render_txt()

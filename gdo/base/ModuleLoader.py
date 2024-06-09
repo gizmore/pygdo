@@ -141,15 +141,17 @@ class ModuleLoader:
             for gdt in module.gdo_user_settings():
                 GDT_UserSetting.register(gdt)
 
-    def init_modules(self, enabled: bool = True):
+    def init_modules(self, enabled: bool = True, load_vals: bool = False):
         self.init_user_settings()
+        if load_vals:
+            self.load_module_vars()
         for module in self._cache.values():
             if enabled and not module.is_enabled():
                 continue
             module.init()
 
     def reload_modules(self):
-        self.init_modules(True)
+        self.init_modules(True, True)
         for module in self._cache.values():
             if not module.is_enabled():
                 continue
@@ -157,7 +159,7 @@ class ModuleLoader:
             module.init()
 
     def load_module_vars(self):
-        result = GDO_ModuleVal.table().select('module_name, mv_key, mv_val').join_object('mv_module').all().exec().iter(ResultType.ROW)
+        result = GDO_ModuleVal.table().select('module_name, mv_key, mv_val').join_object('mv_module').all().exec(False).iter(ResultType.ROW)
         for config in result:
             module_name, key, val = config
             self.get_module(module_name).config_column(key).initial(val)

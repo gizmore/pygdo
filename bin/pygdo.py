@@ -1,3 +1,4 @@
+import asyncio
 import functools
 import os
 import readline
@@ -13,13 +14,18 @@ def pygdo():
     Application.init_cli()
     loader = ModuleLoader.instance()
     loader.load_modules_db()
-    loader.init_modules()
+    loader.init_modules(True, True)
     loader.init_cli()
     Files.create_dir(Application.file_path('cache/repl/'))
 
     if len(sys.argv) > 1:
-        sys.argv = [f'"{arg}"' for arg in sys.argv]
-        process_line(" ".join(sys.argv[1:]))
+        args = []
+        for arg in sys.argv[1:]:
+            if len(args):
+                args.append(f'"{arg}"')
+            else:
+                args.append(arg)
+        process_line(" ".join(args))
     else:
         repl()
 
@@ -41,19 +47,37 @@ def process_line(line: str) -> None:
     from gdo.base.Exceptions import GDOParamError
     from gdo.base.Application import Application
     from gdo.base.Render import Render, Mode
+    from gdo.core.connector.Bash import Bash
+    from gdo.core.GDO_Session import GDO_Session
+    from gdo.base.Message import Message
+    from gdo.base.Util import CLI
     try:
+        server = Bash.get_server()
+        user = CLI.get_current_user()
+        trigger = server.get_trigger()
         append_to_history(line)
         parser = get_parser()
-        method = parser.parse_line(line)
-        Application.fresh_page()
-        gdt = method.execute()
-        txt = gdt.render_cli()
-        txt = Application.get_page()._top_bar.render_cli() + txt
-        print(txt)
-        method._env_session.save()
+        message = Message(line, Mode.CLI)
+        session = GDO_Session.for_user(user)
+        message.env_server(server).env_user(user).env_session(session)
+        Application.EVENTS.publish('new_message', message)
+        if line.startswith(trigger):
+            method = parser.parse_line(line[1:])
+            Application.fresh_page()
+            gdt = method.execute()
+            txt1 = gdt.render_cli()
+            txt2 = Application.get_page()._top_bar.render_cli()
+            if txt2:
+                message._result += txt2
+            if txt1:
+                if txt2:
+                    message._result += "\n"
+                message._result += txt1
+            asyncio.run(message.deliver())
+            method._env_session.save()
+
     except GDOParamError as ex:
         print(Render.red(str(ex), Mode.CLI))
-
 
 
 def append_to_history(line: str):

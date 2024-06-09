@@ -53,7 +53,7 @@ class App:
         Files.create_dir(Application.file_path('protected/'))
         loader = ModuleLoader.instance()
         loader.load_modules_fs()
-        loader.init_modules(False)
+        loader.init_modules(False, True)
         parser = argparse.ArgumentParser(description='Configure modules. Example: ./gdo_adm.sh configure --interactive --unittests')
         parser.add_argument('--interactive', '-i', action='store_true')
         parser.add_argument('--unittests', '-u', action='store_true')
@@ -193,6 +193,9 @@ class App:
                 missing.append(name)
         if not missing:
             print(f"All wanted modules and their dependencies are on disk. You can ./gdo_adm.sh install {args.modules} now.")
+            choice = input('Shall i do this now? (y)').lower()
+            if choice == '' or choice == 'y':
+                pass
             exit(0)
         need = missing
         to_process = list(need)
@@ -368,7 +371,7 @@ class App:
         args = parser.parse_args(sys.argv[2:])
         loader = ModuleLoader.instance()
         loader.load_modules_db()
-        loader.init_modules()
+        loader.init_modules(True, True)
         self._run_yarn_script()
         clear_cache().gdo_execute()
         print("All done!")

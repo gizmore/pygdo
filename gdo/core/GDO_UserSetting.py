@@ -16,13 +16,13 @@ class GDO_UserSetting(GDO):
     """
 
     @classmethod
-    def setting_column(cls, key: str, user: GDO_User):
+    def setting_column(cls, key: str, user: GDO_User) -> GDT:
         gdt = GDT_UserSetting.KNOWN[key]
         gdo = cls.get_setting(user, key)
         if gdo:
-            gdt.initial(gdo.get_val())
+            return gdt.val(gdo.get_val())
         else:
-            gdt.initial(gdt.get_initial())
+            gdt.val(gdt.get_initial())
         return gdt
 
     @classmethod
