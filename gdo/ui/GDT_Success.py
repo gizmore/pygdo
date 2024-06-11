@@ -16,5 +16,8 @@ class GDT_Success(GDT_Panel):
     def render_telegram(self):
         return Render.green(self.render_text(Mode.TELEGRAM), Mode.TELEGRAM)
 
+    def render_irc(self):
+        return Render.green(self.render_text(Mode.IRC), Mode.IRC)
+
     # def render_html(self):
     #     return Render.green(f"{self.render_title(Mode.HTML)}: {self.render_text(Mode.HTML)}", Mode.HTML)

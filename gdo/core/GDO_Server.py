@@ -115,6 +115,7 @@ class GDO_Server(GDO):
         from gdo.core.GDO_Channel import GDO_Channel
         channel = self.get_channel_by_name(name)
         if not channel:
+            print(f"NO CHAN for {name}!")
             channel = GDO_Channel.blank({
                 'chan_name': name,
                 'chan_displayname': display_name or name,
@@ -124,9 +125,9 @@ class GDO_Server(GDO):
 
     def get_channel_by_name(self, name: str):
         from gdo.core.GDO_Channel import GDO_Channel
-        GDO_Channel.table().get_by_vals({
+        return GDO_Channel.table().get_by_vals({
             'chan_server': self.get_id(),
-
+            'chan_name': name,
         })
 
     ########

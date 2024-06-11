@@ -26,6 +26,10 @@ class Message(WithEnv, threading.Thread):
         self._env_session = None
         self._result = ''
 
+    def message_copy(self) -> 'Message':
+        copy = Message(self._message, self._env_mode).env_copy(self)
+        return copy
+
     def result(self, result: str):
         self._result = result
         return self

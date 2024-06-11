@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from gdo.base.Render import Mode
+from gdo.core.GDO_User import GDO_User
 
 if TYPE_CHECKING:
     from gdo.core.GDO_Server import GDO_Server
@@ -130,9 +131,11 @@ class Connector:
         return self
 
     def send_to_channel(self, msg: Message):
+        msg._sender = GDO_User.system() if not msg._sender else None
         Application.EVENTS.publish('msg_sent', msg)
         return self.gdo_send_to_channel(msg)
 
     def send_to_user(self, msg: Message):
+        msg._sender = GDO_User.system() if not msg._sender else None
         Application.EVENTS.publish('msg_sent', msg)
         return self.gdo_send_to_user(msg)

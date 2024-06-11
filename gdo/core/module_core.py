@@ -6,6 +6,8 @@ from gdo.core.GDO_Channel import GDO_Channel
 from gdo.core.GDO_Cronjob import GDO_Cronjob
 from gdo.core.GDO_File import GDO_File
 from gdo.core.GDO_Method import GDO_Method
+from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
+from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
 from gdo.core.GDO_MethodValServer import GDO_MethodValServer
 from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
 from gdo.core.GDO_Permission import GDO_Permission
@@ -95,6 +97,8 @@ class module_core(GDO_Module):
             GDO_Cronjob,
             GDO_File,
             GDO_Method,
+            GDO_MethodValChannel,
+            GDO_MethodValChannelBlob,
             GDO_MethodValServer,
             GDO_MethodValServerBlob,
         ]

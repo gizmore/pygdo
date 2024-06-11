@@ -23,7 +23,7 @@ class GDT_Url(GDT_String):
         'ircs': 6697,
     }
 
-    TLS_SCHEMES = ('tls', 'https', 'ircs')
+    TLS_SCHEMES = ('https', 'ircs', 'tcps', 'tls')
 
     URL_PATTERN = re.compile(
         r'(?P<scheme>\w+)://(?P<host>[\w.-]+)(?::(?P<port>\d+))?'
