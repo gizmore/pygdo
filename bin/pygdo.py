@@ -17,11 +17,10 @@ def pygdo():
     parser = argparse.ArgumentParser(description='Run a pygdo command or the pygdo repl interpreter.')
     parser.add_argument('--test', action='store_true')
     parser.add_argument('--config', nargs='?', default='protected/config.toml')
-    args,_ = parser.parse_known_args(sys.argv[1:])
+    args, rest = parser.parse_known_args(sys.argv[1:])
 
     if args.test:
         import unittest  # Required for unittest detection later
-        sys.argv.remove('--test')
 
     Application.init(__file__ + "/../../", args.config)
     Application.init_cli()
@@ -31,9 +30,9 @@ def pygdo():
     loader.init_cli()
     Files.create_dir(Application.file_path('cache/repl/'))
 
-    if len(sys.argv) > 1:
+    if len(rest):
         args = []
-        for arg in sys.argv[1:]:
+        for arg in rest:
             if len(args):
                 args.append(f'"{arg}"')
             else:
