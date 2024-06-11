@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import functools
 import os
@@ -6,15 +7,23 @@ import sys
 import traceback
 
 
+
+
 def pygdo():
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
     from gdo.base.Util import Files
-    if '--test' in sys.argv:
+
+    parser = argparse.ArgumentParser(description='Run a pygdo command or the pygdo repl interpreter.')
+    parser.add_argument('--test', action='store_true')
+    parser.add_argument('--config', nargs='?', default='protected/config.toml')
+    args,_ = parser.parse_known_args(sys.argv[1:])
+
+    if args.test:
         import unittest  # Required for unittest detection later
         sys.argv.remove('--test')
 
-    Application.init(__file__ + "/../../")
+    Application.init(__file__ + "/../../", args.config)
     Application.init_cli()
     loader = ModuleLoader.instance()
     loader.load_modules_db()

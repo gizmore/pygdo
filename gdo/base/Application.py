@@ -38,7 +38,7 @@ class Application:
         cls.EVENTS.update_timers(cls.TIME)
 
     @classmethod
-    def init(cls, path):
+    def init(cls, path, config_file: str = 'protected/config.toml'):
         from gdo.base.Cache import Cache
         from gdo.base.Database import Database
         from gdo.base.ModuleLoader import ModuleLoader
@@ -48,7 +48,7 @@ class Application:
         time.tzset()
         cls.LOADER = ModuleLoader()
         cls.EVENTS = Events()
-        config_path = 'protected/config_test.toml' if 'unittest' in sys.modules.keys() else 'protected/config.toml'
+        config_path = 'protected/config_test.toml' if 'unittest' in sys.modules.keys() else config_file
         config_path = os.path.join(cls.PATH, config_path)
         cls.get_page().init()
         if os.path.isfile(config_path):
