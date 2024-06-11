@@ -10,6 +10,10 @@ def pygdo():
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
     from gdo.base.Util import Files
+    if '--test' in sys.argv:
+        import unittest  # Required for unittest detection later
+        sys.argv.remove('--test')
+
     Application.init(__file__ + "/../../")
     Application.init_cli()
     loader = ModuleLoader.instance()
