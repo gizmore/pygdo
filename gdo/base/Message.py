@@ -28,6 +28,8 @@ class Message(WithEnv, threading.Thread):
 
     def message_copy(self) -> 'Message':
         copy = Message(self._message, self._env_mode).env_copy(self)
+        copy._sender = self._sender
+        copy._result = self._result
         return copy
 
     def result(self, result: str):

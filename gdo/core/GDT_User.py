@@ -42,7 +42,11 @@ class GDT_User(WithCompletion, GDT_Object):
     def query_gdos(self, val: str) -> list[GDO]:
         val_serv = Strings.regex_first(r'{(\d+)}$', val)
         val = Strings.substr_to(val, '{', val)
-        query = self._table.select().where(f"user_id={GDT.quote(val)} OR user_displayname LIKE '%{GDT.escape(val)}%'")
+        query = self._table.select()
+        if val.isnumeric():
+            query.where(f"user_id={GDT.quote(val)}")
+        else:
+            query.where(f"user_displayname LIKE '%{GDT.escape(val)}%'")
         if val_serv:
             query.where(f"user_server={val_serv}")
         if self._same_server:

@@ -16,7 +16,8 @@ class GDT_Select(GDT_ComboBox):
         #     self._choices = {}
         #     self._choices.update(self.gdo_choices())
         # return self._choices
-        return self.gdo_choices()
+        self._choices = self.gdo_choices()
+        return self._choices
 
     def validate(self, val: str | None, value: any) -> bool:
         if not super().validate(val, value):

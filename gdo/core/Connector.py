@@ -131,11 +131,11 @@ class Connector:
         return self
 
     def send_to_channel(self, msg: Message):
-        msg._sender = GDO_User.system() if not msg._sender else None
+        msg._sender = GDO_User.system() if not msg._sender else msg._sender
         Application.EVENTS.publish('msg_sent', msg)
         return self.gdo_send_to_channel(msg)
 
     def send_to_user(self, msg: Message):
-        msg._sender = GDO_User.system() if not msg._sender else None
+        msg._sender = GDO_User.system() if not msg._sender else msg._sender
         Application.EVENTS.publish('msg_sent', msg)
         return self.gdo_send_to_user(msg)

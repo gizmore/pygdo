@@ -6,6 +6,9 @@ class GDT_Enum(GDT_Select):
     def __init__(self, name):
         super().__init__(name)
 
+    def gdo_choices(self) -> dict:
+        return self._choices
+
     def gdo_column_define(self) -> str:
         values = "','".join(key for key in self.init_choices())  # thx spaceone
         # values = "','".join(map(lambda key: key, self.init_choices().keys()))
