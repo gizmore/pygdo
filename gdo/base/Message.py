@@ -12,6 +12,7 @@ class Message(WithEnv, threading.Thread):
     _method: Method
     _message: str
     _result: str
+    _result_raw: str
     _sender: GDO_User
 
     def __init__(self, message: str, mode: Mode):
@@ -25,11 +26,13 @@ class Message(WithEnv, threading.Thread):
         self._env_channel = None
         self._env_session = None
         self._result = ''
+        self._result_raw = ''
 
     def message_copy(self) -> 'Message':
         copy = Message(self._message, self._env_mode).env_copy(self)
         copy._sender = self._sender
         copy._result = self._result
+        copy._result_raw = self._result_raw
         return copy
 
     def result(self, result: str):
@@ -55,6 +58,7 @@ class Message(WithEnv, threading.Thread):
 
     async def deliver(self):
         text = self._result
+        self._result_raw = text
         if self._env_channel:
             reply_to = self._env_reply_to or self._env_user.render_name()
             text = f"{reply_to}: {text}"
