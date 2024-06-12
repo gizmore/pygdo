@@ -250,7 +250,12 @@ class App:
             clone_cmd = ["git", "clone", url, path]
             subprocess.run(clone_cmd, check=True)
         os.chdir(old_dir)
+        self.post_install()
         print("All done!")
+
+    def post_install(self):
+        print("Running post install scripts.")
+        subprocess.run("./gdo_post_install.sh", check=True)
 
     def install(self):
         loader = ModuleLoader.instance()
