@@ -23,7 +23,7 @@ class GDT_Validator(WithError, GDT):
         self._validator_func = validator
         return self
 
-    def validate(self, value) -> bool:
+    def validate(self, val: str | None, value: any) -> bool:
         form = self._validator_form
         gdt = form.get_field(self._validator_field)
         value = gdt.get_value()

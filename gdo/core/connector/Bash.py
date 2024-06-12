@@ -1,3 +1,4 @@
+from gdo.base.Logger import Logger
 from gdo.base.Message import Message
 from gdo.base.Render import Mode
 from gdo.core.Connector import Connector
@@ -18,3 +19,8 @@ class Bash(Connector):
 
     async def gdo_send_to_user(self, msg: Message):
         print(msg._result)
+
+    async def gdo_connect(self):
+        Logger.debug("Bash connect...")
+        return True
+

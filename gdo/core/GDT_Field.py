@@ -149,15 +149,19 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
     # Validate #
     ############
 
-    def validate(self, value: any) -> bool:
-        if value is None:
+    def validate(self, val: str | None, value: any) -> bool:
+        if val is None:
             if self._not_null:
-                return self.error('err_not_null')
+                return self.error_not_null()
 
         if self._unique and not self.validate_unique(value):
             return False
 
         return True
+
+    def error_not_null(self):
+        return self.error('err_not_null', [self.render_suggestion()])
+
 
     def validate_unique(self, value):
         self._gdo.table().select()

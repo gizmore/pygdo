@@ -26,7 +26,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def actions(self):
         return self._actions
 
-    def validate(self, value) -> bool:
+    def validate(self, val: str | None, value: any) -> bool:
         for gdt in self.fields():
             self.validate_gdt(gdt)
         return not self.has_error()

@@ -13,9 +13,6 @@ class WithInput:
                     # self.input(key, v)
             else:
                 self.input(key, val)
-            # if isinstance(val, list) and len(val) == 1:  # WSGI unwrap single object
-            #     val = val[0]
-            # self.input(key, val)
         return self
 
     def input(self, key: str, val: str):
@@ -30,5 +27,4 @@ class WithInput:
     def args_copy(self, method):
         for arg in method._args:
             self.arg(arg)
-        # self._args = method._args
         return self

@@ -165,8 +165,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def param_val(self, key: str, throw: bool = True):
         for name, gdt in self.parameters().items():
             if key == name:
-                value = gdt.to_value(gdt.get_val())
-                if gdt.validate(value):
+                val = gdt.get_val()
+                value = gdt.to_value(val)
+                if gdt.validate(val, value):
                     return gdt.get_val()
                 elif throw:
                     raise GDOParamError('err_param', [name, gdt.render_error()])
@@ -175,8 +176,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def param_value(self, key: str, throw: bool = True) -> any:
         for name, gdt in self.parameters().items():
             if key == name:
-                value = gdt.to_value(gdt.get_val())
-                if gdt.validate(value):
+                val = gdt.get_val()
+                value = gdt.to_value(val)
+                if gdt.validate(val, value):
                     return value
                 elif throw:
                     raise GDOParamError('err_param', [name, gdt.render_error()])

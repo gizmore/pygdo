@@ -109,8 +109,8 @@ class GDT_String(WithLabel, GDT_Field):
     # Validate #
     ############
 
-    def validate(self, value):
-        if not super().validate(value):
+    def validate(self, val: str | None, value: any) -> bool:
+        if not super().validate(val, value):
             return False
         if not self.validate_pattern(value):
             return False

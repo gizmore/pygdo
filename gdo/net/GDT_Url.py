@@ -111,8 +111,8 @@ class GDT_Url(GDT_String):
     # Validate #
     ############
 
-    def validate(self, value):
-        if not super().validate(value):
+    def validate(self, val: str | None, value: any) -> bool:
+        if not super().validate(val, value):
             return False
         elif value is None:
             return True

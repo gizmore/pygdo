@@ -111,7 +111,7 @@ class GDT:
     def get_initial(self):
         return None
 
-    def get_val(self):
+    def get_val(self) -> str | None:
         return None
 
     def is_not_null(self) -> bool:
@@ -128,12 +128,12 @@ class GDT:
     def to_value(self, val: str):
         return val
 
-    def validate(self, value) -> bool:
+    def validate(self, val: str | None, value: any) -> bool:
         return True
 
     def validated(self):
         self.reset_error()
-        if self.validate(self.get_value()):
+        if self.validate(self.get_val(), self.get_value()):
             return self
         return None
 

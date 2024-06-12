@@ -6,3 +6,4 @@ packaging
 psutil
 pytz
 tomlkit
+typing_extensions

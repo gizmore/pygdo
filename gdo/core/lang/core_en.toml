@@ -8,10 +8,11 @@ error = 'Error'
 err_module = "Unknown Module: %s."
 err_permission = "You do not have the required permissions to execute that method"
 err_not_found = "File not found: %s"
-err_not_null = "This field may not be left empty."
+err_not_null = "This field may not be left empty. Suggestions: %s."
 err_int_min = "may not be smaller than %s."
 err_int_max = "may not be larger than %s."
 err_select_candidates = "Too many results: %s."
+err_invalid_choice = "Invalid choice. Suggestions: %s."
 
 ################
 ### Messages ###

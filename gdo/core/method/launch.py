@@ -37,6 +37,9 @@ class launch(Method):
             return self.err('err_dog_already_running')
         Files.touch(self.lock_path(), True)
         try:
+            from gdo.net.method.wget import wget
+            wget().env_copy(self).input('url', 'https://pygdo.gizmore.org/core.usage.json').execute()
+            self.phone_home()
             asyncio.run(self.mainloop())
         except KeyboardInterrupt as ex:
             self.send_quit_message('CTRL-C got pressed')

@@ -53,7 +53,7 @@ class App:
         Files.create_dir(Application.file_path('protected/'))
         loader = ModuleLoader.instance()
         loader.load_modules_fs()
-        loader.init_modules(False, True)
+        loader.init_modules(False, False)
         parser = argparse.ArgumentParser(description='Configure modules. Example: ./gdo_adm.sh configure --interactive --unittests')
         parser.add_argument('--interactive', '-i', action='store_true')
         parser.add_argument('--unittests', '-u', action='store_true')

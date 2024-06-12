@@ -25,7 +25,7 @@ class GDT_CSRF(GDT_Hidden):
         sess.set('csrf', tokens[-10:])
         return token
 
-    def validate(self, value: any) -> bool:
+    def validate(self, val: str | None, value: any) -> bool:
         if Application.is_unit_test():
             return True
         sess = Application.get_session()

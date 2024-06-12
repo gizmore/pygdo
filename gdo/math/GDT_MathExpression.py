@@ -39,8 +39,8 @@ class GDT_MathExpression(GDT_RestOfText):
             'log': math.log,
         }
 
-    def validate(self, value):
-        if not super().validate(value):
+    def validate(self, val: str | None, value: any) -> bool:
+        if not super().validate(val, value):
             return False
         if value is None:
             return True

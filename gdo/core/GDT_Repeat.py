@@ -34,12 +34,12 @@ class GDT_Repeat(WithProxy, GDT_Field):
             values.append(self._proxy.to_value(val))
         return values
 
-    def validate(self, values):
+    def validate(self, val: str | None, values: any) -> bool:
         if values is None:
-            if not self._proxy.validate(values):
+            if not self._proxy.validate(val, values):
                 return self.error(self._proxy._errkey, self._proxy._errargs)
         for value in values:
-            if not self._proxy.validate(value):
+            if not self._proxy.validate(val, value):
                 return self.error(self._proxy._errkey, self._proxy._errargs)
         return True
 
