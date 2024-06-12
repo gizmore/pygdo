@@ -38,11 +38,11 @@ class launch(Method):
         Files.touch(self.lock_path(), True)
         try:
             from gdo.net.method.wget import wget
-            wget().env_copy(self).input('url', 'https://pygdo.gizmore.org/core.usage.json').execute()
-            self.phone_home()
+            # wget().env_copy(self).input('url', 'https://pygdo.gizmore.org/core.usage.json').input('insecure', '1').execute()
             asyncio.run(self.mainloop())
         except KeyboardInterrupt as ex:
             self.send_quit_message('CTRL-C got pressed')
+            raise ex
         return self.reply('msg_all_done')
 
     def send_quit_message(self, quit_message: str):
@@ -69,6 +69,8 @@ class launch(Method):
                 for server in servers:
                     self.mainloop_step_server(server)
                 await asyncio.sleep(1.0)
+        except Exception as ex:
+            raise ex
         finally:
             Files.remove(self.lock_path())
 

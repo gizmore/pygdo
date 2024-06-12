@@ -99,11 +99,11 @@ class WithObject:
         # Validate #
         ############
 
-    def validate(self, value):
+    def validate(self, val: str | None, value: any):
         if self.has_error():
             return False
         if value:
             return True
-        if not super().validate(value):
+        if not super().validate(val, value):
             return False
         return True

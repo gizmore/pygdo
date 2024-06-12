@@ -1,4 +1,3 @@
-from gdo.avatar.GDT_Avatar import GDT_Avatar
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.core.GDO_User import GDO_User
@@ -18,5 +17,10 @@ class profile(Method):
 
     def gdo_execute(self):
         user = self.get_user()
-        card = GDT_Card().image(GDT_Avatar().for_user(user))
+        card = GDT_Card()
+        try:
+            from gdo.avatar.GDT_Avatar import GDT_Avatar
+            card.image(GDT_Avatar().for_user(user))
+        except:
+            pass
         return self

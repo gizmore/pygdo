@@ -45,7 +45,7 @@ class Message(WithEnv, threading.Thread):
         txt2 = self._method.execute().render(self._env_mode)
         txt1 = GDT_Page.instance()._top_bar.render(self._env_mode)
         if txt1:
-            txt += txt1 + "\n"
+            txt += txt1 + " "
         if txt2:
             txt += txt2
         self._result = txt.strip()

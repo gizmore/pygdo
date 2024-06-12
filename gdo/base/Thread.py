@@ -17,5 +17,6 @@ class Thread(threading.Thread):
 
     @classmethod
     def join_all(cls):
-        for t in cls.ALL:
-            t.join()
+        pass
+        # for t in cls.ALL:
+        #     t.join()
