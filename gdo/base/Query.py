@@ -85,16 +85,16 @@ class Query:
         return self
 
     def table(self, table: str):
-        if hasattr(self, '_table'):
-            self._table += ','
-            self._table += table
-        else:
-            self._table = table
+        # if hasattr(self, '_table'):
+        #     self._table += ','
+        #     self._table += table
+        # else:
+        self._table = table
         return self
 
     def gdo(self, gdo):
         self._gdo = gdo
-        return self.table(gdo.gdo_table_name())
+        return self  # .table(gdo.gdo_table_name())
 
     def select(self, columns='*'):
         self._type = Type.SELECT
@@ -221,28 +221,27 @@ class Query:
             return f' LIMIT {self._limit}'
         return f' LIMIT {self._offset}, {self._limit}'
 
-    def exec(self, use_dict: bool = True):
+    def exec(self, use_dict: bool = True) -> Result:
         Application.db().get_link()
         if Application.config('db.debug') != '0':
             self.debug()
         query = self.build_query()
         try:
-            #self.MUTEX.acquire()
             if self._debug:
                 Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES + 1) + ": " + query)
                 if Application.config('db.debug') == '2':
                     Logger.debug("".join(traceback.format_stack()))
                 msg('%s', [query])
-            if self.is_insert():
-                cursor = Application.db().cursor()
-                Application.DB_WRITES += 1
-                cursor.execute(query)
-                return cursor.lastrowid
             if self.is_select():
                 cursor = Application.db().cursor(use_dict)
                 Application.DB_READS += 1
                 cursor.execute(query)
                 return Result(cursor, self._gdo)
+            if self.is_insert():
+                cursor = Application.db().cursor()
+                Application.DB_WRITES += 1
+                cursor.execute(query)
+                return cursor.lastrowid
             if self.is_update():
                 return Application.db().query(query)
             if self.is_delete():
@@ -252,6 +251,6 @@ class Query:
         except AttributeError as ex:
             raise GDODBException(str(ex), query)
         except (InterfaceError, ProgrammingError, DataError, DatabaseError) as ex:
-            raise GDODBException(ex.msg, query)
+            raise GDODBException(str(ex), query)
         # finally:
         #     self.MUTEX.release()

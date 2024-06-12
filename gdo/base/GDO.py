@@ -83,6 +83,10 @@ class GDO(WithBulk, GDT):
         return []
 
     def column(self, key: str) -> GDT:
+        """
+
+        :rtype: object
+        """
         return Cache.column_for(self.__class__, key).gdo(self)
 
     def columns(self) -> list[GDT]:
@@ -152,7 +156,7 @@ class GDO(WithBulk, GDT):
 
     def query(self):
         from gdo.base.Query import Query
-        return Query().gdo(self)
+        return Query().table(self.gdo_table_name()).gdo(self)
 
     def select(self, columns='*'):
         return self.query().select(columns)

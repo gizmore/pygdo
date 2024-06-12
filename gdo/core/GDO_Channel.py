@@ -34,3 +34,13 @@ class GDO_Channel(GDO):
 
     def render_name(self):
         return self.gdo_val('chan_displayname')
+
+    @classmethod
+    def with_setting(cls, server: GDO_Server, key: str, val: str, default: str = '') -> list['GDO_Channel']:
+        from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
+        null = ' OR mv_val IS NULL' if default == val else ''
+        query = (GDO_MethodValChannel.table().select('mv_channel_t.*').join_object('mv_channel')
+                 .where(f"mv_key={cls.quote(key)}")
+                 .where(f"mv_val={cls.quote(val)}{null}")
+                 .where(f'chan_server={server.get_id()}'))
+        return query.gdo(GDO_Channel.table()).exec().fetch_all()

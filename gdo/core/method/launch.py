@@ -36,10 +36,18 @@ class launch(Method):
         if self.is_running():
             return self.err('err_dog_already_running')
         Files.touch(self.lock_path(), True)
-        asyncio.run(self.mainloop())
-        # self.mainloop()
-        # asyncio.run(self.mainloop())
+        try:
+            asyncio.run(self.mainloop())
+        except KeyboardInterrupt as ex:
+            self.send_quit_message('CTRL-C got pressed')
         return self.reply('msg_all_done')
+
+    def send_quit_message(self, quit_message: str):
+        Application.RUNNING = False
+        servers = GDO_Server.table().all()
+        for server in servers:
+            server.get_connector().gdo_disconnect(quit_message)
+        Thread.join_all()
 
     def lock_path(self) -> str:
         return Application.file_path('bin/dog.lock')
@@ -58,11 +66,6 @@ class launch(Method):
                 for server in servers:
                     self.mainloop_step_server(server)
                 await asyncio.sleep(1.0)
-                # time.sleep(sleep_ms)
-        except KeyboardInterrupt:
-            Logger.debug("Exiting after Ctrl+c")
-            Application.RUNNING = False
-            Thread.join_all()
         finally:
             Files.remove(self.lock_path())
 

@@ -435,9 +435,10 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         for gdt in self._config_channel():
             if gdt.get_name() == key:
                 table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
-                entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_channel.get_id(), None, None)
-                if entry:
-                    gdt.initial(entry.get_val())
+                if self._env_channel:
+                    entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_channel.get_id(), None, None)
+                    if entry:
+                        gdt.initial(entry.get_val())
                 return gdt
 
     def get_config_channel_val(self, key: str) -> str:
@@ -445,6 +446,10 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     def get_config_channel_value(self, key: str):
         return self.get_config_channel(key).get_value()
+
+    def channels_with_setting(self, key: str, val: str):
+        from gdo.core.GDO_Channel import GDO_Channel
+        return GDO_Channel.with_setting(self._env_server, key, val, self.get_config_channel(key).get_initial())
 
     ##########
     # Render #
