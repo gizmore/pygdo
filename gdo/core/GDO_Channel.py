@@ -15,7 +15,7 @@ class GDO_Channel(GDO):
     def gdo_columns(self) -> list[GDT]:
         return [
             GDT_AutoInc('chan_id'),
-            GDT_Object('chan_server').table(GDO_Server.table()).not_null(),
+            GDT_Object('chan_server').table(GDO_Server.table()).not_null().cascade_delete(),
             GDT_Name('chan_name').not_null(),
             GDT_String('chan_displayname').not_null(),
             GDT_Char('chan_trigger').maxlen(1).not_null().initial('$'),

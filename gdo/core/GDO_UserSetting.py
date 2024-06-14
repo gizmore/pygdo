@@ -40,7 +40,7 @@ class GDO_UserSetting(GDO):
 
     def gdo_columns(self) -> list[GDT]:
         return [
-            GDT_User('uset_user').primary(),
+            GDT_User('uset_user').primary().cascade_delete(),
             GDT_UserSetting('uset_key').primary(),
             GDT_String('uset_val'),
         ]

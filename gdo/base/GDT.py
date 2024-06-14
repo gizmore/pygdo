@@ -219,6 +219,9 @@ class GDT:
         val = self.get_val()
         return '' if val is None else val
 
+    def render_markdown(self):
+        return self.render_txt()
+
     def render_irc(self) -> str:
         return self.render_txt()
 

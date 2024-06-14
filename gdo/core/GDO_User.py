@@ -2,6 +2,8 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 
+from gdo.core.GDT_UserName import GDT_UserName
+
 if TYPE_CHECKING:
     from gdo.core.GDO_Server import GDO_Server
 
@@ -62,8 +64,8 @@ class GDO_User(GDO):
             GDT_AutoInc('user_id'),
             GDT_UserType('user_type').not_null().initial(GDT_UserType.MEMBER),
             GDT_Name('user_name').not_null(),
-            GDT_String('user_displayname').not_null(),
-            GDT_Server('user_server').not_null(),
+            GDT_UserName('user_displayname').not_null(),
+            GDT_Server('user_server').not_null().cascade_delete(),
             GDT_Object('user_link').table(GDO_User.table()),
         ]
 

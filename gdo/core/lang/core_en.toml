@@ -134,3 +134,11 @@ md_core_link = "Link accounts to your main account."
 ###########
 mt_core_profile = "%s's Profile"
 md_core_profile = "%s's Profile."
+
+############
+# Set Name #
+############
+mt_core_set_name = "Set Displayname"
+md_core_set_name = "Set your displayed username."
+err_username_taken = "This username is already taken."
+msg_username_set = "Your displayname has been set to %s."

@@ -13,8 +13,8 @@ class GDO_MethodValChannel(GDO):
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_Channel import GDO_Channel
         return [
-            GDT_Object('mv_method').table(GDO_Method.table()).primary(),
-            GDT_Object('mv_channel').table(GDO_Channel.table()).primary(),
+            GDT_Object('mv_method').table(GDO_Method.table()).primary().cascade_delete(),
+            GDT_Object('mv_channel').table(GDO_Channel.table()).primary().cascade_delete(),
             GDT_Name('mv_key').primary(),
             GDT_String('mv_val'),
         ]

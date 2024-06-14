@@ -11,8 +11,8 @@ class GDO_MethodValServer(GDO):
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_Server import GDO_Server
         return [
-            GDT_Object('mv_method').table(GDO_Method.table()).primary(),
-            GDT_Object('mv_server').table(GDO_Server.table()).primary(),
+            GDT_Object('mv_method').table(GDO_Method.table()).primary().cascade_delete(),
+            GDT_Object('mv_server').table(GDO_Server.table()).primary().cascade_delete(),
             GDT_Name('mv_key').primary(),
             GDT_String('mv_val'),
         ]

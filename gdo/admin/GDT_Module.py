@@ -14,12 +14,13 @@ class GDT_Module(GDT_Select):
     def gdo_choices(self):
         choices = {}
         for module in ModuleLoader.instance()._cache.values():
+            name = module.get_name().lower()
             if self._enabled is True and module.is_enabled():
-                choices[module.get_name()] = module
+                choices[name] = module
             elif self._enabled is False and not module.is_enabled():
-                choices[module.get_name()] = module
+                choices[name] = module
             else:
-                choices[module.get_name()] = module
+                choices[name] = module
         return choices
 
     def enabled(self, enabled: bool = True):
