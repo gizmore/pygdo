@@ -8,6 +8,7 @@ class GDT_UserType(GDT_Enum):
     MEMBER = 'member'
     BOT = 'bot'
     LINK = 'link'
+    DEVICE = 'device'
 
     def __init__(self, name):
         super().__init__(name)
@@ -15,7 +16,10 @@ class GDT_UserType(GDT_Enum):
     def gdo_choices(self) -> dict:
         return {
             'system': 'System',
+            'ghost': 'Ghost',
             'guest': 'Guest',
             'member': 'Member',
             'bot': 'Bot',
+            'link': 'Link',
+            'device': 'Device',
         }
