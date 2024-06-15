@@ -414,6 +414,20 @@ class Random:
             max = sys.float_info.max
         return random.uniform(min, max)
 
+    @classmethod
+    def dict_key(cls, dic: dict):
+        """
+        Return a random dictionary key
+        """
+        keys = list(dic.keys())
+        return cls.list_item(keys)
+
+    @classmethod
+    def list_item(cls, lst: list):
+        if lst:
+            index = cls.mrand(0, len(lst) - 1)
+            return lst[index]
+
 
 class Permutations:
     def __init__(self, values):
