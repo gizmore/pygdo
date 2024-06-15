@@ -48,7 +48,7 @@ class GDO(WithBulk, GDT):
         GDO.GDO_ALIVE -= 1
 
     @classmethod
-    def table(cls) -> Self:
+    def table(cls) -> 'GDO':
         return Cache.table_for(cls)
 
     @classmethod

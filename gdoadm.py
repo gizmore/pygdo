@@ -27,16 +27,16 @@ class App:
         parser = argparse.ArgumentParser(
             description='PyGdo admin utility.',
             usage='''gdo_adm.sh <command> [<args>]
-        The Commands are:
+            The Commands are:
             configure   Re-/Create the protected/config.toml. Use -i for interactive prompts.
             database    Show Database setup help how to create a database and user.
             setenv      Append pygdo/bin/ to your PATH env variables. Use -x to really do it. This is optional.
             webconfig   Show apache or nginx config.
             provide     Download modules and dependencies
             install     Install modules.
+            migrate     Auto-Migrate the database for modules.
             admin       Create a user that is admin
             wipe        Remove modules from the database.
-            migrate     Auto-Migrate the database for modules.
             update      Triggers after update hooks.
             skel        Create a module skeleton inside an existing module folder.
         ''')
@@ -57,9 +57,9 @@ class App:
         parser = argparse.ArgumentParser(description='Configure modules. Example: ./gdo_adm.sh configure --interactive --unittests')
         parser.add_argument('--interactive', '-i', action='store_true')
         parser.add_argument('--unittests', '-u', action='store_true')
-        parser.add_argument('--path', default='protected/config.toml')
+        # parser.add_argument('--path', default='protected/config.toml')
         args = parser.parse_args(sys.argv[2:])
-        path = args.path
+        path = Application.CONFIG_PATH
         data = Config.data(Application.CONFIG)
         if args.unittests:
             import unittest
@@ -115,7 +115,6 @@ class App:
             print("Now execute\n\nsource ~/.bashrc\n")
 
     def webconfig(self):
-
         parser = argparse.ArgumentParser(description='Print webserver config. Example: ./gdo_adm.sh webconfig --apache')
         parser.add_argument('--apache', '-a', action='store_true')
         parser.add_argument('--nginx', '-n', action='store_true')
@@ -262,14 +261,9 @@ class App:
         parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all or ./gdo_adm.sh install Core|Dog*')
         parser.add_argument('--reinstall', action='store_true')
         parser.add_argument('-a', '--all', action='store_true')
-        parser.add_argument('--unittests', '-u', action='store_true')
         parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
         reinstall = args.reinstall
-
-        if args.unittests:
-            import unittest  # Required for unittest detection later
-            Application.init(os.path.dirname(__file__))
 
         if args.all:
             modules = list(loader.load_modules_fs('*', reinstall).values())
@@ -293,14 +287,10 @@ class App:
         parser = argparse.ArgumentParser(description='Create / assign an admin user for a connector (web by default).'
                                                      'Example: ./gdo_adm.sh admin gizmore 11111111 gizmore@gizmore.org')
         parser.add_argument('--connector', default='web')
-        parser.add_argument('--unittests', '-u', action='store_true')
         parser.add_argument('username')
         parser.add_argument('password')
         parser.add_argument('email', nargs='?')
         args = parser.parse_args(sys.argv[2:])
-        if args.unittests:
-            import unittest  # Required for unittest detection later
-            Application.init(os.path.dirname(__file__))
 
         loader = ModuleLoader.instance()
         loader.load_modules_db()
@@ -322,13 +312,8 @@ class App:
     def wipe(self):
         parser = argparse.ArgumentParser(description='Remove modules. Example: ./gdo_adm.sh wipe --all OR ./gdo_adm.sh wipe ma*,irc ')
         parser.add_argument('--all', '-a', action='store_true')
-        parser.add_argument('--unittests', '-u', action='store_true')
         parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
-
-        if args.unittests:
-            import unittest  # Required when init shall detect unit tests
-            Application.init(os.path.dirname(__file__))
 
         if args.all:
             Application.db().query(f"DROP DATABASE IF EXISTS {Application.db().db_name}")
@@ -352,13 +337,8 @@ class App:
         parser = argparse.ArgumentParser(
             description='Migrate the database for a single module or all of them.')
         parser.add_argument('--all', '-a', action='store_true')
-        parser.add_argument('--unittests', '-u', action='store_true')
         parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
-
-        if args.unittests:
-            import unittest  # Required for init with unit tests
-            Application.init(os.path.dirname(__file__))
 
         if args.all:
             modules = ModuleLoader.instance().load_modules_fs('*', True)
@@ -419,11 +399,21 @@ class App:
 def run_pygdo_admin():
     try:
         path = os.path.dirname(__file__) + "/"
-        Application.init(path)
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--config', '-c', nargs='?', default='protected/config.toml')
+        parser.add_argument('--unittests', '-u', action='store_true')
+        args, rest = parser.parse_known_args()
+        sys.argv = sys.argv[0:1]
+        sys.argv.extend(rest)
+        config_file = args.config
+        if args.unittests:
+            import unittest  # Required for unittest detection later
+            config_file = 'protected/config_test.toml'
+        Application.init(path, config_file)
         try:
             Application.init_cli()
-        except:
-            pass
+        except Exception as ex:
+            Logger.exception(ex)
         App().argparser()
     except Exception as ex:
         Logger.exception(ex)

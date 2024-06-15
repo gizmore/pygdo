@@ -5,6 +5,10 @@ from gdo.form.GDT_Form import GDT_Form
 
 
 class GDT_Validator(WithError, GDT):
+    """
+    Custom validator.
+    Usage: GDT_Validator().validate(form, field_name, func)
+    """
     _validator_form: GDT_Form
     _validator_field: str
     _validator_func: callable
@@ -24,11 +28,9 @@ class GDT_Validator(WithError, GDT):
         return self
 
     def validate(self, val: str | None, value: any) -> bool:
+        if value is None:
+            return True
         form = self._validator_form
         gdt = form.get_field(self._validator_field)
         value = gdt.get_value()
-        if value is None:
-            return True
-        return self._validator_func(self._validator_form, gdt, value)
-
-
+        return self._validator_func(form, gdt, value)

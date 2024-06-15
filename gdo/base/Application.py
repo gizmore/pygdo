@@ -28,7 +28,8 @@ class Application:
     DB_WRITES: int = 0
 
     # DB: object
-    PATH: str
+    PATH: str = ''
+    CONFIG_PATH: str = ''
     CONFIG: dict[str, str] = {}
 
     @classmethod
@@ -50,6 +51,7 @@ class Application:
         cls.EVENTS = Events()
         config_path = 'protected/config_test.toml' if 'unittest' in sys.modules.keys() else config_file
         config_path = os.path.join(cls.PATH, config_path)
+        cls.CONFIG_PATH = config_path
         cls.get_page().init()
         if os.path.isfile(config_path):
             with open(config_path, 'r') as f:

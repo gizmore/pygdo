@@ -8,6 +8,7 @@ from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Object import GDT_Object
 from gdo.core.GDT_String import GDT_String
 from gdo.date.GDT_Created import GDT_Created
+from gdo.language.GDT_Language import GDT_Language
 
 
 class GDO_Channel(GDO):
@@ -18,6 +19,7 @@ class GDO_Channel(GDO):
             GDT_Object('chan_server').table(GDO_Server.table()).not_null().cascade_delete(),
             GDT_Name('chan_name').not_null(),
             GDT_String('chan_displayname').not_null(),
+            GDT_Language('chan_language').not_null().initial('en'),
             GDT_Char('chan_trigger').maxlen(1).not_null().initial('$'),
             GDT_Created('chan_created'),
             GDT_Creator('chan_creator'),

@@ -4,7 +4,7 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import t
-from gdo.base.Util import Strings, Arrays, href
+from gdo.base.Util import Strings, Arrays, href, Random
 
 
 class UtilityTestCase(unittest.TestCase):
@@ -68,6 +68,16 @@ class UtilityTestCase(unittest.TestCase):
         result = href('core', 'profile', '&for=gizmore{2}')
         self.assertEqual('/core.profile;for.gizmore{2}.html?_lang=en', result, 'href() does not work as expected.')
 
+    def test_with_random_seed(self):
+        with Random(42):
+            a1 = Random.mrand(1, 100)
+            b1 = Random.mrand(1, 100)
+        self.assertGreater(a1, 0, 'Random.mrand() not working.')
+        with Random(42):
+            a2 = Random.mrand(1, 100)
+            b2 = Random.mrand(1, 100)
+        self.assertEqual(a1, a2, 'Random.mrand not working a1!=a2.')
+        self.assertEqual(b1, b2, 'Random.mrand not working b1!=b2.')
 
 
 if __name__ == '__main__':

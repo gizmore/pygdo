@@ -9,6 +9,7 @@ class GDT_Language(GDT_Select):
         self._supported = False
 
     def supported(self, supported: bool = True):
+        self._supported = supported
         return self
 
     def gdo_choices(self):

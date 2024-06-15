@@ -87,8 +87,11 @@ class GDO_User(GDO):
     def get_server_id(self) -> str:
         return self.gdo_val('user_server')
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.gdo_val('user_name')
+
+    def get_displayname(self) -> str:
+        return self.gdo_val('user_displayname')
 
     ##########
     # Groups #

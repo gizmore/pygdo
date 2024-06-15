@@ -1,5 +1,6 @@
 import threading
 
+from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.Render import Mode
 from gdo.base.WithEnv import WithEnv
@@ -57,8 +58,9 @@ class Message(WithEnv, threading.Thread):
         await self.deliver()
 
     async def deliver(self):
+        Logger.debug(f'Message.deliver: {self._result}')
         text = self._result
-        self._result_raw = text
+        self._result_raw = text  # for chatgpt :/
         if self._env_channel:
             reply_to = self._env_reply_to or self._env_user.render_name()
             text = f"{reply_to}: {text}"
