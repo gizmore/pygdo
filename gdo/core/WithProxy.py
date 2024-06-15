@@ -2,7 +2,7 @@ from gdo.core.GDT_Field import GDT_Field
 
 
 class WithProxy:
-    _proxy: GDT_Field
+    _proxy: (GDT_Field, any)
 
     def proxy(self, gdt: GDT_Field):
         self._proxy = gdt
