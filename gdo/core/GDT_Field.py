@@ -162,7 +162,6 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
     def error_not_null(self):
         return self.error('err_not_null', [self.render_suggestion()])
 
-
     def validate_unique(self, value):
         self._gdo.table().select()
 

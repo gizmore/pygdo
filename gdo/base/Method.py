@@ -203,9 +203,12 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     # Message #
     ###########
 
-    def empty(self) -> GDT:
+    def empty(self, text: str = None) -> GDT:
         from gdo.ui.GDT_HTML import GDT_HTML
-        return GDT_HTML()
+        html = GDT_HTML()
+        if text:
+            html.text('%s', [text])
+        return html
 
     def reply(self, key: str, args: list = None):
         from gdo.core.GDT_String import GDT_String

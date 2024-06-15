@@ -1,0 +1,6 @@
+{
+  "license": "MIT",
+  "dependencies": {
+    "flow.js": "^0.2.6"
+  }
+}

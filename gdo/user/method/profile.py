@@ -7,6 +7,9 @@ from gdo.ui.GDT_Card import GDT_Card
 
 class profile(Method):
 
+    def gdo_trigger(self) -> str:
+        return 'profile'
+
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_User('for').not_null(),

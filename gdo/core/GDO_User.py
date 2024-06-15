@@ -81,6 +81,9 @@ class GDO_User(GDO):
     def get_server(self) -> 'GDO_Server':
         return self.gdo_value('user_server')
 
+    def get_linked_user(self) -> 'GDO_User':
+        return self.gdo_value('user_link')
+
     def get_server_id(self) -> str:
         return self.gdo_val('user_server')
 

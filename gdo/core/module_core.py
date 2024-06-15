@@ -51,6 +51,7 @@ class module_core(GDO_Module):
             'net',
             'table',
             'ui',
+            'user',
         ]
 
     def gdo_module_config(self) -> list[GDT]:

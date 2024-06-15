@@ -5,9 +5,9 @@ from gdo.base.Util import Files
 
 
 class Cache:
-    CACHE: dict[str, GDO] = {}
-    CCACHE: dict[str, list[GDT]] = {}
-    OCACHE: dict[str, dict[str, GDO]] = {}
+    CACHE: dict[str, GDO] = {}  # class => GDO table mapping
+    CCACHE: dict[str, list[GDT]] = {}  # class => GDO table columns mapping
+    OCACHE: dict[str, dict[str, GDO]] = {}  # id => GDO object cache mapping
 
     @classmethod
     def clear(cls):
@@ -34,7 +34,8 @@ class Cache:
     def build_ccache(cls, gdo: GDO):
         cache = []
         columns = cls.CACHE[gdo].gdo_columns()
-        cache.extend(columns)
+        for column in columns:
+            cache.extend(column.gdo_components())
         return cache
 
     @classmethod

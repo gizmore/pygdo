@@ -380,6 +380,18 @@ class Arrays:
 
 
 class Random:
+    _seed: int
+    _old_state: any
+
+    def __init__(self, seed: int):
+        self._seed = seed
+        self._old_state = random.getstate()
+
+    def __enter__(self):
+        Random.init(self._seed)
+
+    def __exit__(self, *a):
+        random.setstate(self._old_state)
 
     @classmethod
     def init(cls, seed: int):

@@ -2,7 +2,7 @@ from gdo.base.GDT import GDT
 from gdo.ui.WithHREF import WithHREF
 
 
-class GDT_Image(WithHREF, GDT):
+class GDT_Image(WithHREF, GDT_File):
     _alt_key: str
     _alt_args: list
 

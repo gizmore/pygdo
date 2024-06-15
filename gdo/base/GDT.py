@@ -66,6 +66,9 @@ class GDT:
     def gdo_after_delete(self, gdo):
         pass
 
+    def gdo_components(self) -> list['GDT']:
+        return [self]
+
     ##########
     # Errors #
     ##########

@@ -6,6 +6,9 @@ from gdo.base.GDT import GDT
 
 
 class GDT_FileOut(GDT):
+    """
+    Handle sending files to (http) clients.
+    """
     _path: str
     _handle: any
 
