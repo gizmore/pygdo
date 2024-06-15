@@ -8,6 +8,8 @@ from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_UInt import GDT_UInt
 from gdo.date.GDT_Created import GDT_Created
 from gdo.date.GDT_Duration import GDT_Duration
+from gdo.ui.GDT_Height import GDT_Height
+from gdo.ui.GDT_Width import GDT_Width
 
 
 class GDO_File(GDO):

@@ -12,8 +12,8 @@ class AdminTestCase(unittest.TestCase):
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
-        loader.init_modules()
         install_module('admin')
+        loader.init_modules()
         loader.init_cli()
 
     def test_01_admin_modules(self):

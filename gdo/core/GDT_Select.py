@@ -20,8 +20,8 @@ class GDT_Select(GDT_ComboBox):
         return self._choices
 
     def validate(self, val: str | None, value: any) -> bool:
-        if not super().validate(val, value):
-            return False
+        if value is None:
+            return super().validate(val, value)
         choices = self.init_choices()
         if val not in choices.keys():
             return self.error_invalid_choice()
