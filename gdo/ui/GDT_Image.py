@@ -1,4 +1,5 @@
-from gdo.base.GDT import GDT
+from gdo.base.Trans import t
+from gdo.file.GDT_File import GDT_File
 from gdo.ui.WithHREF import WithHREF
 
 
@@ -6,20 +7,26 @@ class GDT_Image(WithHREF, GDT_File):
     _alt_key: str
     _alt_args: list
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, name: str):
+        super().__init__(name)
 
     def alternate(self, alt_key: str, alt_args: list = None):
         self._alt_key = alt_key
         self._alt_args = alt_args
         return self
 
+    def alternate_raw(self, alt_text: str):
+        return self.alternate('%s', [alt_text])
+
     ##########
     # Render #
     ##########
     def render_txt(self) -> str:
-        return self.render_alternate()
+        return self.render_alt_text()
 
-    def render_alternate(self):
-        pass
+    def html_alternate(self) -> str:
+        return f' alt="{self.render_alt_text()}"'
+
+    def render_alt_text(self) -> str:
+        return t(self._alt_key, self._alt_args) or t('no_alt_text_an_image')
     
