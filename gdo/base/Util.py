@@ -7,6 +7,7 @@ import random
 import re
 import secrets
 import shutil
+import sys
 import urllib.parse
 from collections import OrderedDict
 from html import unescape
@@ -402,8 +403,16 @@ class Random:
         return secrets.token_hex(length)
 
     @classmethod
-    def mrand(cls, min_: int, max_: int):
-        return random.randint(min_, max_)
+    def mrand(cls, min: int = 0, max: int = sys.maxsize):
+        return random.randint(min, max)
+
+    @classmethod
+    def mrandf(cls, min: float = None, max: float = None):
+        if min is None:
+            min = -sys.float_info.max
+        if max is None:
+            max = sys.float_info.max
+        return random.uniform(min, max)
 
 
 class Permutations:

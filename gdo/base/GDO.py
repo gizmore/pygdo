@@ -82,7 +82,7 @@ class GDO(WithBulk, GDT):
     def gdo_columns(self) -> list[GDT]:
         return []
 
-    def column(self, key: str) -> GDT:
+    def column(self, key: str) -> GDT | any:
         """
 
         :rtype: object

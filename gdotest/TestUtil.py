@@ -1,3 +1,8 @@
+from typing_extensions import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.core.GDO_User import GDO_User
+
 import cProfile
 import io
 import time
@@ -156,11 +161,13 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     return out.strip()
 
 
-def cli_plug(user, command) -> str:
+def cli_plug(user: 'GDO_User', command: str) -> str:
     return text_plug(Mode.CLI, command, user)
+
 
 def cli_top(mode: Mode = Mode.TXT):
     return GDT_Page.instance()._top_bar.render(mode)
+
 
 def cli_gizmore():
     return Bash.get_server().get_or_create_user('gizmore')
