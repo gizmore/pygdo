@@ -1,12 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import traceback
-from typing import TYPE_CHECKING
 
 from gdo.base.Result import ResultType
-
-if TYPE_CHECKING:
-    from _typeshed import Self
 
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
@@ -62,6 +59,13 @@ class GDO(WithBulk, GDT):
         back._vals.update(vals)
         back.all_dirty()
         return back
+
+    def gdo_hash(self) -> str:
+        hash_me = hashlib.sha256()
+        for gdt in self.columns():
+            val = gdt.get_val()
+            hash_me.update(val.encode('utf-8') if val is not None else b'')
+        return hash_me.hexdigest()[0:24]
 
     def render_name(self):
         return self.get_name()

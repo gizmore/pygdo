@@ -86,12 +86,14 @@ class GDO_Server(GDO):
         return user
 
     def create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
-        return GDO_User.blank({
+        user = GDO_User.blank({
             'user_type': user_type,
             'user_name': username,
             'user_displayname': displayname or username,
             'user_server': self.get_id(),
         }).insert()
+        Application.EVENTS.publish('user_created', user)
+        return user
 
     def get_user_by_name(self, username) -> GDO_User:
         return GDO_User.table().get_by_vals({

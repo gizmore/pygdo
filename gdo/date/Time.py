@@ -266,7 +266,7 @@ class Time:
 
     @classmethod
     def get_time(cls, date: str = None) -> float:
-        return cls.parse_time(date, cls.UTC, 'db') if date else Application.TIME
+        return cls.parse_time(date, cls.TIMEZONE, 'db') if date else Application.TIME
 
     #######
     # Age #

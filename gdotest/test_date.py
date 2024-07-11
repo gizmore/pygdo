@@ -59,6 +59,14 @@ class DateTestCase(unittest.TestCase):
         output = Time.human_to_seconds('1ms')
         self.assertAlmostEqual(output, 0.001, 3, 'human_to_seconds() does not work for 1ms.')
 
+    def test_age(self):
+        age = Time.get_age_in_years(Time.ONE_YEAR)
+        self.assertEqual(age, 1, 'Cannot get age in years.')
+        time = Time.get_time(Time.get_date())
+        age = Time.get_age_in_years(Application.TIME - time)
+        self.assertEqual(age, 0, 'Cannot get zero age in years.')
+
+
 
 if __name__ == '__main__':
     unittest.main()

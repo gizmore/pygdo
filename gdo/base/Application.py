@@ -34,8 +34,9 @@ class Application:
 
     @classmethod
     def tick(cls):
-        cls.TIME = time.time()
-        cls.STORAGE.time_start = cls.TIME
+        t = time.time()
+        cls.TIME = round(t, 6)
+        cls.STORAGE.time_start = t
         cls.EVENTS.update_timers(cls.TIME)
 
     @classmethod
@@ -230,4 +231,12 @@ class Application:
     @classmethod
     def is_unit_test(cls):
         return 'unittest' in sys.modules.keys()
+
+    @classmethod
+    def domain(cls) -> str:
+        return cls.config('core.domain', 'pygdo.localhost')
+
+    @classmethod
+    def web_root(cls) -> str:
+        return cls.config('core.web_root', '/')
 

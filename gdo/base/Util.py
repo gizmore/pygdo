@@ -77,6 +77,11 @@ def dump(*obj: any):
         err_raw(msg)
 
 
+def url(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
+    from gdo.base.Application import Application
+    return Application.PROTOCOL + "://" + Application.domain() + Application.web_root() + href(module_name, method_name, append, fmt)
+
+
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
     from gdo.base.Application import Application
     splitted = ''

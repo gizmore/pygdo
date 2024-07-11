@@ -236,6 +236,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         """
         Check method environment and if allowed, gdo_execute() on permission
         """
+        Application.set_current_user(self._env_user)
         if not self._prepare_nested_permissions(self):
             return self
         return self._nested_execute(self, True)

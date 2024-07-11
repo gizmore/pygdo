@@ -164,6 +164,7 @@ class GDO_User(GDO):
                 'sess_ip': None,
                 'sess_data': None,
             })
+            Application.set_current_user(GDO_User.ghost())
         return self
 
     def is_authenticated(self) -> bool:
