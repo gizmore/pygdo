@@ -138,6 +138,10 @@ class GDO(WithBulk, GDT):
         self.set_val(key, val)
         return self.save()
 
+    def increment(self, key: str, by: float|int):
+        old = self.gdo_value(key)
+        return self.set_val(key, str(old + by))
+
     @classmethod
     def get_name(cls):
         return cls.__name__
