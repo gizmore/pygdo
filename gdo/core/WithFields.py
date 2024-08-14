@@ -67,8 +67,8 @@ class WithFields:
         return output
 
     def render_form(self) -> str:
+        # if hasattr(self, '_fields'):
         output = ""
-        if hasattr(self, '_fields'):
-            for gdt in self._fields:
-                output += gdt.render_form()
+        for gdt in self.fields():
+            output += gdt.render_form()
         return output

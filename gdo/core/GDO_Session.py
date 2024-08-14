@@ -117,6 +117,10 @@ class GDO_Session(GDO):
         self._data[key] = value
         return self
 
+    def remove(self, key: str):
+        del self._data[key]
+        return self
+
     def get_token(self) -> str:
         return self.gdo_val('sess_token')
 

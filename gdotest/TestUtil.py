@@ -1,5 +1,7 @@
 from typing_extensions import TYPE_CHECKING
 
+from gdo.core.GDO_UserPermission import GDO_UserPermission
+
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
 
@@ -60,7 +62,7 @@ def install_modules(modules):
 
 def install_module_b(name):
     module = ModuleLoader.instance().load_module_fs(name)
-    Installer.install_module(module)
+    Installer.install_modules([module])
 
 
 class WebPlug:
@@ -72,6 +74,8 @@ class WebPlug:
         self._url = url
         self._out = ''
         self._post = {}
+        self._post_raw = None
+        self._boundary = None
         self.headers_in = {}
         self.args = f"_url={url}"
         self._ip = '::1'
@@ -85,6 +89,11 @@ class WebPlug:
 
     def post(self, dic: dict):
         self._post = dic
+        return self
+
+    def post_multipart(self, b: bytes, boundary: str):
+        self._post_raw = b
+        self._boundary = boundary
         return self
 
     def exec(self):
@@ -103,10 +112,18 @@ class WebPlug:
         if cookies:
             self._environ['HTTP_COOKIE'] = cookies
 
-        if len(self._post.items()):
+        if self._post_raw:
+            self._environ['wsgi.input'] = io.BytesIO(self._post_raw)
+            self._environ['wsgi.input'].seek(0)
+            self._environ['CONTENT_LENGTH'] = len(self._post_raw)
+            self._environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=' + self._boundary
+            self._environ['REQUEST_METHOD'] = 'POST'
+
+        elif len(self._post.items()):
             post_bytes = urlencode(self._post).encode('UTF-8')
             self._environ['wsgi.input'] = io.BytesIO(post_bytes)
             self._environ['wsgi.input'].seek(0)
+            self._environ['CONTENT_TYPE'] = 'application/x-www-form-urlencoded'
             self._environ['CONTENT_LENGTH'] = len(post_bytes)
         result = application(self._environ, self.start_request)
         for chunk in result:
@@ -170,7 +187,10 @@ def cli_top(mode: Mode = Mode.TXT):
 
 
 def cli_gizmore():
-    return Bash.get_server().get_or_create_user('gizmore')
+    user = Bash.get_server().get_or_create_user('gizmore')
+    GDO_UserPermission.grant(user, 'admin')
+    GDO_UserPermission.grant(user, 'staff')
+    return user
 
 
 def web_gizmore():

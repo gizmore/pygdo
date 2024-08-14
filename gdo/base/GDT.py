@@ -1,8 +1,13 @@
-import sys
 import traceback
 
+from typing_extensions import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.form.GDT_Form import GDT_Form
+    from gdo.base.Method import Method
+
 from gdo.base.Render import Mode
-from gdo.base.Util import Strings, dump
+from gdo.base.Util import Strings
 
 
 class GDT:
@@ -47,6 +52,11 @@ class GDT:
     #############
     ### Hooks ###
     #############
+    def gdo_file_upload(self, method: 'Method'):
+        pass
+
+    def gdo_added_to_form(self, form: 'GDT_Form'):
+        pass
 
     def gdo_before_create(self, gdo):
         pass
@@ -64,6 +74,9 @@ class GDT:
         pass
 
     def gdo_after_delete(self, gdo):
+        pass
+
+    def gdo_form_validated(self):
         pass
 
     def gdo_components(self) -> list['GDT']:

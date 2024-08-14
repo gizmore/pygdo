@@ -6,6 +6,9 @@ err_param = "Invalid value for parameter %s: %s"
 err_method_connector_not_supported = "The method does not work inside this connector."
 err_method_disabled = "This method is disabled here."
 err_render_mode = "Invalid Render Mode: %s"
+err_permission = "You need the %s permissions to execute this method."
+err_not_in_private = "This method does not work in private."
+err_not_in_channel = "This method does not work inside channels."
 
 and = "and"
 decimal_point = '.'

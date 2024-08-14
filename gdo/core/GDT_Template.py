@@ -144,22 +144,26 @@ class GDT_Template(GDT):
         self._t_vals = vals
         return self
 
-    def renderHTML(self):
-        pass
+    def render(self, mode: Mode = Mode.HTML):
+        return self.python(self._t_module, self._t_file, self._t_vals)
+
+    @classmethod
+    def render_template(cls, path: str, vals):
+        data = {
+            "modules": ModuleLoader.instance()._cache,
+            "Mode": Mode,
+            "Application": Application,
+        }
+        data.update(vals)
+        # Logger.debug(f"Template({filename}, {path})")
+        lite = Templite(None, path)
+        return lite.render(**data)
 
     @classmethod
     def python(cls, modulename, filename, vals):
         try:
-            data = {
-                "modules": ModuleLoader.instance()._cache,
-                "Mode": Mode,
-                "Application": Application,
-            }
-            data.update(vals)
             path = cls.get_path(modulename, filename)
-            # Logger.debug(f"Template({filename}, {path})")
-            lite = Templite(None, path)
-            return lite.render(**data)
+            return cls.render_template(path, vals)
         except Exception as ex:
             Logger.exception(ex)
             tb = traceback.format_exc()

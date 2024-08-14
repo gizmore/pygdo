@@ -85,8 +85,8 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
         self._unique = unique
         return self
 
-    def multiple(self, multiple: bool = True):
-        self._multiple = multiple
+    def multiple(self):
+        self._multiple = True
         return self
 
     def positional(self, positional: bool = True):
@@ -160,7 +160,11 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
         return True
 
     def error_not_null(self):
-        return self.error('err_not_null', [self.render_suggestion()])
+        suggestions = self.render_suggestion()
+        if suggestions:
+            return self.error('err_not_null', [self.render_suggestion()])
+        else:
+            return self.error('err_not_null_no_suggestions')
 
     def validate_unique(self, value):
         self._gdo.table().select()

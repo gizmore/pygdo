@@ -481,3 +481,11 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     def render_txt(self) -> str:
         return ''
+
+    ########
+    # Temp #
+    ########
+    def temp_path_session(self, append: str = ''):
+        mome = self._mome()
+        sessid = self._env_session.get_id()
+        return Application.temp_path(f"{mome}/{sessid}/{append}")

@@ -6,14 +6,15 @@ module_core = "Core"
 ##############
 error = 'Error'
 err_module = "Unknown Module: %s."
-err_permission = "You do not have the required permissions to execute that method"
 err_not_found = "File not found: %s"
 err_not_null = "This field may not be left empty. Suggestions: %s."
+err_not_null_no_suggestions = "This field may not be left empty."
 err_int_min = "may not be smaller than %s."
 err_int_max = "may not be larger than %s."
 err_token = "Your token is invalid."
 err_select_candidates = "Too many results: %s."
 err_invalid_choice = "Invalid choice. Suggestions: %s."
+err_invalid_choice_no_suggestions = "Invalid choice."
 
 ################
 ### Messages ###
@@ -143,3 +144,18 @@ mt_core_set_name = "Set Displayname"
 md_core_set_name = "Set your displayed username."
 err_username_taken = "This username is already taken."
 msg_username_set = "Your displayname has been set to %s."
+
+##########
+# WhoAmI #
+##########
+mt_core_whoami = "WhoAmI"
+md_core_whoami = "WhoAmI"
+info_who_am_i = "Your username is %s with the following permissions: %s."
+
+#########
+# Super #
+#########
+mt_core_super = "Super"
+md_core_super = "Get granted all priviledges on a server."
+msg_super_granted = "You got granted all permissions on this server."
+err_wrong_superword = "The password is wrong."

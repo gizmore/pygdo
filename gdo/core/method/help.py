@@ -55,7 +55,7 @@ class help(Method):
             trigger = method.env_user(user).gdo_trigger()
             if module_name not in grouped:
                 grouped[module_name] = []
-            if self.has_permission(self._env_user):
+            if method.has_permission(self._env_user, False):
                 trigger_colored = Render.green(trigger, mode)
             else:
                 trigger_colored = Render.red(trigger, mode)

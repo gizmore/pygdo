@@ -37,4 +37,6 @@ class WithIcon:
         return self
 
     def render_icon(self, mode: Mode) -> str:
+        if not hasattr(self, '_icon_name'):
+            return ''
         return WithIcon.display_icon(self._icon_name, mode, self._icon_alt, self._icon_color, self._icon_size)

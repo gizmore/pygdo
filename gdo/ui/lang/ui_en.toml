@@ -1,3 +1,5 @@
 module_ui = "User Interface"
 
 no_alt_text_an_image = "An image"
+
+message = "Message"

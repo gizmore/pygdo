@@ -28,7 +28,11 @@ class GDT_Select(GDT_ComboBox):
         return True
 
     def error_invalid_choice(self):
-        return self.error('err_invalid_choice', [self.render_suggestion()])
+        suggestions = self.render_suggestion()
+        if suggestions == '':
+            return self.error('err_invalid_choice_no_suggestions')
+        else:
+            return self.error('err_invalid_choice', [suggestions])
 
     def to_val(self, value) -> str:
         return Arrays.dict_index(self.init_choices(), value)

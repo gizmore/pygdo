@@ -132,6 +132,8 @@ class Connector:
 
     def send_to_channel(self, msg: Message):
         msg._sender = GDO_User.system() if not msg._sender else msg._sender
+        if Application.is_html():
+            pass
         Application.EVENTS.publish('msg_sent', msg)
         return self.gdo_send_to_channel(msg)
 

@@ -1,16 +1,17 @@
-import threading
 import traceback
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gdo.base.GDO import GDO
+
 from enum import Enum
 from mysql.connector import ProgrammingError, DataError, DatabaseError, InterfaceError
 
 from gdo.base.Application import Application
-from gdo.base.Database import Database
 from gdo.base.Exceptions import GDODBException
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Result import Result
 from gdo.base.Util import msg, dump
-
 
 class Type(Enum):
     UNKNOWN = 1
@@ -29,7 +30,8 @@ class Query:
     _debug: bool
     _raw: str
     _table: str
-    _gdo: object
+    _gdo: 'GDO'
+    _fetch_as: 'GDO'
     _type: Type
     _columns: str
     _vals: dict[str, str]
@@ -94,7 +96,12 @@ class Query:
 
     def gdo(self, gdo):
         self._gdo = gdo
+        self._fetch_as = gdo
         return self  # .table(gdo.gdo_table_name())
+
+    def fetch_as(self, gdo: 'GDO'):
+        self._fetch_as = gdo
+        return self
 
     def select(self, columns='*'):
         self._type = Type.SELECT
@@ -236,7 +243,7 @@ class Query:
                 cursor = Application.db().cursor(use_dict)
                 Application.DB_READS += 1
                 cursor.execute(query)
-                return Result(cursor, self._gdo)
+                return Result(cursor, self._fetch_as)
             if self.is_insert():
                 cursor = Application.db().cursor()
                 Application.DB_WRITES += 1

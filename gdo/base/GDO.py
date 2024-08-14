@@ -7,7 +7,7 @@ from gdo.base.Result import ResultType
 
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
-from gdo.base.Query import Type
+from gdo.base.Query import Type, Query
 from gdo.base.Util import Strings
 from gdo.base.WithBulk import WithBulk
 
@@ -162,14 +162,13 @@ class GDO(WithBulk, GDT):
             self._dirty = []
         return self
 
-    def query(self):
-        from gdo.base.Query import Query
+    def query(self) -> Query:
         return Query().table(self.gdo_table_name()).gdo(self)
 
-    def select(self, columns='*'):
+    def select(self, columns='*') -> Query:
         return self.query().select(columns)
 
-    def count_where(self, where='1'):
+    def count_where(self, where='1') -> int:
         col = self.select('COUNT(*)').where(where).exec(False).iter(ResultType.ROW).fetch_val()
         if col is None:
             return 0

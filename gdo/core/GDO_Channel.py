@@ -1,5 +1,8 @@
+from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Message import Message
+from gdo.core.GDO_Event import GDO_Event
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Char import GDT_Char
@@ -28,7 +31,7 @@ class GDO_Channel(GDO):
     def get_trigger(self) -> str:
         return self.gdo_val('chan_trigger')
 
-    def get_server(self):
+    def get_server(self) -> GDO_Server:
         return self.gdo_value('chan_server')
 
     def get_name(self) -> str:
@@ -46,3 +49,13 @@ class GDO_Channel(GDO):
                  .where(f"mv_val={cls.quote(val)}{null}")
                  .where(f'chan_server={server.get_id()}'))
         return query.gdo(GDO_Channel.table()).exec().fetch_all()
+
+    def send(self, message: str):
+        if Application.IS_HTTP:
+            GDO_Event.blank().insert()
+        else:
+            server = self.get_server()
+            conn = server.get_connector()
+            msg = Message(message, conn.get_render_mode())
+            msg.env_server(server).env_channel(self)
+            conn.send_to_channel(msg)

@@ -28,16 +28,18 @@ class Installer:
 
         # out = []
         # for module in modules:
-        #     out.append(module.get_name)
+        #     out.append(module.get_name())
         # print(", ".join(out))
 
         while before != after:
             before = after
             for dep in deps:
                 more = dep.gdo_dependencies()
+                # print(more)
                 for name in more:
                     mod = loader.load_module_fs(name)
                     if mod not in deps:
+                        # print(mod.get_name())
                         deps.append(mod)
             after = len(deps)
         return sorted(deps, key=lambda m: m._priority)

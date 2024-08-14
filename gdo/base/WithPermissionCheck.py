@@ -4,14 +4,30 @@ from gdo.base.Util import module_enabled, href, Arrays, dump, urlencode
 
 class WithPermissionCheck:
 
-    def has_permission(self, user) -> bool:
+    def has_permission(self, user, display_error: bool = True) -> bool:
+        from gdo.core.GDO_Permission import GDO_Permission
         typestr = self.gdo_user_type()
         if typestr:
             types = typestr.split(',')
             type = user.get_user_type()
             if type not in types:
-                return self.err_type(types)
+                return False if not display_error else self.err_type(types)
+        perm = self.gdo_user_permission()
+        if perm and not GDO_Permission().has_permission(user, perm):
+            return False if not display_error else self.err_permission(perm)
+        if not self.gdo_in_private() and self._env_channel:
+            return False if not display_error else self.err_not_in_private()
+        if not self.gdo_in_channels() and not self._env_channel:
+            return False if not display_error else self.err_not_in_channel()
         return True
+
+    def err_not_in_private(self):
+        self.err('err_not_in_private')
+        return False
+
+    def err_not_in_channel(self):
+        self.err('err_not_in_channel')
+        return False
 
     def err_type(self, types: list[str]) -> bool:
         if 'guest' in types:
@@ -48,3 +64,6 @@ class WithPermissionCheck:
         self.err('err_type', [print_types])
         return False
 
+    def err_permission(self, perm: str):
+        self.err('err_permission', [perm])
+        return False

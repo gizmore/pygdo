@@ -1,4 +1,6 @@
+import cgi
 import os.path
+import traceback
 from urllib.parse import parse_qs, unquote
 
 from gdo.base.Application import Application
@@ -41,6 +43,7 @@ def application(environ, start_response):
             loader = ModuleLoader.instance()
             loader.load_modules_db()
             loader.init_modules(True, True)
+            Application.is_http(True)
         else:
             Application.init_common()
             Application.init_web(environ)
@@ -95,17 +98,43 @@ def application(environ, start_response):
 
             method.inputs(qs)  # GET PARAMS
 
-            if environ['REQUEST_METHOD'] == 'POST':  # POST PARAMS
+            if environ['REQUEST_METHOD'] == 'POST' and environ['CONTENT_TYPE'].startswith('multipart/form-data'):
+                content_length = int(environ.get('CONTENT_LENGTH', 0))
+                # post_data = environ['wsgi.input'].read(content_length)
+                # dump(post_data)
+
+                post_variables = cgi.FieldStorage(
+                    fp=environ['wsgi.input'],
+                    environ=environ,
+                    keep_blank_values=True
+                )
+                fields = {}
+                for var in post_variables:
+                    if filename := post_variables[var].filename:
+                        method.add_file(var, filename, post_variables[var].value)
+                    else:
+                        fields[var] = post_variables[var].value
+                method.inputs(fields)
+
+            elif environ['REQUEST_METHOD'] == 'POST':  # POST PARAMS
                 content_length = int(environ.get('CONTENT_LENGTH', 0))
                 post_data = environ['wsgi.input'].read(content_length)
                 post_data_decoded = post_data.decode('utf-8')
                 post_variables = parse_qs(post_data_decoded)
                 method.inputs(post_variables)
 
+            if Application.is_html():
+                Application.header('Content-Type', 'text/html; Charset=UTF-8')
+            elif Application.get_mode() == Mode.JSON:
+                Application.header('Content-Type', 'application/json; Charset=UTF-8')
+            elif Application.get_mode() == Mode.TXT:
+                Application.header('Content-Type', 'text/plain; Charset=UTF-8')
+
             try:
                 result = method.execute()
             except Exception as ex:
                 err('%s', [str(ex)])
+                err('%s', [traceback.format_exc()])
                 result = method
 
             if Application.is_html():
@@ -115,25 +144,22 @@ def application(environ, start_response):
                     module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
 
-            headers = Application.get_headers()
-            if Application.is_html():
-                headers.extend([('Content-Type', 'text/html; Charset=UTF-8')])
-            elif Application.get_mode() == Mode.JSON:
-                headers.extend([('Content-Type', 'application/json; Charset=UTF-8')])
-            elif Application.get_mode() == Mode.TXT:
-                headers.extend([('Content-Type', 'text/plain; Charset=UTF-8')])
-            session.save()
             response = result.render(Application.get_mode())
+            headers = Application.get_headers()
+            session.save()
             headers.extend([('Content-Length', str(bytelen(response)))])
             start_response(Application.get_status(), headers)
-            yield response.encode('utf-8')
+            if isinstance(response, str):
+                yield response.encode('utf-8')
+            else:
+                yield response
     except (GDOModuleException, GDOMethodException) as ex:
         yield error_page(ex, start_response, not_found().input('_url', url), '404 Not Found', False)
     except GDOParamNameException as ex:
         yield error_page(ex, start_response, client_error().exception(ex), '409 User Error', False)
     except Exception as ex:
         try:
-            yield error_page(ex, start_response, server_error(), "500 Fatal Error")
+            yield error_page(ex, start_response, server_error(), "500 Fatal Error", True)
         except Exception as ex:
             msg = str(ex)
             response_headers = [

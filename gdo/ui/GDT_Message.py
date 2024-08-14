@@ -9,5 +9,5 @@ class GDT_Message(GDT_Text):
         super().__init__(name)
 
     def render_form(self):
-        GDT_Template.python('ui', 'form_message.html', {"field": self})
+        return GDT_Template.python('ui', 'form_message.html', {"field": self})
 

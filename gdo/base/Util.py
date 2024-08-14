@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import getpass
+import hashlib
 import json
+import mimetypes
 import os.path
 import random
 import re
@@ -11,6 +13,7 @@ import sys
 import urllib.parse
 from collections import OrderedDict
 from html import unescape
+from io import BytesIO
 from itertools import product
 from typing import Sequence
 
@@ -47,6 +50,9 @@ def bytelen(s: str, encoding: str = 'utf-8') -> int:
     Get size of a string in bytes without codecs
     By ChatGPT and gizmore :)
     """
+    if isinstance(s, bytes):
+        return len(s)
+
     return len(s.encode(encoding))
     # return sys.getsizeof(s) - sys.getsizeof("") does not work!
 
@@ -93,7 +99,7 @@ def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'
                 splitted += f";{key}.{val}"
             else:
                 new_append += f"&{kv}"
-    return f"/{module_name}.{method_name}{splitted}.{Application.get_mode().name.lower()}?_lang={Application.STORAGE.lang}{new_append}"
+    return f"/{module_name}.{method_name}{splitted}.{fmt}?_lang={Application.STORAGE.lang}{new_append}"
 
 
 def module_enabled(module_name: str) -> bool:
@@ -300,6 +306,25 @@ class Files:
     def get_contents(cls, path: str):
         with open(path, 'r') as f:
             return f.read()
+
+    @classmethod
+    def mime(cls, path):
+        mime_type = mimetypes.MimeTypes().guess_type(path)
+        return mime_type[0] if mime_type else  'application/octet-stream'
+
+    @classmethod
+    def size(cls, path: str) -> int:
+        return os.path.getsize(path)
+
+    @classmethod
+    def md5(cls, path: str) -> str:
+        from gdo.base.Application import Application
+        hash_md5 = hashlib.md5()
+        block_size = int(Application.config('fileblock_size', "4096"))
+        with open(path, "rb") as f:
+            for chunk in iter(lambda: f.read(block_size), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
 
 
 class Arrays:

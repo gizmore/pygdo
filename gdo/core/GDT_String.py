@@ -3,7 +3,7 @@ from enum import Enum
 
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t
-from gdo.base.Util import jsn
+from gdo.base.Util import jsn, dump
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.WithLabel import WithLabel

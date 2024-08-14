@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 from typing_extensions import Self
 
 from typing import TYPE_CHECKING
@@ -70,7 +72,10 @@ class ModuleLoader:
         patterns = pattern.split(',')
         for pattern in patterns:
             path = Application.file_path('gdo/')
-            for dirname in glob.glob(pattern, root_dir=path):
+            matches = glob.glob(pattern, root_dir=path)
+            if not matches:
+                print(f"Pattern {pattern} does not match any module.", file=sys.stderr)
+            for dirname in matches:
                 if not dirname.startswith('_'):
                     if Files.is_dir(path + dirname):
                         loaded[dirname] = self.load_module_fs(dirname, installed)

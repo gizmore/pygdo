@@ -18,6 +18,7 @@ from gdo.base.Util import Arrays, dump
 class Application:
     RUNNING = True
     PROTOCOL = 'http'
+    IS_HTTP = False
     LOADER: object
     EVENTS: 'Events'
     # SERVER: object  # This server instance is the server for the GHOST user :/
@@ -40,9 +41,11 @@ class Application:
         cls.EVENTS.update_timers(cls.TIME)
 
     @classmethod
+    def is_http(cls, is_http: bool):
+        cls.IS_HTTP = is_http
+
+    @classmethod
     def init(cls, path, config_file: str = 'protected/config.toml'):
-        from gdo.base.Cache import Cache
-        from gdo.base.Database import Database
         from gdo.base.ModuleLoader import ModuleLoader
         # Cache.init()
         cls.PATH = os.path.normpath(path) + '/'
@@ -74,6 +77,10 @@ class Application:
     @classmethod
     def file_path(cls, path: str = ''):
         return os.path.join(cls.PATH, path)
+
+    @classmethod
+    def temp_path(cls, path: str = ''):
+        return cls.file_path('temp/' + path)
 
     @classmethod
     def set_current_user(cls, user):
@@ -119,16 +126,13 @@ class Application:
 
     @classmethod
     def init_cli(cls):
-        from gdo.core.GDO_Server import GDO_Server
         cls.STORAGE.ip = '::1'
         cls.STORAGE.cookies = {}
         cls.STORAGE.time_start = time.time()
-        # cls.SERVER = GDO_Server.get_by_connector('Bash')
         cls.mode(Mode.CLI)
 
     @classmethod
     def init_web(cls, environ):
-        from gdo.core.GDO_Server import GDO_Server
         cls.init_thread(None)
         cls.STORAGE.time_start = float(environ.get('mod_wsgi.request_start')) / 1000000.0
         cls.STORAGE.environ = environ
@@ -229,6 +233,10 @@ class Application:
         return cls.STORAGE.session
 
     @classmethod
+    def has_session(cls):
+        return hasattr(cls.STORAGE, 'session')
+
+    @classmethod
     def is_unit_test(cls):
         return 'unittest' in sys.modules.keys()
 
@@ -239,4 +247,3 @@ class Application:
     @classmethod
     def web_root(cls) -> str:
         return cls.config('core.web_root', '/')
-

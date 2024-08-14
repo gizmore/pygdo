@@ -10,6 +10,8 @@ from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_MD5 import GDT_MD5
 from gdo.core.GDT_Path import GDT_Path
 from gdo.core.GDT_User import GDT_User
+from gdo.core.connector.Bash import Bash
+from gdo.core.method.reload import reload
 from gdo.ui.GDT_Page import GDT_Page
 from gdotest.TestUtil import cli_plug, web_gizmore, cli_gizmore, GDOTestCase
 
@@ -84,6 +86,20 @@ class CoreTestCase(GDOTestCase):
         GDO_User.table().select().first().debug().exec()
         result = GDT_Page.instance()._top_bar.render()
         self.assertIn('SELECT * FROM gdo_user', result, 'Database Debug output does not render.')
+
+    def test_10_reload_restricted(self):
+        petra = Bash.get_server().get_or_create_user('Petra')
+        method = reload().env_user(petra)
+        has = method.has_permission(petra)
+        self.assertEqual(has, False, "Permission check is not working")
+        out = cli_plug(petra, "$reload")
+        self.assertIn('ermission', out, "CLI Permission not working")
+
+    def test_11_help(self):
+        petra = Bash.get_server().get_or_create_user('Petra')
+        out = cli_plug(petra, "$help")
+        self.assertIn("31mreload", out, "Reload should be red")
+
 
 
 if __name__ == '__main__':

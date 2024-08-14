@@ -102,3 +102,9 @@ class Result:
         obj._vals.update(row)
         obj.all_dirty(False)
         return Cache.obj_for(obj)
+
+    def fetch_column(self) -> list[str]:
+        result = []
+        while row := self.fetch_row():
+            result.append(row[0])
+        return result

@@ -21,7 +21,7 @@ class GDO_UserPermission(GDO):
 
     @classmethod
     def users_with_perm_id(cls, perm_id: str):
-        return cls.table().select('pu_user_t.*').join_object('pu_user').where(f'pu_perm={GDT.quote(perm_id)}').exec().fetch_all()
+        return cls.table().select('pu_user_t.*').fetch_as(GDO_User.table()).join_object('pu_user').where(f'pu_perm={GDT.quote(perm_id)}').exec().fetch_all()
 
     @classmethod
     def has_permission(cls, user: GDO_User, permission: GDO_Permission) -> bool:

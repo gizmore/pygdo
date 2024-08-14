@@ -5,6 +5,7 @@ from gdo.base.Logger import Logger
 
 if TYPE_CHECKING:
     from gdo.core.Connector import Connector
+    from gdo.core.GDO_Channel import GDO_Channel
 
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
@@ -26,7 +27,7 @@ from gdo.net.GDT_Url import GDT_Url
 
 class GDO_Server(GDO):
     _connector: Connector
-    _channels: list
+    _channels: list['GDO_Channel']
     _has_loop: bool
 
     __slots__ = (

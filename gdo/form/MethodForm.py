@@ -32,6 +32,14 @@ class MethodForm(Method):
 
     def gdo_execute(self):
         form = self.get_form()
+
+        ### Flow upload
+        if 'flowField' in self._args:
+            return form.get_field(self._args['flowField']).flow_upload()
+
+        for gdt in form.all_fields():
+            gdt.gdo_file_upload(self)
+
         for button in form.actions().fields():
             if isinstance(button, GDT_Submit) and button.get_val():
                 if form.validate(None, None):
