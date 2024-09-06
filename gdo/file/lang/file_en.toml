@@ -1,1 +1,3 @@
 module_file = "Files"
+
+err_upload_mime = "The file format is not supported."

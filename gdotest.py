@@ -49,5 +49,5 @@ def suite():
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
-    runner.verbosity = 3
+    runner.verbosity = 4
     runner.run(suite())

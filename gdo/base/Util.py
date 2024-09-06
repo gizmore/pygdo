@@ -298,8 +298,8 @@ class Files:
 
     @classmethod
     def put_contents(cls, path: str, contents: str) -> bool:
-        with open(path, 'w') as f:
-            f.write(contents)
+        with open(path, 'wb') as f:
+            f.write(contents.encode('UTF-8') if isinstance(contents, str) else contents)
         return True
 
     @classmethod
@@ -310,7 +310,7 @@ class Files:
     @classmethod
     def mime(cls, path):
         mime_type = mimetypes.MimeTypes().guess_type(path)
-        return mime_type[0] if mime_type else  'application/octet-stream'
+        return mime_type[0] if mime_type[0] else 'application/octet-stream'
 
     @classmethod
     def size(cls, path: str) -> int:

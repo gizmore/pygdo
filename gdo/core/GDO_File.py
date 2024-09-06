@@ -41,8 +41,16 @@ class GDO_File(GDO):
             GDT_Creator('file_creator'),
         ]
 
+    def get_name(self):
+        return self.gdo_val('file_name')
+
     def get_mime(self) -> str:
         return self.gdo_val('file_mime')
+
+    def get_path(self) -> str:
+        if self._temp_path:
+            return self._temp_path
+        return self.get_target_path()
 
     def is_image(self) -> bool:
         from gdo.file.GDT_MimeType import GDT_MimeType
@@ -71,11 +79,11 @@ class GDO_File(GDO):
 
     @classmethod
     def from_dir(cls, dir: str):
-        filename = Files.get_contents(f"{dir}/name")
+        filename = Files.get_contents(f"{dir}name")
         file = cls.blank({
             'file_name': filename,
-            'file_size': str(Files.size(f"{dir}/0")),
-            'file_mime': Files.get_contents(f"{dir}/mime"),
+            'file_size': str(Files.size(f"{dir}0")),
+            'file_mime': Files.get_contents(f"{dir}mime"),
         })
         file.temp_path(f"{dir}/0")
         return file

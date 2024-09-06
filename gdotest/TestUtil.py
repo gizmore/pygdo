@@ -194,4 +194,7 @@ def cli_gizmore():
 
 
 def web_gizmore():
-    return Web.get_server().get_or_create_user('gizmore')
+    user = Web.get_server().get_or_create_user('gizmore')
+    GDO_UserPermission.grant(user, 'admin')
+    GDO_UserPermission.grant(user, 'staff')
+    return user

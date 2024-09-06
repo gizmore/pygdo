@@ -8,7 +8,8 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
-from gdo.base.Trans import Trans
+from gdo.base.Trans import t
+from gdo.base.Util import html
 from gdo.date.Time import Time
 
 
@@ -115,9 +116,13 @@ class Templite(object):
 
         namespace['include'] = include
 
+        # Util
         namespace['Time'] = Time
-        namespace['t'] = Trans.t
-        # namespace['tiso'] = Trans.tiso
+        namespace['t'] = t
+        namespace['Mode'] = Mode
+        namespace['html'] = html
+
+   #+     print(self._code)
 
         # execute template code
         exec(self._code, namespace)

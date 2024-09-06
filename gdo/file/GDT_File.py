@@ -71,8 +71,8 @@ class GDT_File(GDT_Object):
     def get_value(self):
         files = self.get_initial_files()
         if not files:
-            return super().get_value()
-        return files[0]
+            return [super().get_value()] or []
+        return files #[0]
 
     def get_initial_files(self):
         if not Application.has_session():
@@ -89,13 +89,14 @@ class GDT_File(GDT_Object):
         """
         Move file from memory to temp disk
         """
-        if file_data := method.get_files(self.get_name()):
-            dir = self.get_temp_dir()
-            Files.create_dir(dir)
-            path = dir + "/0"
-            Files.put_contents(path, file_data[2])
-            Files.put_contents(dir + "/mime", Files.mime(path))
-            Files.put_contents(dir + "/name", file_data[1])
+        if files_data := method.get_files(self.get_name()):
+            for file_data in files_data:
+                dir = self.get_temp_dir()
+                Files.create_dir(dir)
+                path = dir + "0"
+                Files.put_contents(path, file_data[2])
+                Files.put_contents(dir + "mime", Files.mime(path))
+                Files.put_contents(dir + "name", file_data[1])
 
     def get_temp_dir(self):
         sessid = Application.get_session().get_id()
@@ -106,9 +107,24 @@ class GDT_File(GDT_Object):
     # Validate #
     ############
     def validate(self, val: str | None, value: any) -> bool:
-        if value is None:
+        if not value:
             return super().validate(val, value)
+        return self.validate_file(value[0])
+
+    def validate_file(self, file: GDO_File):
+        if not self.validate_mime(file):
+            return self.error_mime()
         return True
+
+    def validate_mime(self, file: GDO_File):
+        if not self._mimes:
+            return True
+        if file.get_mime() not in self._mimes:
+            return False
+        return True
+
+    def error_mime(self):
+        return self.error('err_upload_mime')
 
     ##########
     # Render #

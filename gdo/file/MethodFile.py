@@ -5,6 +5,9 @@ from gdo.file.GDT_FileOut import GDT_FileOut
 
 
 class MethodFile(Method):
+    """
+    A method that renders a raw file.
+    """
 
     def render_file(self, file: GDO_File) -> GDT:
         return GDT_FileOut().path(file.get_target_path())
