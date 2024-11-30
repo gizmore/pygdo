@@ -1,15 +1,16 @@
 <div class="gdo-file-controls">
 <div id="gdo-file-preview-<%=field.get_name()%>"></div>
 <%
-for gdo_file in field.get_value():
-	delete_button = '1'
-	# delete_button = '' if field._no_delete else '<input type="submit" name="%s[delete_%s][%s]" value="Remove File" onclick="return confirm(\'%s\')"/>' % (field.get_name(), gdo_file.get_id(), t('confirm_delete'))
-	if field._preview and file.is_image():
-		write('<div class="gdo-file-preview"><img src="%s" />%s (%s)</div>' % (field.render_preview_href(gdo_file), delete_button, html(gdo_file.get_name())))
-	else:
-		write('1')
-		# write(delete_button)
-		# write(f'<div class="gdo-file-preview">{html(gdo_file.get_name())} {delete_button}</div>')
+if gdo_files := field.get_value:
+	for gdo_file in field.get_value():
+		delete_button = '1'
+		# delete_button = '' if field._no_delete else '<input type="submit" name="%s[delete_%s][%s]" value="Remove File" onclick="return confirm(\'%s\')"/>' % (field.get_name(), gdo_file.get_id(), t('confirm_delete'))
+		if field._preview and gdo_file.is_image():
+			write('<div class="gdo-file-preview"><img src="%s" />%s (%s)</div>' % (field.render_preview_href(gdo_file), delete_button, html(gdo_file.get_name())))
+		else:
+			write('1')
+			# write(delete_button)
+			# write(f'<div class="gdo-file-preview">{html(gdo_file.get_name())} {delete_button}</div>')
 %>
 </div>
 <div class="gdt-container">
@@ -22,7 +23,7 @@ if field._image_file:
 %>
 id="<%=field.get_name()%>"
 name="<%=field.get_name()%>"
-class="gdo-flow-file"/>
+class="gdo-flow-file" />
 <span id="gdo-file-input-<%=field.get_name()%>"></span>
 <%
 if field.has_error():

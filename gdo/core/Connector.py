@@ -78,7 +78,7 @@ class Connector:
         pass
 
     def get_name(self):
-        return self.__class__.__name__
+        return self.__class__.__name__.lower()
 
     def is_connected(self) -> bool:
         return self._connected

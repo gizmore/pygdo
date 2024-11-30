@@ -205,7 +205,7 @@ class GDO_User(GDO):
         self.save_setting('created', Time.get_date())
         self.save_setting('creator', self.current().get_id())
 
-    def gdo_after_delete(self, gdo):
+    def gdo_before_delete(self, gdo):
         self.save_setting('deleted', Time.get_date())
         self.save_setting('deletor', self.current().get_id())
 

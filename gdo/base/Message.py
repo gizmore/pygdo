@@ -58,7 +58,7 @@ class Message(WithEnv, threading.Thread):
         await self.deliver()
 
     async def deliver(self):
-        Logger.debug(f'Message.deliver: {self._result}')
+#        Logger.debug(f'Message.deliver: {self._result}')
         text = self._result
         self._result_raw = text  # for chatgpt :/
         if self._env_channel:

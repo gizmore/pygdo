@@ -72,7 +72,7 @@ class WebPlug:
         self._headers = {}
         self._status = "100 CONTINUE"
         self._url = url
-        self._out = ''
+        self._out = b''
         self._post = {}
         self._post_raw = None
         self._boundary = None
@@ -127,8 +127,11 @@ class WebPlug:
             self._environ['CONTENT_LENGTH'] = len(post_bytes)
         result = application(self._environ, self.start_request)
         for chunk in result:
-            self._out += chunk.decode('UTF-8')
-        return self._out
+            self._out += bytes(chunk)
+        try:
+            return self._out.decode('UTF-8')
+        except Exception:
+            return self._out
 
     def start_request(self, status, headers):
         self._status = status

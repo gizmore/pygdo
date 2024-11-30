@@ -20,6 +20,7 @@ class GDT_File(GDT_Object):
     _no_delete: bool
     _no_capture: bool
     _image_file: bool
+    _preview: bool
 
     def __init__(self, name: str):
         super().__init__(name)
@@ -32,6 +33,7 @@ class GDT_File(GDT_Object):
         self._no_delete = False
         self._no_capture = False
         self._image_file = False
+        self._preview = True
         self.table(GDO_File.table())
 
     ###########
@@ -71,8 +73,8 @@ class GDT_File(GDT_Object):
     def get_value(self):
         files = self.get_initial_files()
         if not files:
-            return [super().get_value()] or []
-        return files #[0]
+            return super().get_value() or None
+        return files[0]
 
     def get_initial_files(self):
         if not Application.has_session():
@@ -80,7 +82,9 @@ class GDT_File(GDT_Object):
         dir = self.get_temp_dir()
         if not Files.is_dir(dir):
             return []
-        return [GDO_File.from_dir(dir)]
+        if file := GDO_File.from_dir(dir):
+            return [file]
+        return []
 
     ##########
     # Upload #
@@ -100,7 +104,8 @@ class GDT_File(GDT_Object):
 
     def get_temp_dir(self):
         sessid = Application.get_session().get_id()
-        dir = Application.temp_path(f"files/{self._upload_path}/{sessid}/")
+        files_dir = Application.config('file.directory')
+        dir = Application.temp_path(f"{files_dir}{self._upload_path}/{sessid}/")
         return dir
 
     ############
@@ -109,7 +114,7 @@ class GDT_File(GDT_Object):
     def validate(self, val: str | None, value: any) -> bool:
         if not value:
             return super().validate(val, value)
-        return self.validate_file(value[0])
+        return self.validate_file(value)
 
     def validate_file(self, file: GDO_File):
         if not self.validate_mime(file):

@@ -36,11 +36,13 @@ class ModuleLoader:
     def reset(self):
         self._cache = {}
 
-    def gdo_import(self, name):
+    def gdo_import(self, name: str) -> 'GDO_Module':
         mn = importlib.import_module("gdo." + name)
         classname = 'module_' + name
         if classname in mn.__dict__.keys():
-            self._cache[name] = module = mn.__dict__[classname].blank()
+            self._cache[name] = module = mn.__dict__[classname].blank({
+                'module_name': name,
+            })
             module.init_language()
             return module
         return None

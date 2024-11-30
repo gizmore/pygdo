@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from gdo.core.GDO_Session import GDO_Session
+    from gdo.base.Database import Database
 
 from gdo.base.Events import Events
 from gdo.base.Logger import Logger
@@ -168,7 +169,7 @@ class Application:
             cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
 
     @classmethod
-    def db(cls):
+    def db(cls) -> 'Database':
         return cls.STORAGE.DB
 
     @classmethod

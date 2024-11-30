@@ -38,6 +38,7 @@ class GDT_Repeat(WithProxy, GDT_Field):
         if values is None:
             if not self._proxy.validate(val, values):
                 return self.error(self._proxy._errkey, self._proxy._errargs)
+            return super().validate(val, None)
         for value in values:
             if not self._proxy.validate(val, value):
                 return self.error(self._proxy._errkey, self._proxy._errargs)

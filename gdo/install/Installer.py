@@ -65,7 +65,11 @@ class Installer:
             if verbose:
                 print("Migrating core for user settings...")
             Installer.migrate_module(module_core.instance())
-        module.gdo_install()
+        try:
+            module.gdo_install()
+        except Exception as ex:
+            Logger.exception(ex)
+            return False
         return True
 
     @classmethod
@@ -90,7 +94,7 @@ class Installer:
         return Application.db().create_table(table)
 
     @classmethod
-    def install_gdo_fk(cls, classname):
+    def install_gdo_fk(cls, classname: str):
         table = Cache.table_for(classname)
         return Application.db().create_table_fk(table)
 
@@ -104,39 +108,33 @@ class Installer:
     @classmethod
     def migrate_gdo(cls, gdo: GDO):
         db = Application.db()
+        restore_from_zzz = False # If error occurs, try to rename zzz table to table
+        tablename = gdo.gdo_table_name()
+        temptable = f"zzz_temp_{tablename}"
         try:
             db.foreign_keys(False)
-            # Remove old temp table
-            tablename = gdo.gdo_table_name()
-            temptable = f"zzz_temp_{tablename}"
-            # create temp and copy as old
-            db.drop_table(temptable)
-            query = f"SHOW CREATE TABLE {tablename}"
-            result = db.select(query, False)
+            result = db.select(f"SHOW CREATE TABLE {tablename}", False)
             query = result.fetch_row()[1]
-            query = query.replace(tablename, temptable)
-            db.query(query)
-            query = f"INSERT INTO {temptable} SELECT * FROM {tablename}"
-            db.query(query)
+            db.query(query.replace(tablename, temptable))  # CREATE TABLE zzz% like old
+            if cols := cls.column_names(gdo, temptable):  # something changed?
+                columns = ",".join(cols)
+                db.query(f"INSERT INTO {temptable} SELECT * FROM {tablename}")  # copy old to zzz
 
-            query = f"DROP TABLE {tablename}"
-            db.query(query)
-            db.create_table(gdo)
+                restore_from_zzz = True  # At this point we can restore on error
 
-            # calculate columns and copy back in new
-            cols = cls.column_names(gdo, temptable)
+                db.drop_table(tablename)  # Drop old
 
-            columns = ",".join(cols)
-
-            query = f"INSERT INTO {tablename} ({columns}) SELECT {columns} FROM {temptable}"
-            db.query(query)
-
-            # drop temp after all succeded.
-            query = f"DROP TABLE {temptable}"
-            db.query(query)
+                db.create_table(gdo)  # Create new
+                db.create_table_fk(gdo)  # with FKs
+                db.query(f"INSERT INTO {tablename} ({columns}) SELECT {columns} FROM {temptable}")  # Copy zzz to new
         except Exception as ex:
             Logger.exception(ex)
+            if restore_from_zzz:
+                db.drop_table(tablename)  # Remove old temp table
+                db.query(f"RENAME TABLE {temptable} TO {tablename}")
+                db.create_table_fk(gdo)
         finally:
+            db.drop_table(temptable)  # Remove old temp table
             db.foreign_keys(True)
 
     @classmethod

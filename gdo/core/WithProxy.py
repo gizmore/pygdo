@@ -14,7 +14,7 @@ class WithProxy:
 
     def not_null(self, notnull=True):
         self._proxy.not_null(notnull)
-        return self
+        return super().not_null(notnull)
 
     def is_not_null(self) -> bool:
         return self._proxy.is_not_null()

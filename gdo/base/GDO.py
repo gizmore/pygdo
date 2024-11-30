@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import traceback
 
+from gdo.base.Exceptions import GDOException
 from gdo.base.Result import ResultType
 
 from gdo.base.Cache import Cache
@@ -101,6 +102,12 @@ class GDO(WithBulk, GDT):
         for key in names:
             cols.append(self.column(key))
         return cols
+
+    def column_by_type(self, klass: type) -> 'GDT':
+        for gdt in self.columns():
+            if isinstance(gdt, klass):
+                return gdt
+        raise GDOException(f"{self.get_name()} has no GDT of type {klass}")
 
     def gdo_val(self, key):
         if key not in self._vals:
@@ -217,12 +224,12 @@ class GDO(WithBulk, GDT):
         return self.insert()
 
     def insert(self):
-        return self.insertOrReplace(Type.INSERT)
+        return self.insert_or_replace(Type.INSERT)
 
     def replace(self):
-        return self.insertOrReplace(Type.REPLACE)
+        return self.insert_or_replace(Type.REPLACE)
 
-    def insertOrReplace(self, type_: Type):
+    def insert_or_replace(self, type_: Type):
         self.before_create()
         query = self.query().type(type_).set_vals(self.insert_vals())
         self._last_id = query.exec()
@@ -255,12 +262,14 @@ class GDO(WithBulk, GDT):
         return self.query().type(Type.DELETE)
 
     def delete(self):
-        self.before_delete()
-        self.delete_query().where(self.pk_where()).exec()
-        vals = {gdt.get_name(): gdt.get_val() for gdt in self.get_pk_columns()}
-        Cache.obj_search(self.table(), vals, True)
-        self.after_delete()
-        return self.all_dirty(True)
+        if self.is_persisted():
+            self.before_delete()
+            self.delete_query().where(self.pk_where()).exec()
+            vals = {gdt.get_name(): gdt.get_val() for gdt in self.get_pk_columns()}
+            Cache.obj_search(self.table(), vals, True)
+            self.after_delete()
+            self.all_dirty(True)
+        return self
 
     def delete_where(self, where: str, with_hooks: bool = False):
         self.delete_query().where(where).exec()
@@ -280,7 +289,6 @@ class GDO(WithBulk, GDT):
         for gdt in self.columns():
             gdt.gdo_before_create(self)
         self.gdo_before_create(self)
-        pass
 
     def after_create(self):
         for gdt in self.columns():
@@ -293,21 +301,20 @@ class GDO(WithBulk, GDT):
         self.gdo_before_update(self)
 
     def after_update(self):
+        Cache.obj_for(self).set_vals(self._vals, False)  # After a blanked update this is required.
+        self.gdo_after_update(self)
         for gdt in self.columns():
             gdt.gdo_after_update(self)
-        self.gdo_after_update(self)
-        Cache.obj_for(self).set_vals(self._vals, False)  # After a blanked update this is required.
 
     def before_delete(self):
         for gdt in self.columns():
             gdt.gdo_before_delete(self)
         self.gdo_before_delete(self)
-        pass
 
     def after_delete(self):
+        self.gdo_after_delete(self)
         for gdt in self.columns():
             gdt.gdo_after_delete(self)
-        self.gdo_after_delete(self)
 
     #######
     # All #

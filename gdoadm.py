@@ -268,7 +268,7 @@ class App:
         if args.all:
             modules = list(loader.load_modules_fs('*', reinstall).values())
         elif args.module:
-            ModuleLoader.instance().load_modules_fs()
+#            ModuleLoader.instance().load_modules_fs()
             modules = ModuleLoader.instance().load_modules_fs(args.module.lower(), reinstall)
             modules = list(modules.values())
         else:

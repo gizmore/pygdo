@@ -150,7 +150,7 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
     ############
 
     def validate(self, val: str | None, value: any) -> bool:
-        if val is None:
+        if value is None:
             if self._not_null:
                 return self.error_not_null()
 

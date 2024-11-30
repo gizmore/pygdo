@@ -101,6 +101,5 @@ class CoreTestCase(GDOTestCase):
         self.assertIn("31mreload", out, "Reload should be red")
 
 
-
 if __name__ == '__main__':
     unittest.main()

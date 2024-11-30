@@ -26,7 +26,7 @@ class GDT_Order(WithHREF, GDT_String):
         vals = self.get_val()
         if vals is not None:
             for val in vals:
-                query.order(val).debug()
+                query.order(val)
 
     def href_order(self, gdt: GDT, dir: str):
         url = Application.environ('REQUEST_URI')

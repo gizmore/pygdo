@@ -92,7 +92,8 @@ def run_tests():
     p = Stats(profile)
     p.strip_dirs()
     p.sort_stats('cumtime')
-    p.print_stats()
+    p.dump_stats(Application.temp_path('profiler.dump.txt'))
+#    p.print_stats()
 
     # Finish
     test_runner = unittest.TextTestRunner()

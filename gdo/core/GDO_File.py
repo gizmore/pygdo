@@ -79,14 +79,17 @@ class GDO_File(GDO):
 
     @classmethod
     def from_dir(cls, dir: str):
-        filename = Files.get_contents(f"{dir}name")
-        file = cls.blank({
-            'file_name': filename,
-            'file_size': str(Files.size(f"{dir}0")),
-            'file_mime': Files.get_contents(f"{dir}mime"),
-        })
-        file.temp_path(f"{dir}/0")
-        return file
+        try:
+            filename = Files.get_contents(f"{dir}name")
+            file = cls.blank({
+                'file_name': filename,
+                'file_size': str(Files.size(f"{dir}0")),
+                'file_mime': Files.get_contents(f"{dir}mime"),
+            })
+            file.temp_path(f"{dir}/0")
+            return file
+        except FileNotFoundError:
+            return None
 
     @classmethod
     def from_path(cls, path: str, delete: bool = False):

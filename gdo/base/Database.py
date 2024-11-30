@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO
+    from gdo.base.GDT import GDT
 
 import mysql.connector
 from mysql.connector import ProgrammingError, DatabaseError, IntegrityError
@@ -78,10 +79,13 @@ class Database:
 
     def select(self, query: str, dictionary: bool = True):
         from gdo.base.Application import Application
-        Application.DB_READS += 1
-        cursor = self.cursor(dictionary)
-        cursor.execute(query)
-        return Result(cursor)
+        try:
+            Application.DB_READS += 1
+            cursor = self.cursor(dictionary)
+            cursor.execute(query)
+            return Result(cursor)
+        except (ProgrammingError, DatabaseError, IntegrityError) as ex:
+            raise GDODBException(ex.msg, query)
 
     def cursor(self, dictionary=True):
         return self.get_link().cursor(dictionary=dictionary, buffered=True)
@@ -98,14 +102,9 @@ class Database:
                 prim.append(gdt.get_name())
             if gdt.is_unique():
                 uniq.append(gdt.get_name())
-            # fk = gdt.column_define_fk()
-            # if fk:
-            #     fkey.append(fk)
         if prim:
             primary = ",".join(prim)
             cols.append(f"PRIMARY KEY ({primary})")
-        # if fkey:
-        #     cols.extend(fkey)
         if uniq:
             unique = ",".join(uniq)
             cols.append(f"CONSTRAINT {gdo.gdo_table_name()}_UNIQUE UNIQUE ({unique})")
@@ -117,8 +116,19 @@ class Database:
         for gdt in gdo.columns():
             fk = gdt.column_define_fk()
             if fk:
-                query = f"ALTER TABLE {gdo.gdo_table_name()} ADD {fk}"
-                self.query(query)
+                cn = f"GDO__FK__{gdo.gdo_table_name()}__{gdt.get_name()}"
+                self.delete_fk(cn)
+                self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} {fk}")
+
+    def delete_fk(self, constraint_name: str):
+        from gdo.base.Application import Application
+        db_name = Application.config('db.name')
+        query = (f'SELECT CONCAT("ALTER TABLE ", TABLE_NAME, " DROP FOREIGN KEY ", CONSTRAINT_NAME) AS drop_statement '
+                 f'FROM information_schema.TABLE_CONSTRAINTS '
+                 f'WHERE CONSTRAINT_TYPE = "FOREIGN KEY" AND TABLE_SCHEMA = "{db_name}" AND CONSTRAINT_NAME = "{constraint_name}"')
+        result = self.select(query, False)
+        if query := result.fetch_val():
+            self.query(query)
 
     def is_configured(self):
         return self.db_host is not None

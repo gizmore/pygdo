@@ -4,8 +4,7 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import bytelen
-from gdo.core import module_core
-from gdo.core.method.echo import echo
+from gdo.core.method.echo import (echo)
 from gdotest.TestUtil import WebPlug
 
 
@@ -25,26 +24,26 @@ class WebTestCase(unittest.TestCase):
 
     def test_02_web_plug_echo(self):
         req = WebPlug("core.echo;text.This%20Test.html?_lang=de")
-        req.exec()
-        self.assertIn('This Test', req._out, "Plugged web test failed")
+        out = req.exec()
+        self.assertIn('This Test', out, "Plugged web test failed")
 
     def test_03_json_via_web(self):
         req = WebPlug("core.echo;text.This%20Test.json?_lang=de")
-        req.exec()
-        self.assertIn('{', req._out, "web json test failed")
-        self.assertIn('"text":', req._out, "web json test failed")
-        self.assertIn('"This Test"', req._out, "web json test failed")
-        self.assertIn('}', req._out, "web json test failed")
+        out = req.exec()
+        self.assertIn('{', out, "web json test failed")
+        self.assertIn('"text":', out, "web json test failed")
+        self.assertIn('"This Test"', out, "web json test failed")
+        self.assertIn('}', out, "web json test failed")
 
     def test_04_welcome_page(self):
         req = WebPlug("core.welcome.html")
-        req.exec()
-        self.assertIn('PyGDO', req._out, "Welcome method does not work")
+        out = req.exec()
+        self.assertIn('PyGDO', out, "Welcome method does not work")
 
     def test_05_file_not_found(self):
         req = WebPlug("core.echoNONO;This%20Test.html?_lang=de")
-        req.exec()
-        self.assertIn('not found', req._out, "Plugged web test 404 failed")
+        out = req.exec()
+        self.assertIn('not found', out, "Plugged web test 404 failed")
 
     def test_06_asset_download(self):
         req = WebPlug("gdo/core/css/pygdo.css?v=2")
