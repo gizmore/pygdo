@@ -400,10 +400,14 @@ class Arrays:
         return list(dic.keys())[index_no]
 
     @classmethod
-    def human_join(cls, lst: list[str], conn: str = 'and'):
+    def human_join(cls, lst: list[str], conn: str = 'and') -> str:
         from gdo.base.Trans import t
-        conn = t(conn)
-        return conn.join(lst)
+        if len(lst) == 0:
+            return ''
+        elif len(lst) == 1:
+            return lst[0]
+        else:
+            return f"{', '.join(lst[:-1])} {t(conn)} {lst[-1]}"
 
     @classmethod
     def empty(cls, vals: list[str]) -> bool:

@@ -71,8 +71,8 @@ class Result:
         if row is None:
             self.close()
             return None
-        # if isinstance(row, dict):
-        #     return list(row.values())
+        if isinstance(row, dict):
+            return list(row.values())
         return list(row)
 
     def fetch_assoc(self):
@@ -103,8 +103,8 @@ class Result:
         obj.all_dirty(False)
         return Cache.obj_for(obj)
 
-    def fetch_column(self) -> list[str]:
+    def fetch_column(self, col_num: int = 0) -> list[str]:
         result = []
         while row := self.fetch_row():
-            result.append(row[0])
+            result.append(row[col_num])
         return result

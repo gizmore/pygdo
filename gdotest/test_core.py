@@ -4,7 +4,7 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.base.Util import Permutations
+from gdo.base.Util import Permutations, Arrays
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_MD5 import GDT_MD5
@@ -103,6 +103,12 @@ class CoreTestCase(GDOTestCase):
     def test_12_whoami(self):
         out = cli_plug(cli_gizmore(), "$WHOAMI")
         self.assertIn('gizmore{1}', out, '$WHOAMI does not work')
+
+    def test_13_human_join(self):
+        self.assertEqual('', Arrays.human_join([]), 'Arrays.human_join() does not work with empty arg.')
+        self.assertEqual('test', Arrays.human_join(['test']), 'Arrays.human_join() does not work with single item.')
+        self.assertEqual('test and test2', Arrays.human_join(['test', 'test2']), 'Arrays.human_join() does not work with single item.')
+        self.assertEqual('test, test3 and test2', Arrays.human_join(['test', 'test3', 'test2']), 'Arrays.human_join() does not work with single item.')
 
 
 
