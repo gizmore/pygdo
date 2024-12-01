@@ -16,15 +16,27 @@ class GDO_Permission(GDO):
     CRONJOB = 'cronjob'
 
     @classmethod
-    def get_by_name(cls, name: str):
+    def get_by_name(cls, name: str) -> 'GDO_Permission':
         return GDO_Permission.table().get_by_vals({
             'perm_name': name,
         })
 
     @classmethod
+    def get_or_create(cls, name: str) -> 'GDO_Permission':
+        if perm := cls.get_by_name(name):
+            return perm
+        return cls.blank({
+            'perm_name': name,
+        }).insert()
+
+    @classmethod
     def has_permission(cls, user: 'GDO_User', permission: str):
         from gdo.core.GDO_UserPermission import GDO_UserPermission
-        return GDO_UserPermission.has_permission(user, cls.get_by_name(permission))
+        for perm_name in permission.split(','):
+            if perm := cls.get_by_name(perm_name):
+                if GDO_UserPermission.has_permission(user, perm):
+                    return True
+        return False
 
     def __init__(self):
         super().__init__()

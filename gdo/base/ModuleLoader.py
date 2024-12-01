@@ -55,7 +55,7 @@ class ModuleLoader:
 
     def get_method(self, method_trigger: str) -> Method | None:
         try:
-            method = self._methods[method_trigger]
+            method = self._methods[method_trigger.lower()]
             fqn = method.fqn()
             module_name, class_name = fqn.rsplit('.', 1)
             module = importlib.import_module(module_name)
@@ -183,6 +183,6 @@ class ModuleLoader:
             for method in module.get_methods():
                 trigger = method.gdo_trigger()
                 if trigger:
-                    self._methods[trigger] = method
+                    self._methods[trigger.lower()] = method
 
 

@@ -100,6 +100,11 @@ class CoreTestCase(GDOTestCase):
         out = cli_plug(petra, "$help")
         self.assertIn("31mreload", out, "Reload should be red")
 
+    def test_12_whoami(self):
+        out = cli_plug(cli_gizmore(), "$WHOAMI")
+        self.assertIn('gizmore{1}', out, '$WHOAMI does not work')
+
+
 
 if __name__ == '__main__':
     unittest.main()
