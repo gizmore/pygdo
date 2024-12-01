@@ -2,6 +2,7 @@ import os
 import sys
 import threading
 import time
+
 import tomlkit
 
 from typing import TYPE_CHECKING
@@ -22,14 +23,12 @@ class Application:
     IS_HTTP = False
     LOADER: object
     EVENTS: 'Events'
-    # SERVER: object  # This server instance is the server for the GHOST user :/
     STORAGE = threading.local()
     LANG_ISO = 'en'
     TIME = time.time()
     DB_READS: int = 0
     DB_WRITES: int = 0
 
-    # DB: object
     PATH: str = ''
     CONFIG_PATH: str = ''
     CONFIG: dict[str, str] = {}

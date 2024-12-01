@@ -1,6 +1,6 @@
+import asyncio
 import threading
 
-from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.Render import Mode
 from gdo.base.WithEnv import WithEnv
@@ -48,7 +48,10 @@ class Message(WithEnv, threading.Thread):
 
     async def run(self):
         txt = ''
-        txt2 = self._method.execute().render(self._env_mode)
+        result = self._method.execute()
+        if asyncio.iscoroutine(result):
+            result = await result
+        txt2 = result.render(self._env_mode)
         txt1 = GDT_Page.instance()._top_bar.render(self._env_mode)
         if txt1:
             txt += txt1 + " "
@@ -58,7 +61,6 @@ class Message(WithEnv, threading.Thread):
         await self.deliver()
 
     async def deliver(self):
-#        Logger.debug(f'Message.deliver: {self._result}')
         text = self._result
         self._result_raw = text  # for chatgpt :/
         if self._env_channel:

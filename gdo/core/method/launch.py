@@ -37,8 +37,6 @@ class launch(Method):
             return self.err('err_dog_already_running')
         Files.touch(self.lock_path(), True)
         try:
-            from gdo.net.method.wget import wget
-            # wget().env_copy(self).input('url', 'https://pygdo.gizmore.org/core.usage.json').input('insecure', '1').execute()
             asyncio.run(self.mainloop())
         except KeyboardInterrupt as ex:
             self.send_quit_message('CTRL-C got pressed')
@@ -61,14 +59,14 @@ class launch(Method):
     async def mainloop(self):
         Logger.debug("Launching DOG Bot")
         sleep_ms = self.sleep_ms()
+        Logger.debug(f"sleep_ms = {sleep_ms}")
         try:
             while Application.RUNNING:
-                # Logger.debug('In mainloop')
                 self.mainloop_step_timers()
                 servers = GDO_Server.table().all()
                 for server in servers:
                     self.mainloop_step_server(server)
-                await asyncio.sleep(1.0)
+                await asyncio.sleep(5)
         except Exception as ex:
             raise ex
         finally:
@@ -84,10 +82,6 @@ class launch(Method):
             Logger.debug(f"step server {server.render_name()}")
             server._has_loop = True
             asyncio.create_task(server.loop())
-        # conn = server.get_connector()
-        # if not conn.is_connected():
-        #     # asyncio.get_event_loop_policy().get_event_loop().call_soon(functools.partial(self.connect_server, server))
-        #     self.connect_server(server)
 
     def connect_server(self, server) -> bool:
         conn = server.get_connector()

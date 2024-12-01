@@ -1,8 +1,10 @@
+import asyncio
 import time
 
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.core.GDT_None import GDT_None
+from gdo.core.GDT_String import GDT_String
 from gdo.date.GDT_Duration import GDT_Duration
 
 
@@ -16,6 +18,6 @@ class sleep(Method):
             GDT_Duration('time').not_null(),
         ]
 
-    def gdo_execute(self):
-        time.sleep(self.param_value('time'))
+    async def gdo_execute(self):
+        await asyncio.sleep(self.param_value('time'))
         return GDT_None()
