@@ -29,7 +29,7 @@ class InstallCore:
         if not GDO_Server.get_by_connector('Bash'):
             Application.SERVER = GDO_Server.blank({
                 'serv_name': 'Bash',
-                'serv_connector': 'Bash',
+                'serv_connector': 'bash',
                 # 'serv_trigger': '.',
             }).insert()
 
@@ -38,7 +38,7 @@ class InstallCore:
         if not GDO_Server.get_by_connector('Web'):
             GDO_Server.blank({
                 'serv_name': 'Web',
-                'serv_connector': 'Web',
+                'serv_connector': 'web',
             }).insert()
 
     @classmethod

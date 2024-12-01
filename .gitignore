@@ -3,6 +3,7 @@
 /.python-version
 /.idea/
 /.venv/
+/bin/dog.lock
 __pycache__/
 /node_modules/
 /yarn.lock
