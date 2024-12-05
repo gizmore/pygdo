@@ -71,11 +71,12 @@ class Connector:
 
     def gdo_send_to_channel(self, msg: Message):
         Logger.debug(f"{self.get_name()} has stub send_to_channel()")
-        pass
 
     def gdo_send_to_user(self, msg: Message):
         Logger.debug(f"{self.get_name()} has stub send_to_user()")
-        pass
+
+    def gdo_get_dog_user(self) -> GDO_User:
+        return GDO_User.system()
 
     def get_name(self):
         return self.__class__.__name__.lower()
@@ -130,14 +131,16 @@ class Connector:
             self._next_connect_time = Application.TIME
         return self
 
-    def send_to_channel(self, msg: Message):
+    def send_to_channel(self, msg: Message, with_events: bool=True):
         msg._sender = GDO_User.system() if not msg._sender else msg._sender
         if Application.is_html():
             pass
-        Application.EVENTS.publish('msg_sent', msg)
+        if with_events:
+            Application.EVENTS.publish('msg_sent', msg)
         return self.gdo_send_to_channel(msg)
 
-    def send_to_user(self, msg: Message):
+    def send_to_user(self, msg: Message, with_events: bool=True):
         msg._sender = GDO_User.system() if not msg._sender else msg._sender
-        Application.EVENTS.publish('msg_sent', msg)
+        if with_events:
+            Application.EVENTS.publish('msg_sent', msg)
         return self.gdo_send_to_user(msg)

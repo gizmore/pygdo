@@ -20,6 +20,10 @@ class Bash(Connector):
     async def gdo_send_to_user(self, msg: Message):
         print(msg._result)
 
+    def gdo_handle_message(self, message: Message):
+        pass
+
+
     def gdo_connect(self):
         # Logger.debug("Bash connect...")
         self._connected = True

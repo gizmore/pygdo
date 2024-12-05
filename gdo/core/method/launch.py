@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import queue
 import time
 
 from gdo.base.Application import Application
@@ -21,7 +22,7 @@ class launch(Method):
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Bool('force').not_null().initial('0'),
-            GDT_Duration('dog_msleep').not_null().initial('5ms'),
+            GDT_Duration('dog_msleep').not_null().initial('25ms'),
         ]
 
     def is_forced(self) -> bool:
@@ -66,7 +67,8 @@ class launch(Method):
                 servers = GDO_Server.table().all()
                 for server in servers:
                     self.mainloop_step_server(server)
-                await asyncio.sleep(5)
+                await self.mainloop_process_ai()
+                await asyncio.sleep(sleep_ms)
         except Exception as ex:
             raise ex
         finally:
@@ -74,8 +76,6 @@ class launch(Method):
 
     def mainloop_step_timers(self):
         Application.tick()
-
-    # def mainloop_step_servers(self):
 
     def mainloop_step_server(self, server: GDO_Server):
         if not server._has_loop:
@@ -90,3 +90,10 @@ class launch(Method):
         elif conn.should_connect_now():
             conn.connect()
         return True
+
+    async def mainloop_process_ai(self):
+        try:
+            if message := Application.MESSAGES.get(block=False):
+                await message.execute()
+        except queue.Empty:
+            pass

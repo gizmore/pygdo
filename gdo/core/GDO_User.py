@@ -13,7 +13,6 @@ from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Object import GDT_Object
 from gdo.core.GDT_Server import GDT_Server
-from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_UserType import GDT_UserType
 from gdo.date.Time import Time
 from gdo.net.GDT_IP import GDT_IP
@@ -213,3 +212,6 @@ class GDO_User(GDO):
     #############
     def send(self, key: str, args: list = None, reply_to: str=None):
         self.get_server().send_to_user(self, key, args, reply_to)
+
+    def is_dog(self) -> bool:
+        return self == self.get_server().get_connector().gdo_get_dog_user()

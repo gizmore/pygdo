@@ -1,9 +1,11 @@
 import os.path
 import unittest
+from datetime import datetime
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.date.GDO_Timezone import GDO_Timezone
+from gdo.date.GDT_Timestamp import GDT_Timestamp
 from gdo.date.Time import Time
 from gdotest.TestUtil import install_module
 
@@ -65,6 +67,11 @@ class DateTestCase(unittest.TestCase):
         time = Time.get_time(Time.get_date())
         age = Time.get_age_in_years(Application.TIME - time)
         self.assertEqual(age, 0, 'Cannot get zero age in years.')
+
+    def test_value_conversion(self):
+        col = GDT_Timestamp('test').val('2023-11-09 14:12:11.123')
+        dt = col.get_value()
+        self.assertIsInstance(dt, datetime, 'Conversion does not yield an object.')
 
 
 

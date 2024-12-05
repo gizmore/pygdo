@@ -1,6 +1,9 @@
 from enum import Enum
-
 from mysql.connector.cursor import MySQLCursorDict
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.base.GDO import GDO
 
 from gdo.base.Cache import Cache
 
@@ -13,10 +16,10 @@ class ResultType(Enum):
 
 class Result:
     _result: MySQLCursorDict
-    _table: object
+    _table: 'GDO'
     _iter = ResultType.OBJECT
 
-    def __init__(self, result, gdo=None):
+    def __init__(self, result: MySQLCursorDict, gdo: 'GDO' = None):
         self._result = result
         self._table = gdo
 
@@ -50,7 +53,7 @@ class Result:
             raise StopIteration
         return data
 
-    def fetch_all(self):
+    def fetch_all(self) -> list['GDO']:
         return [row for row in self]
 
     def fetch_all_dict(self) -> dict:
@@ -91,7 +94,7 @@ class Result:
         self.close()
         return result
 
-    def fetch_object(self):
+    def fetch_object(self) -> 'GDO':
         """
         Fetch the next row as an object piped through the cache
         """

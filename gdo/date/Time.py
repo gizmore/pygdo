@@ -150,7 +150,7 @@ class Time:
 
     @classmethod
     def parse_time_db(cls, date: str) -> float:
-        return cls.parse_time(date, cls.UTC, 'db')
+        return cls.parse_time(date, cls.TIMEZONE, 'db')
 
     @classmethod
     def parse_time_iso(cls, iso: str, date: str, tz: str = None, format: str = 'parse') -> float:
@@ -166,7 +166,7 @@ class Time:
         return cls.parse_datetime_iso(Application.LANG_ISO, date, tz, fmt)
 
     @classmethod
-    def parse_datetime_db(cls, date: str, tz: str = None) -> None | datetime:
+    def parse_datetime_db(cls, date: str, tz: str = TIMEZONE) -> None | datetime:
         return cls.parse_datetime_iso('en', date, tz, 'db')
 
     @classmethod
@@ -182,8 +182,10 @@ class Time:
             date += ':00.000000'
         elif len(date) == 19:
             date += '.000000'
+        elif len(date) == 23:
+            date += '000'
         elif len(date) != 26:
-            raise ValueError('Cannot parse invalid date format.')
+            raise ValueError(f"Cannot parse invalid date format: {date}")
 
         if fmt == 'db':
             fmt = '%Y-%m-%d %H:%M:%S.%f'

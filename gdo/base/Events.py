@@ -1,3 +1,6 @@
+import asyncio
+
+
 class Events:
     _subscribers: dict[str, list[dict]]
     _timers: list[dict]
@@ -45,7 +48,9 @@ class Events:
 
         if event_name in self._subscribers:
             for subscriber in self._subscribers[event_name]:
-                subscriber['callback'](*args, **kwargs)
+                result = subscriber['callback'](*args, **kwargs)
+                if asyncio.iscoroutine(result):
+                    asyncio.run(result)
                 subscriber['count'] -= 1
                 if subscriber['count'] == 0:
                     to_delete.append(subscriber['callback'])
