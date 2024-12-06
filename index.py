@@ -48,13 +48,10 @@ def application(environ, start_response):
             Application.init_common()
             Application.init_web(environ)
             loader = ModuleLoader.instance()
+            loader.init_modules(True, True)
             Application.fresh_page()
 
-        # dump(environ)
-
         qs = parse_qs(environ['QUERY_STRING'])
-
-        # dump(qs)
 
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
