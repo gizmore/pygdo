@@ -13,7 +13,7 @@ from gdo.core.GDT_User import GDT_User
 from gdo.core.connector.Bash import Bash
 from gdo.core.method.reload import reload
 from gdo.ui.GDT_Page import GDT_Page
-from gdotest.TestUtil import cli_plug, web_gizmore, cli_gizmore, GDOTestCase
+from gdotest.TestUtil import cli_plug, web_gizmore, cli_gizmore, GDOTestCase, web_plug
 
 
 class CoreTestCase(GDOTestCase):
@@ -110,6 +110,9 @@ class CoreTestCase(GDOTestCase):
         self.assertEqual('test and test2', Arrays.human_join(['test', 'test2']), 'Arrays.human_join() does not work with single item.')
         self.assertEqual('test, test3 and test2', Arrays.human_join(['test', 'test3', 'test2']), 'Arrays.human_join() does not work with single item.')
 
+    def test_14_welcome(self):
+        out = web_plug('core.welcome.html').exec()
+        self.assertIn('Welcome', out, 'Welcome page does not work')
 
 
 if __name__ == '__main__':
