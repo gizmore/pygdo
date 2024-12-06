@@ -1,3 +1,4 @@
+import asyncio
 import cgi
 import os.path
 import traceback
@@ -21,7 +22,6 @@ from gdo.core.method.not_found import not_found
 from gdo.ui.GDT_Error import GDT_Error
 
 FRESH = True
-
 
 def application(environ, start_response):
     """

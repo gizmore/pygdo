@@ -246,7 +246,6 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         for arg in method._args:
             if isinstance(arg, Method):
                 method._args[i] = self._nested_execute(arg)
-                pass
             i += 1
         gdt = method._nested_execute_parse()
         if return_gdt:

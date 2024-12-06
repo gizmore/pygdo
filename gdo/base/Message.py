@@ -30,10 +30,7 @@ class Message(WithEnv):
         self._delivered = False
 
     def message_copy(self) -> 'Message':
-        copy = Message(self._message, self._env_mode).env_copy(self)
-        # copy._sender = self._sender
-        copy._result = self._result
-        return copy
+        return Message(self._message, self._env_mode).env_copy(self).result(self._result).comrade(self._thread_user)
 
     def message(self, text: str):
         self._message = text
@@ -49,6 +46,7 @@ class Message(WithEnv):
         return self
 
     async def execute(self):
+        Application.fresh_page()
         Application.EVENTS.publish('new_message', self)
         try:
             trigger = self._env_server.get_trigger()
@@ -58,7 +56,7 @@ class Message(WithEnv):
                 self._message = self._message[1:]
                 parser = Parser(self._env_mode, self._env_user, self._env_server, self._env_channel, self._env_session)
                 self._method = parser.parse(self._message)
-                await self.run()
+                return await self.run()
         except Exception as ex:
             Logger.exception(ex)
             self._result = Application.get_page()._top_bar.render(self._env_mode)
