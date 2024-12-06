@@ -15,30 +15,27 @@ class Message(WithEnv):
     _method: Method
     _message: str
     _result: str
-    _result_raw: str
-    _sender: GDO_User
-    _comrade: GDO_User
-    _thread_user: GDO_User
+    # _sender: GDO_User
+    _thread_user: GDO_User  # For chatgpt
+    _delivered: bool
 
     def __init__(self, message: str, mode: Mode):
         super().__init__()
         self.env_http(False)
         self.env_mode(mode)
         self._message = message
-        self.daemon = True
-        self._sender = None  # GDO_User.system()
+        # self._sender = None  # GDO_User.system()
         self._env_reply_to = None
-        self._comrade = None
+        self._thread_user = None
         self._env_channel = None
         self._env_session = None
         self._result = ''
-        self._result_raw = ''
+        self._delivered = False
 
     def message_copy(self) -> 'Message':
         copy = Message(self._message, self._env_mode).env_copy(self)
-        copy._sender = self._sender
+        # copy._sender = self._sender
         copy._result = self._result
-        copy._result_raw = self._result_raw
         return copy
 
     def message(self, text: str):
@@ -47,10 +44,10 @@ class Message(WithEnv):
 
     def result(self, result: str):
         self._result = result
+        self._delivered = False
         return self
 
     def comrade(self, user: GDO_User):
-        self._comrade = user
         self._thread_user = user
         return self
 
@@ -87,9 +84,9 @@ class Message(WithEnv):
 
     async def deliver(self, with_events: bool=True):
         text = self._result
-        if not text:
+        if not text or self._delivered:
             return
-        self._result_raw = text  # for chatgpt :/
+        self._delivered = True
         if self._env_channel:
             reply_to = self._env_reply_to or self._env_user.render_name()
             text = f"{reply_to}: {text}"
@@ -99,12 +96,10 @@ class Message(WithEnv):
             if self._env_reply_to:
                 text = f"{self._env_reply_to}: {text}"
                 self._result = text
-            u = self._env_user
-            if self._comrade:
-                self._env_user = self._comrade
-                self._comrade = u
+            u = self._thread_user if self._thread_user else self._env_user
+            o = self._env_user
+            if self._thread_user:
+                self._env_user = u
             await self._env_server.get_connector().send_to_user(self, with_events)
-            self._comrade = self._env_user
-            self._env_user = u
-
-
+            if self._thread_user:
+                self._env_user = o

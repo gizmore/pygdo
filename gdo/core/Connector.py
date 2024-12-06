@@ -69,10 +69,10 @@ class Connector:
     def gdo_disconnected(self):
         pass
 
-    def gdo_send_to_channel(self, msg: Message):
+    async def gdo_send_to_channel(self, msg: Message):
         Logger.debug(f"{self.get_name()} has stub send_to_channel()")
 
-    def gdo_send_to_user(self, msg: Message):
+    async def gdo_send_to_user(self, msg: Message):
         Logger.debug(f"{self.get_name()} has stub send_to_user()")
 
     def gdo_get_dog_user(self) -> GDO_User:
@@ -131,16 +131,16 @@ class Connector:
             self._next_connect_time = Application.TIME
         return self
 
-    def send_to_channel(self, msg: Message, with_events: bool=True):
-        msg._sender = GDO_User.system() if not msg._sender else msg._sender
-        if Application.is_html():
-            pass
+    async def send_to_channel(self, msg: Message, with_events: bool=True):
+        # msg._sender = GDO_User.system() if not msg._sender else msg._sender
+        # if Application.is_html():
+        #     pass
+        await self.gdo_send_to_channel(msg)
         if with_events:
             Application.EVENTS.publish('msg_sent', msg)
-        return self.gdo_send_to_channel(msg)
 
-    def send_to_user(self, msg: Message, with_events: bool=True):
-        msg._sender = GDO_User.system() if not msg._sender else msg._sender
+    async def send_to_user(self, msg: Message, with_events: bool=True):
+        # msg._sender = GDO_User.system() if not msg._sender else msg._sender
+        await self.gdo_send_to_user(msg)
         if with_events:
             Application.EVENTS.publish('msg_sent', msg)
-        return self.gdo_send_to_user(msg)
