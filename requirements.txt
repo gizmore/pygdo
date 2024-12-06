@@ -4,6 +4,6 @@ mysql
 mysql-connector
 packaging
 psutil
-pytz
+pytzdata
 tomlkit
 typing_extensions
