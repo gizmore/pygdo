@@ -81,15 +81,16 @@ class Message(WithEnv):
         self._result = txt.strip()
         await self.deliver()
 
-    async def deliver(self, with_events: bool=True):
+    async def deliver(self, with_events: bool=True, with_prefix: bool=True):
         text = self._result
         if not text or self._delivered:
             return
         self._delivered = True
         if self._env_channel:
-            reply_to = self._env_reply_to or self._env_user.render_name()
-            text = f"{reply_to}: {text}"
-            self._result = text
+            if with_prefix:
+                reply_to = self._env_reply_to or self._env_user.render_name()
+                text = f"{reply_to}: {text}"
+                self._result = text
             await self._env_server.get_connector().send_to_channel(self, with_events)
         else:
             if self._env_reply_to:

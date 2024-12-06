@@ -1,3 +1,5 @@
+import asyncio
+
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
@@ -20,9 +22,10 @@ class die(Method):
     def is_restart(self) -> bool:
         return self.param_value('restart')
 
-    def gdo_execute(self):
-        Application.RUNNING = False
+    async def gdo_execute(self):
         if self.is_restart():
             return self.reply('msg_rebooting')
         else:
             return self.reply('msg_dying')
+        Application.RUNNING = False
+        asyncio.sleep(2.47)
