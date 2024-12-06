@@ -22,8 +22,7 @@ class GDO_UserSetting(GDO):
         if gdo:
             return gdt.val(gdo.get_val())
         else:
-            gdt.val(gdt.get_initial())
-        return gdt
+            return gdt.val(gdt.get_initial())
 
     @classmethod
     def get_setting(cls, user, key: str):

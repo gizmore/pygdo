@@ -4,18 +4,15 @@ from gdo.base.Application import Application
 from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.Render import Mode
-from gdo.base.Util import html
 from gdo.base.WithEnv import WithEnv
 from gdo.base.Parser import Parser
 from gdo.core.GDO_User import GDO_User
-from gdo.ui.GDT_Page import GDT_Page
 
 
 class Message(WithEnv):
     _method: Method
     _message: str
     _result: str
-    # _sender: GDO_User
     _thread_user: GDO_User  # For chatgpt
     _delivered: bool
 
@@ -102,15 +99,3 @@ class Message(WithEnv):
             await self._env_server.get_connector().send_to_user(self, with_events)
             if self._thread_user:
                 self._env_user = o
-
-
-    ##########
-    # Escape #
-    ##########
-
-    def escape(self, text: str) -> str:
-        method_name = f'escape_{self._env_mode.name.lower()}'
-        if method := getattr(self, method_name):
-            return method(text)
-        return text
-

@@ -142,11 +142,14 @@ class ModuleLoader:
 
     def init_user_settings(self):
         from gdo.core.GDT_UserSetting import GDT_UserSetting
+        from gdo.core.GDT_Field import GDT_Field
         for module in self._cache.values():
             for gdt in module.gdo_user_config():
-                GDT_UserSetting.register(gdt)
+                if isinstance(gdt, GDT_Field):
+                    GDT_UserSetting.register(gdt)
             for gdt in module.gdo_user_settings():
-                GDT_UserSetting.register(gdt)
+                if isinstance(gdt, GDT_Field):
+                    GDT_UserSetting.register(gdt)
 
     def init_modules(self, enabled: bool = True, load_vals: bool = False):
         self.init_user_settings()

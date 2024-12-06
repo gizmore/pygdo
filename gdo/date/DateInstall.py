@@ -1,6 +1,7 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
-import pytz
+import pytzdata
 
 from gdo.date import module_date
 from gdo.date.GDO_Timezone import GDO_Timezone
@@ -14,7 +15,7 @@ class DateInstall:
         cls.install_timezone('UTC', 0)
         cls.install_timezone('USRT', 0)
         cls.install_timezone('FAMT', 31337)
-        for tz in pytz.all_timezones:
+        for tz in pytzdata.get_timezones():
             if tz != 'UTC':
                 cls.install_timezone(tz)
         GDO_Timezone.table().bulk_insert_gdo(cls.BULK)
@@ -33,5 +34,5 @@ class DateInstall:
 
     @classmethod
     def get_timezone_offset(cls, timezone_name) -> int:
-        tz = pytz.timezone(timezone_name)
-        return int(tz.utcoffset(datetime.utcnow()).total_seconds())
+        dt = datetime.now(tz = ZoneInfo(timezone_name))
+        return int(dt.utcoffset().total_seconds())

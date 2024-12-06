@@ -61,19 +61,6 @@ class Time:
     # Timezones #
     #############
 
-    # @classmethod
-    # def set_timezone_named(cls, timezone_name: str) -> None:
-    #     """
-    #     Set the timezone using a timezone name.
-    #     """
-    #     timezone_object = GDO_Timezone.get_by_name(timezone_name).getValue()
-        # cls.set_timezone_gdo(timezone_object)
-
-    # @classmethod
-    # def set_timezone_gdo(cls, timezone_object):
-    #     GDO_Timezone.table().get_by_id(timezone_object)
-    #     pass
-
     @classmethod
     def get_timezone_object(cls, timezone_name: str):
         tz = GDO_Timezone.table().get_by_name(timezone_name)
