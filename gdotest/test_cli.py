@@ -19,6 +19,8 @@ class CLITestCase(unittest.TestCase):
         return self
 
     def test_01_echo(self):
+        result = cli_plug(None, "$echo \\\"Hello world\\\"")
+        self.assertEqual('"Hello world"', result, 'Test if CLI core.echo "Hello world" works.')
         result = cli_plug(None, "$echo \"Hello world\"")
         self.assertEqual('Hello world', result, 'Test if CLI core.echo "Hello world" works.')
         result = cli_plug(None, "$echo Hello world")

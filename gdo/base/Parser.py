@@ -81,6 +81,9 @@ class Parser:
                 if current_token:
                     curr_tokens.append(current_token)
                     current_token = ''
+            elif char == '\\':
+                current_token += line[i]
+                i += 1
             elif char == '"':
                 inside_quotes = not inside_quotes
             elif char == ')' and not inside_quotes and bracket_open:
