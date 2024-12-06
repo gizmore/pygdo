@@ -91,6 +91,8 @@ class launch(Method):
     async def mainloop_process_ai(self):
         try:
             if message := Application.MESSAGES.get(block=False):
+                Application.tick()
+                Application.fresh_page()
                 await message.execute()
         except queue.Empty:
             pass

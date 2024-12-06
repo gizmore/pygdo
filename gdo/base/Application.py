@@ -58,7 +58,6 @@ class Application:
         config_path = 'protected/config_test.toml' if 'unittest' in sys.modules.keys() else config_file
         config_path = os.path.join(cls.PATH, config_path)
         cls.CONFIG_PATH = config_path
-        cls.get_page().init()
         if os.path.isfile(config_path):
             with open(config_path, 'r') as f:
                 cls.CONFIG = tomlkit.load(f)

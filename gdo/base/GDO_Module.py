@@ -179,7 +179,7 @@ class GDO_Module(WithModuleConfig, GDO):
     def add_css(self, filename: str):
         from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"
-        GDT_Page.instance()._css.append(path)
+        Application.get_page()._css.append(path)
         return self
 
     def add_bower_css(self, filename: str):
@@ -188,7 +188,7 @@ class GDO_Module(WithModuleConfig, GDO):
     def add_js(self, filename: str):
         from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"
-        GDT_Page.instance()._js.append(path)
+        Application.get_page()._js.append(path)
         return self
 
     def add_bower_js(self, filename: str):
@@ -196,7 +196,7 @@ class GDO_Module(WithModuleConfig, GDO):
 
     def add_js_inline(self, code: str):
         from gdo.ui.GDT_Page import GDT_Page
-        GDT_Page.instance()._js_inline += f"<script>{code}\n</script>\n"
+        Application.get_page()._js_inline += f"<script>{code}\n</script>\n"
         return self
 
     ##########

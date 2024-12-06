@@ -84,7 +84,7 @@ class CoreTestCase(GDOTestCase):
 
     def test_09_db_debug(self):
         GDO_User.table().select().first().debug().exec()
-        result = GDT_Page.instance()._top_bar.render()
+        result = Application.get_page()._top_bar.render()
         self.assertIn('SELECT * FROM gdo_user', result, 'Database Debug output does not render.')
 
     def test_10_reload_restricted(self):

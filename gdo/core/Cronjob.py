@@ -1,4 +1,5 @@
 from gdo.base.Application import Application
+from gdo.base.Database import Database
 from gdo.base.Logger import Logger
 from gdo.base.Util import Strings
 from gdo.core.GDO_Cronjob import GDO_Cronjob
@@ -95,13 +96,13 @@ class Cronjob:
     @staticmethod
     def executeCronjob(method: MethodCronjob) -> None:
         try:
-            db = Database.instance()
+            db = Application.db()
             job = GDO_Cronjob.blank({'cron_method': method.__class__.__name__}).insert()
             db.transactionBegin()
             method.execute()
             job.saveVars({'cron_success': '1'})
             db.transactionEnd()
-        except Throwable as ex:
+        except Exception as ex:
             if 'db' in locals():
                 db.transactionRollback()
                 if 'job' in locals():

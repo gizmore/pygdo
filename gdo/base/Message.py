@@ -73,7 +73,7 @@ class Message(WithEnv):
         if asyncio.iscoroutine(result):
             result = await result
         txt2 = result.render(self._env_mode)
-        if txt1 := GDT_Page.instance()._top_bar.render(self._env_mode):
+        if txt1 := Application.get_page()._top_bar.render(self._env_mode):
             txt += txt1 + " "
         if txt2:
             txt += txt2
