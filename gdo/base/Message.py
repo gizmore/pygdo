@@ -1,5 +1,4 @@
 import asyncio
-import threading
 
 from gdo.base.Application import Application
 from gdo.base.Logger import Logger
@@ -64,7 +63,7 @@ class Message(WithEnv):
                 await self.run()
         except Exception as ex:
             Logger.exception(ex)
-            self._result = Application.get_page()._top_bar.render_irc()
+            self._result = Application.get_page()._top_bar.render(self._env_mode)
             self._result += str(ex)
             await self.deliver()
 
@@ -74,8 +73,7 @@ class Message(WithEnv):
         if asyncio.iscoroutine(result):
             result = await result
         txt2 = result.render(self._env_mode)
-        txt1 = GDT_Page.instance()._top_bar.render(self._env_mode)
-        if txt1:
+        if txt1 := GDT_Page.instance()._top_bar.render(self._env_mode):
             txt += txt1 + " "
         if txt2:
             txt += txt2

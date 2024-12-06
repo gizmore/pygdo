@@ -4,6 +4,7 @@ import queue
 import time
 
 from gdo.base.Application import Application
+from gdo.base.Events import Events
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Method import Method
@@ -22,7 +23,7 @@ class launch(Method):
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Bool('force').not_null().initial('0'),
-            GDT_Duration('dog_msleep').not_null().initial('25ms'),
+            GDT_Duration('dog_msleep').not_null().initial('250ms'),
         ]
 
     def is_forced(self) -> bool:
@@ -60,10 +61,9 @@ class launch(Method):
     async def mainloop(self):
         Logger.debug("Launching DOG Bot")
         sleep_ms = self.sleep_ms()
-        Logger.debug(f"sleep_ms = {sleep_ms}")
         try:
             while Application.RUNNING:
-                self.mainloop_step_timers()
+                Application.tick()
                 servers = GDO_Server.table().all()
                 for server in servers:
                     self.mainloop_step_server(server)
@@ -73,9 +73,6 @@ class launch(Method):
             raise ex
         finally:
             Files.remove(self.lock_path())
-
-    def mainloop_step_timers(self):
-        Application.tick()
 
     def mainloop_step_server(self, server: GDO_Server):
         if not server._has_loop:
