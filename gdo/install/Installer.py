@@ -12,11 +12,16 @@ class Installer:
 
     @classmethod
     def install_modules(cls, modules: list[GDO_Module], verbose: bool = False):
-        first = True
-        for module in cls.modules_with_deps(modules):
-            cls.install_module(module, verbose, first)
-            if module.get_name() != 'base':
-                first = False
+        modules = cls.modules_with_deps(modules)
+        last = modules[-1]
+        for module in modules:
+            cls.install_module(module, verbose, module == last)
+        for module in modules:
+            try:
+                module.gdo_install()
+            except Exception as ex:
+                Logger.exception(ex)
+                return False
 
     @classmethod
     def modules_with_deps(cls, modules: list) -> [GDO_Module]:
@@ -25,11 +30,6 @@ class Installer:
         deps = Arrays.unique(modules)
         before = len(deps)
         after = 0
-
-        # out = []
-        # for module in modules:
-        #     out.append(module.get_name())
-        # print(", ".join(out))
 
         while before != after:
             before = after
@@ -58,18 +58,12 @@ class Installer:
         for classname in classes:
             cls.install_gdo_fk(classname)
         cls.install_module_entry(module)
-        ModuleLoader.instance().init_user_settings()
-        # module.init()
         if module.get_name() != 'base' and install_settings:
+            ModuleLoader.instance().init_user_settings()
             from gdo.core import module_core
             if verbose:
                 print("Migrating core for user settings...")
             Installer.migrate_module(module_core.instance())
-        try:
-            module.gdo_install()
-        except Exception as ex:
-            Logger.exception(ex)
-            return False
         return True
 
     @classmethod

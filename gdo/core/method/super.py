@@ -13,7 +13,7 @@ class super(Method):
 
     def gdo_parameters(self) -> [GDT]:
         return [
-            GDT_Secret('pass'),
+            GDT_Secret('pass').not_null(),
         ]
 
     def gdo_method_config_server(self) -> [GDT]:
@@ -22,7 +22,7 @@ class super(Method):
         ]
 
     def gdo_execute(self):
-        key = self.get_config_server('superkey')
+        key = self.get_config_server_val('superkey')
         if key == self.param_val('pass'):
             self.grant(self._env_user, self._env_server)
             return self.msg('msg_super_granted')

@@ -1,6 +1,7 @@
 import asyncio
 
 from gdo.base.Application import Application
+from gdo.base.Exceptions import GDOParamError
 from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.Render import Mode
@@ -57,6 +58,10 @@ class Message(WithEnv):
                 parser = Parser(self._env_mode, self._env_user, self._env_server, self._env_channel, self._env_session)
                 self._method = parser.parse(self._message)
                 return await self.run()
+        except GDOParamError as ex:
+            self._result = str(ex)
+            self._result += " " + str(self._method.get_arg_parser(True).format_usage())
+            await self.deliver()
         except Exception as ex:
             Logger.exception(ex)
             self._result = Application.get_page()._top_bar.render(self._env_mode)
