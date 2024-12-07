@@ -48,7 +48,7 @@ class help(Method):
     def show_all_commands(self):
         loader = ModuleLoader.instance()
         grouped = {}
-        mode = Application.get_mode()
+        mode = self._env_mode
         user = self._env_user
         for cmd, method in loader._methods.items():
             module_name = method.module().render_name()
