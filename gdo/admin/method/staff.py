@@ -8,7 +8,7 @@ class staff(MethodForm):
     """
 
     def gdo_trigger(self) -> str:
-        return "super"
+        return "staff"
 
     def gdo_in_channels(self) -> bool:
         return False

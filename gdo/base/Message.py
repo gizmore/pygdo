@@ -2,6 +2,7 @@ import asyncio
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOParamError
+from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.Render import Mode
@@ -15,6 +16,7 @@ class Message(WithEnv):
     _message: str
     _result: str
     _thread_user: GDO_User  # For chatgpt
+    _gdt_result: GDT  # For chatgpt
     _delivered: bool
 
     def __init__(self, message: str, mode: Mode):
@@ -28,6 +30,7 @@ class Message(WithEnv):
         self._env_channel = None
         self._env_session = None
         self._result = ''
+        self._gdt_result = None
         self._delivered = False
 
     def message_copy(self) -> 'Message':
@@ -71,8 +74,9 @@ class Message(WithEnv):
     async def run(self):
         txt = ''
         result = self._method.execute()
-        if asyncio.iscoroutine(result):
+        while asyncio.iscoroutine(result):
             result = await result
+        self._gdt_result = result
         txt2 = result.render(self._env_mode)
         if txt1 := Application.get_page()._top_bar.render(self._env_mode):
             txt += txt1 + " "
@@ -87,10 +91,10 @@ class Message(WithEnv):
             return
         self._delivered = True
         if self._env_channel:
-            if with_prefix:
-                reply_to = self._env_reply_to or self._env_user.render_name()
-                text = f"{reply_to}: {text}"
-                self._result = text
+            # if with_prefix:
+                # reply_to = self._env_reply_to or self._env_user.render_name()
+                # text = f"{reply_to}: {text}"
+                # self._result = text
             await self._env_server.get_connector().send_to_channel(self, with_events)
         else:
             if self._env_reply_to:

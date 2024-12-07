@@ -18,7 +18,7 @@ class super(Method):
 
     def gdo_method_config_server(self) -> [GDT]:
         return [
-            GDT_Secret('superkey').initial('ssdsddsguper'),
+            GDT_Secret('superkey').initial('super'),
         ]
 
     def gdo_execute(self):

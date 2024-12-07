@@ -77,6 +77,8 @@ def process_line(line: str) -> None:
             method = parser.parse_line(line[1:])
             Application.fresh_page()
             gdt = method.execute()
+            if asyncio.iscoroutine(gdt):
+                gdt = asyncio.run(gdt)
             txt1 = gdt.render_cli()
             txt2 = Application.get_page()._top_bar.render_cli()
             if txt2:

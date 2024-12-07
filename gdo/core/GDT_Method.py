@@ -11,3 +11,8 @@ class GDT_Method(GDT_Select):
         triggers = ModuleLoader.instance()._methods.keys()
         as_dict = {key: key for key in triggers}
         return as_dict
+
+    def to_value(self, val: str):
+        if val is None:
+            return None
+        return ModuleLoader.instance().get_method(val)

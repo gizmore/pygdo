@@ -22,6 +22,7 @@ class MyArgParser(argparse.ArgumentParser):
 
 
 class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
+    _message: object
     _parameters: dict[str, GDT]
     _next_method: object  # Method chaining
     _result: str
@@ -232,22 +233,22 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     ########
     # Exec #
     ########
-    def execute(self):
+    async def execute(self):
         """
         Check method environment and if allowed, gdo_execute() on permission
         """
         Application.set_current_user(self._env_user)
         if not self._prepare_nested_permissions(self):
             return self
-        return self._nested_execute(self, True)
+        return await self._nested_execute(self, True)
 
-    def _nested_execute(self, method, return_gdt: bool = False):
+    async def _nested_execute(self, method, return_gdt: bool = False):
         i = 0
         for arg in method._args:
             if isinstance(arg, Method):
                 method._args[i] = self._nested_execute(arg)
             i += 1
-        gdt = method._nested_execute_parse()
+        gdt = await method._nested_execute_parse()
         if return_gdt:
             return gdt
         else:
@@ -270,7 +271,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 else:
                     gdt.val(val)
 
-    def _nested_execute_parse(self):
+    async def _nested_execute_parse(self):
         self._nested_parse()
         return self.gdo_execute()
 
@@ -347,6 +348,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def get_fqn(self) -> str:
         return self.__module__ + "." + self.__class__.__name__
 
+    def gdo_default_enabled(self) -> bool:
+        return True
+
     #################
     # Config Server #
     #################
@@ -354,7 +358,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def _config_server(self):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
-            GDT_Bool('disabled').initial('0'),
+            GDT_Bool('disabled').initial('1' if self.gdo_default_enabled() else '0'),
         ]
         conf.extend(self.gdo_method_config_server())
         return conf
@@ -400,6 +404,59 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def get_config_server_value(self, key: str):
         return self.get_config_server(key).get_value()
 
+    ###############
+    # Config User #
+    ###############
+
+    def _config_user(self):
+        from gdo.core.GDT_Bool import GDT_Bool
+        conf = [
+            GDT_Bool('disabled').initial('1' if self.gdo_default_enabled() else '0'),
+        ]
+        conf.extend(self.gdo_method_config_user())
+        return conf
+
+    def save_config_user(self, key: str, val: str):
+        Logger.debug(f"{self.get_name()}.save_config_user({key}, {val})")
+        from gdo.core.GDO_Method import GDO_Method
+        from gdo.core.GDO_MethodValUser import GDO_MethodValUser
+        from gdo.core.GDO_MethodValUserBlob import GDO_MethodValUserBlob
+        from gdo.core.GDT_Text import GDT_Text
+        for gdt in self._config_user():
+            if gdt.get_name() == key:
+                table = GDO_MethodValUserBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValUser.table()
+                gdom = GDO_Method.for_method(self)
+                entry = table.get_by_id(gdom.get_id(), self._env_user.get_id(), key)
+                if entry is None:
+                    table.blank({
+                        'mv_method': gdom.get_id(),
+                        'mv_user': self._env_user.get_id(),
+                        'mv_key': key,
+                        'mv_val': val,
+                    }).insert()
+                else:
+                    entry.save_val('mv_val', val)
+
+    def get_config_user(self, key: str) -> GDT:
+        from gdo.core.GDO_Method import GDO_Method
+        from gdo.core.GDO_MethodValUser import GDO_MethodValUser
+        from gdo.core.GDO_MethodValUserBlob import GDO_MethodValUserBlob
+        from gdo.core.GDT_Text import GDT_Text
+        for gdt in self._config_user():
+            if gdt.get_name() == key:
+                table = GDO_MethodValUserBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValUser.table()
+                gdom = GDO_Method.for_method(self)
+                entry = table.get_by_id(gdom.get_id(), self._env_user.get_id(), key)
+                if entry:
+                    gdt.initial(entry.get_val())
+                return gdt
+
+    def get_config_user_val(self, key: str) -> str:
+        return self.get_config_user(key).get_val()
+
+    def get_config_user_value(self, key: str):
+        return self.get_config_user(key).get_value()
+
     ##################
     # Config Channel #
     ##################
@@ -407,7 +464,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def _config_channel(self):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
-            GDT_Bool('disabled').initial('0'),
+            GDT_Bool('disabled').initial('1' if self.gdo_default_enabled() else '0'),
         ]
         conf.extend(self.gdo_method_config_channel())
         return conf

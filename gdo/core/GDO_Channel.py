@@ -4,6 +4,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Message import Message
 from gdo.core.GDO_Event import GDO_Event
 from gdo.core.GDO_Server import GDO_Server
+from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Char import GDT_Char
 from gdo.core.GDT_Creator import GDT_Creator
@@ -15,6 +16,12 @@ from gdo.language.GDT_Language import GDT_Language
 
 
 class GDO_Channel(GDO):
+
+    _users: list[GDO_User]
+
+    def __init__(self):
+        super().__init__()
+        self._users = []
 
     def gdo_columns(self) -> list[GDT]:
         return [
@@ -59,3 +66,10 @@ class GDO_Channel(GDO):
             msg = Message(message, conn.get_render_mode())
             msg.env_server(server).env_channel(self)
             conn.send_to_channel(msg)
+
+    def on_user_joined(self, user: GDO_User):
+        if user not in self._users:
+            self._users.append(user)
+
+    def on_user_left(self, user: GDO_User):
+        self._users.remove(user)

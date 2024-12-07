@@ -159,3 +159,10 @@ mt_core_super = "Super"
 md_core_super = "Get granted all priviledges on a server."
 msg_super_granted = "You got granted all permissions on this server."
 err_wrong_superword = "The password is wrong."
+
+########
+# Look #
+########
+mt_core_look = "Channel Users"
+md_core_look = "List the online users inside a channel."
+msg_look = "There are %d users in %s: %s"

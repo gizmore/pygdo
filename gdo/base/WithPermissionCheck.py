@@ -15,9 +15,9 @@ class WithPermissionCheck:
         perm = self.gdo_user_permission()
         if perm and not GDO_Permission().has_permission(user, perm):
             return False if not display_error else self.err_permission(perm)
-        if not self.gdo_in_private() and self._env_channel:
+        if not self.gdo_in_private() and not self._env_channel:
             return False if not display_error else self.err_not_in_private()
-        if not self.gdo_in_channels() and not self._env_channel:
+        if not self.gdo_in_channels() and self._env_channel is not None:
             return False if not display_error else self.err_not_in_channel()
         return True
 
