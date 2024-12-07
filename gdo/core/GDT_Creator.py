@@ -9,6 +9,6 @@ class GDT_Creator(GDT_User):
     def gdo_before_create(self, gdo):
         from gdo.core.GDO_User import GDO_User
         user = GDO_User.current()
-        if user:
-            gdo.set_val(self.get_name(), user.get_id())
-
+        if user.is_ghost():
+            user = GDO_User.system()
+        gdo.set_val(self.get_name(), user.get_id())

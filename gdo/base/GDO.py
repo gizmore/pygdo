@@ -320,7 +320,7 @@ class GDO(WithBulk, GDT):
     # All #
     #######
 
-    def all(self, where: str = '1', result_type: ResultType = ResultType.OBJECT):
+    def all(self, where: str = '1', result_type: ResultType = ResultType.OBJECT) -> list['GDO']:
         return self.table().select().where(where).exec().iter(result_type).fetch_all()
 
     ########

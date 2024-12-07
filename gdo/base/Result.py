@@ -91,7 +91,7 @@ class Result:
         """
         row = self.fetch_row()
         result = None if row is None else row[0]
-        self.close()
+#        self.close()
         return result
 
     def fetch_object(self) -> 'GDO':

@@ -113,12 +113,21 @@ class Database:
         self.query(query)
 
     def create_table_fk(self, gdo: 'GDO'):
+        self.delete_all_fk(gdo)
         for gdt in gdo.columns():
-            fk = gdt.column_define_fk()
-            if fk:
+            if fk := gdt.column_define_fk():
                 cn = f"GDO__FK__{gdo.gdo_table_name()}__{gdt.get_name()}"
-                self.delete_fk(cn)
+                # self.delete_fk(cn)
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} {fk}")
+
+    def delete_all_fk(self, gdo: 'GDO'):
+        from gdo.base.Application import Application
+        db_name = Application.config('db.name')
+        query = (f'SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS '
+                 f'WHERE CONSTRAINT_TYPE = "FOREIGN KEY" AND TABLE_SCHEMA = "{db_name}" AND TABLE_NAME="{gdo.gdo_table_name()}"')
+        result = self.select(query, False)
+        while cn := result.fetch_val():
+            self.delete_fk(cn)
 
     def delete_fk(self, constraint_name: str):
         from gdo.base.Application import Application

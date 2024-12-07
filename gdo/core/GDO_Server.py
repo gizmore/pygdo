@@ -2,6 +2,7 @@ import asyncio
 from typing import TYPE_CHECKING
 
 from gdo.base.Logger import Logger
+from gdo.core.GDT_Bool import GDT_Bool
 
 if TYPE_CHECKING:
     from gdo.core.Connector import Connector
@@ -54,6 +55,7 @@ class GDO_Server(GDO):
             GDT_Name('serv_username'),
             GDT_Secret('serv_password'),
             GDT_Connector('serv_connector'),
+            GDT_Bool('serv_enabled').not_null().initial('1'),
             GDT_Created('serv_created'),
             # GDT_Creator('serv_creator'),
         ]
@@ -142,8 +144,9 @@ class GDO_Server(GDO):
             # Logger.debug(f"{self.get_name()} loop")
             if not conn.is_connected():
                 if not conn.is_connecting():
-                    conn.connect()
-            await asyncio.sleep(0.5)
+                    if conn.should_connect_now():
+                        conn.connect()
+            await asyncio.sleep(2)
 
     ###########
     # Message #

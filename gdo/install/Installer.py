@@ -1,3 +1,5 @@
+import re
+
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.GDO import GDO
@@ -6,6 +8,7 @@ from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Result import ResultType
 from gdo.base.Util import Arrays, msg
+from gdo.core.GDO_UserSetting import GDO_UserSetting
 
 
 class Installer:
@@ -63,7 +66,7 @@ class Installer:
             from gdo.core import module_core
             if verbose:
                 print("Migrating core for user settings...")
-            Installer.migrate_module(module_core.instance())
+            Installer.migrate_gdo(GDO_UserSetting.table())
         return True
 
     @classmethod
@@ -109,7 +112,8 @@ class Installer:
             db.foreign_keys(False)
             result = db.select(f"SHOW CREATE TABLE {tablename}", False)
             query = result.fetch_row()[1]
-            db.query(query.replace(tablename, temptable))  # CREATE TABLE zzz% like old
+            query = query.replace(tablename, temptable)
+            db.query(query)  # CREATE TABLE zzz% like old
             if cols := cls.column_names(gdo, temptable):  # something changed?
                 columns = ",".join(cols)
                 db.query(f"INSERT INTO {temptable} SELECT * FROM {tablename}")  # copy old to zzz

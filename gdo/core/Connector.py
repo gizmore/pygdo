@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from gdo.base.Render import Mode
 from gdo.core.GDO_User import GDO_User
+from gdo.date.Time import Time
 
 if TYPE_CHECKING:
     from gdo.core.GDO_Server import GDO_Server
@@ -117,7 +118,7 @@ class Connector:
 
     def connect_failed(self):
         self._connect_failures += 1
-        self._next_connect_time = Application.TIME + (self._connect_failures * 10)
+        self._next_connect_time = Application.TIME + (min(self._connect_failures * 10, Time.ONE_MINUTE*2))
         self._connecting = False
 
     def connect_success(self):

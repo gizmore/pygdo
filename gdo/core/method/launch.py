@@ -64,7 +64,7 @@ class launch(Method):
         try:
             while Application.RUNNING:
                 Application.tick()
-                servers = GDO_Server.table().all()
+                servers = GDO_Server.table().all('serv_enabled')
                 for server in servers:
                     self.mainloop_step_server(server)
                 await self.mainloop_process_ai()
@@ -80,19 +80,9 @@ class launch(Method):
             server._has_loop = True
             asyncio.create_task(server.loop())
 
-    def connect_server(self, server) -> bool:
-        conn = server.get_connector()
-        if conn.is_connecting():
-            return True
-        elif conn.should_connect_now():
-            conn.connect()
-        return True
-
     async def mainloop_process_ai(self):
-        try:
-            if message := Application.MESSAGES.get(block=False):
-                Application.tick()
-                Application.fresh_page()
-                await message.execute()
-        except queue.Empty:
-            pass
+        if not Application.MESSAGES.empty():
+            message = Application.MESSAGES.get()
+            Application.tick()
+            Application.fresh_page()
+            await message.execute()
