@@ -10,6 +10,8 @@ from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
 from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
 from gdo.core.GDO_MethodValServer import GDO_MethodValServer
 from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
+from gdo.core.GDO_MethodValUser import GDO_MethodValUser
+from gdo.core.GDO_MethodValUserBlob import GDO_MethodValUserBlob
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_Session import GDO_Session
@@ -102,6 +104,8 @@ class module_core(GDO_Module):
             GDO_MethodValChannelBlob,
             GDO_MethodValServer,
             GDO_MethodValServerBlob,
+            GDO_MethodValUser,
+            GDO_MethodValUserBlob,
         ]
 
     def gdo_install(self):

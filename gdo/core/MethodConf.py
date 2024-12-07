@@ -1,5 +1,6 @@
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
+from gdo.base.Util import html
 from gdo.core.GDT_Method import GDT_Method
 from gdo.core.GDT_String import GDT_String
 
@@ -14,10 +15,16 @@ class MethodConf(Method):
         ]
 
     def get_method(self) -> Method:
-        return self.param_value('method')
+        return self.param_value('method').env_copy(self)
 
     def get_configs(self, method: Method) -> list:
         raise Exception("OOPS, get_configs not implemented.")
+
+    def get_config_val(self, method: Method, key: str) -> str:
+        raise Exception("OOPS, get_config_val not implemented.")
+
+    def set_config_val(self, method: Method, key: str, val: str) -> str:
+        raise Exception("OOPS, set_config_val not implemented.")
 
     def gdo_execute(self):
         method = self.get_method()
@@ -32,11 +39,14 @@ class MethodConf(Method):
     def show_configs(self, method: Method) -> GDT:
         out = []
         for gdt in self.get_configs(method):
-            out.append(gdt.get_name())
+            out.append(f"{gdt.get_name()}({gdt.get_val()})")
         return self.reply('msg_configs', [', '.join(out)])
 
     def show_config(self, method: Method, key: str) -> GDT:
-        pass
+        return self.reply('msg_config', [method.gdo_trigger(), key, html(self.get_config_val(method, key))])
 
-    def set_config(self, method, key, value):
-        pass
+    def set_config(self, method: Method, key: str, val: str):
+        old = self.get_config_val(method, key)
+        self.set_config_val(method, key, val)
+        new = self.get_config_val(method, key)
+        return self.reply('msg_config_set', [method.gdo_trigger(), key, html(old), html(new)])

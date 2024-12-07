@@ -185,11 +185,6 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                     raise GDOParamError('err_param', [name, gdt.render_error()])
         return None
 
-    # def init_params(self, params: dict):
-    #     for key, val in params.items():
-    #         self.parameter(key).val(val)
-    #     return self
-
     ############
     # Redirect #
     ############
@@ -358,7 +353,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def _config_server(self):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
-            GDT_Bool('disabled').initial('1' if self.gdo_default_enabled() else '0'),
+            GDT_Bool('disabled').initial('0' if self.gdo_default_enabled() else '1'),
         ]
         conf.extend(self.gdo_method_config_server())
         return conf
@@ -411,7 +406,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def _config_user(self):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
-            GDT_Bool('disabled').initial('1' if self.gdo_default_enabled() else '0'),
+            GDT_Bool('disabled').initial('0' if self.gdo_default_enabled() else '1'),
         ]
         conf.extend(self.gdo_method_config_user())
         return conf
@@ -464,7 +459,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def _config_channel(self):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
-            GDT_Bool('disabled').initial('1' if self.gdo_default_enabled() else '0'),
+            GDT_Bool('disabled').initial('0' if self.gdo_default_enabled() else '1'),
         ]
         conf.extend(self.gdo_method_config_channel())
         return conf

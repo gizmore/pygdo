@@ -24,8 +24,8 @@ class die(Method):
 
     async def gdo_execute(self):
         if self.is_restart():
-            return self.reply('msg_rebooting')
+            out = self.reply('msg_rebooting')
         else:
-            return self.reply('msg_dying')
+            out = self.reply('msg_dying')
         Application.RUNNING = False
-        asyncio.sleep(2.47)
+        return out
