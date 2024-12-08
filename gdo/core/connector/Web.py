@@ -12,3 +12,6 @@ class Web(Connector):
     def get_server(cls) -> GDO_Server:
         return GDO_Server.get_by_connector('Web')
 
+    def gdo_connect(self):
+        self._connected = True
+        return True

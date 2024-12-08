@@ -23,7 +23,7 @@ class MethodConf(Method):
     def get_config_val(self, method: Method, key: str) -> str:
         raise Exception("OOPS, get_config_val not implemented.")
 
-    def set_config_val(self, method: Method, key: str, val: str) -> str:
+    def set_config_val(self, method: Method, key: str, val: str):
         raise Exception("OOPS, set_config_val not implemented.")
 
     def gdo_execute(self):

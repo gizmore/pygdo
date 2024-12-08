@@ -265,6 +265,8 @@ class App:
         args = parser.parse_args(sys.argv[2:])
         reinstall = args.reinstall
 
+        loader.load_modules_db()
+
         if args.all:
             modules = list(loader.load_modules_fs('*', reinstall).values())
         elif args.module:

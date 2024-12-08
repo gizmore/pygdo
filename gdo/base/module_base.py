@@ -32,9 +32,9 @@ class module_base(GDO_Module):
 
     def gdo_module_config(self) -> list[GDT]:
         return [
-            GDT_Bool('500_mails').initial('1'),
-            GDT_Bool('serve_dotfiles').initial('0'),
-            GDT_Bool('serve_gdo_assets').initial('0')
+            GDT_Bool('500_mails').not_null().initial('1'),
+            GDT_Bool('serve_dotfiles').not_null().initial('0'),
+            GDT_Bool('serve_gdo_assets').not_null().initial('0')
         ]
 
     def cfg_serve_dot_files(self) -> bool:
