@@ -50,9 +50,9 @@ class Message(WithEnv):
         return self
 
     async def execute(self):
-        Application.fresh_page()
-        Application.EVENTS.publish('new_message', self)
         try:
+            Application.fresh_page()
+            Application.EVENTS.publish('new_message', self)
             trigger = self._env_server.get_trigger()
             if self._env_channel is not None:
                 trigger = self._env_channel.get_trigger()

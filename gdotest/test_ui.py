@@ -33,8 +33,8 @@ class UITestCase(unittest.TestCase):
         self.assertIn(sect, "Test", 'Section does not render in CLI mode.')
 
     def test_04_method_errors(self):
-        result = web_plug("math.calc.html").post({'submit': '1', 'expression': 'PI()'}).exec()
-        self.assertIn('<form', result, 'errorneus page does not render fallback')
+        result = web_plug("math.calc.html").post({'submit': '1', 'expression': 'PI * 3'}).exec()
+        self.assertIn('<form', result, 'erroneous page does not render fallback')
 
 
 if __name__ == '__main__':

@@ -40,7 +40,6 @@ class Application:
         t = time.time()
         cls.TIME = round(t, 6)
         cls.STORAGE.time_start = t
-        cls.EVENTS.update_timers(cls.TIME)
 
     @classmethod
     def is_http(cls, is_http: bool):

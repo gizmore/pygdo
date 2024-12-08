@@ -80,7 +80,8 @@ class ModuleLoader:
             for dirname in matches:
                 if not dirname.startswith('_'):
                     if Files.is_dir(path + dirname):
-                        loaded[dirname] = self.load_module_fs(dirname, installed)
+                        if module := self.load_module_fs(dirname, installed):
+                            loaded[dirname] = module
         self.sort_cache()
         return loaded
 

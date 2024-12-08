@@ -65,7 +65,7 @@ class WebTestCase(unittest.TestCase):
         self.assertEqual(bytelen(test_string), len(test_string.encode('UTF-8')), 'bytelen function does not give correct result')
 
     def test_11_connector_not_allowed(self):
-        result = WebPlug("core.help.cli").exec()
+        result = WebPlug("core.help.html").exec()
         self.assertIn("does not work inside this connector", result, "A non Web Method is executing in HTTP.")
 
 

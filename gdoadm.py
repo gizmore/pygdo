@@ -265,22 +265,16 @@ class App:
         args = parser.parse_args(sys.argv[2:])
         reinstall = args.reinstall
 
-        loader.load_modules_db()
-
         if args.all:
             modules = list(loader.load_modules_fs('*', reinstall).values())
         elif args.module:
-#            ModuleLoader.instance().load_modules_fs()
-            modules = ModuleLoader.instance().load_modules_fs(args.module.lower(), reinstall)
+            modules = loader.load_modules_fs(args.module.lower(), reinstall)
             modules = list(modules.values())
         else:
             modules = []
-
         if not modules:
             print("No modules found!", file=sys.stderr)
             exit(-1)
-
-#        loader.init_modules()
         Installer.install_modules(modules, True)
         self._run_yarn_script()
         print("All Done!")
@@ -341,15 +335,18 @@ class App:
         parser.add_argument('--all', '-a', action='store_true')
         parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
-
+        loader = ModuleLoader.instance()
+        loader.load_modules_db()
         if args.all:
-            modules = ModuleLoader.instance().load_modules_fs('*', True)
+            modules = loader.load_modules_fs('*', True)
         elif args.module:
-            modules = ModuleLoader.instance().load_modules_fs(args.module, True)
+            modules = loader.load_modules_fs(args.module, True)
         else:
             parser.print_help()
             exit(0)
         modules = list(modules.values())
+        modules = Installer.modules_with_deps(modules)
+        loader.init_user_settings()
         Installer.migrate_modules(modules)
         print("All done!")
 

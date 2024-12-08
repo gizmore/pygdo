@@ -1,3 +1,4 @@
+import asyncio
 import os
 import time
 import unittest
@@ -39,23 +40,23 @@ class EventsTestCase(unittest.TestCase):
 
     def test_02_timers(self):
         y = 0
-
+        def tck():
+            Application.tick()
+            asyncio.run(Application.EVENTS.update_timers(Application.TIME))
         def foo():
             nonlocal y
             y += 1
-
         Application.EVENTS.add_timer(0.25, foo, 2)
-        Application.tick()
+        tck()
         time.sleep(0.25)
-        Application.tick()
+        tck()
         time.sleep(0.25)
-        Application.tick()
+        tck()
         time.sleep(0.25)
-        Application.tick()
+        tck()
         time.sleep(0.25)
-        Application.tick()
+        tck()
         self.assertEqual(y, 2, 'Timers do not fire correctly')
-
 
 if __name__ == '__main__':
     unittest.main()

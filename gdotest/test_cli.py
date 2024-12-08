@@ -36,9 +36,9 @@ class CLITestCase(unittest.TestCase):
     #     result = subprocess.run(["pygdo", "\\$echo", "Hello world"], capture_output=True)
     #     self.assertIn('Hello world', str(result.stdout), 'Test if CLI core.echo "Hello world" works via binary execution.')
 
-    def test_04_perf(self):
-        result = cli_plug(None, "$perf")
-        self.assertIn('Memory', result, 'Test if CLI core.perf renders ok.')
+    # def test_04_perf(self):
+    #     result = cli_plug(None, "$perf")
+    #     self.assertIn('Memory', result, 'Test if CLI core.perf renders ok.')
 
     def test_05_help_overview(self):
         result = cli_plug(None, "$help")

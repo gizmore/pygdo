@@ -30,7 +30,10 @@ class DateInstall:
                 'tz_name': tz_name,
                 'tz_offset': str(offset)
             })
-            cls.BULK.append(gdo_tz)
+            if tz_name == 'UTC':
+                gdo_tz.insert()
+            else:
+                cls.BULK.append(gdo_tz)
 
     @classmethod
     def get_timezone_offset(cls, timezone_name) -> int:

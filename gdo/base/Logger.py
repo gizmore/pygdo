@@ -26,10 +26,12 @@ class Logger:
 
     @classmethod
     def error(cls, content: str):
+        print(content)
         cls.write('error.log', content)
 
     @classmethod
     def message(cls, content: str):
+        print(content)
         cls.write('message.log', content)
 
     @classmethod

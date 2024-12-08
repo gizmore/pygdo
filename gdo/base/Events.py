@@ -2,6 +2,8 @@ import asyncio
 
 
 class Events:
+    FOREVER = 2000000000
+
     _subscribers: dict[str, list[dict]]
     _timers: list[dict]
 
@@ -41,11 +43,9 @@ class Events:
     def unsubscribe(self, event_name: str, subscriber: callable):
         if event_name in self._subscribers:
             self._subscribers[event_name] = [sub for sub in self._subscribers[event_name] if sub['callback'] != subscriber]
-#            self._subscribers[event_name].remove(subscriber)
 
     def publish(self, event_name, *args, **kwargs):
         to_delete = []
-
         if event_name in self._subscribers:
             for subscriber in self._subscribers[event_name]:
                 result = subscriber['callback'](*args, **kwargs)
@@ -54,7 +54,6 @@ class Events:
                 subscriber['count'] -= 1
                 if subscriber['count'] == 0:
                     to_delete.append(subscriber['callback'])
-
         for callback in to_delete:
             self.unsubscribe(event_name, callback)
 
@@ -70,9 +69,8 @@ class Events:
     def remove_timer(self, callback):
         self._timers = [timer for timer in self._timers if timer['callback'] != callback]
 
-    def update_timers(self, current_time: float):
+    async def update_timers(self, current_time: float):
         expired_timers = []
-
         for timer in self._timers:
             if current_time >= timer['next_run']:
                 timer['callback']()
@@ -81,7 +79,6 @@ class Events:
                     timer['next_run'] = current_time + timer['duration']
                 else:
                     expired_timers.append(timer)
-
         for expired_timer in expired_timers:
             self._timers.remove(expired_timer)
 

@@ -241,7 +241,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         i = 0
         for arg in method._args:
             if isinstance(arg, Method):
-                method._args[i] = self._nested_execute(arg)
+                method._args[i] = await self._nested_execute(arg)
             i += 1
         gdt = await method._nested_execute_parse()
         if return_gdt:
@@ -440,8 +440,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         for gdt in self._config_user():
             if gdt.get_name() == key:
                 table = GDO_MethodValUserBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValUser.table()
-                gdom = GDO_Method.for_method(self)
-                entry = table.get_by_id(gdom.get_id(), self._env_user.get_id(), key)
+                entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_user.get_id(), key)
                 if entry:
                     gdt.initial(entry.get_val())
                 return gdt
@@ -493,7 +492,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             if gdt.get_name() == key:
                 table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
                 if self._env_channel:
-                    entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_channel.get_id(), None, None)
+                    entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_channel.get_id(), key)
                     if entry:
                         gdt.initial(entry.get_val())
                 return gdt

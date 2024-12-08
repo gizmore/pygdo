@@ -50,7 +50,6 @@ def application(environ, start_response):
             loader = ModuleLoader.instance()
             loader.init_modules(True, True)
             Application.fresh_page()
-
         qs = parse_qs(environ['QUERY_STRING'])
 
         if '_url' in qs:
@@ -72,6 +71,8 @@ def application(environ, start_response):
             user = session.get_user()
             method = file_server().env_user(user).input('_url', path)
             gdt = method.execute()
+            if asyncio.iscoroutine(gdt):
+                gdt = asyncio.run(gdt)
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
             for chunk in gdt:
@@ -133,6 +134,9 @@ def application(environ, start_response):
                 err('%s', [str(ex)])
                 err('%s', [traceback.format_exc()])
                 result = method
+
+            if asyncio.iscoroutine(result):
+                result = asyncio.run(result)
 
             if Application.is_html():
                 page = Application.get_page()

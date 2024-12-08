@@ -10,6 +10,7 @@ from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.Thread import Thread
 from gdo.base.Util import Files
+from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.date.GDT_Duration import GDT_Duration
@@ -20,10 +21,16 @@ class launch(Method):
     def gdo_trigger(self) -> str:
         return 'launch'
 
+    def gdo_user_permission(self) -> str | None:
+        return GDO_Permission.ADMIN
+
+    def gdo_connectors(self) -> str:
+        return 'bash'
+
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Bool('force').not_null().initial('0'),
-            GDT_Duration('dog_msleep').not_null().initial('250ms'),
+            GDT_Duration('dog_msleep').not_null().initial('25ms'),
         ]
 
     def is_forced(self) -> bool:
@@ -64,8 +71,8 @@ class launch(Method):
         try:
             while Application.RUNNING:
                 Application.tick()
-                servers = GDO_Server.table().all('serv_enabled')
-                for server in servers:
+                await Application.EVENTS.update_timers(Application.TIME)
+                for server in GDO_Server.table().all('serv_enabled'):
                     self.mainloop_step_server(server)
                 await self.mainloop_process_ai()
                 await asyncio.sleep(sleep_ms)

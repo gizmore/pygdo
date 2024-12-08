@@ -2,6 +2,7 @@ import re
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
+from gdo.base.Exceptions import GDOException
 from gdo.base.GDO import GDO
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Logger import Logger
@@ -16,15 +17,19 @@ class Installer:
     @classmethod
     def install_modules(cls, modules: list[GDO_Module], verbose: bool = False):
         modules = cls.modules_with_deps(modules)
-        last = modules[-1]
         for module in modules:
-            cls.install_module(module, verbose, module == last)
+            cls.install_module(module, verbose)
         for module in modules:
             try:
                 module.gdo_install()
             except Exception as ex:
                 Logger.exception(ex)
                 return False
+        ModuleLoader.instance().init_user_settings()
+        if verbose:
+            print("Migrating core for user settings...")
+        Installer.migrate_gdo(GDO_UserSetting.table())
+        return True
 
     @classmethod
     def modules_with_deps(cls, modules: list) -> [GDO_Module]:
@@ -48,7 +53,7 @@ class Installer:
         return sorted(deps, key=lambda m: m._priority)
 
     @classmethod
-    def install_module(cls, module: GDO_Module, verbose: bool = False, install_settings: bool = False) -> bool:
+    def install_module(cls, module: GDO_Module, verbose: bool = False) -> bool:
         if verbose:
             print(f"Installing module {module.get_name()}")
         if not module.is_installable():
@@ -61,12 +66,6 @@ class Installer:
         for classname in classes:
             cls.install_gdo_fk(classname)
         cls.install_module_entry(module)
-        if module.get_name() != 'base' and install_settings:
-            ModuleLoader.instance().init_user_settings()
-            from gdo.core import module_core
-            if verbose:
-                print("Migrating core for user settings...")
-            Installer.migrate_gdo(GDO_UserSetting.table())
         return True
 
     @classmethod
@@ -97,10 +96,9 @@ class Installer:
 
     @classmethod
     def migrate_module(cls, module: GDO_Module):
-        for classname in module.gdo_classes():
-            table = Cache.table_for(classname)
+        for class_name in module.gdo_classes():
+            table = Cache.table_for(class_name)
             cls.migrate_gdo(table)
-        pass
 
     @classmethod
     def migrate_gdo(cls, gdo: GDO):

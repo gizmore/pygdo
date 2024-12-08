@@ -24,13 +24,13 @@ class calc(MethodForm):
 
     def form_submitted(self):
         gdt = self.parameters()['expression']
-        expr = gdt.get_val().lower().replace('_', self.last_value())
-        result = eval(expr, GDT_MathExpression('x').get_namespace())
+        expr = gdt.get_value().lower().replace('_', self.last_value())
+        result = str(eval(expr, GDT_MathExpression('x').get_namespace()))
         self.LAST_RESULT[self._env_user] = result
         self.msg('%s', [result])
         return self.render_page()
 
     def last_value(self):
         if self._env_user not in self.LAST_RESULT:
-            self.LAST_RESULT[self._env_user] = 0
+            self.LAST_RESULT[self._env_user] = "0"
         return self.LAST_RESULT[self._env_user]

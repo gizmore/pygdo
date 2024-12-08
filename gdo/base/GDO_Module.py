@@ -61,6 +61,9 @@ class GDO_Module(WithModuleConfig, GDO):
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         pass
 
+    def gdo_subscribe_events(self):
+        pass
+
     def gdo_load_scripts(self, page: 'GDT_Page'):
         pass
 
@@ -113,6 +116,7 @@ class GDO_Module(WithModuleConfig, GDO):
     def init(self):
         if not self._inited:
             self.gdo_init()
+            self.gdo_subscribe_events()
             self._inited = True
         pass
 
