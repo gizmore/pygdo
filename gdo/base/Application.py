@@ -46,7 +46,7 @@ class Application:
         cls.IS_HTTP = is_http
 
     @classmethod
-    def init(cls, path, config_file: str = 'protected/config.toml'):
+    def init(cls, path: str, config_file: str = 'protected/config.toml'):
         from gdo.base.ModuleLoader import ModuleLoader
         # Cache.init()
         cls.PATH = os.path.normpath(path) + '/'
@@ -77,6 +77,10 @@ class Application:
     @classmethod
     def file_path(cls, path: str = ''):
         return os.path.join(cls.PATH, path)
+
+    @classmethod
+    def files_path(cls, path: str = ''):
+        return cls.file_path(Application.config('file.directory') + path)
 
     @classmethod
     def temp_path(cls, path: str = ''):
