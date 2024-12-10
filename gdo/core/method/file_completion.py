@@ -2,4 +2,6 @@ from gdo.core.MethodCompletion import MethodCompletion
 
 
 class file_completion(MethodCompletion):
-    pass
+    
+    def gdo_connectors(self) -> str:
+        return 'web'

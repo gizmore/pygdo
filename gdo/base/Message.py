@@ -72,6 +72,7 @@ class Message(WithEnv):
                 self._message = self._message[1:]
                 parser = Parser(self._env_mode, self._env_user, self._env_server, self._env_channel, self._env_session)
                 self._method = parser.parse(self._message)
+                self._method._message = self
                 return await self.run()
         except GDOParamError as ex:
             self._result = str(ex)

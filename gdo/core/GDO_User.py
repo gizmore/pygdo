@@ -187,7 +187,7 @@ class GDO_User(GDO):
 
     def permissions(self) -> list[str]:
         from gdo.core.GDO_UserPermission import GDO_UserPermission
-        return GDO_UserPermission.table().select('perm_name').join_object('pu_perm').exec().fetch_column()
+        return GDO_UserPermission.table().select('perm_name').where(f'pu_user={self.get_id()}').join_object('pu_perm').exec().fetch_column()
 
     ##########
     # Render #

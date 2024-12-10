@@ -8,6 +8,7 @@ from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException, GDOParamNameException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Message import Message
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import WebParser
@@ -95,6 +96,7 @@ def application(environ, start_response):
                 method = not_found().env_user(session.get_user()).input('_url', url)
 
             method.inputs(qs)  # GET PARAMS
+            method._message = Message(f"${method.gdo_trigger()}", Mode.HTML).env_copy(method)
 
             if environ['REQUEST_METHOD'] == 'POST' and environ['CONTENT_TYPE'].startswith('multipart/form-data'):
                 content_length = int(environ.get('CONTENT_LENGTH', 0))
