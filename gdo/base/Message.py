@@ -1,5 +1,11 @@
 import asyncio
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.core.Connector import Connector
+    from gdo.core.GDO_User import GDO_User
+
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOParamError
 from gdo.base.GDT import GDT
@@ -8,14 +14,16 @@ from gdo.base.Method import Method
 from gdo.base.Render import Mode
 from gdo.base.WithEnv import WithEnv
 from gdo.base.Parser import Parser
-from gdo.core.GDO_User import GDO_User
 
 
 class Message(WithEnv):
+
+    CURRENT: 'Message' = None
+
     _method: Method
     _message: str
     _result: str
-    _thread_user: GDO_User  # For chatgpt
+    _thread_user: 'GDO_User'  # For chatgpt
     _gdt_result: GDT  # For chatgpt
     _delivered: bool
 
@@ -32,6 +40,10 @@ class Message(WithEnv):
         self._result = ''
         self._gdt_result = None
         self._delivered = False
+        self.__class__.CURRENT = self
+
+    def get_connector(self) -> 'Connector':
+        return self._env_server.get_connector()
 
     def message_copy(self) -> 'Message':
         return Message(self._message, self._env_mode).env_copy(self).result(self._result).comrade(self._thread_user)
@@ -45,7 +57,7 @@ class Message(WithEnv):
         self._delivered = False
         return self
 
-    def comrade(self, user: GDO_User):
+    def comrade(self, user: 'GDO_User'):
         self._thread_user = user
         return self
 

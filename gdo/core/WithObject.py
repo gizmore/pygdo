@@ -105,6 +105,6 @@ class WithObject:
             return False
         if value:
             return True
-        # if not super().validate(val, value):
-        #     return False
+        if not super().validate(val, value):
+            return False
         return True

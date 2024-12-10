@@ -25,7 +25,9 @@ class Installer:
             except Exception as ex:
                 Logger.exception(ex)
                 return False
-        ModuleLoader.instance().init_user_settings()
+        loader = ModuleLoader.instance()
+        loader.load_modules_db()
+        loader.init_user_settings()
         if verbose:
             print("Migrating core for user settings...")
         Installer.migrate_gdo(GDO_UserSetting.table())

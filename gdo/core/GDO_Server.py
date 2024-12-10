@@ -162,3 +162,7 @@ class GDO_Server(GDO):
     ##########
     def render_name(self) -> str:
         return f"{self.get_id()}-{self.get_name()}"
+
+    def query_channels(self) -> list['GDO_Channel']:
+        from gdo.core.GDO_Channel import GDO_Channel
+        return GDO_Channel.table().select().where(f"chan_server={self.get_id()}").exec().fetch_all()
