@@ -166,3 +166,10 @@ err_wrong_superword = "The password is wrong."
 mt_core_look = "Channel Users"
 md_core_look = "List the online users inside a channel."
 msg_look = "There are %d users in %s: %s"
+
+##########
+# DB.raw #
+##########
+mt_core_db_raw = "DB.raw"
+md_core_db_raw = "Execute a raw Database query."
+msg_db_raw_write = "Success: %s"

@@ -156,3 +156,6 @@ class Database:
 
     def unlock(self, name: str):
         return self.query(f"RELEASE LOCK '{name}'")
+
+    def affected_rows(self) -> int:
+        return self.get_link().num_rows

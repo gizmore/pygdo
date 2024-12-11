@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
 
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOParamError
+from gdo.base.Exceptions import GDOParamError, GDOModuleException
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Method import Method
@@ -74,15 +74,23 @@ class Message(WithEnv):
                 self._method = parser.parse(self._message)
                 self._method._message = self
                 return await self.run()
+        except GDOModuleException as ex:
+            pass
         except GDOParamError as ex:
             self._result = str(ex)
             self._result += " " + str(self._method.get_arg_parser(True).format_usage())
-            await self.deliver()
+            try:
+                await self.deliver()
+            except Exception:
+                pass
         except Exception as ex:
             Logger.exception(ex)
             self._result = Application.get_page()._top_bar.render(self._env_mode)
             self._result += str(ex)
-            await self.deliver()
+            try:
+                await self.deliver()
+            except Exception:
+                pass
 
     async def run(self):
         txt = ''
