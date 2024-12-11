@@ -49,17 +49,18 @@ class help(Method):
         loader = ModuleLoader.instance()
         grouped = {}
         mode = self._env_mode
-        user = self._env_user
         for cmd, method in loader._methods.items():
             module_name = method.module().render_name()
-            trigger = method.env_user(user).gdo_trigger()
-            if module_name not in grouped:
-                grouped[module_name] = []
-            if method.has_permission(self._env_user, False):
-                trigger_colored = Render.green(trigger, mode)
-            else:
-                trigger_colored = Render.red(trigger, mode)
-            grouped[module_name].append([trigger, trigger_colored])
+            method.env_copy(self)
+            if method.allows_connector():
+                trigger = method.gdo_trigger()
+                if module_name not in grouped:
+                    grouped[module_name] = []
+                if method.has_permission(self._env_user, False):
+                    trigger_colored = Render.green(trigger, mode)
+                else:
+                    trigger_colored = Render.red(trigger, mode)
+                grouped[module_name].append([trigger, trigger_colored])
 
         grouped_sorted = {module: sorted(triggers, key=lambda x: x[0]) for module, triggers in sorted(grouped.items())}
 

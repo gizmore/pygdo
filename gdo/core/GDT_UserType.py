@@ -6,6 +6,7 @@ class GDT_UserType(GDT_Enum):
     GHOST = 'ghost'
     GUEST = 'guest'
     MEMBER = 'member'
+    CHAPPY = 'chappy'
     BOT = 'bot'
     LINK = 'link'
     DEVICE = 'device'
@@ -19,6 +20,7 @@ class GDT_UserType(GDT_Enum):
             'ghost': 'Ghost',
             'guest': 'Guest',
             'member': 'Member',
+            'chappy': 'GPT',
             'bot': 'Bot',
             'link': 'Link',
             'device': 'Device',

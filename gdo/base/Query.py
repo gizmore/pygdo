@@ -1,5 +1,6 @@
 import traceback
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO
 
@@ -167,7 +168,7 @@ class Query:
 
     def join_object(self, key: str, join: str = 'JOIN'):
         from gdo.core.GDT_Join import GDT_Join
-        from gdo.core.GDT_Object import GDT_Object
+        from gdo.core.WithObject import WithObject
         if key in self._joined_objects:
             return self
         self._joined_objects.append(key)
@@ -176,13 +177,13 @@ class Query:
 
         if isinstance(gdt, GDT_Join):
             join = gdt._join
-        elif isinstance(gdt, GDT_Object):
+        elif isinstance(gdt, WithObject):
             table = gdt._table
             a_tbl = self._gdo.gdo_table_name()
             f_tbl = f"{key}_t"
             join = f"{join} {table.gdo_table_name()} AS {f_tbl} ON {f_tbl}.{table.primary_key_column().get_name()}={a_tbl}.{gdt.get_name()}"
         else:
-            raise GDODBException("Cannot join object", self.build_query())
+            raise GDODBException(f"Cannot join object {key}", self.build_query())
         return self.join(join)
 
     def join(self, join: str):

@@ -1,3 +1,4 @@
+from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.core.GDO_Permission import GDO_Permission
@@ -15,4 +16,6 @@ class db_raw(Method):
         ]
 
     def gdo_execute(self):
+        result = Application.db().query("QUERY")
+
         return self.empty('not yet')

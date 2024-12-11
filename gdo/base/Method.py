@@ -79,7 +79,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         Comma separated list of applicable user types
         Use this to restrict to members or guests.
         """
-        return 'ghost,member,guest'
+        return 'ghost,member,guest,chappy'
 
     def gdo_connectors(self) -> str:
         """

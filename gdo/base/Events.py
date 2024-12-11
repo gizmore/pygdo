@@ -1,5 +1,7 @@
 import asyncio
 
+from gdo.base.Logger import Logger
+
 
 class Events:
     FOREVER = 2000000000
@@ -73,7 +75,10 @@ class Events:
         expired_timers = []
         for timer in self._timers:
             if current_time >= timer['next_run']:
-                timer['callback']()
+                try:
+                    await timer['callback']()
+                except Exception as ex:
+                    Logger.exception(ex)
                 timer['repeat'] -= 1
                 if timer['repeat'] > 0:
                     timer['next_run'] = current_time + timer['duration']
