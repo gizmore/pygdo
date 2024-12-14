@@ -38,6 +38,9 @@ class GDO_Channel(GDO):
     def get_trigger(self) -> str:
         return self.gdo_val('chan_trigger')
 
+    def get_lang_iso(self) -> str:
+        return self.gdo_val('chan_language')
+
     def get_server(self) -> GDO_Server:
         return self.gdo_value('chan_server')
 

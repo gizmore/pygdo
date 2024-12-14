@@ -35,6 +35,8 @@ class Config:
             GDT_Section().title_raw('File'),
             cls.data_int('file.block_size', 4096),
             cls.data_str('file.directory', 'files/'),
+            cls.data_str('file.umask', "0600"),
+            cls.data_str('dir.umask', "0700"),
             GDT_Section().title_raw('Database'),
             cls.data_str('db.host', 'localhost'),
             cls.data_int('db.port', 3306),

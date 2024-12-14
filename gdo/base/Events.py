@@ -72,6 +72,7 @@ class Events:
         self._timers = [timer for timer in self._timers if timer['callback'] != callback]
 
     async def update_timers(self, current_time: float):
+        # Logger.debug("Firing timers...")
         expired_timers = []
         for timer in self._timers:
             if current_time >= timer['next_run']:

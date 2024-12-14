@@ -14,7 +14,10 @@ from gdo.base.WithBulk import WithBulk
 
 
 class GDO(WithBulk, GDT):
-    ID_SEPARATOR = ':'
+    """
+    A GDO (Gizmore Data Object) is just a GDT(Gizmore Data Type) with s are GDT
+    """
+    ID_SEPARATOR = ':'  # Multiple primary keys supported
     GDO_COUNT = 0
     GDO_ALIVE = 0
     GDO_MAX = 0
@@ -85,6 +88,9 @@ class GDO(WithBulk, GDT):
         return False
 
     def gdo_columns(self) -> list[GDT]:
+        """
+        Return the columns for your GDO right with this method
+        """
         return []
 
     def column(self, key: str) -> GDT | any:
@@ -237,10 +243,23 @@ class GDO(WithBulk, GDT):
         return self.all_dirty(False)
 
     def dirty_vals(self) -> dict:
-        return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns() if gdt.get_name() in self._dirty}
+        from gdo.core.GDT_Field import GDT_Field
+        vals = {}
+        for gdt in self.columns():
+            if isinstance(gdt, GDT_Field):
+                name = gdt.get_name()
+                if name in self._dirty:
+                    vals[name] = self.gdo_val(name)
+        return vals
 
     def insert_vals(self):
-        return {gdt.get_name(): self.gdo_val(gdt.get_name()) for gdt in self.columns()}
+        from gdo.core.GDT_Field import GDT_Field
+        vals = {}
+        for gdt in self.columns():
+            if isinstance(gdt, GDT_Field):
+                name = gdt.get_name()
+                vals[name] = self.gdo_val(name)
+        return vals
 
     def save(self):
         if not self.is_persisted():

@@ -1,7 +1,9 @@
 import json
 import tomlkit
+from tomlkit.exceptions import ParseError
 
 from gdo.base.Application import Application
+from gdo.base.Logger import Logger
 from gdo.base.Util import Files
 
 
@@ -56,8 +58,11 @@ class Trans:
                 file_path = f"{path}_{iso}.toml"  # Construct the file path
                 if Files.exists(file_path):
                     with open(file_path, 'r') as f:
-                        more = tomlkit.load(f)
-                        cls.CACHE[iso].update(more)
+                        try:
+                            more = tomlkit.load(f)
+                            cls.CACHE[iso].update(more)
+                        except ParseError as ex:
+                            Logger.exception(ex)
         return cls.CACHE[iso]
 
     @classmethod

@@ -27,6 +27,9 @@ class launch(Method):
     def gdo_connectors(self) -> str:
         return 'bash'
 
+    def gdo_transactional(self) -> bool:
+        return False
+
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Bool('force').not_null().initial('0'),

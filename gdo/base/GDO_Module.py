@@ -14,7 +14,6 @@ from packaging.version import Version
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOMethodException
 from gdo.base.GDO import GDO
-from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import Trans, t
 from gdo.base.Util import Files, href, err, msg
@@ -135,7 +134,7 @@ class GDO_Module(WithModuleConfig, GDO):
     def render_name(self):
         return t(f"module_{self.get_name()}")
 
-    def get_methods(self) -> list[Method]:
+    def get_methods(self) -> list['Method']:
         methods = []
         dirname = self.file_path('method')
         if Files.exists(dirname):
@@ -149,14 +148,14 @@ class GDO_Module(WithModuleConfig, GDO):
                         Logger.exception(ex)
         return methods
 
-    def get_method(self, name: str) -> Method:
+    def get_method(self, name: str) -> 'Method':
         return self.instantiate_method(name)
 
-    def instantiate_method(self, name):
+    def instantiate_method(self, name: str) -> 'Method':
         try:
             mn = importlib.import_module("gdo." + self.get_name() + ".method." + name)
             return mn.__dict__[name]()
-        except ModuleNotFoundError as ex:
+        except (ModuleNotFoundError, KeyError):
             raise GDOMethodException(self.get_name(), name)
 
     def href(self, method_name: str, append: str = '', format: str = 'html'):

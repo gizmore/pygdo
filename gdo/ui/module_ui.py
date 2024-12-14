@@ -6,6 +6,11 @@ from gdo.ui.IconUTF8 import IconUTF8
 
 class module_ui(GDO_Module):
 
+    def __init__(self):
+        super().__init__()
+        self._priority = 8
+
+
     def gdo_classes(self):
         return []
 

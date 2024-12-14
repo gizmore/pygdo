@@ -24,7 +24,7 @@ class set_name(MethodForm):
 
     def validate_name(self, form: GDT_Form, field: GDT, value: any):
         my_id = self._env_user.get_id()
-        count = GDO_User.table().count_where(f"user_name={GDT.quote(value)} AND user_id != {GDT.quote(my_id)}")
+        count = GDO_User.table().count_where(f"user_server={self._env_server.get_id()} AND user_name={GDT.quote(value)} AND user_id != {GDT.quote(my_id)}")
         if count:
             return field.error('err_username_taken')
         return True

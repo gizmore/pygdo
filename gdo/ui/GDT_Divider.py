@@ -20,12 +20,18 @@ class GDT_Divider(WithTitle, WithFlow, GDT):
     def render_html(self) -> str:
         return '\n<span class="gdt-divider gdt-horizontal"></span>\n'
 
+    def render_txt(self):
+        return self.render_cli()
+
     def render_cli(self):
         title = self.render_title(Mode.CLI)
         cli = Mode.CLI
-        title = Render.underline(Render.bold(title, cli), cli)
         if self.is_horizontal():
-            return f"|{title}: "
+            if title:
+                title = Render.underline(Render.bold(title, cli), cli)
+                return f" | {title}: "
+            else:
+                return " | "
         width = len(title)
         side = self.DIV_CLI_CHAR * int((self.MAX_CLI_WIDTH - width - 2) / 2)
         return f"{side}_{title}_{side}"

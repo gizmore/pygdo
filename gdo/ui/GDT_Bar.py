@@ -1,3 +1,4 @@
+from gdo.base.Render import Mode
 from gdo.base.WithName import WithName
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Template import tpl
@@ -15,3 +16,18 @@ class GDT_Bar(WithFlow, WithName, GDT_Container):
         back += super().render_html()
         back += "</div>"
         return back
+
+    def render_txt(self) -> str:
+        return self.render_textual(Mode.TXT)
+
+    def render_irc(self) -> str:
+        return self.render_textual(Mode.IRC)
+
+    def render_telegram(self) -> str:
+        return self.render_textual(Mode.TELEGRAM)
+
+    def render_textual(self, mode: Mode) -> str:
+        out = []
+        for gdt in self.fields():
+            out.append(gdt.render_gdt(mode))
+        return "".join(out)

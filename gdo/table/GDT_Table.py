@@ -1,6 +1,7 @@
 from enum import Enum
 
 from gdo.base.GDT import GDT
+from gdo.base.Method import Method
 from gdo.base.Render import Mode
 from gdo.base.Result import Result
 from gdo.base.WithName import WithName
@@ -31,7 +32,7 @@ class GDT_Table(WithName, GDT):
         self._table_result = result
         return self
 
-    def method(self, method: object):
+    def method(self, method: Method):
         self._table_method = method
         return self
 
@@ -53,10 +54,13 @@ class GDT_Table(WithName, GDT):
     def render_txt(self) -> str:
         return self.render_textual(Mode.TXT)
 
+    def render_irc(self) -> str:
+        return self.render_textual(Mode.IRC)
+
     def render_textual(self, mode: Mode):
         method = self._table_method
         result = method.gdo_table_result()
         out = []
         for gdo in result:
-            out.append(method.gdo(gdo).render(mode))
+            out.append(method.render_gdo(gdo, mode))
         return method.gdo_render_title() + ': ' + ", ".join(out)

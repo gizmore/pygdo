@@ -133,15 +133,11 @@ class Connector:
         return self
 
     async def send_to_channel(self, msg: Message, with_events: bool=True):
-        # msg._sender = GDO_User.system() if not msg._sender else msg._sender
-        # if Application.is_html():
-        #     pass
         await self.gdo_send_to_channel(msg)
         if with_events:
             Application.EVENTS.publish('msg_sent', msg)
 
     async def send_to_user(self, msg: Message, with_events: bool=True):
-        # msg._sender = GDO_User.system() if not msg._sender else msg._sender
         await self.gdo_send_to_user(msg)
         if with_events:
             Application.EVENTS.publish('msg_sent', msg)

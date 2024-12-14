@@ -1,6 +1,11 @@
-class WithGDO():
-    _gdo: object
+from typing import TYPE_CHECKING
 
-    def gdo(self, gdo: object):
+if TYPE_CHECKING:
+    from gdo.base.GDO import GDO
+
+class WithGDO:
+    _gdo: 'GDO'
+
+    def gdo(self, gdo: 'GDO'):
         self._gdo = gdo
         return self

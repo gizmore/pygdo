@@ -5,4 +5,5 @@ class module_table(GDO_Module):
 
     def __init__(self):
         super().__init__()
+        self._priority = 10
         

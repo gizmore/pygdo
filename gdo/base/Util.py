@@ -13,7 +13,6 @@ import sys
 import urllib.parse
 from collections import OrderedDict
 from html import unescape
-from io import BytesIO
 from itertools import product
 from typing import Sequence
 
@@ -265,7 +264,9 @@ class Files:
 
     @classmethod
     def create_dir(cls, path: str) -> bool:
-        os.makedirs(path, exist_ok=True)
+        from gdo.base.Application import Application
+        mode = int(Application.config('dir.umask'), 8)
+        os.makedirs(path, mode=mode, exist_ok=True)
         return True
 
     @classmethod

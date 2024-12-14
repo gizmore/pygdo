@@ -7,7 +7,7 @@ class GDT_Name(GDT_String):
 
     def __init__(self, name):
         super().__init__(name)
-        self._encoding = Encoding.ASCII
+        self.ascii()
         self._minlen = 2
         self._maxlen = 64
         self._case_s = True

@@ -1,12 +1,13 @@
 from typing import TYPE_CHECKING
 
+from gdo.base.Application import Application
+
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO
-    from gdo.base.GDT import GDT
 
 import mysql.connector
 from mysql.connector import ProgrammingError, DatabaseError, IntegrityError
-from mysql.connector.conversion import MySQLConverterBase, MySQLConverter
+from mysql.connector.conversion import MySQLConverter
 
 from gdo.base.Exceptions import GDODBException
 from gdo.base.Logger import Logger
@@ -94,14 +95,13 @@ class Database:
         cols = []
         prim = []
         uniq = []
-        # fkey = []
         for gdt in gdo.columns():
-            define = gdt.gdo_column_define()
-            cols.append(define)
-            if gdt.is_primary():
-                prim.append(gdt.get_name())
-            if gdt.is_unique():
-                uniq.append(gdt.get_name())
+            if define := gdt.gdo_column_define():
+                cols.append(define)
+                if gdt.is_primary():
+                    prim.append(gdt.get_name())
+                if gdt.is_unique():
+                    uniq.append(gdt.get_name())
         if prim:
             primary = ",".join(prim)
             cols.append(f"PRIMARY KEY ({primary})")
@@ -109,15 +109,18 @@ class Database:
             unique = ",".join(uniq)
             cols.append(f"CONSTRAINT {gdo.gdo_table_name()}_UNIQUE UNIQUE ({unique})")
         engine = 'MyISAM' if gdo.gdo_engine_fast() else 'InnoDB'
-        query = f"CREATE TABLE IF NOT EXISTS {gdo.gdo_table_name()} (" + ",\n".join(cols) + f") ENGINE = {engine}\n"
+        query = f"CREATE TABLE IF NOT EXISTS {gdo.gdo_table_name()} (" + ",\n".join(cols) + f") ENGINE = {engine}"
         self.query(query)
 
     def create_table_fk(self, gdo: 'GDO'):
+        from gdo.core.GDT_Unique import GDT_Unique
         self.delete_all_fk(gdo)
         for gdt in gdo.columns():
+            if isinstance(gdt, GDT_Unique):
+                cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{gdt.get_name()}"
+                self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({', '.join(gdt._column_names)})")
             if fk := gdt.column_define_fk():
                 cn = f"GDO__FK__{gdo.gdo_table_name()}__{gdt.get_name()}"
-                # self.delete_fk(cn)
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} {fk}")
 
     def delete_all_fk(self, gdo: 'GDO'):
@@ -159,3 +162,25 @@ class Database:
 
     def affected_rows(self) -> int:
         return self.get_link().num_rows
+
+    ###############
+    # Transaction #
+    ###############
+
+    def begin(self):
+        Application.DB_TRANSACTIONS += 0.5
+        self.get_link().start_transaction()
+        return self
+
+    def is_in_transaction(self) -> bool:
+        return self.get_link().in_transaction
+
+    def commit(self):
+        Application.DB_TRANSACTIONS += 0.5
+        self.get_link().commit()
+        return self
+
+    def rollback(self):
+        Application.DB_TRANSACTIONS += 0.25
+        self.get_link().rollback()
+        return self

@@ -45,11 +45,9 @@ class Installer:
             before = after
             for dep in deps:
                 more = dep.gdo_dependencies()
-                # print(more)
                 for name in more:
                     mod = loader.load_module_fs(name)
                     if mod not in deps:
-                        # print(mod.get_name())
                         deps.append(mod)
             after = len(deps)
         return sorted(deps, key=lambda m: m._priority)
@@ -87,13 +85,13 @@ class Installer:
         module.soft_replace()
 
     @classmethod
-    def install_gdo(cls, classname):
-        table = Cache.table_for(classname)
+    def install_gdo(cls, class_name):
+        table = Cache.table_for(class_name)
         return Application.db().create_table(table)
 
     @classmethod
-    def install_gdo_fk(cls, classname: str):
-        table = Cache.table_for(classname)
+    def install_gdo_fk(cls, class_name: str):
+        table = Cache.table_for(class_name)
         return Application.db().create_table_fk(table)
 
     @classmethod
@@ -117,11 +115,8 @@ class Installer:
             if cols := cls.column_names(gdo, temptable):  # something changed?
                 columns = ",".join(cols)
                 db.query(f"INSERT INTO {temptable} SELECT * FROM {tablename}")  # copy old to zzz
-
                 restore_from_zzz = True  # At this point we can restore on error
-
                 db.drop_table(tablename)  # Drop old
-
                 db.create_table(gdo)  # Create new
                 db.create_table_fk(gdo)  # with FKs
                 db.query(f"INSERT INTO {tablename} ({columns}) SELECT {columns} FROM {temptable}")  # Copy zzz to new

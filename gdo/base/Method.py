@@ -1,8 +1,14 @@
 import argparse
 import functools
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.base.GDO_Module import GDO_Module
+
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError, GDOParamError
+from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
@@ -58,6 +64,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         """
         module = self.module()
         return f"{module.get_name()}.{self.get_name()}"
+
+    def gdo_transactional(self) -> bool:
+        return True
 
     def gdo_parameters(self) -> [GDT]:
         return []
@@ -218,7 +227,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         self.module().err(key, args)
         return self
 
-    def module(self):
+    def module(self) -> 'GDO_Module':
         from gdo.base.ModuleLoader import ModuleLoader
         mn = self.__module__
         mn = Strings.substr_from(mn, 'gdo.')
@@ -229,13 +238,22 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     # Exec #
     ########
     async def execute(self):
-        """
-        Check method environment and if allowed, gdo_execute() on permission
-        """
-        Application.set_current_user(self._env_user)
-        if not self._prepare_nested_permissions(self):
-            return self
-        return await self._nested_execute(self, True)
+        db = Application.db()
+        tr = self.gdo_transactional() and not db.is_in_transaction()
+        try:
+            if tr:
+                db.begin()
+            Application.set_current_user(self._env_user)
+            if not self._prepare_nested_permissions(self):
+                return self
+            return await self._nested_execute(self, True)
+        except Exception as ex:
+            if tr:
+                db.rollback()
+                raise ex
+        finally:
+            if tr:
+                db.commit()
 
     async def _nested_execute(self, method, return_gdt: bool = False):
         i = 0
@@ -359,7 +377,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return conf
 
     def save_config_server(self, key: str, val: str):
-        Logger.debug(f"{self.get_name()}.save_config_server({key}, {val})")
+        # Logger.debug(f"{self.get_name()}.save_config_server({key}, {val})")
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValServer import GDO_MethodValServer
         from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
@@ -522,6 +540,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 parser = self.get_arg_parser(True)
                 return parser.format_usage()
         return self.render_page().render(mode)
+
+    def render_gdo(self, gdo: GDO, mode: Mode) -> str:
+        return ''
 
     def render_html(self) -> str:
         return self.render_page().render(Mode.HTML)

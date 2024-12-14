@@ -29,9 +29,9 @@ class WithEnv:
         return self
 
     def env_user(self, user: 'GDO_User'):
-        from gdo.core.GDO_Session import GDO_Session
         self._env_user = user
         if user:
+            from gdo.core.GDO_Session import GDO_Session
             return self.env_session(GDO_Session.for_user(user))
         return self.env_session(None)
 

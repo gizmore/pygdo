@@ -53,6 +53,8 @@ def application(environ, start_response):
             Application.fresh_page()
         qs = parse_qs(environ['QUERY_STRING'])
 
+        Application.request_method(environ['REQUEST_METHOD'])
+
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
             # get_params = parse_qs(url)

@@ -14,6 +14,7 @@ class servers(MethodQueryTable):
     def render_cli(self) -> str:
         server = self._gdo
         return f"{server.render_name()}"
+
     def render_irc(self) -> str:
         server = self._gdo
         return f"{server.render_name()}"
