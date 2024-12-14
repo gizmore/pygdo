@@ -62,12 +62,14 @@ class GDO_Channel(GDO):
 
     async def send(self, message: str):
         if Application.IS_HTTP:
-            GDO_Event.blank().insert()
+            pass
+            # GDO_Event.blank().insert()
         else:
             server = self.get_server()
             conn = server.get_connector()
             msg = Message(message, conn.get_render_mode())
-            msg.env_server(server).env_channel(self)
+            msg.env_user(GDO_User.system())
+            msg.env_server(server).env_channel(self).result(message)
             await conn.send_to_channel(msg)
 
     def on_user_joined(self, user: GDO_User):
