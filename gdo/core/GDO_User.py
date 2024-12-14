@@ -210,8 +210,8 @@ class GDO_User(GDO):
     #############
     # Messaging #
     #############
-    def send(self, key: str, args: list = None):
-        self.get_server().send_to_user(self, key, args)
+    async def send(self, key: str, args: list = None):
+        await self.get_server().send_to_user(self, key, args)
 
     def is_dog(self) -> bool:
         return self == self.get_server().get_connector().gdo_get_dog_user()

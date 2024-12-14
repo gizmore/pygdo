@@ -60,7 +60,7 @@ class GDO_Channel(GDO):
                  .where(f'chan_server={server.get_id()}'))
         return query.gdo(GDO_Channel.table()).exec().fetch_all()
 
-    def send(self, message: str):
+    async def send(self, message: str):
         if Application.IS_HTTP:
             GDO_Event.blank().insert()
         else:
@@ -68,7 +68,7 @@ class GDO_Channel(GDO):
             conn = server.get_connector()
             msg = Message(message, conn.get_render_mode())
             msg.env_server(server).env_channel(self)
-            conn.send_to_channel(msg)
+            await conn.send_to_channel(msg)
 
     def on_user_joined(self, user: GDO_User):
         if user not in self._users:

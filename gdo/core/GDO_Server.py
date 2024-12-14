@@ -151,11 +151,11 @@ class GDO_Server(GDO):
     ###########
     # Message #
     ###########
-    def send_to_user(self, user: GDO_User, key: str, args: list = None):
+    async def send_to_user(self, user: GDO_User, key: str, args: list = None):
         text = tusr(user, key, args)
         message = Message(text, Application.get_mode())
         message.env_user(user).env_server(self).env_channel(None)
-        self.get_connector().send_to_user(message.result(text))
+        await self.get_connector().send_to_user(message.result(text))
 
     ##########
     # Render #
