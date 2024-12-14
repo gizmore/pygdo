@@ -101,10 +101,6 @@ def application(environ, start_response):
             method._message = Message(f"${method.gdo_trigger()}", Mode.HTML).env_copy(method)
 
             if environ['REQUEST_METHOD'] == 'POST' and environ['CONTENT_TYPE'].startswith('multipart/form-data'):
-                content_length = int(environ.get('CONTENT_LENGTH', 0))
-                # post_data = environ['wsgi.input'].read(content_length)
-                # dump(post_data)
-
                 post_variables = cgi.FieldStorage(
                     fp=environ['wsgi.input'],
                     environ=environ,
