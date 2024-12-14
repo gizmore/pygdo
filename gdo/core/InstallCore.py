@@ -1,4 +1,5 @@
 from gdo.base.Application import Application
+from gdo.base.Util import Files
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
@@ -13,6 +14,7 @@ class InstallCore:
         cls.install_system()
         cls.install_web()
         cls.install_perms()
+        cls.install_files()
 
     @classmethod
     def install_system(cls):
@@ -53,3 +55,7 @@ class InstallCore:
             GDO_Permission.blank({
                 'perm_name': name
             }).insert()
+
+    @classmethod
+    def install_files(cls):
+        Files.create_dir(Application.files_path('gdo_file/'))

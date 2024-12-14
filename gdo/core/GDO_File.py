@@ -65,7 +65,7 @@ class GDO_File(GDO):
         return self
 
     def get_target_path(self) -> str:
-        return Application.file_path(f"files/{self.get_id()}")
+        return Application.file_path(f"files/gdo_file/{self.get_id()}")
 
     @classmethod
     def from_memory(cls, file_data: tuple):
