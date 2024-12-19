@@ -10,7 +10,7 @@ from gdo.file.MethodFile import MethodFile
 
 class preview(MethodFile):
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_File('file'),
             GDT_Token('token').not_null(),
@@ -19,7 +19,7 @@ class preview(MethodFile):
     def get_file(self) -> GDO_File:
         return self.param_value('file')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         file = self.get_file()
         token = self.param_val('token')
         correct = file.gdo_hash()

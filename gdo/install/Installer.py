@@ -1,5 +1,7 @@
 import re
 
+import tomlkit
+
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.Exceptions import GDOException
@@ -8,7 +10,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Result import ResultType
-from gdo.base.Util import Arrays, msg
+from gdo.base.Util import Arrays, msg, Files
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 
 
@@ -163,3 +165,15 @@ class Installer:
         for klass in reversed(module.gdo_classes()):
             Application.db().drop_table(klass.table().gdo_table_name())
         module.delete()
+
+    @classmethod
+    def get_repo_info(cls, module: GDO_Module) -> list:
+        repo_info = cls.load_provider_toml()
+        return repo_info[module.get_name().lower()]
+
+    @classmethod
+    def load_provider_toml(cls) -> object:
+        path = Application.file_path('gdo/base/res/deps.toml')
+        content = Files.get_contents(path)
+        return tomlkit.loads(content)
+

@@ -1,3 +1,4 @@
+import asyncio
 import os
 import unittest
 
@@ -29,7 +30,7 @@ class ModuleConfigTestCase(unittest.TestCase):
 
     def test_02_module_user_config(self):
         web = Web.get_server()
-        user = web.get_or_create_user('gizmore')
+        user = asyncio.run(web.get_or_create_user('gizmore'))
         user.save_setting('email', '')
         email = user.get_setting_val('email')
         self.assertIsNone(email, "User email is not null")

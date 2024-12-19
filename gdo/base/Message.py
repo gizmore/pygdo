@@ -2,6 +2,8 @@ import asyncio
 
 from typing import TYPE_CHECKING
 
+from gdo.core.GDT_UserType import GDT_UserType
+
 if TYPE_CHECKING:
     from gdo.core.Connector import Connector
     from gdo.core.GDO_User import GDO_User
@@ -26,6 +28,7 @@ class Message(WithEnv):
     _thread_user: 'GDO_User'  # For chatgpt
     _gdt_result: GDT  # For chatgpt
     _delivered: bool
+    _reply_to: str
 
     def __init__(self, message: str, mode: Mode):
         super().__init__()
@@ -33,13 +36,14 @@ class Message(WithEnv):
         self.env_mode(mode)
         self._message = message
         # self._sender = None  # GDO_User.system()
-        self._env_reply_to = None
+        # self._env_reply_to = None
         self._thread_user = None
         self._env_channel = None
         self._env_session = None
         self._result = ''
         self._gdt_result = None
         self._delivered = False
+        self._reply_to = ''
         self.__class__.CURRENT = self
 
     def get_connector(self) -> 'Connector':
@@ -64,7 +68,7 @@ class Message(WithEnv):
     async def execute(self):
         try:
             Application.fresh_page()
-            Application.EVENTS.publish('new_message', self)
+            await Application.EVENTS.publish('new_message', self)
             trigger = self._env_server.get_trigger()
             if self._env_channel is not None:
                 trigger = self._env_channel.get_trigger()
@@ -112,15 +116,11 @@ class Message(WithEnv):
             return
         self._delivered = True
         if self._env_channel:
-            # if with_prefix:
-                # reply_to = self._env_reply_to or self._env_user.render_name()
-                # text = f"{reply_to}: {text}"
-                # self._result = text
+            self._reply_to = ''
+            if not self._thread_user:
+                self._reply_to = f"{self._env_user.get_displayname()}: "
             await self._env_server.get_connector().send_to_channel(self, with_events)
         else:
-            if self._env_reply_to:
-                text = f"{self._env_reply_to}: {text}"
-                self._result = text
             u = self._thread_user if self._thread_user else self._env_user
             o = self._env_user
             if self._thread_user:

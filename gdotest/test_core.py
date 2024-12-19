@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os.path
 import unittest
@@ -39,11 +40,11 @@ class CoreTestCase(GDOTestCase):
 
     def test_03_path(self):
         gdt = GDT_Path('file').initial(Application.file_path('DOCS')).existing_dir()
-        self.assertIsNotNone(gdt.validated(), "Checking GDT_File for an existing dir fails.")
+        self.assertIsNotNone(asyncio.run(gdt.validated()), "Checking GDT_File for an existing dir fails.")
         gdt = GDT_Path('file').initial(Application.file_path('DOCS/README.md')).existing_file()
-        self.assertIsNotNone(gdt.validated(), "Checking GDT_File for an existing dir fails.")
+        self.assertIsNotNone(asyncio.run(gdt.validated()), "Checking GDT_File for an existing dir fails.")
         gdt = GDT_Path('file').initial(Application.file_path('DOCS/README_NOT.md')).existing_file()
-        self.assertIsNone(gdt.validated(), "Checking GDT_File for an existing file should fail.")
+        self.assertIsNot(asyncio.run(gdt.validated()), "Checking GDT_File for an existing file should fail.")
 
     def test_04_float_rendering(self):
         gdt = GDT_Float('number').initial_value(31337.141569)
@@ -88,7 +89,7 @@ class CoreTestCase(GDOTestCase):
         self.assertIn('SELECT * FROM gdo_user', result, 'Database Debug output does not render.')
 
     def test_10_reload_restricted(self):
-        petra = Bash.get_server().get_or_create_user('Petra')
+        petra = asyncio.run(Bash.get_server().get_or_create_user('Petra'))
         method = reload().env_user(petra)
         has = method.has_permission(petra)
         self.assertEqual(has, False, "Permission check is not working")
@@ -96,7 +97,7 @@ class CoreTestCase(GDOTestCase):
         self.assertIn('ermission', out, "CLI Permission not working")
 
     def test_11_help(self):
-        petra = Bash.get_server().get_or_create_user('Petra')
+        petra = asyncio.run(Bash.get_server().get_or_create_user('Petra'))
         out = cli_plug(petra, "$help")
         self.assertIn("31mreload", out, "Reload should be red")
 

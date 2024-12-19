@@ -11,10 +11,10 @@ class sum(Method):
     def gdo_trigger(self) -> str:
         return 'sum'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Repeat(GDT_Float('x').not_null()),
         ]
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         return GDT_Float('result').initial_value(builtins.sum(self.param_value('x')))

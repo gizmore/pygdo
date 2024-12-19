@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import functools
 
 from typing import TYPE_CHECKING
@@ -68,7 +69,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def gdo_transactional(self) -> bool:
         return True
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return []
 
     def gdo_method_config_bot(self) -> [GDT]:
@@ -126,7 +127,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         """
         return True
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         raise GDOError('err_stub')
 
     def gdo_render_title(self) -> str:
@@ -177,11 +178,13 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             if key == name:
                 val = gdt.get_val()
                 value = gdt.to_value(val)
-                if gdt.validate(val, value):
+                result = gdt.validate(val, value)
+                while asyncio.iscoroutine(result):
+                    result = asyncio.run(result)
+                if result:
                     return gdt.get_val()
                 elif throw:
                     raise GDOParamError('err_param', [name, gdt.render_error()])
-        return None
 
     def param_value(self, key: str, throw: bool = True) -> any:
         for name, gdt in self.parameters().items():

@@ -18,7 +18,7 @@ class not_found(Method):
             GDT_Url("_url").not_null(),
         ]
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         if module_core.instance().cfg_404_mails():
             self.send_mail()
         url = self.param_val('_url')

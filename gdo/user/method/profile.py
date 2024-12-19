@@ -10,7 +10,7 @@ class profile(Method):
     def gdo_trigger(self) -> str:
         return 'profile'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_User('for').not_null(),
         ]
@@ -18,7 +18,7 @@ class profile(Method):
     def get_user(self) -> GDO_User:
         return self.param_value('for')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         user = self.get_user()
         card = GDT_Card()
         try:

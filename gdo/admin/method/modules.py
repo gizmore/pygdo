@@ -2,6 +2,7 @@ import functools
 
 from gdo.base.GDO import GDO
 from gdo.base.GDO_Module import GDO_Module
+from gdo.base.GDT import GDT
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render, Mode
 from gdo.base.Result import Result
@@ -28,9 +29,9 @@ class modules(MethodTable):
     def gdo_paginated(self) -> bool:
         return False
 
-    def gdo_execute(self):
-        Trans.reload()
-        mods = self.get_modules()
+    def gdo_execute(self) -> GDT:
+        # Trans.reload()
+        self.get_modules()
         self._n = 0
         return super().gdo_execute()
 

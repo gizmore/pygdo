@@ -10,7 +10,7 @@ from gdo.form.GDT_Submit import GDT_Submit
 class MethodForm(Method):
     _form: GDT_Form
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return []
 
     def __init__(self):
@@ -30,7 +30,7 @@ class MethodForm(Method):
             self._nested_parse()
         return self._form
 
-    def gdo_execute(self):
+    async def gdo_execute(self) -> GDT:
         form = self.get_form()
 
         ### Flow upload
@@ -38,11 +38,11 @@ class MethodForm(Method):
             return form.get_field(self._args['flowField']).flow_upload()
 
         for gdt in form.all_fields():
-            gdt.gdo_file_upload(self)
+            await gdt.gdo_file_upload(self)
 
         for button in form.actions().fields():
             if isinstance(button, GDT_Submit) and button.get_val():
-                if form.validate(None, None):
+                if await form.validate(None, None):
                     return button.call()
                 else:
                     return self.form_invalid()

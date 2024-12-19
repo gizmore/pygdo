@@ -48,7 +48,7 @@ def get_parser():
     from gdo.base.Render import Mode
     from gdo.base.Util import CLI
     from gdo.core.GDO_Session import GDO_Session
-    user = CLI.get_current_user()
+    user = asyncio.run(CLI.get_current_user())
     server = user.get_server()
     channel = None
     session = GDO_Session.for_user(user)
@@ -65,7 +65,7 @@ def process_line(line: str) -> None:
     from gdo.base.Util import CLI
     try:
         server = Bash.get_server()
-        user = CLI.get_current_user()
+        user = asyncio.run(CLI.get_current_user())
         trigger = server.get_trigger()
         append_to_history(line)
         parser = get_parser()
@@ -77,7 +77,7 @@ def process_line(line: str) -> None:
             method = parser.parse_line(line[1:])
             Application.fresh_page()
             gdt = method.execute()
-            if asyncio.iscoroutine(gdt):
+            while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
             txt1 = gdt.render_cli()
             txt2 = Application.get_page()._top_bar.render_cli()
@@ -98,7 +98,7 @@ def append_to_history(line: str):
     from gdo.base.Util import CLI
     from gdo.base.Application import Application
     from gdo.base.Util import Files
-    user = CLI.get_current_user()
+    user = asyncio.run(CLI.get_current_user())
     path = Application.file_path(f'cache/repl/{user.get_id()}.repl.log')
     Files.append_content(path, f"{line}\n", create=True)
 

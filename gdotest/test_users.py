@@ -1,3 +1,4 @@
+import asyncio
 import os.path
 import unittest
 
@@ -15,7 +16,7 @@ class UsersTestCase(unittest.TestCase):
         ModuleLoader.instance().init_modules()
 
     def test_web_user(self):
-        gizmore = Web.get_server().get_or_create_user('gizmore')
+        gizmore = asyncio.run(Web.get_server().get_or_create_user('gizmore'))
         self.assertIsInstance(gizmore, GDO_User, "Cannot create gizmore for webserver")
 
 

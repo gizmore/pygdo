@@ -16,6 +16,8 @@ from html import unescape
 from itertools import product
 from typing import Sequence
 
+import aiofiles
+
 from gdo.base.Render import Mode
 
 
@@ -89,16 +91,16 @@ def url(module_name: str, method_name: str, append: str = '', fmt: str = 'html')
 
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
     from gdo.base.Application import Application
-    splitted = ''
+    split = ''
     new_append = ''
     if append:
         for kv in append.lstrip('&').split('&'):
             key, val = kv.split('=')
             if not key.startswith('_'):
-                splitted += f";{key}.{val}"
+                split += f";{key}.{val}"
             else:
                 new_append += f"&{kv}"
-    return f"/{module_name}.{method_name}{splitted}.{fmt}?_lang={Application.STORAGE.lang}{new_append}"
+    return f"/{module_name}.{method_name}{split}.{fmt}?_lang={Application.STORAGE.lang}{new_append}"
 
 
 def module_enabled(module_name: str) -> bool:
@@ -112,16 +114,10 @@ def module_enabled(module_name: str) -> bool:
 class CLI:
 
     @classmethod
-    def get_current_user(cls):
+    async def get_current_user(cls):
         from gdo.core.connector.Bash import Bash
         name = getpass.getuser()
-        return Bash.get_server().get_or_create_user(name)
-
-    # @classmethod
-    # def parse(cls, line):
-    #     from gdo.base.Parser import Parser
-    #     method = Parser(line, cls.get_current_user()).parse()
-    #     return method
+        return await Bash.get_server().get_or_create_user(name)
 
 
 class Strings:
@@ -214,7 +210,7 @@ class Strings:
         return [text[:boundary_index]] + cls.split_boundary(text[boundary_index:], chunk_size)
 
     @classmethod
-    def regex_first(cls, pattern: str, string: str):
+    def regex_first(cls, pattern: str, string: str) -> str:
         """
         Get the first matching group value of a string match
         """
@@ -265,7 +261,7 @@ class Files:
     @classmethod
     def create_dir(cls, path: str) -> bool:
         from gdo.base.Application import Application
-        mode = int(Application.config('dir.umask'), 8)
+        mode = int(Application.config('dir.umask', '0700'), 8)
         os.makedirs(path, mode=mode, exist_ok=True)
         return True
 
@@ -302,6 +298,17 @@ class Files:
         with open(path, 'wb') as f:
             f.write(contents.encode('UTF-8') if isinstance(contents, str) else contents)
         return True
+
+    @classmethod
+    async def async_put_contents(cls, name: str, content: bytes, append: bool = False) -> None:
+        """
+        Asynchronously writes content to a file.
+        """
+        if isinstance(content, str):
+            content = content.encode('UTF-8')
+        mode = 'ab' if append else 'wb'  # Append binary or write binary
+        async with aiofiles.open(name, mode) as file:
+            await file.write(content)
 
     @classmethod
     def get_contents(cls, path: str):

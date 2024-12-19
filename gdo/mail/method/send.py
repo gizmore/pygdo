@@ -8,14 +8,14 @@ from gdo.ui.GDT_Title import GDT_Title
 
 class send(Method):
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_User("to").not_null(),
             GDT_Title("subject").not_null(),
             GDT_Text("body").not_null()
         ]
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         sender = self._env_user
         to = self.param_value('to')
         if not to.has_mail():

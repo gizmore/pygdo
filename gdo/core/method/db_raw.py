@@ -15,7 +15,7 @@ class db_raw(Method):
     def gdo_user_permission(self) -> str | None:
         return GDO_Permission.ADMIN
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_RestOfText('sql').not_null(),
             GDT_UInt('max_rows').max(100).initial('10'),
@@ -27,7 +27,7 @@ class db_raw(Method):
     def get_max_rows(self) -> int:
         return self.param_value('max_rows')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         out = []
         db = Application.db()
         query = self.get_query()

@@ -135,9 +135,9 @@ class Connector:
     async def send_to_channel(self, msg: Message, with_events: bool=True):
         await self.gdo_send_to_channel(msg)
         if with_events:
-            Application.EVENTS.publish('msg_sent', msg)
+            await Application.EVENTS.publish('msg_sent', msg)
 
     async def send_to_user(self, msg: Message, with_events: bool=True):
         await self.gdo_send_to_user(msg)
         if with_events:
-            Application.EVENTS.publish('msg_sent', msg)
+            await Application.EVENTS.publish('msg_sent', msg)

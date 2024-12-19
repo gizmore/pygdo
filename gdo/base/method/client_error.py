@@ -1,5 +1,4 @@
-import traceback
-
+from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.ui.GDT_Error import GDT_Error
 
@@ -17,5 +16,5 @@ class client_error(Method):
         self._exception = exception
         return self
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         return GDT_Error.from_exception(self._exception)

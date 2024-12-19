@@ -2,12 +2,10 @@ import re
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
-from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render
 from gdo.core.Connector import Connector
-from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_String import GDT_String
 
 
@@ -19,7 +17,7 @@ class help(Method):
     def gdo_connectors(self) -> str:
         return Connector.text_connectors()
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_String('trigger').positional(),
         ]
@@ -27,7 +25,7 @@ class help(Method):
     def get_trigger(self):
         return self.param_val('trigger')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         trigger = self.get_trigger()
         if trigger:
             return self.show_help_for(trigger)

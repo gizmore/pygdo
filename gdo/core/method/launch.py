@@ -30,7 +30,7 @@ class launch(Method):
     def gdo_transactional(self) -> bool:
         return False
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Bool('force').not_null().initial('0'),
             GDT_Duration('dog_msleep').not_null().initial('25ms'),
@@ -42,14 +42,15 @@ class launch(Method):
     def sleep_ms(self) -> float:
         return self.param_value('dog_msleep')
 
-    def gdo_execute(self) -> GDT:
+    async def gdo_execute(self) -> GDT:
         if self.is_forced():
             Files.remove(self.lock_path())
         if self.is_running():
             return self.err('err_dog_already_running')
         Files.touch(self.lock_path(), True)
         try:
-            asyncio.run(self.mainloop())
+           await self.mainloop()
+           return self.empty()
         except KeyboardInterrupt as ex:
             self.send_quit_message('CTRL-C got pressed')
             raise ex

@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import os
 import subprocess
 import sys
@@ -147,9 +148,7 @@ class App:
         pass
 
     def _load_provider_toml(self):
-        path = Application.file_path('gdo/base/res/deps.toml')
-        content = Files.get_contents(path)
-        return tomlkit.loads(content)
+        return Installer.load_provider_toml()
 
     def provide(self):
         """
@@ -292,7 +291,7 @@ class App:
         loader.load_modules_db()
 
         server = GDO_Server.get_by_connector(args.connector)
-        user = server.get_or_create_user(args.username)
+        user = asyncio.run(server.get_or_create_user(args.username))
         GDO_UserPermission.grant(user, GDO_Permission.ADMIN)
         GDO_UserPermission.grant(user, GDO_Permission.STAFF)
         GDO_UserPermission.grant(user, GDO_Permission.CRONJOB)

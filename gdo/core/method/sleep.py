@@ -13,11 +13,11 @@ class sleep(Method):
     def gdo_trigger(self) -> str:
         return 'sleep'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Duration('time').not_null(),
         ]
 
-    async def gdo_execute(self):
+    async def gdo_execute(self) -> GDT:
         await asyncio.sleep(self.param_value('time'))
-        return GDT_None()
+        return self.empty()

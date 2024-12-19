@@ -82,20 +82,20 @@ class GDO_Server(GDO):
     # User #
     ########
 
-    def get_or_create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
+    async def get_or_create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
         user = self.get_user_by_name(username)
         if not user:
-            user = self.create_user(username, displayname or username, user_type)
+            user = await self.create_user(username, displayname or username, user_type)
         return user
 
-    def create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
+    async def create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
         user = GDO_User.blank({
             'user_type': user_type,
             'user_name': username,
             'user_displayname': displayname or username,
             'user_server': self.get_id(),
         }).insert()
-        Application.EVENTS.publish('user_created', user)
+        await Application.EVENTS.publish('user_created', user)
         return user
 
     def get_user_by_name(self, username) -> GDO_User:

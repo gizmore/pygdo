@@ -25,6 +25,9 @@ from gdo.ui.GDT_Error import GDT_Error
 FRESH = True
 
 def application(environ, start_response):
+    return app_main(environ, start_response)
+
+def app_main(environ, start_response):
     """
     The PyGDO Rendering core and http  method proxy
     """
@@ -57,7 +60,6 @@ def application(environ, start_response):
 
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
-            # get_params = parse_qs(url)
             del qs['_url']
             if not url:
                 url = 'core.welcome.html'
@@ -74,7 +76,7 @@ def application(environ, start_response):
             user = session.get_user()
             method = file_server().env_user(user).input('_url', path)
             gdt = method.execute()
-            if asyncio.iscoroutine(gdt):
+            while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
@@ -130,13 +132,12 @@ def application(environ, start_response):
 
             try:
                 result = method.execute()
+                while asyncio.iscoroutine(result):
+                    result = asyncio.run(result)
             except Exception as ex:
                 err('%s', [str(ex)])
                 err('%s', [traceback.format_exc()])
                 result = method
-
-            if asyncio.iscoroutine(result):
-                result = asyncio.run(result)
 
             if Application.is_html():
                 page = Application.get_page()

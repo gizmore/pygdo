@@ -46,16 +46,19 @@ class Events:
         if event_name in self._subscribers:
             self._subscribers[event_name] = [sub for sub in self._subscribers[event_name] if sub['callback'] != subscriber]
 
-    def publish(self, event_name, *args, **kwargs):
+    async def publish(self, event_name, *args, **kwargs):
         to_delete = []
         if event_name in self._subscribers:
             for subscriber in self._subscribers[event_name]:
-                result = subscriber['callback'](*args, **kwargs)
-                if asyncio.iscoroutine(result):
-                    asyncio.run(result)
-                subscriber['count'] -= 1
-                if subscriber['count'] == 0:
-                    to_delete.append(subscriber['callback'])
+                try:
+                    result = subscriber['callback'](*args, **kwargs)
+                    while asyncio.iscoroutine(result):
+                        result = await result
+                    subscriber['count'] -= 1
+                    if subscriber['count'] == 0:
+                        to_delete.append(subscriber['callback'])
+                except Exception as ex:
+                    Logger.exception(ex)
         for callback in to_delete:
             self.unsubscribe(event_name, callback)
 

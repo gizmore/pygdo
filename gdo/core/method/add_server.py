@@ -15,7 +15,7 @@ class add_server(Method):
     def gdo_user_permission(self) -> str | None:
         return 'staff'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Name('username'),
             GDT_Password('password'),
@@ -39,7 +39,7 @@ class add_server(Method):
     def get_url(self):
         return self.param_val('url')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         conn = self.get_connector()
         server = GDO_Server.blank({
             'serv_name': self.get_server_name(),

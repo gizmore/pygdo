@@ -8,7 +8,7 @@ class server(Method):
     def gdo_trigger(self) -> str:
         return 'server'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Object('id').table(GDO_Server.table()),
         ]
