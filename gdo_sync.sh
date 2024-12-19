@@ -17,8 +17,11 @@ python3 gdoproviders.py
 echo "Are you sure? Press Enter!"
 read
 
-echo "Syncing repositories..."
-echo "Do: git commit & push all repos"
+echo "Syncing core..."
+pwd && git add -A . && git commit -am \"$message\" && git push
 sleep 1
-find . -iname ".git" -type d -exec sh -c "cd $CORE && cd {} && cd .. && pwd && git add -A . && git commit -am \"$message\" && git push" \;
+
+echo "Syncing module repositories..."
+sleep 1
+find gdo -iname ".git" -type d -exec sh -c "cd $CORE && cd {} && cd .. && pwd && git add -A . && git commit -am \"$message\" && git push" \;
 
