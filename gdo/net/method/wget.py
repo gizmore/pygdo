@@ -4,7 +4,7 @@ from gdo.base.Method import Method
 from gdo.base.Util import Strings
 from gdo.core.GDT_Select import GDT_Select
 from gdo.net.GDT_Url import GDT_Url
-from gdo.ui.GDT_HTML import GDT_HTML
+from gdo.message.GDT_HTML import GDT_HTML
 
 
 class wget(Method):

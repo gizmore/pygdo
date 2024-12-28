@@ -13,7 +13,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Trans import t, thas
-from gdo.base.Util import Strings, err, dump
+from gdo.base.Util import Strings
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
 from gdo.base.WithInput import WithInput
@@ -198,7 +198,6 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     # Redirect #
     ############
     def redirect(self, href: str):
-        from gdo.ui.GDT_Page import GDT_Page
         from gdo.net.GDT_Redirect import GDT_Redirect
         redirect = GDT_Redirect().href(href)
         Application.get_page()._top_bar.add_field(redirect)
@@ -209,7 +208,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     ###########
 
     def empty(self, text: str = None) -> GDT:
-        from gdo.ui.GDT_HTML import GDT_HTML
+        from gdo.message.GDT_HTML import GDT_HTML
         html = GDT_HTML()
         if text:
             html.text('%s', [text])

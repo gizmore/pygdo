@@ -43,7 +43,7 @@ class EventsTestCase(unittest.TestCase):
         def tck():
             Application.tick()
             asyncio.run(Application.EVENTS.update_timers(Application.TIME))
-        def foo():
+        async def foo():
             nonlocal y
             y += 1
         Application.EVENTS.add_timer(0.25, foo, 2)

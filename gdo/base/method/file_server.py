@@ -10,7 +10,7 @@ from gdo.base.Method import Method
 from gdo.base.Util import hdr
 from gdo.core.GDT_Path import GDT_Path
 from gdo.file.GDT_FileOut import GDT_FileOut
-from gdo.ui.GDT_HTML import GDT_HTML
+from gdo.message.GDT_HTML import GDT_HTML
 
 
 class file_server(Method):

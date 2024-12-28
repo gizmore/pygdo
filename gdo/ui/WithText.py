@@ -1,7 +1,6 @@
 from gdo.base.Render import Mode
 from gdo.base.Trans import t
 from gdo.base.Util import Strings
-from gdo.ui.GDT_Paragraph import GDT_Paragraph
 
 
 class WithText:

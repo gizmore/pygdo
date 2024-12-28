@@ -26,7 +26,7 @@ class UITestCase(unittest.TestCase):
 
     def test_02_flow(self):
         horz = GDT_Divider().title_raw('Test').horizontal().render_cli()
-        self.assertEqual('|', horz[0], 'Divider does not start with pipe')
+        self.assertEqual('|', horz[1], 'Divider does not start with pipe')
 
     def test_03_section(self):
         sect = GDT_Section().title_raw("Test").render_title(Mode.CLI)

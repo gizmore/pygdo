@@ -13,6 +13,7 @@ from gdotest.test_forms import FormTestCase
 from gdotest.test_install import InstallTestCase
 from gdotest.test_mail import MailTestCase
 from gdotest.test_math import MathTestCase
+from gdotest.test_message import MessageTestCase
 from gdotest.test_module_config import ModuleConfigTestCase
 from gdotest.test_session import SessionTestCase
 from gdotest.test_ui import UITestCase
@@ -32,6 +33,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(AdminTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DateTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(MathTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(MessageTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DBTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(FormTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(EventsTestCase))

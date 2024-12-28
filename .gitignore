@@ -27,6 +27,7 @@ __pycache__/
 !/gdo/language/
 !/gdo/mail/
 !/gdo/math/
+!/gdo/message/
 !/gdo/net/
 !/gdo/table/
 !/gdo/ui/

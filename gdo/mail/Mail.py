@@ -8,7 +8,7 @@ from gdo.base.Util import Strings
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Template import tpl
 from gdo.mail.GDO_Mail import GDO_Mail
-from gdo.ui.GDT_HTML import GDT_HTML
+from gdo.message.GDT_HTML import GDT_HTML
 
 
 class Mail:

@@ -12,7 +12,7 @@ class Bash(Connector):
 
     @classmethod
     def get_server(cls) -> GDO_Server:
-        return GDO_Server.get_by_connector('Bash')
+        return GDO_Server.get_by_connector('bash')
 
     def gdo_needs_authentication(self) -> bool:
         return False
