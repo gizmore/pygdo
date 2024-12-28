@@ -21,7 +21,7 @@ class settings(MethodForm):
     def gdo_render_descr(self) -> str:
         return t('md_account_settings', ['OOPS'])
 
-    def gdo_parameters(self) -> list[GDT]:
+    def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Module('module').not_null().enabled(),
         ]

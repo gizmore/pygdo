@@ -10,7 +10,7 @@ class channels(Method):
     def gdo_trigger(self) -> str:
         return 'channels'
 
-    def gdo_parameters(self) -> list[GDT]:
+    def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Server('server').not_null().default_current(),
         ]
@@ -18,7 +18,7 @@ class channels(Method):
     def get_server(self) -> GDO_Server:
         return self.param_value('server')
 
-    def gdo_execute(self) -> GDT:
+    def gdo_execute(self):
         out = []
         serv = self.get_server()
         channels = serv.query_channels()

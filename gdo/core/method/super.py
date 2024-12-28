@@ -11,7 +11,7 @@ class super(Method):
     def gdo_trigger(self) -> str:
         return "super"
 
-    def gdo_parameters(self) -> list[GDT]:
+    def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Secret('pass').not_null(),
         ]
@@ -21,7 +21,7 @@ class super(Method):
             GDT_Secret('superkey').initial('super'),
         ]
 
-    def gdo_execute(self) -> GDT:
+    def gdo_execute(self):
         key = self.get_config_server_val('superkey')
         if key == self.param_val('pass'):
             self.grant(self._env_user, self._env_server)

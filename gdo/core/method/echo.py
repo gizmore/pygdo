@@ -9,7 +9,7 @@ class echo(Method):
     def gdo_trigger(self) -> str:
         return 'echo'
 
-    def gdo_parameters(self) -> list[GDT]:
+    def gdo_parameters(self) -> [GDT]:
         return [
             GDT_String('sep').initial(' '),
             GDT_RestOfText('text').not_null(),

@@ -2,7 +2,7 @@ import re
 import socket
 import ssl
 
-import httpx
+import httplib2
 
 from gdo.base.Application import Application
 from gdo.base.Util import html, Strings
@@ -111,7 +111,7 @@ class GDT_Url(GDT_String):
     # Validate #
     ############
 
-    async def validate(self, val: str | None, value: any) -> bool:
+    def validate(self, val: str | None, value: any) -> bool:
         if not super().validate(val, value):
             return False
         elif value is None:
@@ -120,47 +120,51 @@ class GDT_Url(GDT_String):
             return self.error('err_url_pattern')
         elif not self.validate_scheme(value):
             return False
-        elif not await self.validate_exists(value):
+        elif not self.validate_exists(value):
             return False
         elif not self.validate_internal_external(value):
             return False
         else:
             return True
 
-    def validate_scheme(self, url: dict) -> bool:
+    def validate_scheme(self, url: dict):
         if len(self._url_schemes) == 0:
             return True
         if url['scheme'] not in self._url_schemes:
-            return self.error('err_url_scheme', [html(url['scheme'])])
+            self.error('err_url_scheme', [html(url['scheme'])])
+            return False
         return True
 
-    async def validate_exists(self, url) -> bool:
+    def validate_exists(self, url):
         if url['scheme'].startswith('http'):
-            return await self.validate_http_exists(url)
+            return self.validate_http_exists(url)
         elif url['tls']:
-            return await self.validate_tls_exists(url)
+            return self.validate_tls_exists(url)
         else:
-            return await self.validate_plain_exists(url)
+            return self.validate_plain_exists(url)
 
-    async def validate_http_exists(self, url) -> bool:
+    def validate_http_exists(self, url):
         try:
-            async with httpx.AsyncClient() as client:
-                response = await client.head(url['scheme'] + '://' + url['host'] + ':' + str(url['port']) + url['path'])
-            if response.status_code < 400:
+            http = httplib2.Http()
+            response, content = http.request(url['scheme'] + '://' + url['host'] + ':' + str(url['port']) + url['path'], method='HEAD')
+            if response.status < 400:
                 return True
             else:
-                return self.error('err_http_url_available', [html(url['raw']), f"HTTP ERROR {response.status_code}"])
-        except Exception as ex:
-            return self.error('err_http_url_available', [html(url['raw']), f"ERROR: {str(ex)}"])
+                self.error('err_http_url_available', [html(url['raw']), response.status])
+                return False
+        except (httplib2.HttpLib2Error, ConnectionRefusedError):
+            self.error('err_http_url_available', [html(url['raw']), "ERROR"])
+            return False
 
-    async def validate_plain_exists(self, url) -> bool:
+    def validate_plain_exists(self, url):
         try:
             with socket.create_connection((url['host'], url['port'])) as sock:
                 return True
         except (socket.timeout, ConnectionError, OSError):
-            return self.error('err_url_available', [html(url['raw'])])
+            self.error('err_url_available', [html(url['raw'])])
+            return False
 
-    async def validate_tls_exists(self, url) -> bool:
+    def validate_tls_exists(self, url) -> bool:
         try:
             with socket.create_connection((url['host'], url['port'])) as sock:
                 with ssl.create_default_context().wrap_socket(sock, server_hostname=url['host']) as tls_sock:
@@ -172,8 +176,10 @@ class GDT_Url(GDT_String):
     def validate_internal_external(self, url: dict) -> bool:
         if not self._url_internal:
             if url['host'] == Application.config('core.domain'):
-                return self.error('err_url_no_internals')
+                self.error('err_url_no_internals')
+                return False
         if not self._url_external:
             if url['host'] != Application.config('core.domain'):
-                return self.error('err_url_no_externals')
+                self.error('err_url_no_externals')
+                return False
         return True

@@ -11,3 +11,7 @@ class MethodCronjob(Method):
 
     def gdo_trigger(self) -> str:
         return ''
+
+    def gdo_execute(self):
+        pass
+

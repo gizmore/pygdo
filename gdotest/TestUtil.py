@@ -2,7 +2,6 @@ import asyncio
 
 from typing_extensions import TYPE_CHECKING
 
-from gdo.base.Logger import Logger
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 
 if TYPE_CHECKING:
@@ -128,13 +127,12 @@ class WebPlug:
             self._environ['wsgi.input'].seek(0)
             self._environ['CONTENT_TYPE'] = 'application/x-www-form-urlencoded'
             self._environ['CONTENT_LENGTH'] = len(post_bytes)
+        result = application(self._environ, self.start_request)
+        for chunk in result:
+            self._out += bytes(chunk)
         try:
-            result = application(self._environ, self.start_request)
-            for chunk in result:
-                self._out += bytes(chunk)
             return self._out.decode('UTF-8')
-        except Exception as ex:
-            Logger.exception(ex)
+        except Exception:
             return self._out
 
     def start_request(self, status, headers):
@@ -179,7 +177,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     Application.mode(mode)
     method = Parser(mode, user, server, channel, session).parse(line[1:])
     result = method.execute()
-    while asyncio.iscoroutine(result):
+    if asyncio.iscoroutine(result):
         result = asyncio.run(result)
     out = cli_top(mode)
     out += "\n"
@@ -196,14 +194,14 @@ def cli_top(mode: Mode = Mode.TXT):
 
 
 def cli_gizmore():
-    user = asyncio.run(Bash.get_server().get_or_create_user('gizmore'))
+    user = Bash.get_server().get_or_create_user('gizmore')
     GDO_UserPermission.grant(user, 'admin')
     GDO_UserPermission.grant(user, 'staff')
     return user
 
 
 def web_gizmore():
-    user = asyncio.run(Web.get_server().get_or_create_user('gizmore'))
+    user = Web.get_server().get_or_create_user('gizmore')
     GDO_UserPermission.grant(user, 'admin')
     GDO_UserPermission.grant(user, 'staff')
     return user

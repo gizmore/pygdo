@@ -1,4 +1,3 @@
-import asyncio
 import traceback
 
 from typing_extensions import TYPE_CHECKING
@@ -53,7 +52,7 @@ class GDT:
     #############
     ### Hooks ###
     #############
-    async def gdo_file_upload(self, method: 'Method'):
+    def gdo_file_upload(self, method: 'Method'):
         pass
 
     def gdo_added_to_form(self, form: 'GDT_Form'):
@@ -148,12 +147,11 @@ class GDT:
     def validate(self, val: str | None, value: any) -> bool:
         return True
 
-    async def validated(self) -> 'GDT':
+    def validated(self):
         self.reset_error()
-        coro = self.validate(self.get_val(), self.get_value())
-        while asyncio.iscoroutine(coro):
-            coro = asyncio.ensure_future(coro)
-        return self
+        if self.validate(self.get_val(), self.get_value()):
+            return self
+        return None
 
     def is_positional(self) -> bool:
         return False

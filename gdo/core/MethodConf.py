@@ -7,7 +7,7 @@ from gdo.core.GDT_String import GDT_String
 
 class MethodConf(Method):
 
-    def gdo_parameters(self) -> list[GDT]:
+    def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Method('method').not_null().positional(),
             GDT_String('key').positional(),
@@ -26,7 +26,7 @@ class MethodConf(Method):
     def set_config_val(self, method: Method, key: str, val: str):
         raise Exception("OOPS, set_config_val not implemented.")
 
-    def gdo_execute(self) -> GDT:
+    def gdo_execute(self):
         method = self.get_method()
         if key := self.param_val('key'):
             if value := self.param_val('value'):

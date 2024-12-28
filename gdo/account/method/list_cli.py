@@ -1,8 +1,9 @@
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.core.Connector import Connector
 from gdo.core.GDO_UserSetting import GDO_UserSetting
+from gdo.core.GDT_String import GDT_String
+from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 
 class list_cli(Method):
@@ -10,14 +11,11 @@ class list_cli(Method):
     def gdo_trigger(self) -> str:
         return 'settings'
 
-    def gdo_parameters(self) -> list[GDT]:
+    def gdo_parameters(self) -> [GDT]:
         return [
         ]
 
-    def gdo_connectors(self) -> str:
-        return Connector.text_connectors()
-
-    def gdo_execute(self) -> GDT:
+    def gdo_execute(self):
         user = self._env_user
         loader = ModuleLoader.instance()
         vals = {}

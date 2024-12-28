@@ -14,7 +14,7 @@ class die(Method):
     def gdo_permission(self):
         return 'admin'
 
-    def gdo_parameters(self) -> list[GDT]:
+    def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Bool('restart').initial('0'),
         ]
@@ -22,7 +22,7 @@ class die(Method):
     def is_restart(self) -> bool:
         return self.param_value('restart')
 
-    async def gdo_execute(self) -> GDT:
+    async def gdo_execute(self):
         if self.is_restart():
             out = self.reply('msg_rebooting')
         else:

@@ -8,10 +8,10 @@ class after(Method):
     def gdo_trigger(self) -> str:
         return 'in'
 
-    def gdo_parameters(self) -> list[GDT]:
+    def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Duration('time'),
         ]
 
-    def gdo_execute(self) -> GDT:
+    def gdo_execute(self):
         pass

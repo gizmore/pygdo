@@ -28,14 +28,13 @@ class ModuleLoader:
     def instance(cls) -> Self:
         return Application.LOADER
 
-    def enabled(self) -> list['GDO_Module']:
+    def enabled(self):
         for module in self._cache.values():
             if module.is_enabled():
                 yield module
 
     def reset(self):
         self._cache = {}
-        return self
 
     def gdo_import(self, name: str) -> 'GDO_Module':
         mn = importlib.import_module("gdo." + name)

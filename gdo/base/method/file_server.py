@@ -15,7 +15,7 @@ from gdo.ui.GDT_HTML import GDT_HTML
 
 class file_server(Method):
 
-    def gdo_parameters(self) -> list[GDT]:
+    def gdo_parameters(self) -> [GDT]:
         return [
             GDT_Path('_url').existing_file(),
         ]
@@ -26,7 +26,7 @@ class file_server(Method):
     def get_path(self):
         return self.param_val('_url')
 
-    def gdo_execute(self) -> GDT:
+    def gdo_execute(self):
         file_path = self.get_path()
         mtime = os.path.getmtime(file_path)
         etag = str(mtime) + "." + GDO_Module.CORE_REV

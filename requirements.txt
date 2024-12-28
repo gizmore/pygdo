@@ -1,5 +1,5 @@
 bcrypt
-httpx
+httplib2
 mysql
 mysql-connector
 packaging

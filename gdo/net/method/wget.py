@@ -1,6 +1,5 @@
 import httplib2
 
-from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.Util import Strings
 from gdo.core.GDT_Select import GDT_Select
@@ -19,7 +18,7 @@ class wget(Method):
             GDT_Url('url').in_and_external().not_null(),
         ]
 
-    def gdo_execute(self) -> GDT:
+    def gdo_execute(self):
         url = self.param_value('url')
         method = self.param_val('method')
         http = httplib2.Http()
@@ -31,6 +30,6 @@ class wget(Method):
         try:
             ct = response.get('content-type')
             return Strings.regex_first("charset=(.*)", ct)
-        except Exception:
+        except:
             return 'utf-8'
 

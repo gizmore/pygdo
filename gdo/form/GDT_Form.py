@@ -1,4 +1,3 @@
-import asyncio
 from enum import Enum
 
 from gdo.base.GDT import GDT
@@ -36,9 +35,9 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def actions(self):
         return self._actions
 
-    async def validate(self, val: str | None, value: any) -> bool:
+    def validate(self, val: str | None, value: any) -> bool:
         for gdt in self.fields():
-            await asyncio.ensure_future(self.validate_gdt(gdt))
+            self.validate_gdt(gdt)
         if not self.has_error():
             for gdt in self.fields():
                 gdt.gdo_form_validated()
@@ -67,9 +66,9 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def render_cli(self):
         return ''
 
-    async def validate_gdt(self, gdt: GDT):
-        if not await gdt.validated():
+    def validate_gdt(self, gdt: GDT):
+        if not gdt.validated():
             self.error('err_form')
         if gdt.has_fields():
             for gdt2 in gdt.all_fields():
-                await self.validate_gdt(gdt2)
+                self.validate_gdt(gdt2)

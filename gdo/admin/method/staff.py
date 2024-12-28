@@ -4,7 +4,7 @@ from gdo.form.MethodForm import MethodForm
 
 class staff(MethodForm):
     """
-    Request staff permissions on a server.
+    Request admin permissions on a server.
     """
 
     def gdo_trigger(self) -> str:

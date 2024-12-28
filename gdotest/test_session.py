@@ -1,4 +1,3 @@
-import asyncio
 import os.path
 import unittest
 
@@ -21,7 +20,7 @@ class SessionTestCase(unittest.TestCase):
 
     def test_cli_session(self):
         from gdo.core.GDO_Session import GDO_Session
-        user = asyncio.run(CLI.get_current_user())
+        user = CLI.get_current_user()
         result = cli_plug(user, "$echo hi")
         self.assertIn('hi', result, 'echo does not work for session test.')
         session = GDO_Session.for_user(user).set('tea', 'hot')

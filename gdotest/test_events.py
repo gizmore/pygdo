@@ -25,15 +25,15 @@ class EventsTestCase(unittest.TestCase):
             y += x
 
         Application.EVENTS.subscribe('test_event', foo)
-        asyncio.run(Application.EVENTS.publish('test_event', 1))
-        asyncio.run(Application.EVENTS.publish('test_event', 1))
+        Application.EVENTS.publish('test_event', 1)
+        Application.EVENTS.publish('test_event', 1)
         self.assertEqual(y, 2, 'basic event publishing does not work')
 
         Application.EVENTS.reset_all()
 
         Application.EVENTS.subscribe_once('test_event', foo)
-        asyncio.run(Application.EVENTS.publish('test_event', 1))
-        asyncio.run(Application.EVENTS.publish('test_event', 1))
+        Application.EVENTS.publish('test_event', 1)
+        Application.EVENTS.publish('test_event', 1)
         self.assertEqual(y, 3, 'basic event once publishing does not work')
 
         Application.EVENTS.reset_all()
@@ -43,7 +43,7 @@ class EventsTestCase(unittest.TestCase):
         def tck():
             Application.tick()
             asyncio.run(Application.EVENTS.update_timers(Application.TIME))
-        async def foo():
+        def foo():
             nonlocal y
             y += 1
         Application.EVENTS.add_timer(0.25, foo, 2)

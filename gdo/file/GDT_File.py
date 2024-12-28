@@ -89,18 +89,18 @@ class GDT_File(GDT_Object):
     ##########
     # Upload #
     ##########
-    async def gdo_file_upload(self, method: Method):
+    def gdo_file_upload(self, method: Method):
         """
         Move file from memory to temp disk
         """
         if files_data := method.get_files(self.get_name()):
-            async for file_data in files_data:
+            for file_data in files_data:
                 dir = self.get_temp_dir()
                 Files.create_dir(dir)
                 path = dir + "0"
-                await Files.async_put_contents(path, file_data[2])
-                await Files.async_put_contents(dir + "mime", Files.mime(path))
-                await Files.async_put_contents(dir + "name", file_data[1])
+                Files.put_contents(path, file_data[2])
+                Files.put_contents(dir + "mime", Files.mime(path))
+                Files.put_contents(dir + "name", file_data[1])
 
     def get_temp_dir(self):
         sessid = Application.get_session().get_id()
