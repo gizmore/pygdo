@@ -57,7 +57,7 @@ class WithPermissionCheck:
             self.err('err_type_member', [link])
             return False
         else:
-            return self.err_type_not_allowed(['admin'])
+            return self.err_type_not_allowed(['guest'])
 
     def err_type_not_allowed(self, types: list[str]):
         print_types = Arrays.human_join(types)
