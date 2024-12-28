@@ -2,6 +2,7 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 
+from gdo.base.Util import module_enabled
 from gdo.core.GDT_UserName import GDT_UserName
 
 if TYPE_CHECKING:
@@ -146,8 +147,9 @@ class GDO_User(GDO):
     def authenticate(self, session: object, bind_ip: bool = False):
         self._authenticated = True
         Application.set_current_user(self)
-        self.save_setting('last_login_ip', GDT_IP.current())
-        self.save_setting('last_login_datetime', Time.get_date())
+        if module_enabled('login'):
+            self.save_setting('last_login_ip', GDT_IP.current())
+            self.save_setting('last_login_datetime', Time.get_date())
         session.set_val('sess_user', self.get_id())
         if bind_ip:
             session.set_val('sess_ip', GDT_IP.current())

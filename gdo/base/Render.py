@@ -28,6 +28,16 @@ class Mode(Enum):
     DOC = 20
     TOML = 21
 
+    @classmethod
+    def explicit(cls) -> list['Mode']:
+        return [
+            cls.HTML,
+            cls.CLI,
+            cls.IRC,
+            cls.TELEGRAM,
+            cls.TXT,
+        ]
+
 
 class Render:
     """

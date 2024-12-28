@@ -12,3 +12,6 @@ class GDT_Editor(GDT_Enum):
     @classmethod
     def register(cls, editor: type[Editor]):
         cls.EDITORS[editor.__class__.__name__.lower()] = editor
+
+    def gdo_choices(self) -> dict:
+        return self.__class__.EDITORS

@@ -5,6 +5,7 @@ from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.GDT_Text import GDT_Text
+from gdo.message.Editor import Editor
 from gdo.message.GDT_Editor import GDT_Editor
 
 
@@ -20,8 +21,10 @@ class GDT_Message(GDT_Composite, GDT_Field):
         components.append(GDT_Text(f"{self._name}_plain"))
         for mode in Mode.explicit():
             components.append(GDT_Text(f"{self._name}_{mode.name.lower()}"))
-        return [
-        ]
+        return components
+
+    def get_editor(self) -> type['Editor']:
+        return self._gdo.gdo_value(f"{self._name}_editor")
 
     def render_form(self):
         return GDT_Template.python('ui', 'form_message.html', {"field": self})

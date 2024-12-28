@@ -146,6 +146,7 @@ class Application:
 
     @classmethod
     def init_web(cls, environ):
+        cls.IS_HTTP = True
         cls.STORAGE.time_start = float(environ.get('mod_wsgi.request_start')) / 1000000.0
         cls.STORAGE.environ = environ
         cls.STORAGE.headers = {}
