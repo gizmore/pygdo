@@ -19,18 +19,18 @@ class Installer:
         modules = cls.modules_with_deps(modules)
         for module in modules:
             cls.install_module(module, verbose)
-        for module in modules:
-            try:
-                module.gdo_install()
-            except Exception as ex:
-                Logger.exception(ex)
-                return False
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_user_settings()
         if verbose:
             print("Migrating core for user settings...")
         Installer.migrate_gdo(GDO_UserSetting.table())
+        for module in modules:
+            try:
+                module.gdo_install()
+            except Exception as ex:
+                Logger.exception(ex)
+                return False
         return True
 
     @classmethod

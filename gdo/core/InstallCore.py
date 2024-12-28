@@ -23,12 +23,12 @@ class InstallCore:
                 'user_type': GDT_UserType.SYSTEM,
                 'user_name': 'System',
                 'user_displayname': 'System',
-                'user_server': GDO_Server.get_by_connector('Bash').get_id(),
+                'user_server': GDO_Server.get_by_connector('bash').get_id(),
             }).insert()
 
     @classmethod
     def install_bash(cls):
-        if not GDO_Server.get_by_connector('Bash'):
+        if not GDO_Server.get_by_connector('bash'):
             Application.SERVER = GDO_Server.blank({
                 'serv_name': 'Bash',
                 'serv_connector': 'bash',
@@ -37,7 +37,7 @@ class InstallCore:
 
     @classmethod
     def install_web(cls):
-        if not GDO_Server.get_by_connector('Web'):
+        if not GDO_Server.get_by_connector('web'):
             GDO_Server.blank({
                 'serv_name': 'Web',
                 'serv_connector': 'web',
