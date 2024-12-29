@@ -126,7 +126,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         """
         return True
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         raise GDOError('err_stub')
 
     def gdo_render_title(self) -> str:

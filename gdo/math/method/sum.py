@@ -16,5 +16,5 @@ class sum(Method):
             GDT_Repeat(GDT_Float('x').not_null()),
         ]
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         return GDT_Float('result').initial_value(builtins.sum(self.param_value('x')))

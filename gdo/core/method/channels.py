@@ -18,10 +18,10 @@ class channels(Method):
     def get_server(self) -> GDO_Server:
         return self.param_value('server')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         out = []
         serv = self.get_server()
         channels = serv.query_channels()
         for chan in channels:
             out.append(f"{chan.get_id()}-{chan.render_name()}")
-        return self.reply('msg_channels', [len(channels), self._env_server.render_name(), ", ".join(out)])
+        return self.reply('msg_channels', [len(channels), serv.render_name(), ", ".join(out)])

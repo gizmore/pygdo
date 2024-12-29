@@ -30,7 +30,7 @@ class MethodForm(Method):
             self._nested_parse()
         return self._form
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         form = self.get_form()
 
         ### Flow upload

@@ -19,7 +19,7 @@ class preview(MethodFile):
     def get_file(self) -> GDO_File:
         return self.param_value('file')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         file = self.get_file()
         token = self.param_val('token')
         correct = file.gdo_hash()

@@ -26,7 +26,7 @@ class file_server(Method):
     def get_path(self):
         return self.param_val('_url')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         file_path = self.get_path()
         mtime = os.path.getmtime(file_path)
         etag = str(mtime) + "." + GDO_Module.CORE_REV

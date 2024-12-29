@@ -19,7 +19,7 @@ class preview_session(MethodFile):
     def get_file(self) -> GDO_File:
         return self.param_value('file')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         file = GDT_File(self.param_value('gdt_name'))
         index = self.param_value('gdt_index')
         file = file.get_initial_files()[index]

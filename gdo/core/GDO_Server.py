@@ -28,17 +28,22 @@ from gdo.net.GDT_Url import GDT_Url
 
 class GDO_Server(GDO):
     _connector: Connector
-    _channels: list['GDO_Channel']
+    _channels: dict[str, 'GDO_Channel']
+    _users: dict[str, 'GDO_User']
     _has_loop: bool
 
     __slots__ = (
         '_connector',
         '_channels',
+        '_users',
+        '_has_loop',
     )
 
     def __init__(self):
         super().__init__()
-        self._channels = []
+        self._connector = None
+        self._channels = {}
+        self._users = {}
         self._has_loop = False
 
     @classmethod
@@ -46,7 +51,6 @@ class GDO_Server(GDO):
         return cls.table().get_by_vals({"serv_connector": name})
 
     def gdo_columns(self) -> list[GDT]:
-        from gdo.core.GDT_Creator import GDT_Creator
         return [
             GDT_AutoInc('serv_id'),
             GDT_Name('serv_name').unique(),
@@ -57,7 +61,6 @@ class GDO_Server(GDO):
             GDT_Connector('serv_connector'),
             GDT_Bool('serv_enabled').not_null().initial('1'),
             GDT_Created('serv_created'),
-            # GDT_Creator('serv_creator'),
         ]
 
     def get_name(self) -> str:
@@ -73,10 +76,23 @@ class GDO_Server(GDO):
         return self.gdo_value('serv_url')
 
     def get_connector(self) -> Connector:
-        if not hasattr(self, '_connector'):
+        if self._connector is None:
             self._connector = self.gdo_value('serv_connector')
             self._connector.server(self)
         return self._connector
+
+    ##########
+    # Events #
+    ##########
+    def on_user_joined(self, user: 'GDO_User'):
+        self._users[user.get_name()] = user
+        Application.EVENTS.publish('user_joined_server', user)
+
+    def on_user_quit(self, user: 'GDO_User'):
+        for name, channel in self._channels.items():
+            channel.on_user_left(user)
+        del self._users[user.get_name()]
+        Application.EVENTS.publish('user_quit_server', user)
 
     ########
     # User #
@@ -86,6 +102,8 @@ class GDO_Server(GDO):
         user = self.get_user_by_name(username)
         if not user:
             user = self.create_user(username, displayname or username, user_type)
+        if username not in self._users:
+            self.on_user_joined(user)
         return user
 
     def create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
@@ -120,7 +138,7 @@ class GDO_Server(GDO):
         from gdo.core.GDO_Channel import GDO_Channel
         channel = self.get_channel_by_name(name)
         if not channel:
-            print(f"NO CHAN for {name}!")
+            print(f"NO CHAN for {name} yet!")
             channel = GDO_Channel.blank({
                 'chan_name': name,
                 'chan_displayname': display_name or name,

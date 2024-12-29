@@ -22,7 +22,7 @@ class die(Method):
     def is_restart(self) -> bool:
         return self.param_value('restart')
 
-    async def gdo_execute(self):
+    async def gdo_execute(self) -> GDT:
         if self.is_restart():
             out = self.reply('msg_rebooting')
         else:

@@ -60,9 +60,9 @@ class Connector:
         """
         return True
 
-    def gdo_connect(self):
+    def gdo_connect(self) -> bool:
         self._connected = True
-        return self
+        return True
 
     def gdo_disconnect(self, quit_message: str):
         pass

@@ -127,7 +127,7 @@ class MethodTable(WithGDO, MethodForm):
     ########
     # Exec #
     ########
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         table = self.get_table()
         table.mode(self.gdo_table_mode())
         return table

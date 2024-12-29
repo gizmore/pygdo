@@ -97,6 +97,7 @@ msg_modules_reloaded = "All modules have been reloaded."
 mt_core_launch = "Launch Chatbot Daemon"
 md_core_launch = "This method launches the dog chatbot."
 err_dog_already_running = "The bot is already running. You can force a new process with the --force parameter."
+msg_all_done = "All Done!"
 
 ##################
 ### Add Server ###
@@ -110,6 +111,13 @@ msg_added_dog_server = "A new %s server has been added: %s ID#%s."
 ###############
 mt_core_servers = "Servers"
 md_core_servers = "List of servers"
+
+############
+# Channels #
+############
+mt_core_channels = "Channels"
+md_core_channels = "List of channels."
+msg_channels = "There are %s channels on %s: %s."
 
 ###################
 ### Clear Cache ###
@@ -174,3 +182,10 @@ mt_core_db_raw = "DB.raw"
 md_core_db_raw = "Execute a raw Database query."
 msg_db_raw_write = "Success: %s"
 and_n_more = "and %s more"
+
+#######
+# Die #
+#######
+mt_core_die = "Die"
+md_core_die = "Make the bot quit."
+msg_dying = "Shutting down..."

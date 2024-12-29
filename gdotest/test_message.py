@@ -15,7 +15,6 @@ class MessageTestCase(unittest.TestCase):
         loader.init_cli()
 
     def test_01_composition(self):
-        GDT_M
         pass
 
 

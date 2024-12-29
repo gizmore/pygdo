@@ -18,7 +18,7 @@ class profile(Method):
     def get_user(self) -> GDO_User:
         return self.param_value('for')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         user = self.get_user()
         card = GDT_Card()
         try:

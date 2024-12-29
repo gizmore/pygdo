@@ -1,5 +1,6 @@
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
+from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 
 
@@ -14,7 +15,7 @@ class clear_cache(Method):
     def gdo_trigger(self) -> str:
         return "cc"
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         Cache.clear()
         Application.EVENTS.publish('clear_cache')
         return self.reply('msg_cache_cleared')

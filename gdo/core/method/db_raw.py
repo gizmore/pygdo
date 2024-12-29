@@ -27,7 +27,7 @@ class db_raw(Method):
     def get_max_rows(self) -> int:
         return self.param_value('max_rows')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         out = []
         db = Application.db()
         query = self.get_query()

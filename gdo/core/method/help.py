@@ -27,7 +27,7 @@ class help(Method):
     def get_trigger(self):
         return self.param_val('trigger')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         trigger = self.get_trigger()
         if trigger:
             return self.show_help_for(trigger)

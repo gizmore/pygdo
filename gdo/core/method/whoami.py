@@ -1,3 +1,4 @@
+from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.Trans import t
 from gdo.base.Util import Arrays
@@ -9,7 +10,7 @@ class whoami(Method):
     def gdo_trigger(self) -> str:
         return "whoami"
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         u = self._env_user
         ps = []
         for p in u.permissions():

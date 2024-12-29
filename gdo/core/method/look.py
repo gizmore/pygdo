@@ -1,3 +1,4 @@
+from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 
 
@@ -12,7 +13,7 @@ class look(Method):
     def gdo_in_private(self) -> bool:
         return False
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         channel = self._env_channel
         out = []
         for user in channel._users:

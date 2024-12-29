@@ -15,7 +15,7 @@ class list_cli(Method):
         return [
         ]
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         user = self._env_user
         loader = ModuleLoader.instance()
         vals = {}

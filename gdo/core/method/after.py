@@ -13,5 +13,5 @@ class after(Method):
             GDT_Duration('time'),
         ]
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         pass

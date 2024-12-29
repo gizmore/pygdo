@@ -33,7 +33,7 @@ class config(Method):
     def get_module(self) -> GDO_Module:
         return self.param_value('module')
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         module = self.get_module()
         if not module:
             return self.list_all()

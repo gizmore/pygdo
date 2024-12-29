@@ -18,7 +18,7 @@ class set_cli(Method):
             GDT_String('value').positional(),
         ]
 
-    def gdo_execute(self):
+    def gdo_execute(self) -> GDT:
         user = self._env_user
         key = self.param_val('name')
         value = self.param_val('value')
