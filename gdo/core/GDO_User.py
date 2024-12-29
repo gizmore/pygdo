@@ -26,14 +26,17 @@ class GDO_User(GDO):
     """
     SYSTEM: GDO
     _authenticated: bool
+    _discord_user: object
 
     __slots__ = (
         '_authenticated',
+        '_discord_user',
     )
 
     def __init__(self):
         super().__init__()
         self._authenticated = False
+        self._discord_user = None
 
     @classmethod
     def system(cls) -> Self:

@@ -81,16 +81,16 @@ class Message(WithEnv):
             self._result += " " + str(self._method.get_arg_parser(True).format_usage())
             try:
                 await self.deliver()
-            except Exception:
-                pass
+            except Exception as ex:
+                Logger.exception(ex)
         except Exception as ex:
             Logger.exception(ex)
             self._result = Application.get_page()._top_bar.render(self._env_mode)
             self._result += str(ex)
             try:
                 await self.deliver()
-            except Exception:
-                pass
+            except Exception as ex:
+                Logger.exception(ex)
 
     async def run(self):
         txt = ''
