@@ -3,6 +3,7 @@ from gdo.base.Method import Method
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
+from gdo.core.GDT_Password import GDT_Password
 from gdo.core.GDT_Secret import GDT_Secret
 
 
@@ -18,12 +19,12 @@ class super(Method):
 
     def gdo_method_config_server(self) -> [GDT]:
         return [
-            GDT_Secret('superkey').initial('super'),
+            GDT_Password('superkey').initial(GDT_Password.hash('super')),
         ]
 
     def gdo_execute(self) -> GDT:
         key = self.get_config_server_val('superkey')
-        if key == self.param_val('pass'):
+        if GDT_Password.check(key, self.param_value('pass')):
             self.grant(self._env_user, self._env_server)
             return self.msg('msg_super_granted')
         return self.err('err_wrong_superword')

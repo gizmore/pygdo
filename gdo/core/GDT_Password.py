@@ -17,3 +17,8 @@ class GDT_Password(GDT_String):
     @classmethod
     def hash(cls, plain: str):
         return bcrypt.hashpw(plain.encode('utf-8'), bcrypt.gensalt(cls.SALT_LEN)).decode('utf-8')
+
+    def val(self, val: str | list):
+        if val is None:
+            return self
+        return super().val(self.hash(val))
