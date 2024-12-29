@@ -21,9 +21,6 @@ class profile(Method):
     def gdo_execute(self) -> GDT:
         user = self.get_user()
         card = GDT_Card()
-        try:
-            from gdo.avatar.GDT_Avatar import GDT_Avatar
-            card.image(GDT_Avatar().for_user(user))
-        except:
-            pass
-        return self
+        from gdo.avatar.GDT_Avatar import GDT_Avatar
+        card.image(GDT_Avatar('avatar').for_user(user))
+        return card
