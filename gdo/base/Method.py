@@ -391,7 +391,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                         'mv_method': gdom.get_id(),
                         'mv_server': self._env_server.get_id(),
                         'mv_key': key,
-                        'mv_val': val,
+                        'mv_val': gdt.val(val).get_val(),
                     }).insert()
                 else:
                     entry.save_val('mv_val', val)
