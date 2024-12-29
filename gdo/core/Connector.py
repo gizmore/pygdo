@@ -118,6 +118,7 @@ class Connector:
         self._connecting = False
         self._connect_failures = 0
         self._next_connect_time = Application.TIME
+        self.gdo_disconnected()
 
     def connect_failed(self):
         self._connect_failures += 1

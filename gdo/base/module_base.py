@@ -35,6 +35,9 @@ class module_base(GDO_Module):
             GDT_Bool('serve_gdo_assets').not_null().initial('0')
         ]
 
+    def cfg_500_mails(self) -> bool:
+        return self.get_config_value('500_mails')
+
     def cfg_serve_dot_files(self) -> bool:
         return self.get_config_value('serve_dot_files')
 

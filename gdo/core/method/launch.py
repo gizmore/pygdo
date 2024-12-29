@@ -13,6 +13,7 @@ from gdo.base.Util import Files
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.core.method.die import die
 from gdo.date.GDT_Duration import GDT_Duration
 
 
@@ -48,19 +49,8 @@ class launch(Method):
         if self.is_running():
             return self.err('err_dog_already_running')
         Files.touch(self.lock_path(), True)
-        try:
-            asyncio.run(self.mainloop())
-        except KeyboardInterrupt as ex:
-            self.send_quit_message('CTRL-C got pressed')
-            raise ex
+        asyncio.run(self.mainloop())
         return self.reply('msg_all_done')
-
-    def send_quit_message(self, quit_message: str):
-        Application.RUNNING = False
-        servers = GDO_Server.table().all()
-        for server in servers:
-            server.get_connector().gdo_disconnect(quit_message)
-        Thread.join_all()
 
     def lock_path(self) -> str:
         return Application.file_path('bin/dog.lock')
@@ -80,8 +70,9 @@ class launch(Method):
                     self.mainloop_step_server(server)
                 await self.mainloop_process_ai()
                 await asyncio.sleep(sleep_ms)
-        except Exception as ex:
-            raise ex
+        except KeyboardInterrupt as ex:
+            die().inputs({'message': 'CTRL-C got pressed!'}).gdo_execute()
+            time.sleep(1)
         finally:
             Files.remove(self.lock_path())
 
@@ -92,11 +83,10 @@ class launch(Method):
         if not server._has_loop:
             Logger.debug(f"step server {server.render_name()}")
             server._has_loop = True
-            asyncio.create_task(server.loop())
+            asyncio.create_task(server.loop(), name=f"Server {server.render_name()}")
 
     async def mainloop_process_ai(self):
-        if not Application.MESSAGES.empty():
-            message = Application.MESSAGES.get()
-            Application.tick()
+        while not Application.MESSAGES.empty():
             Application.fresh_page()
+            message = Application.MESSAGES.get()
             await message.execute()

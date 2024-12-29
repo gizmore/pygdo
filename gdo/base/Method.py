@@ -211,7 +211,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         from gdo.message.GDT_HTML import GDT_HTML
         html = GDT_HTML()
         if text:
-            html.text('%s', [text])
+            html.text(text)
         return html
 
     def reply(self, key: str, args: list = None):
