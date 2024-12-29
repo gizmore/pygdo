@@ -20,8 +20,9 @@ class WithPermissionCheck:
             return False if not display_error else self.err_not_in_private()
         if not self.gdo_in_channels() and self._env_channel is not None:
             return False if not display_error else self.err_not_in_channel()
-        if user.get_user_type() in (GDT_UserType.MEMBER, GDT_UserType.CHAPPY, GDT_UserType.LINK, GDT_UserType.DEVICE) and not user._authenticated:
-            return False if not display_error else self.err_not_authenticated()
+        if self.gdo_needs_authentication():
+            if user.get_user_type() in (GDT_UserType.MEMBER, GDT_UserType.CHAPPY, GDT_UserType.LINK, GDT_UserType.DEVICE) and not user._authenticated:
+                return False if not display_error else self.err_not_authenticated()
         return True
 
     def err_not_authenticated(self):

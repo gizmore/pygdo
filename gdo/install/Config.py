@@ -51,6 +51,7 @@ class Config:
             GDT_Section().title_raw('Mail'),
             cls.data_int('mail.debug', 1),
             cls.data_str('mail.host', 'localhost'),
+            cls.data_int('mail.tls', 1),
             cls.data_int('mail.port', 587),
             cls.data_str('mail.user', 'pygdo@localhost'),
             cls.data_str('mail.pass', 'pygdo'),

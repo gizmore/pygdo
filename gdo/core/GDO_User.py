@@ -75,7 +75,9 @@ class GDO_User(GDO):
     def get_lang_iso(self):
         return self.get_setting_val('language')
 
-    def get_mail(self, confirmed: bool = True) -> str:
+    def get_mail(self, confirmed: bool = True) -> str | None:
+        if confirmed and not self.get_setting_value('email_confirmed'):
+            return None
         return self.get_setting_val('email')
 
     def get_user_type(self) -> str:

@@ -10,11 +10,15 @@ class whoami(Method):
     def gdo_trigger(self) -> str:
         return "whoami"
 
+    def gdo_needs_authentication(self) -> bool:
+        return False
+
     def gdo_execute(self) -> GDT:
         u = self._env_user
         ps = []
         for p in u.permissions():
             ps.append(p)
 
-        text = t('info_who_am_i', [u.render_name(), Arrays.human_join(ps)])
+        authed = 'authenticated' if u._authenticated else 'not_authenticated'
+        text = t('info_who_am_i', [u.render_name(), t(authed), Arrays.human_join(ps)])
         return GDT_String('result').val(text)

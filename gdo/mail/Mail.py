@@ -25,7 +25,7 @@ class Mail:
 
     @classmethod
     def _cfg(cls, key: str) -> dict[str, str]:
-        return Application.config(f'mail')
+        return Application.config(f'mail.{key}')
 
     @classmethod
     def from_bot(cls):
@@ -79,7 +79,7 @@ class Mail:
         return self
 
     def send_to_user(self, user: GDO_User) -> bool:
-        self.recipient(user.get_mail(), user.gdo_val('user_displayname'))
+        self.recipient(user.get_mail(), user.get_displayname())
         return self.send()
 
     def send(self) -> bool:
@@ -97,7 +97,7 @@ class Mail:
         return self.really_send_mail()
 
     def print_mail_to_screen(self):
-        Application.get_page()._top_bar.add_field(GDT_HTML().val(self._body_text()))
+        Application.get_page()._top_bar.add_field(GDT_HTML().text(self._body_text()))
         pass
 
     def _body_html(self) -> str:
@@ -107,7 +107,6 @@ class Mail:
         return Strings.html_to_text(self._body)
 
     def really_send_mail(self):
-        # Configuration
         port = int(Application.config('mail.port'))
         smtp_server = Application.config('mail.host')
         login = Application.config('mail.user')
@@ -116,15 +115,11 @@ class Mail:
         sender_email = self._sender
         receiver_email = self._recipients
 
-        # Create a multipart message and set headers
         message = MIMEMultipart()
         message["From"] = self._sender
-        message["To"] = self._recipients
+        message["To"] = ",".join(self._recipients)
         message["Subject"] = self._subject
-
         message.attach(MIMEText(self._body_html(), "html"))
-
-        # Add body to email
         message.attach(MIMEText(self._body_text(), "plain"))
 
         # # Specify the attachment file path
@@ -146,7 +141,8 @@ class Mail:
 
         # Send the email
         with smtplib.SMTP(smtp_server, port) as server:
-            server.starttls()
+            if Application.config('mail.tls', '1') == '1':
+                server.starttls()
             server.login(login, password)
             server.sendmail(sender_email, receiver_email, message.as_string())
 

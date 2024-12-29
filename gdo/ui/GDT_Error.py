@@ -19,7 +19,7 @@ class GDT_Error(GDT_Panel):
     def render_cli(self):
         return Render.red(self.render_text(Mode.CLI), Mode.CLI)
 
-    def render_irc(self):
+    def render_irc(self) -> str:
         return Render.red(self.render_text(Mode.IRC), Mode.IRC)
 
     def render_telegram(self):

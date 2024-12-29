@@ -163,4 +163,4 @@ class GDT_String(WithLabel, GDT_Field):
         return GDT_Template.python('core', 'form_string.html', {'field': self})
 
     def render_irc(self) -> str:
-        return self.get_val()
+        return str(self.get_val())

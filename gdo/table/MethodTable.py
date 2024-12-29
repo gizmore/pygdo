@@ -141,6 +141,6 @@ class MethodTable(WithGDO, MethodForm):
     def render_gdo(self, gdo: GDO, mode: Mode) -> str:
         return gdo.render_name()
 
-    def render_page(self):
+    def render_page(self) -> GDT:
         return self.get_table()
 

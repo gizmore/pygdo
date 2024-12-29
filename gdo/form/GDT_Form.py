@@ -66,6 +66,9 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def render_cli(self):
         return ''
 
+    def render_irc(self):
+        return ''
+
     def validate_gdt(self, gdt: GDT):
         if not gdt.validated():
             self.error('err_form')

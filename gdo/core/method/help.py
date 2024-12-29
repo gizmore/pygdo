@@ -16,6 +16,9 @@ class help(Method):
     def gdo_trigger(self) -> str:
         return 'help'
 
+    def gdo_needs_authentication(self) -> bool:
+        return False
+
     def gdo_connectors(self) -> str:
         return Connector.text_connectors()
 
@@ -50,7 +53,7 @@ class help(Method):
         grouped = {}
         mode = self._env_mode
         for cmd, method in loader._methods.items():
-            module_name = method.module().render_name()
+            module_name = method.gdo_module().render_name()
             method.env_copy(self)
             if method.allows_connector():
                 trigger = method.gdo_trigger()

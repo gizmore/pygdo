@@ -34,4 +34,4 @@ class module_mail(GDO_Module):
             self.set_mail_confirmed_for(user)
 
     def set_mail_confirmed_for(self, user: GDO_User):
-        user.save_setting('email_confirmed', Time.get_date(Application.TIME))
+        user.save_setting('email_confirmed', Time.get_date())

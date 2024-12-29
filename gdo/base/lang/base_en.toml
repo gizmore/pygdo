@@ -9,6 +9,7 @@ err_render_mode = "Invalid Render Mode: %s"
 err_permission = "You need the %s permissions to execute this method."
 err_not_in_private = "This method does not work in private."
 err_not_in_channel = "This method does not work inside channels."
+err_not_authenticated = "Your account is not authenticated."
 
 and = "and"
 decimal_point = '.'

@@ -69,7 +69,7 @@ class GDO_Server(GDO):
     def get_trigger(self) -> str:
         return self.gdo_val('serv_trigger')
 
-    def get_username(self):
+    def get_username(self) -> str:
         return self.gdo_val('serv_username') or 'Dog'
 
     def get_url(self) -> dict:
@@ -136,7 +136,7 @@ class GDO_Server(GDO):
     ###########
     # Channel #
     ###########
-    def get_or_create_channel(self, name: str, display_name: str = None):
+    def get_or_create_channel(self, name: str, display_name: str = None) -> 'GDO_Channel':
         from gdo.core.GDO_Channel import GDO_Channel
         channel = self.get_channel_by_name(name)
         if not channel:
@@ -148,12 +148,19 @@ class GDO_Server(GDO):
             }).insert()
         return channel
 
-    def get_channel_by_name(self, name: str):
+    def get_channel_by_name(self, name: str) -> 'GDO_Channel':
         from gdo.core.GDO_Channel import GDO_Channel
         return GDO_Channel.table().get_by_vals({
             'chan_server': self.get_id(),
             'chan_name': name,
         })
+
+    def get_channels_for_user(self, user: GDO_User) -> list['GDO_Channel']:
+        channels = []
+        for channel in self._channels.values():
+            if user.get_name() in channel._users:
+                channels.append(channel)
+        return channels
 
     ########
     # Loop #

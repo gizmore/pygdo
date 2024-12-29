@@ -19,9 +19,7 @@ class GDT_Password(GDT_String):
         return bcrypt.hashpw(plain.encode('utf-8'), bcrypt.gensalt(cls.SALT_LEN)).decode('utf-8')
 
     def val(self, val: str | list):
-        if val is None:
-            return self
-        if val[0] == '$':
+        if len(val) == 0 or val[0] == '$':
             return super().val(val)
         else:
             return super().val(self.hash(val))

@@ -72,7 +72,7 @@ def application(environ, start_response):
         if Files.is_file(path):
             session = GDO_Session.start(False)
             user = session.get_user()
-            method = file_server().env_user(user).input('_url', path)
+            method = file_server().env_server(user.get_server()).env_user(user).input('_url', path)
             gdt = method.execute()
             if asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
@@ -90,12 +90,12 @@ def application(environ, start_response):
             channel = None
             if Files.is_dir(path):
                 session = GDO_Session.start(False)
-                method = dir_server().input('_url', path)
+                method = dir_server().env_server(server).input('_url', path)
             else:
                 parser = WebParser(user, server, channel, session)
                 method = parser.parse(url)
             if not method:
-                method = not_found().env_user(session.get_user()).input('_url', url)
+                method = not_found().env_server(server).env_user(session.get_user()).input('_url', url)
 
             method.inputs(qs)  # GET PARAMS
             method._message = Message(f"${method.gdo_trigger()}", Mode.HTML).env_copy(method)

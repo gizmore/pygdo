@@ -5,5 +5,6 @@ class GDT_Email(GDT_String):
 
     def __init__(self, name):
         super().__init__(name)
+        self.ascii().maxlen(96).case_i()
         self.pattern("^[^@\\s]+@[^@\\s]+$")
         self.icon('email')

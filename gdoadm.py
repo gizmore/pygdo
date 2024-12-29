@@ -146,10 +146,8 @@ class App:
     def configure_interactive(self, path: str, data: dict[str, GDT]):
         pass
 
-    def _load_provider_toml(self):
-        path = Application.file_path('gdo/base/res/deps.toml')
-        content = Files.get_contents(path)
-        return tomlkit.loads(content)
+    def _load_provider_toml(self) -> dict:
+        return Installer.load_provider_toml()
 
     def provide(self):
         """
@@ -290,6 +288,7 @@ class App:
 
         loader = ModuleLoader.instance()
         loader.load_modules_db()
+        loader.init_modules(True, True)
 
         server = GDO_Server.get_by_connector(args.connector)
         user = server.get_or_create_user(args.username)

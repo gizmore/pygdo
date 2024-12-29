@@ -50,7 +50,7 @@ class ModuleLoader:
     def __init__(self):
         self._cache = self.__dict__.get('_cache', {})
 
-    def get_module(self, module_name):
+    def get_module(self, module_name: str) -> 'GDO_Module':
         return self._cache[module_name]
 
     def get_method(self, method_trigger: str) -> Method | None:

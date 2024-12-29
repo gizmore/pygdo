@@ -1,6 +1,6 @@
-from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.core.GDT_Text import GDT_Text
+from gdo.base.GDT import GDT
+from gdo.core.GDT_RestOfText import GDT_RestOfText
 from gdo.core.GDT_User import GDT_User
 from gdo.mail.Mail import Mail
 from gdo.ui.GDT_Title import GDT_Title
@@ -12,7 +12,7 @@ class send(Method):
         return [
             GDT_User("to").not_null(),
             GDT_Title("subject").not_null(),
-            GDT_Text("body").not_null()
+            GDT_RestOfText("body").not_null()
         ]
 
     def gdo_execute(self) -> GDT:
@@ -21,7 +21,7 @@ class send(Method):
         if not to.has_mail():
             return self.error('err_user_no_mail')
         mail = Mail.from_bot()
-        mail.reply_to(sender.get_email(),)
+        mail.reply_to(sender.get_mail())
         mail.subject(self.param_val('subject'))
-        mail.body(self.param_val('body'))
+        mail.body(self.param_value('body'))
         mail.send_to_user(to)

@@ -60,7 +60,6 @@ def process_line(line: str) -> None:
     from gdo.base.Application import Application
     from gdo.base.Render import Render, Mode
     from gdo.core.connector.Bash import Bash
-    from gdo.core.GDO_Session import GDO_Session
     from gdo.base.Message import Message
     from gdo.base.Util import CLI
     try:
@@ -70,14 +69,13 @@ def process_line(line: str) -> None:
         append_to_history(line)
         parser = get_parser()
         message = Message(line, Mode.CLI)
-        session = GDO_Session.for_user(user)
-        message.env_server(server).env_user(user).env_session(session)
+        message.env_server(server).env_user(user)  # .env_session(session)
         Application.EVENTS.publish('new_message', message)
         if line.startswith(trigger):
             method = parser.parse_line(line[1:])
             Application.fresh_page()
-            gdt = method.execute()
-            if asyncio.iscoroutine(gdt):
+            gdt = method.message(message).execute()
+            while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
             txt1 = gdt.render_cli()
             txt2 = Application.get_page()._top_bar.render_cli()

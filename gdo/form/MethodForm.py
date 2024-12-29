@@ -48,7 +48,7 @@ class MethodForm(Method):
                     return self.form_invalid()
         return self.render_page()
 
-    def render_page(self):
+    def render_page(self) -> GDT:
         return self.get_form()
 
     def form_submitted(self):

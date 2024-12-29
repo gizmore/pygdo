@@ -5,6 +5,10 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from gdo.base.GDO_Module import GDO_Module
+    from gdo.core.GDO_Channel import GDO_Channel
+    from gdo.core.GDO_Server import GDO_Server
+    from gdo.core.GDO_User import GDO_User
+    from gdo.base.Message import Message
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError, GDOParamError
@@ -28,9 +32,9 @@ class MyArgParser(argparse.ArgumentParser):
 
 
 class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
-    _message: object
+    # _message: 'Message'
     _parameters: dict[str, GDT]
-    _next_method: object  # Method chaining
+    _next_method: 'Method'  # Method chaining
     _result: str
 
     def __init__(self):
@@ -62,7 +66,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         """
         The CLI/Text trigger for non Web connectors. Return an empty string to disable all CLI connectors.
         """
-        module = self.module()
+        module = self.gdo_module()
         return f"{module.get_name()}.{self.get_name()}"
 
     def gdo_transactional(self) -> bool:
@@ -116,13 +120,19 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     def gdo_user_permission(self) -> str | None:
         """
-        return a permission name here from GDO_Permission table to restrict
+        return a permission name csv here from GDO_Permission table to restrict
         """
         return None
 
-    def gdo_has_permission(self, user):
+    def gdo_has_permission(self, user: 'GDO_User'):
         """
         Completely free and flexible permission check
+        """
+        return True
+
+    def gdo_needs_authentication(self) -> bool:
+        """
+        Required for IRC functions when a user is member, but not authed.
         """
         return True
 
@@ -150,10 +160,10 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return t('keywords') if thas('keywords') else 'PyGDO,Website,HTTP Handler,WSGI'
 
     def _mome(self):
-        return self.module().get_name() + "." + self.get_name()
+        return self.gdo_module().get_name() + "." + self.get_name()
 
     def _mome_tkey(self, key: str) -> str:
-        return f'{key}_{self.module().get_name()}_{self.get_name()}'
+        return f'{key}_{self.gdo_module().get_name()}_{self.get_name()}'
 
     ##############
     # Parameters #
@@ -219,19 +229,23 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return GDT_String('reply').text(key, args)
 
     def msg(self, key: str, args: list = None):
-        self.module().msg(key, args)
+        self.gdo_module().msg(key, args)
         return self
 
     def err(self, key: str, args: list = None):
-        self.module().err(key, args)
+        self.gdo_module().err(key, args)
         return self
 
-    def module(self) -> 'GDO_Module':
+    def gdo_module(self) -> 'GDO_Module':
         from gdo.base.ModuleLoader import ModuleLoader
         mn = self.__module__
         mn = Strings.substr_from(mn, 'gdo.')
         mn = Strings.substr_to(mn, '.')
         return ModuleLoader.instance()._cache[mn]
+
+    # def message(self, message: 'Message') -> 'Method':
+    #     self._message = message
+    #     return self
 
     ########
     # Exec #
@@ -249,6 +263,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         except Exception as ex:
             if tr:
                 db.rollback()
+                tr = False
                 raise ex
         finally:
             if tr:
@@ -268,9 +283,12 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     def _nested_parse(self):
         from gdo.core.GDT_Repeat import GDT_Repeat
+        from gdo.core.GDT_Field import GDT_Field
         parser = self.get_arg_parser(False)
         args, unknown_args = parser.parse_known_args(self._args)
         for gdt in self.parameters().values():
+            if not isinstance(gdt, GDT_Field):
+                continue
             val = args.__dict__[gdt.get_name()] or ''
             if isinstance(val, list):
                 gdt.val(val)
@@ -287,7 +305,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         self._nested_parse()
         return self.gdo_execute()
 
-    def _prepare_nested_permissions(self, method) -> bool:
+    def _prepare_nested_permissions(self, method: 'Method') -> bool:
         if not method.has_permission(method._env_user):
             self.error('err_permission')
             return False
@@ -296,20 +314,21 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             return False
         if method._env_channel and method._disabled_in_channel(method._env_channel):
             self.error('err_method_disabled')
+            return False
         if method._disabled_in_server(method._env_server):
             self.error('err_method_disabled')
-
+            return False
         for arg in method._args:
             if isinstance(arg, Method):
                 if not self._prepare_nested_permissions(arg):
                     return False
         return True
 
-    def _disabled_in_channel(self, channel):
-        return False
+    def _disabled_in_channel(self, channel: 'GDO_Channel') -> bool:
+        return self._get_config_channel('disabled', channel).get_value()
 
-    def _disabled_in_server(self, channel):
-        return False
+    def _disabled_in_server(self, server: 'GDO_Server') -> bool:
+        return self._get_config_server('disabled', server).get_value()
 
     def allows_connector(self) -> bool:
         connectors = self.gdo_connectors()
@@ -324,9 +343,12 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     @functools.cache
     def _get_arg_parser_cli(self, for_usage: bool):
         from gdo.form.GDT_Submit import GDT_Submit
+        from gdo.core.GDT_Field import GDT_Field
         prog = self.gdo_trigger()
         parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
         for gdt in self.parameters().values():
+            if not isinstance(gdt, GDT_Field):
+                continue
             name = gdt.get_name()
             if for_usage and isinstance(gdt, GDT_Submit) and gdt._default_button:
                 continue
@@ -342,9 +364,12 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     @functools.cache
     def _get_arg_parser_http(self, for_usage: bool):
+        from gdo.core.GDT_Field import GDT_Field
         prog = self.get_name()
         parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
         for gdt in self.parameters().values():
+            if not isinstance(gdt, GDT_Field):
+                continue
             name = gdt.get_name()
             if gdt.is_multiple():
                 parser.add_argument(f'--{name}', default=gdt.get_initial(), nargs='*')
@@ -397,6 +422,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                     entry.save_val('mv_val', gdt.val(val).get_val())
 
     def get_config_server(self, key: str) -> GDT:
+        return self._get_config_server(key, self._env_server)
+
+    def _get_config_server(self, key: str, server: 'GDO_Server') -> GDT:
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValServer import GDO_MethodValServer
         from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
@@ -405,10 +433,11 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             if gdt.get_name() == key:
                 table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
                 gdom = GDO_Method.for_method(self)
-                entry = table.get_by_id(gdom.get_id(), self._env_server.get_id(), key)
+                entry = table.get_by_id(gdom.get_id(), server.get_id(), key)
                 if entry:
                     gdt.initial(entry.get_val())
                 return gdt
+
 
     def get_config_server_val(self, key: str) -> str:
         return self.get_config_server(key).get_val()
@@ -501,15 +530,18 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                     entry.save_val('mv_val', val)
 
     def get_config_channel(self, key: str) -> GDT:
+        return self._get_config_channel(key, self._env_channel)
+
+    def _get_config_channel(self, key: str, channel: 'GDO_Channel') -> GDT:
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
         from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
         from gdo.core.GDT_Text import GDT_Text
         for gdt in self._config_channel():
             if gdt.get_name() == key:
-                table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
-                if self._env_channel:
-                    entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_channel.get_id(), key)
+                if channel:
+                    table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
+                    entry = table.get_by_id(GDO_Method.for_method(self).get_id(), channel.get_id(), key)
                     if entry:
                         gdt.initial(entry.get_val())
                 return gdt

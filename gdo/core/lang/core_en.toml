@@ -158,7 +158,9 @@ msg_username_set = "Your displayname has been set to %s."
 ##########
 mt_core_whoami = "WhoAmI"
 md_core_whoami = "WhoAmI"
-info_who_am_i = "Your username is %s with the following permissions: %s."
+authenticated = "authenticated"
+not_authenticated = "not_authenticated"
+info_who_am_i = "Your username is %s (%s) with the following permissions: %s."
 
 #########
 # Super #
