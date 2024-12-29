@@ -2,19 +2,16 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-echo "Running the gdo_fix.sh because argh. This will take a while"
+#echo "Running the gdo_fix.sh because argh. This will take a while"
 #bash gdo_fix.sh
 
-# THREADS: number of parallel executing  processes
-# default: THREADS=15
-#  - THREADS=0 (unlimited)
 THREADS=15
 if [ $# -gt 0 ]; then
   THREADS=$1
 fi;
 
 XARGS_OPTIONS="-P $THREADS -0 -I {}"
-if [ $(uname -s) == "FreeBSD" ]; then
+if [ "$(uname -s)" == "FreeBSD" ] || [ "$(uname -s)" == "Darwin" ]; then
         XARGS_OPTIONS="-S 1024 -R 2 $XARGS_OPTIONS"
 fi
 
@@ -36,6 +33,3 @@ bash gdo_adm.sh configure
 
 echo "Triggering 'gdo_adm.sh update'."
 bash gdo_adm.sh update
-
-#echo "Triggering 'gdo_yarn.sh'."
-#bash gdo_yarn.sh

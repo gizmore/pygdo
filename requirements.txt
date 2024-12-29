@@ -7,3 +7,4 @@ psutil
 pytzdata
 tomlkit
 typing_extensions
+nest_asyncio
