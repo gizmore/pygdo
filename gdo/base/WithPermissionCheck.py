@@ -6,6 +6,7 @@ class WithPermissionCheck:
 
     def has_permission(self, user, display_error: bool = True) -> bool:
         from gdo.core.GDO_Permission import GDO_Permission
+        from gdo.core.GDT_UserType import GDT_UserType
         typestr = self.gdo_user_type()
         if typestr:
             types = typestr.split(',')
@@ -19,7 +20,13 @@ class WithPermissionCheck:
             return False if not display_error else self.err_not_in_private()
         if not self.gdo_in_channels() and self._env_channel is not None:
             return False if not display_error else self.err_not_in_channel()
+        if user.get_user_type() in (GDT_UserType.MEMBER, GDT_UserType.CHAPPY, GDT_UserType.LINK, GDT_UserType.DEVICE) and not user._authenticated:
+            return False if not display_error else self.err_not_authenticated()
         return True
+
+    def err_not_authenticated(self):
+        self.err('err_not_authenticated')
+        return False
 
     def err_not_in_private(self):
         self.err('err_not_in_private')

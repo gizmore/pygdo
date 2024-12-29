@@ -86,6 +86,8 @@ class GDO_Server(GDO):
     ##########
     def on_user_joined(self, user: 'GDO_User'):
         self._users[user.get_name()] = user
+        if not self.get_connector().gdo_needs_authentication():
+            user._authenticated = True
         Application.EVENTS.publish('user_joined_server', user)
 
     def on_user_quit(self, user: 'GDO_User'):
