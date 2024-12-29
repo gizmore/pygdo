@@ -228,8 +228,7 @@ class App:
                         choices[name] = git_remote_url(multi[n - 1], args.ssh)
                         break
                     except KeyboardInterrupt:
-                        print("Exiting with code 0.")
-                        exit(0)
+                        exit(-1)
                     except Exception:
                         print('ERROR!')
             else:
