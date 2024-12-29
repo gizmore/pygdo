@@ -18,7 +18,7 @@ echo "Are you sure? Press Enter!"
 read
 
 echo "Syncing core..."
-pwd && git add -A . && git commit -am \"$message\" && git push
+pwd && git add -A . && git commit -am "$message" && git push
 sleep 1
 
 echo "Syncing module repositories..."

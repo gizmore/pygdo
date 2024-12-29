@@ -159,7 +159,6 @@ class GDO_Server(GDO):
     async def loop(self):
         conn = self.get_connector()
         while Application.RUNNING:
-            # Logger.debug(f"{self.get_name()} loop")
             if not conn.is_connected():
                 if not conn.is_connecting():
                     if conn.should_connect_now():

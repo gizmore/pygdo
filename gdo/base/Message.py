@@ -105,6 +105,8 @@ class Message(WithEnv):
             txt += txt2
         self._result = txt.strip()
         await self.deliver()
+        from gdo.core.GDO_Session import GDO_Session
+        GDO_Session.for_user(self._env_user).save()
 
     async def deliver(self, with_events: bool=True, with_prefix: bool=True):
         text = self._result

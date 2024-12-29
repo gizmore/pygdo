@@ -27,6 +27,7 @@ class Application:
     STORAGE = threading.local()
     LANG_ISO = 'en'
     TIME = time.time()
+    FIRST_TIME = time.time()
     DB_READS: int = 0
     DB_WRITES: int = 0
     DB_TRANSACTIONS: float = 0
@@ -261,3 +262,7 @@ class Application:
     @classmethod
     def web_root(cls) -> str:
         return cls.config('core.web_root', '/')
+
+    @classmethod
+    def runtime(cls):
+        return cls.TIME - cls.FIRST_TIME

@@ -125,22 +125,25 @@ class Database:
 
     def delete_all_fk(self, gdo: 'GDO'):
         from gdo.base.Application import Application
-        db_name = Application.config('db.name')
-        query = (f'SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS '
-                 f'WHERE CONSTRAINT_TYPE = "FOREIGN KEY" AND TABLE_SCHEMA = "{db_name}" AND TABLE_NAME="{gdo.gdo_table_name()}"')
-        result = self.select(query, False)
-        while cn := result.fetch_val():
-            self.delete_fk(cn)
+        try:
+            self.foreign_keys(False)
+            db_name = Application.config('db.name')
+            query = (f'SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS '
+                     f'WHERE CONSTRAINT_TYPE IN ("FOREIGN KEY", "UNIQUE") AND TABLE_SCHEMA = "{db_name}" AND TABLE_NAME="{gdo.gdo_table_name()}"')
+            result = self.select(query, False)
+            while cn := result.fetch_val():
+                self.delete_fk(gdo, cn)
+        finally:
+            self.foreign_keys(True)
 
-    def delete_fk(self, constraint_name: str):
+    def delete_fk(self, gdo: 'GDO', constraint_name: str):
         from gdo.base.Application import Application
         db_name = Application.config('db.name')
-        query = (f'SELECT CONCAT("ALTER TABLE ", TABLE_NAME, " DROP FOREIGN KEY ", CONSTRAINT_NAME) AS drop_statement '
-                 f'FROM information_schema.TABLE_CONSTRAINTS '
-                 f'WHERE CONSTRAINT_TYPE = "FOREIGN KEY" AND TABLE_SCHEMA = "{db_name}" AND CONSTRAINT_NAME = "{constraint_name}"')
-        result = self.select(query, False)
-        if query := result.fetch_val():
-            self.query(query)
+        if "UNIQUE" in constraint_name:
+            query = f"ALTER TABLE {gdo.gdo_table_name()} DROP INDEX {constraint_name}"
+        else:
+            query = f"ALTER TABLE {gdo.gdo_table_name()} DROP FOREIGN KEY {constraint_name}"
+        result = self.query(query)
 
     def is_configured(self):
         return self.db_host is not None
@@ -150,7 +153,7 @@ class Database:
         query = f"DROP TABLE IF EXISTS {tablename}"
         self.query(query)
 
-    def foreign_keys(self, state=False):
+    def foreign_keys(self, state: bool = False):
         query = f"SET FOREIGN_KEY_CHECKS = %i" % state
         return self.query(query)
 

@@ -74,7 +74,8 @@ class launch(Method):
         try:
             while Application.RUNNING:
                 Application.tick()
-                await Application.EVENTS.update_timers(Application.TIME)
+                if self.tried_connecting():
+                    await Application.EVENTS.update_timers(Application.TIME)
                 for server in GDO_Server.table().all('serv_enabled'):
                     self.mainloop_step_server(server)
                 await self.mainloop_process_ai()
@@ -83,6 +84,9 @@ class launch(Method):
             raise ex
         finally:
             Files.remove(self.lock_path())
+
+    def tried_connecting(self):
+        return Application.runtime() > 30
 
     def mainloop_step_server(self, server: GDO_Server):
         if not server._has_loop:

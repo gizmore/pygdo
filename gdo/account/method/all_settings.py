@@ -14,7 +14,7 @@ class all_settings(Method):
     def gdo_user_type(self) -> str | None:
         return 'member,guest'
 
-    def gdo_execute(self) -> GDT:
+    async def gdo_execute(self) -> GDT:
         cont = GDT_Bar().vertical()
         loader = ModuleLoader.instance()
         for module in loader._cache.values():
@@ -23,5 +23,5 @@ class all_settings(Method):
                 cont.add_field(method)
                 break
         for method in cont.all_fields():
-            method.execute()
+            await method.execute()
         return cont

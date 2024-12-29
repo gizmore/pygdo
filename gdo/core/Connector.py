@@ -19,6 +19,7 @@ class Connector:
     _server: 'GDO_Server'  # instance server
     _connected: bool
     _connecting: bool
+    _tried_connecting: bool
     _connect_failures: int
     _next_connect_time: float
 
@@ -46,6 +47,7 @@ class Connector:
         super().__init__()
         self._connected = False
         self._connecting = False
+        self._tried_connecting = False
         self._connect_failures = 0
 
     def get_render_mode(self) -> Mode:
@@ -94,6 +96,7 @@ class Connector:
     def connect(self) -> bool:
         Logger.debug("Connector.connect()")
         self._connecting = True
+        self._tried_connecting = True
         self.gdo_connect()
         if self._connected:
             self.connect_success()

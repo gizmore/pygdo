@@ -89,7 +89,6 @@ def process_line(line: str) -> None:
                 message._result += txt1
             asyncio.run(message.deliver())
             method._env_session.save()
-
     except GDOParamError as ex:
         print(Render.red(str(ex), Mode.CLI))
 
