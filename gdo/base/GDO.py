@@ -291,6 +291,9 @@ class GDO(WithBulk, GDT):
         return self
 
     def delete_where(self, where: str, with_hooks: bool = False):
+        """
+        Runs a delete query and executes it and returns nothing.... this is quite a todo.
+        """
         self.delete_query().where(where).exec()
 
     def delete_by_vals(self, vals: dict, with_hooks: bool = False):

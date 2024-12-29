@@ -1,3 +1,6 @@
+import nest_asyncio
+
+from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.core import GDO_MethodValServerBlob
@@ -38,6 +41,8 @@ class module_core(GDO_Module):
         Connector.register(Bash)
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
+        if not Application.IS_HTTP:
+            nest_asyncio.apply()
 
     def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):
