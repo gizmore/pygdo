@@ -394,7 +394,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                         'mv_val': gdt.val(val).get_val(),
                     }).insert()
                 else:
-                    entry.save_val('mv_val', val)
+                    entry.save_val('mv_val', gdt.val(val).get_val())
 
     def get_config_server(self, key: str) -> GDT:
         from gdo.core.GDO_Method import GDO_Method

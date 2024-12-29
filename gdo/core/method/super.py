@@ -19,16 +19,15 @@ class super(Method):
 
     def gdo_method_config_server(self) -> [GDT]:
         return [
-            GDT_Password('superkey').initial(GDT_Password.hash('super')),
+            GDT_Password('superkey').initial('super'),
         ]
 
     def gdo_execute(self) -> GDT:
-        return self.empty('DISABLED!')
-        # key = self.get_config_server_val('superkey')
-        # if GDT_Password.check(key, self.param_value('pass')):
-        #     self.grant(self._env_user, self._env_server)
-        #     return self.msg('msg_super_granted')
-        # return self.err('err_wrong_superword')
+        key = self.get_config_server_val('superkey')
+        if GDT_Password.check(key, self.param_value('pass')):
+            self.grant(self._env_user, self._env_server)
+            return self.msg('msg_super_granted')
+        return self.err('err_wrong_superword')
 
     def grant(self, user: GDO_User, server: GDO_Server):
         for perm in ('staff', 'admin'):

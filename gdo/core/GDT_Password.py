@@ -21,4 +21,7 @@ class GDT_Password(GDT_String):
     def val(self, val: str | list):
         if val is None:
             return self
-        return super().val(self.hash(val))
+        if val[0] == '$':
+            return super().val(val)
+        else:
+            return super().val(self.hash(val))
