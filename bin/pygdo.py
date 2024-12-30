@@ -74,7 +74,7 @@ def process_line(line: str) -> None:
         if line.startswith(trigger):
             method = parser.parse_line(line[1:])
             Application.fresh_page()
-            gdt = method.message(message).execute()
+            gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
             txt1 = gdt.render_cli()
