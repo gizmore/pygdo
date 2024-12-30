@@ -306,6 +306,7 @@ class App:
         user = server.get_or_create_user(args.username)
         GDO_UserPermission.grant(user, GDO_Permission.ADMIN)
         GDO_UserPermission.grant(user, GDO_Permission.STAFF)
+        GDO_UserPermission.grant(user, GDO_Permission.VOICE)
         GDO_UserPermission.grant(user, GDO_Permission.CRONJOB)
         if module_enabled('login'):
             from gdo.login import module_login

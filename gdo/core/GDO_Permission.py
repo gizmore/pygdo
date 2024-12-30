@@ -11,9 +11,11 @@ from gdo.core.GDT_Name import GDT_Name
 
 
 class GDO_Permission(GDO):
-    ADMIN = 'admin'
-    STAFF = 'staff'
-    CRONJOB = 'cronjob'
+    OWNER: str = 'owner'  # gizzle
+    ADMIN: str = 'admin'  # OP
+    STAFF: str = 'staff'  # HalfOP
+    VOICE: str = 'voice'  # Voice
+    CRONJOB: str = 'cronjob'
 
     @classmethod
     def get_by_name(cls, name: str) -> 'GDO_Permission':

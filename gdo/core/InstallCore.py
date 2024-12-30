@@ -45,8 +45,10 @@ class InstallCore:
 
     @classmethod
     def install_perms(cls):
+        cls.install_perm(GDO_Permission.OWNER)
         cls.install_perm(GDO_Permission.ADMIN)
         cls.install_perm(GDO_Permission.STAFF)
+        cls.install_perm(GDO_Permission.VOICE)
         cls.install_perm(GDO_Permission.CRONJOB)
 
     @classmethod

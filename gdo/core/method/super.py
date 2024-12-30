@@ -30,5 +30,5 @@ class super(Method):
         return self.err('err_wrong_superword')
 
     def grant(self, user: GDO_User, server: GDO_Server):
-        for perm in ('staff', 'admin'):
+        for perm in ('voice', 'staff', 'admin'):
             GDO_UserPermission.grant(user, perm)

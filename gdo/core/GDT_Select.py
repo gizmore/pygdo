@@ -12,11 +12,9 @@ class GDT_Select(GDT_ComboBox):
         return {}
 
     def init_choices(self):
-        # if not hasattr(self, '_choices'):
-        #     self._choices = {}
-        #     self._choices.update(self.gdo_choices())
-        # return self._choices
-        self._choices = self.gdo_choices()
+        if not hasattr(self, '_choices'):
+            self._choices = {}
+        self._choices.update(self.gdo_choices())
         return self._choices
 
     def validate(self, val: str | None, value: any) -> bool:

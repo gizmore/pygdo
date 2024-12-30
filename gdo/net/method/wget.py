@@ -30,7 +30,7 @@ class wget(Method):
         content = content.decode(encoding)
         if not self.param_value('full'):
             content = self.html_to_text(content)
-        return GDT_HTML().val(content)
+        return GDT_HTML().html(content)
 
     def parse_encoding(self, response: httplib2.Response):
         try:
