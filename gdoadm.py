@@ -190,9 +190,15 @@ class App:
                 missing.append(name)
         if not missing:
             print(f"All wanted modules and their dependencies are on disk. You can ./gdo_adm.sh install {args.modules} now.")
-            choice = input('Shall i do this now? (y)').lower()
-            if choice == '' or choice == 'y':
-                pass
+            if not args.yes:
+                choice = input('Shall i do this now? (y)').lower()
+                if choice != 'y' or choice != '':
+                    exit(0)
+            process_args = ["./gdo_adm.sh", "install"]
+            if args.yes:
+                process_args.append('--yes')
+            process_args.append(args.modules)
+            subprocess.run(process_args, check=True)
             exit(0)
         need = missing
         to_process = list(need)
@@ -208,7 +214,7 @@ class App:
             to_process = Arrays.unique(need)
             after = len(to_process)
         need = Arrays.unique(need)
-        print(f"You need to clone {len(need)} modules: {', '.join(need)}. Press enter.")
+        print(f"You need to clone {len(need)} modules: {', '.join(need)}.")
         choices = {}
         for name in need:
             multi = providers[name][0]
@@ -220,11 +226,14 @@ class App:
                         for url in multi:
                             n += 1
                             print(f"{n}) {git_remote_url(url, args.ssh)}")
-                        choice = input(f"Please enter a choice from 1 to {n} (1): ")
-                        if choice == '':
+                        if args.yes:
                             n = 1
                         else:
-                            n = int(choice)
+                            choice = input(f"Please enter a choice from 1 to {n} (1): ")
+                            if choice == '':
+                                n = 1
+                            else:
+                                n = int(choice)
                         choices[name] = git_remote_url(multi[n - 1], args.ssh)
                         break
                     except KeyboardInterrupt:
@@ -236,7 +245,8 @@ class App:
         print(f"I will download {len(choices)} modules as a git repository:")
         for name, url in choices.items():
             print(f"{name}: {url}")
-        input("Is that OK? Press Enter.")
+        if not args.yes:
+            input("Is that OK? Press Enter.")
         old_dir = Application.file_path()
         gdo_dir = Application.file_path('gdo/')
         os.chdir(gdo_dir)
@@ -250,6 +260,8 @@ class App:
         print("All done!")
 
     def post_install(self):
+        print("Installing requirements.")
+        subprocess.run("./gdo_requirements.sh", check=True)
         print("Running post install scripts.")
         subprocess.run("./gdo_post_install.sh", check=True)
 
@@ -258,6 +270,7 @@ class App:
         parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all or ./gdo_adm.sh install Core|Dog*')
         parser.add_argument('--reinstall', action='store_true')
         parser.add_argument('-a', '--all', action='store_true')
+        parser.add_argument('-y', '--yes', action='store_true')
         parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
         reinstall = args.reinstall
