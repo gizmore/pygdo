@@ -18,15 +18,27 @@ class Installer:
 
     @classmethod
     def install_modules(cls, modules: list[GDO_Module], verbose: bool = False):
+        if verbose:
+            print("Collecting modules and dependencies.")
         modules = cls.modules_with_deps(modules)
+
+        if verbose:
+            print(f"Installing {len(modules)} module entries.")
         for module in modules:
             cls.install_module(module, verbose)
+
+        if verbose:
+            print("Re-Loading installed modules.")
         loader = ModuleLoader.instance()
         loader.load_modules_db()
-        loader.init_user_settings()
+        loader.init_modules(True, True)
+
         if verbose:
-            print("Migrating core for user settings...")
+            print("Migrating core for user settings.")
         Installer.migrate_gdo(GDO_UserSetting.table())
+
+        if verbose:
+            print("Calling module install hooks")
         for module in modules:
             try:
                 module.gdo_install()
