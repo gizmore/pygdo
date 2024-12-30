@@ -9,6 +9,9 @@ class echo(Method):
     def gdo_trigger(self) -> str:
         return 'echo'
 
+    def gdo_needs_authentication(self) -> bool:
+        return False
+
     def gdo_parameters(self) -> [GDT]:
         return [
             GDT_String('sep').initial(' '),

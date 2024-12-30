@@ -2,12 +2,11 @@ import re
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
-from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render
+from gdo.base.Util import html
 from gdo.core.Connector import Connector
-from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_String import GDT_String
 
 
@@ -37,16 +36,18 @@ class help(Method):
         else:
             return self.show_all_commands()
 
-    def show_help_for(self, trigger):
+    def show_help_for(self, trigger) -> GDT:
         loader = ModuleLoader.instance()
-        method = loader.get_method(trigger)
-        mode = Application.get_mode()
-        method.env_copy(self)
-        parser = method.get_arg_parser(True)
-        usage = parser.format_usage().rstrip()
-        usage = usage.replace("\n", '')
-        usage = re.sub(r'\s+', ' ', usage)
-        return GDT_String('help').text('msg_help_for', [Render.bold(trigger, mode), method.gdo_render_descr(), usage])
+        if method := loader.get_method(trigger):
+            mode = Application.get_mode()
+            method.env_copy(self)
+            parser = method.get_arg_parser(True)
+            usage = parser.format_usage().rstrip()
+            usage = usage.replace("\n", '')
+            usage = re.sub(r'\s+', ' ', usage)
+            return GDT_String('help').text('msg_help_for', [Render.bold(trigger, mode), method.gdo_render_descr(), usage])
+        else:
+            return self.err('err_module', [html(trigger)])
 
     def show_all_commands(self):
         loader = ModuleLoader.instance()

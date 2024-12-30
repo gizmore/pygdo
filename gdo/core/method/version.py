@@ -10,6 +10,8 @@ class version(Method):
     def gdo_trigger(self) -> str:
         return 'version'
 
-    def execute(self):
-        return GDT_String('result').text('msg_version', [sys.version, str(module_base.instance().CORE_VERSION)])
+    def gdo_needs_authentication(self) -> bool:
+        return False
 
+    def execute(self):
+        return GDT_String('result').text('msg_version', [sys.version, str(module_base.instance().CORE_REV)])
