@@ -23,7 +23,6 @@ from gdo.core.GDO_Session import GDO_Session
 from gdo.core.connector.Web import Web
 from gdo.core.connector.Bash import Bash
 from gdo.install.Installer import Installer
-from gdo.ui.GDT_Page import GDT_Page
 from index import application
 
 
@@ -197,6 +196,7 @@ def cli_gizmore():
     user = Bash.get_server().get_or_create_user('gizmore')
     GDO_UserPermission.grant(user, 'admin')
     GDO_UserPermission.grant(user, 'staff')
+    GDO_UserPermission.grant(user, 'voice')
     return user
 
 
@@ -204,4 +204,5 @@ def web_gizmore():
     user = Web.get_server().get_or_create_user('gizmore')
     GDO_UserPermission.grant(user, 'admin')
     GDO_UserPermission.grant(user, 'staff')
+    GDO_UserPermission.grant(user, 'voice')
     return user
