@@ -109,6 +109,7 @@ class ModuleLoader:
 
     def on_module_installed(self, module: 'GDO_Module'):
         self._cache[module.get_name()] = module
+        module.init()
 
     def after_delete(self, module: GDO_Module):
         if module.get_name() in self._cache:

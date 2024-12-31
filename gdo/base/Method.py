@@ -309,33 +309,11 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         if not method.has_permission(method._env_user):
             self.error('err_permission')
             return False
-        if not method.allows_connector():
-            self.error('err_method_connector_not_supported')
-            return False
-        if method._env_channel and method._disabled_in_channel(method._env_channel):
-            self.error('err_method_disabled')
-            return False
-        if method._disabled_in_server(method._env_server):
-            self.error('err_method_disabled')
-            return False
         for arg in method._args:
             if isinstance(arg, Method):
                 if not self._prepare_nested_permissions(arg):
                     return False
         return True
-
-    def _disabled_in_channel(self, channel: 'GDO_Channel') -> bool:
-        return self._get_config_channel('disabled', channel).get_value()
-
-    def _disabled_in_server(self, server: 'GDO_Server') -> bool:
-        return self._get_config_server('disabled', server).get_value()
-
-    def allows_connector(self) -> bool:
-        connectors = self.gdo_connectors()
-        if not connectors:
-            return True
-        connector = self._env_server.get_connector()
-        return connector.get_name().lower() in connectors
 
     def get_arg_parser(self, for_usage: bool):
         return self._get_arg_parser_http(for_usage) if self._env_http else self._get_arg_parser_cli(for_usage)

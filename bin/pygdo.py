@@ -77,8 +77,8 @@ def process_line(line: str) -> None:
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
-            txt1 = gdt.render_cli()
-            txt2 = Application.get_page()._top_bar.render_cli()
+            txt1 = gdt.render(Mode.CLI)
+            txt2 = Application.get_page()._top_bar.render(Mode.CLI)
             if txt2:
                 message._result += txt2
             if txt1:

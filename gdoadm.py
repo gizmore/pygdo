@@ -357,8 +357,8 @@ class App:
             parser.print_help()
             exit(0)
         modules = list(modules.values())
-        modules = Installer.modules_with_deps(modules)
-        loader.init_user_settings()
+        # modules = Installer.modules_with_deps(modules)
+        loader.init_modules(False, True)
         Installer.migrate_modules(modules)
         print("All done!")
 

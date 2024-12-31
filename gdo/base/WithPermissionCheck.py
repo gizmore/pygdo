@@ -25,7 +25,34 @@ class WithPermissionCheck:
                 return False if not display_error else self.err_not_authenticated()
         if not self.gdo_has_permission(user):
             return False if not display_error else self.err_generic_permission()
+        if not self.allows_connector():
+            return False if not display_error else self.err_connector_not_supported()
+        if self._env_channel and self._disabled_in_channel(self._env_channel):
+            return False if not display_error else self.err_method_disabled()
+        if self._disabled_in_server(self._env_server):
+            return False if not display_error else self.err_method_disabled()
         return True
+
+    def _disabled_in_channel(self, channel: 'GDO_Channel') -> bool:
+        return self._get_config_channel('disabled', channel).get_value()
+
+    def _disabled_in_server(self, server: 'GDO_Server') -> bool:
+        return self._get_config_server('disabled', server).get_value()
+
+    def allows_connector(self) -> bool:
+        connectors = self.gdo_connectors()
+        if not connectors:
+            return True
+        connector = self._env_server.get_connector()
+        return connector.get_name().lower() in connectors
+
+    def err_method_disabled(self):
+        self.err('err_method_disabled')
+        return False
+
+    def err_connector_not_supported(self):
+        self.err('err_method_connector_not_supported')
+        return False
 
     def err_not_authenticated(self):
         self.err('err_not_authenticated')
