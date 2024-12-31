@@ -40,7 +40,7 @@ class MethodConf(Method):
         out = []
         for gdt in self.get_configs(method):
             out.append(f"{gdt.get_name()}({gdt.get_val()})")
-        return self.reply('msg_configs', [', '.join(out)])
+        return self.reply('msg_configs', [method.gdo_trigger(), ', '.join(out)])
 
     def show_config(self, method: Method, key: str) -> GDT:
         return self.reply('msg_config', [method.gdo_trigger(), key, html(self.get_config_val(method, key))])

@@ -2,6 +2,8 @@ import asyncio
 
 from typing import TYPE_CHECKING
 
+from gdo.core.GDT_Container import GDT_Container
+
 if TYPE_CHECKING:
     from gdo.core.Connector import Connector
     from gdo.core.GDO_User import GDO_User
@@ -101,13 +103,17 @@ class Message(WithEnv):
         result = self._method.execute()
         while asyncio.iscoroutine(result):
             result = await result
-        self._gdt_result = result
+
+        self._gdt_result = GDT_Container()
+        self._gdt_result.add_field(*list(Application.get_page()._top_bar.all_fields()))
+        self._gdt_result.add_field(result)
+
         txt2 = result.render(self._env_mode)
         if txt1 := Application.get_page()._top_bar.render(self._env_mode):
             txt += txt1 + " "
         if txt2:
             txt += txt2
-        self._result = txt.strip()
+        self._result = txt
         await self.deliver()
         if not Application.IS_HTTP:
             from gdo.core.GDO_Session import GDO_Session
@@ -117,7 +123,7 @@ class Message(WithEnv):
         text = self._result
         if not text or self._delivered:
             return
-        self._delivered = True
+       # self._delivered = True
         if self._env_channel:
             # if with_prefix:
                 # reply_to = self._env_reply_to or self._env_user.render_name()

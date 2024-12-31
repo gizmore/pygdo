@@ -191,3 +191,12 @@ and_n_more = "and %s more"
 mt_core_die = "Die"
 md_core_die = "Make the bot quit."
 msg_dying = "Shutting down..."
+
+#########
+# confs #
+#########
+mt_core_confs = "Config Server"
+md_core_confs = "Configure server settings for a method."
+msg_configs = "Configuration for %s: %s."
+msg_config = "Configuration for %s.%s is %s"
+msg_config_set = "Configuration for %s.%s has been changed from %s to %s."
