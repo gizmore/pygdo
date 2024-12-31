@@ -56,6 +56,8 @@ class GDO_User(GDO):
             'user_id': '0',
             'user_server': '2',
             'user_type': GDT_UserType.GHOST,
+            'user_displayname': 'Guest',
+            'user_name': 'Guest',
         })
 
     @classmethod

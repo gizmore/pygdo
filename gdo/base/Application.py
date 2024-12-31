@@ -152,7 +152,7 @@ class Application:
         cls.STORAGE.time_start = float(environ.get('mod_wsgi.request_start')) / 1000000.0
         cls.STORAGE.environ = environ
         cls.STORAGE.headers = {}
-        cls.init_cookies(environ)
+        cls.init_cookies_wsgi(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
         cls.PROTOCOL = environ['REQUEST_SCHEME']
         # cls.SERVER = GDO_Server.get_by_connector('Web')

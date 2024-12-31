@@ -22,6 +22,11 @@
 .gdt-divider.gdt-horizontal {
     padding: 0 8px;
 }
+
 .gdt-divider.gdt-horizontal:BEFORE {
     content: "|";
+}
+
+pre {
+    white-space: normal;
 }
