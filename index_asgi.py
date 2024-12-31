@@ -26,9 +26,10 @@ async def app(scope, receive, send):
             FRESH = False
             Application.init(os.path.dirname(__file__))
             ModuleLoader.instance().load_modules_db()
-            ModuleLoader.instance().init_modules(True, True)
         else:
             Application.fresh_page()
+
+        ModuleLoader.instance().init_modules(True, True)
 
         url = 'core.welcome.html'
         Application.request_method(scope['method'])
@@ -60,27 +61,24 @@ async def app(scope, receive, send):
             # start_response(Application.get_status(), headers)
             # for chunk in gdt:
             #     yield chunk
+        elif Files.is_dir(path):
+            session = GDO_Session.start(False)
+            user = session.get_user()
+            method = dir_server().env_server(user.get_server()).input('_url', path)
+
         else:
             session = GDO_Session.start(True)
             Application.set_current_user(session.get_user())
             Application.set_session(session)
-            Application.status("200 OK")
+            # Application.status("200 OK")
             user = session.get_user()
             server = user.get_server()
             channel = None
-            if Files.is_dir(path):
-                session = GDO_Session.start(False)
-                method = dir_server().env_server(server).input('_url', path)
-            else:
-                parser = WebParser(user, server, channel, session)
-                method = parser.parse(url)
+            parser = WebParser(user, server, channel, session)
+            method = parser.parse(url)
             if not method:
                 method = not_found().env_server(server).env_user(session.get_user()).input('_url', url)
-
-            method.inputs(qs)  # GET PARAMS
-            method._message = Message(f"${method.gdo_trigger()}", Mode.HTML).env_copy(method)
-
-
+            # method._message = Message(f"${method.gdo_trigger()}", Mode.HTML).env_copy(method)
 
         body = b""
         header = b""
@@ -94,7 +92,17 @@ async def app(scope, receive, send):
         # Process the received body
         data = body.decode("utf-8")
 
-        out = Application.get_page().result(GDT_Success().text_raw('hi')).method(welcome()).render(Mode.HTML)
+        result = await method.execute()
+
+        if Application.is_html():
+            page = Application.get_page()
+            result = page.result(result).method(method)
+            for module in ModuleLoader.instance().enabled():
+                module.gdo_load_scripts(page)
+                module.gdo_init_sidebar(page)
+
+        out = result.render(Mode.HTML)
+
         await send({
             'type': 'http.response.start',
             'status': 200,

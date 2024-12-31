@@ -157,9 +157,9 @@ class ModuleLoader:
                     GDT_UserSetting.register(gdt)
 
     def init_modules(self, enabled: bool = True, load_vals: bool = False):
-        self.init_user_settings()
         if load_vals:
             self.load_module_vars()
+            self.init_user_settings()
         for module in self._cache.values():
             if enabled and not module.is_enabled():
                 continue
