@@ -172,7 +172,7 @@ class Strings:
         if s is None:
             return ''
         match mode:
-            case Mode.HTML:
+            case (Mode.HTML, Mode.TELEGRAM):
                 return (s.replace('&', '&amp;').
                         replace('"', '&quot;').
                         replace("'", '&#039;').
