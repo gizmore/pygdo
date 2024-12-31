@@ -38,6 +38,7 @@ async def app(scope, receive, send):
         dump(str(qs))
         dump(str(scope))
 
+        scope['path'] = scope['path'].lstrip('/')
         url = scope['path'] if scope['path'] else 'core.welcome.html'
 
         # if '_url' in qs:

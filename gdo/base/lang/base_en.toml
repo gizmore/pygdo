@@ -51,5 +51,11 @@ md_base_client_error = "The server could not process your parameters."
 ##############
 # Fileserver #
 ##############
-mt_base_file_server = "File Download"
+mt_base_file_server = "File"
 md_base_file_server = "Download a file from this website."
+
+#############
+# dirserver #
+#############
+mt_base_dir_server = "Directory"
+md_base_dir_server = "List a directory on this server."

@@ -132,7 +132,7 @@ class Application:
         return Arrays.walk(cls.CONFIG, path) or default
 
     @classmethod
-    def storage(cls, key: str, default: any) -> str:
+    def storage(cls, key: str, default: any) -> any:
         if hasattr(cls.STORAGE, key):
             return cls.STORAGE.__getattribute__(key)
         elif default:
