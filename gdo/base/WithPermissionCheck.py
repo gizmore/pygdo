@@ -23,6 +23,8 @@ class WithPermissionCheck:
         if self.gdo_needs_authentication():
             if user.get_user_type() in (GDT_UserType.MEMBER, GDT_UserType.CHAPPY, GDT_UserType.LINK, GDT_UserType.DEVICE) and not user._authenticated:
                 return False if not display_error else self.err_not_authenticated()
+        if not self.gdo_has_permission(user):
+            return False if not display_error else self.err_generic_permission()
         return True
 
     def err_not_authenticated(self):
@@ -74,4 +76,8 @@ class WithPermissionCheck:
 
     def err_permission(self, perm: str):
         self.err('err_permission', [perm])
+        return False
+
+    def err_generic_permission(self):
+        self.err('err_generic_permission')
         return False

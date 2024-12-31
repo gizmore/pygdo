@@ -1,15 +1,14 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
-from gdo.base.Util import Strings, dump
 from gdo.base.WithError import WithError
 from gdo.core.WithGDO import WithGDO
+from gdo.core.WithNullable import WithNullable
 from gdo.ui.WithIcon import WithIcon
 from gdo.ui.WithTooltip import WithTooltip
 
 
-class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
+class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, WithNullable, GDT):
     _name: str
-    _not_null: bool
     _val: str
     _initial: str
     _converted: bool
@@ -20,7 +19,7 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
     _positional: bool | None
     _multiple: bool
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         super(GDT_Field, self).__init__()
         self._name = name
         self._not_null = False
@@ -98,9 +97,6 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
             return self._positional
         return self._not_null and not self._initial
 
-    def is_not_null(self) -> bool:
-        return self._not_null
-
     def writable(self, writable: bool = True):
         self._writable = writable
         return self
@@ -128,13 +124,6 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
             return " DEFAULT " + self.quote(self._initial)
         return ''
 
-    def not_null(self, not_null: bool = True):
-        self._not_null = not_null
-        return self
-
-    def nullable(self, nullable: bool = True):
-        return self.not_null(not nullable)
-
     def error(self, errkey, errargs=None) -> bool:
         if errargs is None:
             errargs = []
@@ -150,35 +139,11 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, GDT):
     ############
 
     def validate(self, val: str | None, value: any) -> bool:
-        if value is None:
-            if self._not_null:
-                return self.error_not_null()
-
+        if not self.validate_null(val, value):
+            return False
         if self._unique and not self.validate_unique(value):
             return False
-
         return True
-
-    def error_not_null(self):
-        suggestions = self.render_suggestion()
-        if suggestions:
-            return self.error('err_not_null', [self.render_suggestion()])
-        else:
-            return self.error('err_not_null_no_suggestions')
 
     def validate_unique(self, value):
         self._gdo.table().select()
-
-    ##########
-    # Render #
-    ##########
-    # def render_val(self):
-    #     if isinstance(self._val, list):
-    #         dump(self)
-    #     return Strings.html(self._val)
-
-    # def render_html(self) -> str:
-    #     return Strings.html(self._val)
-    #
-    # def render_cli(self) -> str:
-    #     return self._val

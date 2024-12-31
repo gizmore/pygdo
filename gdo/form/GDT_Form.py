@@ -1,6 +1,7 @@
 from enum import Enum
 
 from gdo.base.GDT import GDT
+from gdo.base.Render import Mode
 from gdo.base.WithError import WithError
 from gdo.base.WithName import WithName
 from gdo.core.GDT_Container import GDT_Container
@@ -59,6 +60,11 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
 
     def render_enctype(self) -> str:
         return self._encoding.value
+
+    def render(self, mode: Mode = Mode.HTML):
+        if mode == Mode.HTML:
+            return self.render_html()
+        return super().render(mode)
 
     def render_html(self):
         return GDT_Template.python('form', 'form.html', {'field': self})

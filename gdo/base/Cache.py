@@ -35,6 +35,7 @@ class Cache:
         cache = []
         columns = cls.CACHE[gdo].gdo_columns()
         for column in columns:
+            cache.append(column)
             cache.extend(column.gdo_components())
         return cache
 

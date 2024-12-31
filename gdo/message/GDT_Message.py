@@ -1,24 +1,22 @@
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.core.GDT_Composite import GDT_Composite
-from gdo.core.GDT_Field import GDT_Field
-from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.GDT_Text import GDT_Text
-from gdo.message.Editor import Editor
-from gdo.message.GDT_Editor import GDT_Editor
+from gdo.message.editor.Editor import Editor
+from gdo.message.editor.GDT_Editor import GDT_Editor
 
 
-class GDT_Message(GDT_Composite, GDT_Field):
+class GDT_Message(GDT_Composite):
 
     def __init__(self, name):
         super().__init__(name)
 
     def gdo_components(self) -> list['GDT']:
-        components = []
-        components.append(GDT_Editor(f"{self._name}_editor"))
-        components.append(GDT_Text(f"{self._name}_input"))
-        components.append(GDT_Text(f"{self._name}_plain"))
+        components = [
+            GDT_Text(f"{self._name}_input"),
+            GDT_Editor(f"{self._name}_editor").not_null(),
+        ]
         for mode in Mode.explicit():
             components.append(GDT_Text(f"{self._name}_{mode.name.lower()}"))
         return components
@@ -26,6 +24,45 @@ class GDT_Message(GDT_Composite, GDT_Field):
     def get_editor(self) -> type['Editor']:
         return self._gdo.gdo_value(f"{self._name}_editor")
 
-    def render_form(self):
-        return GDT_Template.python('ui', 'form_message.html', {"field": self})
+    def get_input(self) -> str:
+        return self._gdo.gdo_val(f"{self._name}_input")
 
+    def converted_html(self) -> str:
+        return self.get_editor().to_html(self.get_input())
+
+    def get_output_gdt(self, mode: Mode) -> GDT:
+        return self._gdo.column(self.get_output_gdt_key(mode))
+
+    def get_output_gdt_key(self, mode: Mode) -> str:
+        return f"{self._name}_{mode.name.lower()}"
+
+    #######
+    # GDT #
+    #######
+    def val(self, val: str):
+        self._gdo.column(f"{self._name}_input").val(val)
+        return self
+
+    ##########
+    # Render #
+    ##########
+
+    def render_form(self):
+        return GDT_Template.python('message', 'form_message.html', {"field": self})
+
+    def render_cli(self) -> str:
+        return self.get_rendered(Mode.CLI)
+
+    def get_rendered(self, mode: Mode) -> str:
+        gdt = self.get_output_gdt(mode)
+        output = gdt.get_val()
+        if output is None:
+            return self.get_rendered_now(gdt, mode)
+        return output
+
+    def get_rendered_now(self, gdt: GDT, mode: Mode) -> str:
+        html = self.converted_html()
+        tree = Editor.parse_tree(html)
+        rendered = tree.render(mode)
+        self._gdo.save_val(self.get_output_gdt_key(mode), rendered)
+        return rendered

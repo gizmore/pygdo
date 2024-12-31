@@ -80,7 +80,7 @@ class GDT:
         pass
 
     def gdo_components(self) -> list['GDT']:
-        return [self]
+        return []
 
     ##########
     # Errors #
@@ -217,7 +217,8 @@ class GDT:
         return f"{self.get_name()} = \"{self.get_val()}\"\n"
 
     def render_html(self) -> str:
-        return Strings.html(self.get_val())
+        val = self.get_val()
+        return '' if val is None else val
 
     def render_telegram(self):
         return self.render_txt()

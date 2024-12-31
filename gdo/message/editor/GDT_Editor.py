@@ -1,5 +1,5 @@
 from gdo.core.GDT_Enum import GDT_Enum
-from gdo.message.Editor import Editor
+from gdo.message.editor.Editor import Editor
 
 
 class GDT_Editor(GDT_Enum):
@@ -8,10 +8,11 @@ class GDT_Editor(GDT_Enum):
 
     def __init__(self, name: str):
         super().__init__(name)
+        self.initial('html')
 
     @classmethod
     def register(cls, editor: type[Editor]):
-        cls.EDITORS[editor.__class__.__name__.lower()] = editor
+        cls.EDITORS[editor.get_name()] = editor
 
     def gdo_choices(self) -> dict:
-        return self.__class__.EDITORS
+        return self.EDITORS

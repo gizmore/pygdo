@@ -176,7 +176,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     Application.mode(mode)
     method = Parser(mode, user, server, channel, session).parse(line[1:])
     result = method.execute()
-    if asyncio.iscoroutine(result):
+    while asyncio.iscoroutine(result):
         result = asyncio.run(result)
     out = cli_top(mode)
     out += "\n"

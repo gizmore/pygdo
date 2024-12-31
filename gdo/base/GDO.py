@@ -4,6 +4,7 @@ import hashlib
 import traceback
 
 from gdo.base.Exceptions import GDOException
+from gdo.base.Logger import Logger
 from gdo.base.Result import ResultType
 
 from gdo.base.Cache import Cache
@@ -98,7 +99,10 @@ class GDO(WithBulk, GDT):
 
         :rtype: object
         """
-        return Cache.column_for(self.__class__, key).gdo(self)
+        if gdt := Cache.column_for(self.__class__, key):
+            return gdt.gdo(self)
+        else:
+            raise GDOException(f"Unknown column name {key} for {self.__class__.__name__}")
 
     def columns(self) -> list[GDT]:
         return Cache.columns_for(self.__class__)

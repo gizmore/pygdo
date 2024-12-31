@@ -1,6 +1,7 @@
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
+from gdo.base.Render import Mode
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Template import GDT_Template
 from gdo.ui.GDT_Bar import GDT_Bar
@@ -51,5 +52,5 @@ class GDT_Page(GDT):
         self._css.append(url)
 
     def render_html(self):
-        return GDT_Template.python('ui', 'page.html', {'field': self, 'result': self._result.render()})
+        return GDT_Template.python('ui', 'page.html', {'field': self, 'result': self._result.render(Mode.HTML)})
 
