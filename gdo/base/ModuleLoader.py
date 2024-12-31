@@ -107,6 +107,9 @@ class ModuleLoader:
             pass
         return False
 
+    def on_module_installed(self, module: 'GDO_Module'):
+        self._cache[module.get_name()] = module
+
     def after_delete(self, module: GDO_Module):
         if module.get_name() in self._cache:
             del self._cache[module.get_name()]
@@ -188,5 +191,3 @@ class ModuleLoader:
                 trigger = method.gdo_trigger()
                 if trigger:
                     self._methods[trigger.lower()] = method
-
-

@@ -289,17 +289,17 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         for gdt in self.parameters().values():
             if not isinstance(gdt, GDT_Field):
                 continue
-            val = args.__dict__[gdt.get_name()] or ''
-            if isinstance(val, list):
-                gdt.val(val)
-            else:
-                # val = val.rstrip()
-                if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
-                    vals = [val]
-                    vals.extend(unknown_args)
-                    gdt.val(vals)
-                else:
+            if val := args.__dict__[gdt.get_name()]:
+                if isinstance(val, list):
                     gdt.val(val)
+                else:
+                    # val = val.rstrip()
+                    if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
+                        vals = [val]
+                        vals.extend(unknown_args)
+                        gdt.val(vals)
+                    else:
+                        gdt.val(val)
 
     async def _nested_execute_parse(self):
         self._nested_parse()

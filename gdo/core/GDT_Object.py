@@ -11,4 +11,4 @@ class GDT_Object(WithObject, GDT_UInt):
         return self.render_txt()
 
     def render_txt(self) -> str:
-        return f"{self._gdo.get_id()}"
+        return f"{self._gdo.get_name()}"

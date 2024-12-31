@@ -5,5 +5,9 @@ from gdo.message.editor.GDT_Editor import GDT_Editor
 
 class module_message(GDO_Module):
 
+    def __init__(self):
+        super().__init__()
+        self._priority = 35
+
     def gdo_init(self):
         GDT_Editor.register(EditorHTML)

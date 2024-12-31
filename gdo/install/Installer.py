@@ -1,4 +1,5 @@
 import re
+from modulefinder import Module
 
 import tomlkit
 
@@ -79,7 +80,8 @@ class Installer:
             cls.install_gdo(classname)
         for classname in classes:
             cls.install_gdo_fk(classname)
-        cls.install_module_entry(module)
+        module = cls.install_module_entry(module)
+        ModuleLoader.instance().on_module_installed(module)
         return True
 
     @classmethod
@@ -89,6 +91,7 @@ class Installer:
         mid = '0'
         if db is not None:
             mid = db.get_id()
+            module = db
         module._vals.update({
             'module_id': mid,
             'module_name': module.get_name(),
@@ -97,6 +100,7 @@ class Installer:
         })
         module.all_dirty(db is None)
         module.soft_replace()
+        return module
 
     @classmethod
     def install_gdo(cls, class_name):

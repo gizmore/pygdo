@@ -1,8 +1,10 @@
-from gdo.base.GDT import GDT
-from gdo.core.WithFields import WithFields
+from gdo.base.Render import Mode
+from gdo.message.GDT_Span import GDT_Span
 
 
-class GDT_Paragraph(WithFields, GDT):
+class GDT_Paragraph(GDT_Span):
 
-    def __init__(self):
-        super().__init__()
+    def render(self, mode: Mode = Mode.HTML):
+        if mode == Mode.HTML:
+            return f"<p>{super().render(mode)}</p>"
+        return super().render(mode)

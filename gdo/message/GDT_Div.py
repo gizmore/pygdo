@@ -1,6 +1,7 @@
-from gdo.core.GDT_Container import GDT_Container
-from gdo.message.GDT_HTML import GDT_HTML
+from gdo.message.GDT_Span import GDT_Span
 
 
-class GDT_Div(GDT_Container, GDT_HTML):
-    pass
+class GDT_Div(GDT_Span):
+
+    def get_tag(self):
+        return 'div'

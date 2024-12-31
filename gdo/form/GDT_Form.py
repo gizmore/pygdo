@@ -62,9 +62,9 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
         return self._encoding.value
 
     def render(self, mode: Mode = Mode.HTML):
-        if mode == Mode.HTML:
+        if mode in (Mode.HTML, Mode.FORM):
             return self.render_html()
-        return super().render(mode)
+        return '' #super().render(mode)
 
     def render_html(self):
         return GDT_Template.python('form', 'form.html', {'field': self})

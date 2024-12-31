@@ -55,6 +55,7 @@ class module_core(GDO_Module):
             'form',
             'language',
             'mail',
+            'message',
             'net',
             'table',
             'ui',
