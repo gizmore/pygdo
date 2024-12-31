@@ -38,12 +38,16 @@ async def app(scope, receive, send):
         dump(str(qs))
         dump(str(scope))
 
-        if '_url' in qs:
-            url = unquote(Strings.substr_from(qs['_url'][0], '/'))
-            # get_params = parse_qs(url)
-            del qs['_url']
-            if not url:
-                url = 'core.welcome.html'
+        url = scope['path'] if scope['path'] else 'core.welcome.html'
+
+        # if '_url' in qs:
+        #     url = unquote(Strings.substr_from(qs['_url'][0], '/'))
+        #     # get_params = parse_qs(url)
+        #     del qs['_url']
+        #     if not url:
+        #         url = 'core.welcome.html'
+
+        dump(url)
 
         lang = 'en'
         if '_lang' in qs:
@@ -64,7 +68,7 @@ async def app(scope, receive, send):
         elif Files.is_dir(path):
             session = GDO_Session.start(False)
             user = session.get_user()
-            method = dir_server().env_server(user.get_server()).input('_url', path)
+            method = dir_server().env_server(user.get_server()).env_user(user).input('_url', path)
 
         else:
             session = GDO_Session.start(True)
