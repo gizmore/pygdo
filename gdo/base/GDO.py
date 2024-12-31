@@ -23,9 +23,9 @@ class GDO(WithBulk, GDT):
     GDO_ALIVE = 0
     GDO_MAX = 0
 
-    _vals: dict
-    _dirty: list
-    _last_id: int
+    _vals: dict[str, str]
+    _dirty: list[str]
+    _last_id: int|None
 
     __slots__ = (
         '_vals',

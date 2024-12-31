@@ -38,7 +38,6 @@ register = [["https://github.com/gizmore/pygdo-register"], ["form", "login"], fa
 slapwarz = [["https://github.com/gizmore/pygdo-slapwarz"], [], false]
 table = [["https://github.com/gizmore/pygdo"], [], false]
 telegram = [["https://github.com/gizmore/pygdo-telegram"], [], false]
-todo = [["https://github.com/gizmore/pygdo-todo"], [], false]
 ui = [["https://github.com/gizmore/pygdo"], [], false]
 user = [["https://github.com/gizmore/pygdo"], [], false]
 wd = [["https://github.com/gizmore/pygdo-watchdog"], [], false]

@@ -7,14 +7,14 @@ from gdo.message.editor.Editor import Editor
 from gdo.message.editor.GDT_Editor import GDT_Editor
 
 
-class GDT_Message(GDT_Composite):
+class GDT_Message(GDT_Composite, GDT_Text):
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__(name)
+        self.label(name)
 
     def gdo_components(self) -> list['GDT']:
         components = [
-            GDT_Text(f"{self._name}_input"),
             GDT_Editor(f"{self._name}_editor").not_null(),
         ]
         for mode in Mode.explicit():
@@ -25,7 +25,7 @@ class GDT_Message(GDT_Composite):
         return self._gdo.gdo_value(f"{self._name}_editor")
 
     def get_input(self) -> str:
-        return self._gdo.gdo_val(f"{self._name}_input")
+        return self._gdo.gdo_val(f"{self._name}")
 
     def converted_html(self) -> str:
         return self.get_editor().to_html(self.get_input())
@@ -40,18 +40,19 @@ class GDT_Message(GDT_Composite):
     # GDT #
     #######
     def val(self, val: str):
-        self._gdo.column(f"{self._name}_input").val(val)
         return self
 
     ##########
     # Render #
     ##########
 
+    def render(self, mode: Mode = Mode.HTML):
+        if mode in Mode.explicit():
+            return self.get_rendered(mode)
+        return super().render(mode)
+
     def render_form(self):
         return GDT_Template.python('message', 'form_message.html', {"field": self})
-
-    def render_cli(self) -> str:
-        return self.get_rendered(Mode.CLI)
 
     def get_rendered(self, mode: Mode) -> str:
         gdt = self.get_output_gdt(mode)

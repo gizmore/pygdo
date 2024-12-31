@@ -35,6 +35,7 @@ class Mode(Enum):
             cls.CLI,
             cls.IRC,
             cls.TELEGRAM,
+            cls.MARKDOWN,
             cls.TXT,
         ]
 
@@ -84,7 +85,7 @@ class Render:
     def bold(cls, s: str, mode: Mode) -> str | list:
         match mode:
             case Mode.TXT | Mode.MARKDOWN:
-                return f"*{s}*"
+                return f"**{s}**"
             case Mode.CLI:
                 return cls._cli_mode('1', s)
             case Mode.IRC:
@@ -114,7 +115,7 @@ class Render:
             case Mode.TXT:
                 return f"/{s}/"
             case Mode.MARKDOWN:
-                return f"**{s}**"
+                return f"*{s}*"
             case Mode.CLI:
                 return cls._cli_mode('3', s)
             case Mode.IRC:

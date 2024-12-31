@@ -3,7 +3,7 @@ class WithNullable:
     _not_null: bool
 
     def is_not_null(self) -> bool:
-        return self._not_null
+        return hasattr(self, '_not_null') and self._not_null
 
     def not_null(self, not_null: bool = True):
         self._not_null = not_null

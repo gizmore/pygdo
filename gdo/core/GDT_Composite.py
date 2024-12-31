@@ -13,7 +13,7 @@ class GDT_Composite(WithName, WithGDO, WithNullable, GDT):
     """
 
     def __init__(self, name: str):
-        super().__init__()
+        super().__init__(name)
         self.name(name)
 
     def gdo_components(self) -> list['GDT']:
