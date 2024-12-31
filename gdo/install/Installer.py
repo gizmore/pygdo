@@ -31,7 +31,7 @@ class Installer:
         if verbose:
             print("Re-Loading installed modules.")
         loader = ModuleLoader.instance()
-        loader.load_modules_db()
+        modules = loader.load_modules_db()
         loader.init_modules(True, True)
 
         if verbose:
