@@ -1,10 +1,12 @@
 import argparse
+import getpass
 import os
 import subprocess
 import sys
 
 import tomlkit
 
+from gdo.base import Util
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
@@ -120,24 +122,29 @@ class App:
         parser.add_argument('--nginx', '-n', action='store_true')
         args = parser.parse_args(sys.argv[2:])
         if args.apache:
-            print("""
-            <VirtualHost *:80>
-            WSGIScriptReloading On
-            WSGIProcessGroup test
-            WSGIDaemonProcess test user=gizmore group=gizmore threads=5 python-home=/usr/ home=/home/gizmore/PycharmProjects/pygdo/
-            WSGIScriptAlias / /home/gizmore/PycharmProjects/pygdo/test.py  process-group=test application-group=%{GLOBAL}
-            ServerName py.giz.org
-            AllowEncodedSlashes NoDecode
-            DocumentRoot /home/gizmore/PycharmProjects/pygdo/
-            <Directory "/home/gizmore/PycharmProjects/pygdo/">
-                    Options +FollowSymLinks +Indexes +ExecCGI
-                    AllowOverride All
-                    Require all granted
-            </Directory>
-            ErrorLog /home/gizmore/www/pygdo.error.log
-            CustomLog /home/gizmore/www/pygdo.access.log combined
-            </VirtualHost>
-            """)
+            GLOBAL = "{GLOBAL}"
+            user = getpass.getuser()
+            domain = Application.domain()
+            pygdo_home = Application.PATH
+            python_home = os.path.abspath(sys.executable + "/../../") + "/"
+            print(f"""
+<VirtualHost *:80>
+    ServerName {domain}
+    WSGIScriptReloading On
+    WSGIProcessGroup pygdo
+    WSGIDaemonProcess pygdo user={user} group={user} threads=5 python-home={python_home} home={pygdo_home}
+    WSGIScriptAlias / {pygdo_home}index.py  process-group=pygdo application-group=%{GLOBAL}
+    AllowEncodedSlashes NoDecode
+    DocumentRoot "{pygdo_home}"
+    <Directory "{pygdo_home}">
+        Options +FollowSymLinks +Indexes +ExecCGI
+        AllowOverride All
+        Require all granted
+    </Directory>
+    ErrorLog /home/{user}/pygdo.error.log
+    CustomLog /home/{user}/pygdo.access.log combined
+</VirtualHost>
+""")
         elif args.nginx:
             print("""TODO!""")
         else:

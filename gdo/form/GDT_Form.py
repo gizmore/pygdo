@@ -22,8 +22,9 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     _slim: bool
     _encoding: Encoding
 
-    def __init__(self):
+    def __init__(self, name: str = 'form'):
         super().__init__()
+        self.name(name)
         self._href = '?'
         self._actions = GDT_Menu()
         self._slim = False
@@ -33,7 +34,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
         self._slim = slim
         return self
 
-    def actions(self):
+    def actions(self) -> GDT_Menu:
         return self._actions
 
     def validate(self, val: str | None, value: any) -> bool:
@@ -41,7 +42,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
             self.validate_gdt(gdt)
         if not self.has_error():
             for gdt in self.fields():
-                gdt.gdo_form_validated()
+                gdt.gdo_form_validated(self)
             return True
         return False
 

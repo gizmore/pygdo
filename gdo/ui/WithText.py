@@ -2,7 +2,6 @@ from gdo.base.Render import Mode
 from gdo.base.Trans import t
 from gdo.base.Util import Strings
 
-
 class WithText:
     _text_key: str
     _text_args: list
@@ -26,7 +25,9 @@ class WithText:
     def render_text(self, mode: Mode = Mode.HTML) -> str:
         out = ''
         if self.has_text():
+            from gdo.ui.GDT_Panel import GDT_Panel
             out = t(self._text_key, self._text_args)
             if self._text_escaped:
-                return Strings.html(out, mode)
+                out = Strings.html(out, mode)
+            # return GDT_Panel().text_raw(out).render(mode)
         return out

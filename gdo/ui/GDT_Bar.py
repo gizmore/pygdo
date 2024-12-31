@@ -13,7 +13,7 @@ class GDT_Bar(WithFlow, WithName, GDT_Container):
 
     def render_html(self) -> str:
         back = f'<div id="{self.get_name()}" class="bar {self.render_class()}">'
-        back += super().render_html()
+        back += super().render(Mode.HTML)
         back += "</div>"
         return back
 
@@ -30,4 +30,4 @@ class GDT_Bar(WithFlow, WithName, GDT_Container):
         out = []
         for gdt in self.fields():
             out.append(gdt.render_gdt(mode))
-        return "".join(out)
+        return " ".join(out)

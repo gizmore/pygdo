@@ -26,7 +26,7 @@ from gdo.install.Installer import Installer
 from index import application
 
 
-class GDOTestCase(unittest.TestCase):
+class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     _profile: cProfile
 
     # def setUp(self):

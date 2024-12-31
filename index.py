@@ -24,7 +24,11 @@ from gdo.ui.GDT_Error import GDT_Error
 
 FRESH = True
 
+
 def application(environ, start_response):
+    return pygdo_application(environ, start_response)
+
+def pygdo_application(environ, start_response):
     """
     The PyGDO Rendering core and http  method proxy
     """
@@ -135,7 +139,7 @@ def application(environ, start_response):
                 err('%s', [traceback.format_exc()])
                 result = method
 
-            if asyncio.iscoroutine(result):
+            while asyncio.iscoroutine(result):
                 result = asyncio.run(result)
 
             if Application.is_html():

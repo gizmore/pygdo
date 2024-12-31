@@ -7,8 +7,6 @@ import sys
 import traceback
 
 
-
-
 def pygdo():
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
@@ -62,6 +60,7 @@ def process_line(line: str) -> None:
     from gdo.core.connector.Bash import Bash
     from gdo.base.Message import Message
     from gdo.base.Util import CLI
+    from gdo.core.GDT_Container import GDT_Container
     try:
         server = Bash.get_server()
         user = CLI.get_current_user()
@@ -77,6 +76,9 @@ def process_line(line: str) -> None:
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
+            message._gdt_result = GDT_Container()
+            message._gdt_result.add_field(Application.get_page()._top_bar)
+            message._gdt_result.add_field(gdt)
             txt1 = gdt.render(Mode.CLI)
             txt2 = Application.get_page()._top_bar.render(Mode.CLI)
             if txt2:

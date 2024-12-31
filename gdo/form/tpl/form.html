@@ -4,8 +4,8 @@
     <form method="POST" action="<%=field.render_href()%>" enctype="<%=field.render_enctype()%>">
         <%
         for gdt in field.fields():
-                write(gdt.render_form())
+                write(gdt.render(Mode.FORM))
         %>
-        <%=field._actions.render_form()%>
+        <%=field._actions.render(Mode.FORM)%>
     </form>
 </div>

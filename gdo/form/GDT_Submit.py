@@ -1,4 +1,5 @@
 from gdo.base.Render import Mode
+from gdo.core.GDT_Template import GDT_Template
 from gdo.ui.GDT_Button import GDT_Button
 
 
@@ -16,7 +17,4 @@ class GDT_Submit(GDT_Button):
         return self
 
     def render_form(self):
-        return f'<span class="gdt-submit"><input type="submit" name="{self.get_name()}" value="{self.render_text(Mode.HTML)}"></span>'
-
-
-
+        return GDT_Template.python('form', 'submit.html', {'field': self})

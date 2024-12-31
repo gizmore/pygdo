@@ -76,7 +76,7 @@ class GDT:
     def gdo_after_delete(self, gdo):
         pass
 
-    def gdo_form_validated(self):
+    def gdo_form_validated(self, form):
         pass
 
     def gdo_components(self) -> list['GDT']:

@@ -10,11 +10,11 @@ from gdo.form.GDT_Submit import GDT_Submit
 class MethodForm(Method):
     _form: GDT_Form
 
-    def gdo_parameters(self) -> [GDT]:
-        return []
-
     def __init__(self):
         super().__init__()
+
+    def gdo_parameters(self) -> [GDT]:
+        return []
 
     def gdo_create_form(self, form: GDT_Form) -> None:
         if Application.is_html():

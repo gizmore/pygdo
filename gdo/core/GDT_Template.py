@@ -9,7 +9,7 @@ from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.base.Trans import t
-from gdo.base.Util import html
+from gdo.base.Util import html, Files, dump
 from gdo.date.Time import Time
 
 
@@ -17,7 +17,7 @@ class Templite(object):
     cache = {}
     delimiters = ('<%', '%>')
 
-    def __init__(self, text=None, filename=None, encoding='utf-8', delimiters=None, caching=False):
+    def __init__(self, text=None, filename=None, encoding='utf-8', delimiters=None, caching=True):
         """Loads a template from string or file."""
         if filename:
             filename = os.path.abspath(filename)
@@ -36,7 +36,6 @@ class Templite(object):
             if len(start) != 2 or len(end) != 2:
                 raise ValueError('each delimiter must be two characters long')
             self.delimiters = delimiters
-        # check cache
         cache = self.cache
         if caching and key in cache and cache[key][0] == mtime:
             self._code = cache[key][1]
@@ -115,21 +114,19 @@ class Templite(object):
             stack.append(t.render(**namespace))
 
         namespace['include'] = include
-
-        # Util
         namespace['Time'] = Time
         namespace['t'] = t
         namespace['Mode'] = Mode
         namespace['html'] = html
 
-   #+     print(self._code)
-
-        # execute template code
         exec(self._code, namespace)
         return ''.join(stack)
 
 
 class GDT_Template(GDT):
+
+    THEMES: dict[str, str] = {}
+
     _t_module: str
     _t_file: str
     _t_vals: dict
@@ -153,19 +150,18 @@ class GDT_Template(GDT):
         return self.python(self._t_module, self._t_file, self._t_vals)
 
     @classmethod
-    def render_template(cls, path: str, vals):
+    def render_template(cls, path: str, vals: dict[str, any]):
         data = {
             "modules": ModuleLoader.instance()._cache,
             "Mode": Mode,
             "Application": Application,
         }
         data.update(vals)
-        # Logger.debug(f"Template({filename}, {path})")
         lite = Templite(None, path)
         return lite.render(**data)
 
     @classmethod
-    def python(cls, modulename, filename, vals):
+    def python(cls, modulename: str, filename: str, vals: dict[str, any]):
         try:
             path = cls.get_path(modulename, filename)
             return cls.render_template(path, vals)
@@ -175,7 +171,15 @@ class GDT_Template(GDT):
             return f"Exception: {ex}\nTraceback: {tb}"
 
     @classmethod
+    def register_theme(cls, name: str, path: str):
+        cls.THEMES[name] = path
+
+    @classmethod
     def get_path(cls, modulename: str, path: str):
+        for theme_path in cls.THEMES.values():
+            p = f"{theme_path}{modulename}/{path}"
+            if Files.is_file(p):
+                return p
         return os.path.join(Application.PATH, f"gdo/{modulename}/tpl/{path}")
 
 
