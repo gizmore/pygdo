@@ -104,9 +104,9 @@ class Message(WithEnv):
         while asyncio.iscoroutine(result):
             result = await result
 
-        self._gdt_result = GDT_Container()
-        self._gdt_result.add_field(*list(Application.get_page()._top_bar.all_fields()))
-        self._gdt_result.add_field(result)
+        # self._gdt_result = GDT_Container()
+        # self._gdt_result.add_field(*list(Application.get_page()._top_bar.all_fields()))
+        # self._gdt_result.add_field(result)
 
         txt2 = result.render(self._env_mode)
         if txt1 := Application.get_page()._top_bar.render(self._env_mode):
