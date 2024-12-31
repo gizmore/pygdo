@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gdo.core.GDO_Session import GDO_Session
     from gdo.base.Database import Database
+    from gdo.ui.GDT_Page import GDT_Page
 
 from gdo.base.Events import Events
 from gdo.base.Logger import Logger
@@ -100,7 +101,7 @@ class Application:
         return cls.STORAGE.page
 
     @classmethod
-    def get_page(cls):
+    def get_page(cls) -> 'GDT_Page':
         from gdo.ui.GDT_Page import GDT_Page
         if not hasattr(cls.STORAGE, 'page'):
             cls.STORAGE.page = GDT_Page()
@@ -157,6 +158,23 @@ class Application:
         # cls.SERVER = GDO_Server.get_by_connector('Web')
 
     @classmethod
+    def init_asgi(cls, scope):
+        cls.IS_HTTP = True
+        cls.STORAGE.time_start = time.time()
+        cls.STORAGE.environ = scope
+        cls.STORAGE.headers = cls.asgi_headers(scope)
+        cls.init_cookies_asgi(scope)
+        # cls.STORAGE.ip = environ.get('REMOTE_ADDR')
+        # cls.PROTOCOL = environ['REQUEST_SCHEME']
+
+    @classmethod
+    def asgi_headers(cls, scope):
+        back = {}
+        for tup in scope['headers']:
+            back[tup[0].decode()] = tup[1].decode()
+        return back
+
+    @classmethod
     def init_common(cls):
         cls.STORAGE.mode = Mode.HTML
         cls.STORAGE.request_method = 'HEAD'
@@ -187,15 +205,22 @@ class Application:
         return cls.STORAGE.DB
 
     @classmethod
-    def init_cookies(cls, environ):
+    def init_cookies_wsgi(cls, environ):
+        cls.init_cookies(environ.get('HTTP_COOKIE', ''))
+
+    @classmethod
+    def init_cookies_asgi(cls, scope):
+        cls.init_cookies(scope.get('cookies', ''))
+
+    @classmethod
+    def init_cookies(cls, cookies_str: str):
         cookies = {}
-        cookies_str = environ.get('HTTP_COOKIE', '')
-        # if cookies_str:
-        for cookie in cookies_str.split(';'):
-            parts = cookie.strip().split('=', 1)
-            if len(parts) == 2:
-                name, value = cookie.split('=', 1)
-                cookies[name] = value
+        if cookies_str:
+            for cookie in cookies_str.split(';'):
+                parts = cookie.strip().split('=', 1)
+                if len(parts) == 2:
+                    name, value = cookie.split('=', 1)
+                    cookies[name] = value
         cls.STORAGE.cookies = cookies
 
     @classmethod
@@ -216,6 +241,11 @@ class Application:
     def get_headers(cls):
         headers_dict = cls.storage('headers', {})
         return [(key, value) for key, value in headers_dict.items()]
+
+    @classmethod
+    def get_headers_asgi(cls):
+        headers_dict = cls.storage('headers', {})
+        return [(key.encode(), value.encode()) for key, value in headers_dict.items()]
 
     @classmethod
     def get_client_header(cls, name: str, default: str = None) -> str | None:
