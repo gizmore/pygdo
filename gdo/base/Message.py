@@ -89,6 +89,8 @@ class Message(WithEnv):
                 await self.deliver()
             except Exception as ex:
                 Logger.exception(ex)
+        except KeyboardInterrupt as ex:
+            raise ex
         except Exception as ex:
             Logger.exception(ex)
             self._result = Application.get_page()._top_bar.render(self._env_mode)

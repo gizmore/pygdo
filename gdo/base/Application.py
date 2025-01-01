@@ -38,6 +38,8 @@ class Application:
     CONFIG_PATH: str = ''
     CONFIG: dict[str, str] = {}
 
+    ASGI = False
+
     @classmethod
     def tick(cls):
         t = time.time()
@@ -159,10 +161,12 @@ class Application:
 
     @classmethod
     def init_asgi(cls, scope):
+        cls.ASGI = True
         cls.IS_HTTP = True
         cls.STORAGE.time_start = time.time()
         cls.STORAGE.environ = scope
-        cls.STORAGE.headers = cls.asgi_headers(scope)
+        cls.STORAGE.environ['headers'] = cls.asgi_headers(scope)
+        cls.STORAGE.headers = {}
         cls.init_cookies_asgi(scope)
         # cls.STORAGE.ip = environ.get('REMOTE_ADDR')
         # cls.PROTOCOL = environ['REQUEST_SCHEME']
@@ -210,7 +214,7 @@ class Application:
 
     @classmethod
     def init_cookies_asgi(cls, scope):
-        cls.init_cookies(scope.get('cookies', ''))
+        cls.init_cookies(cls.get_client_header('cookie', ''))
 
     @classmethod
     def init_cookies(cls, cookies_str: str):
@@ -218,9 +222,8 @@ class Application:
         if cookies_str:
             for cookie in cookies_str.split(';'):
                 parts = cookie.strip().split('=', 1)
-                if len(parts) == 2:
-                    name, value = cookie.split('=', 1)
-                    cookies[name] = value
+                name, value = cookie.split('=', 1)
+                cookies[name] = value
         cls.STORAGE.cookies = cookies
 
     @classmethod
@@ -238,6 +241,11 @@ class Application:
         cls.STORAGE.headers = headers
 
     @classmethod
+    def get_header(cls, name: str, default: str = None) -> str:
+        h = cls.storage('headers', {})
+        return h[name] if name in h else default
+
+    @classmethod
     def get_headers(cls):
         headers_dict = cls.storage('headers', {})
         return [(key, value) for key, value in headers_dict.items()]
@@ -249,8 +257,12 @@ class Application:
 
     @classmethod
     def get_client_header(cls, name: str, default: str = None) -> str | None:
-        env = cls.STORAGE.environ
-        return env[name] if name in env else default
+        if cls.ASGI:
+            env = cls.STORAGE.environ['headers']
+            return env[name] if name in env else default
+        else:
+            env = cls.STORAGE.environ
+            return env[name] if name in env else default
 
     @classmethod
     def get_cookie(cls, name: str, default: str = ''):
@@ -296,3 +308,7 @@ class Application:
     @classmethod
     def runtime(cls):
         return cls.TIME - cls.FIRST_TIME
+
+    @classmethod
+    def get_status_code(cls) -> int:
+        return int(cls.get_status()[0:3])

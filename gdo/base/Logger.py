@@ -14,9 +14,12 @@ class Logger:
     _user: 'GDO_User'
 
     @classmethod
-    def init(cls):
-        from gdo.base.Application import Application
-        cls._base = Application.file_path('protected/logs/')
+    def init(cls, base: str = None):
+        if base:
+            cls._base = base
+        else:
+            from gdo.base.Application import Application
+            cls._base = Application.file_path('protected/logs/')
         Files.create_dir(cls._base)
         cls._user = None
 

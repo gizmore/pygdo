@@ -2,7 +2,7 @@ import os
 from urllib.parse import parse_qs, unquote
 
 from gdo.base.Application import Application
-from gdo.base.Message import Message
+from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import WebParser
 from gdo.base.Render import Mode
@@ -12,47 +12,47 @@ from gdo.base.method.file_server import file_server
 from gdo.base.method.server_error import server_error
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
-from gdo.core.method.welcome import welcome
 from gdo.ui.GDT_Error import GDT_Error
-from gdo.ui.GDT_Success import GDT_Success
 
 FRESH = True
 
 async def app(scope, receive, send):
     try:
         global FRESH
-        assert scope['type'] == 'http'
+        Logger.init(os.path.dirname(__file__)+"/protected/logs/")
+        if scope['type'] == 'lifespan':
+            message = await receive()
+            if message['type'] == 'lifespan.startup':
+                await send({'type': 'lifespan.startup.complete'})
+            elif message['type'] == 'lifespan.shutdown':
+                await send({'type': 'lifespan.shutdown.complete'})
+            return
+
+        assert scope['type'] == 'http', f"Type {scope['type']} not supported"
         if FRESH:
             FRESH = False
             Application.init(os.path.dirname(__file__))
             ModuleLoader.instance().load_modules_db()
+            ModuleLoader.instance().init_modules(True, True)
         else:
             Application.fresh_page()
-
-        ModuleLoader.instance().init_modules(True, True)
 
         url = 'core.welcome.html'
         Application.request_method(scope['method'])
         Application.init_asgi(scope)
-        qs = parse_qs(scope['query_string'])
+        qs = parse_qs(scope['query_string'].decode())
         dump(str(qs))
         dump(str(scope))
 
         scope['path'] = scope['path'].lstrip('/')
         url = scope['path'] if scope['path'] else 'core.welcome.html'
 
-        # if '_url' in qs:
-        #     url = unquote(Strings.substr_from(qs['_url'][0], '/'))
-        #     # get_params = parse_qs(url)
-        #     del qs['_url']
-        #     if not url:
-        #         url = 'core.welcome.html'
-
+        scope['REQUEST_URI'] = scope['path'] + '?' + scope['query_string'].decode()
         dump(url)
 
         lang = 'en'
         if '_lang' in qs:
-            lang = qs['_lang']
+            lang = qs['_lang'][0]
             del qs['_lang']
 
         path = Application.file_path(url)
@@ -62,65 +62,75 @@ async def app(scope, receive, send):
             user = session.get_user()
             method = file_server().env_server(user.get_server()).env_user(user).input('_url', path)
             gdt = await method.execute()
-            # headers = Application.get_headers()
-            # start_response(Application.get_status(), headers)
-            # for chunk in gdt:
-            #     yield chunk
-        elif Files.is_dir(path):
-            session = GDO_Session.start(False)
-            user = session.get_user()
-            method = dir_server().env_server(user.get_server()).env_user(user).input('_url', path)
-
+            await send({
+                'type': 'http.response.start',
+                'status': Application.get_status_code(),
+                'headers': Application.get_headers_asgi(),
+            })
+            length = int(Application.get_header('Content-Length'))
+            for chunk in gdt:
+                length -= len(chunk)
+                await send({
+                    'type': 'http.response.body',
+                    'body': chunk,
+                    'more_body': length > 0,
+                })
+            return
         else:
-            session = GDO_Session.start(True)
-            Application.set_current_user(session.get_user())
-            Application.set_session(session)
-            # Application.status("200 OK")
-            user = session.get_user()
-            server = user.get_server()
-            channel = None
-            parser = WebParser(user, server, channel, session)
-            method = parser.parse(url)
-            if not method:
-                method = not_found().env_server(server).env_user(session.get_user()).input('_url', url)
-            # method._message = Message(f"${method.gdo_trigger()}", Mode.HTML).env_copy(method)
+            if Files.is_dir(path):
+                session = GDO_Session.start(False)
+                user = session.get_user()
+                method = dir_server().env_server(user.get_server()).env_user(user).input('_url', path)
+            else:
+                session = GDO_Session.start(True)
+                user = session.get_user()
+                Application.set_current_user(user)
+                Application.set_session(session)
+                server = user.get_server()
+                channel = None
+                parser = WebParser(user, server, channel, session)
+                method = parser.parse(url)
+                if not method:
+                    method = not_found().env_server(server).env_user(session.get_user()).input('_url', url)
 
-        body = b""
-        header = b""
-        while True:
-            message = await receive()
-            if message['type'] == 'http.request':
-                body += message.get('body', b'')
-                if not message.get('more_body', False):
-                    break
+            body = b""
+            while True:
+                message = await receive()
+                if message['type'] == 'http.request':
+                    body += message.get('body', b'')
+                    if not message.get('more_body', False):
+                        break
 
-        # Process the received body
-        data = body.decode("utf-8")
+            if data := body.decode():
+                qs.update(parse_qs(data))
 
-        result = await method.execute()
+            dump(str(qs))
+            result = await method.inputs(qs).execute()
 
-        if Application.is_html():
-            page = Application.get_page()
-            result = page.result(result).method(method)
-            for module in ModuleLoader.instance().enabled():
-                module.gdo_load_scripts(page)
-                module.gdo_init_sidebar(page)
+            if Application.is_html():
+                page = Application.get_page()
+                result = page.result(result).method(method)
+                for module in ModuleLoader.instance().enabled():
+                    module.gdo_load_scripts(page)
+                    module.gdo_init_sidebar(page)
 
-        out = result.render(Mode.HTML)
+            out = result.render(Mode.HTML).encode()
 
-        await send({
-            'type': 'http.response.start',
-            'status': 200,
-            'headers': Application.get_headers_asgi(),
-        })
-
-        await send({
-            'type': 'http.response.body',
-            'body': out.encode(),
-        })
-
+            length = str(len(out))
+            Application.header('Content-Length', length)
+            await send({
+                'type': 'http.response.start',
+                'status': Application.get_status_code(),
+                'headers': Application.get_headers_asgi(),
+            })
+            await send({
+                'type': 'http.response.body',
+                'body': out,
+            })
+            session.save()
     except Exception as ex:
         try:
+            Logger.exception(ex)
             out = Application.get_page().result(GDT_Error.from_exception(ex)).method(server_error()).render(Mode.HTML)
             await send({
                 'type': 'http.response.start',

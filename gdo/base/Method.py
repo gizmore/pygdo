@@ -307,7 +307,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     def _prepare_nested_permissions(self, method: 'Method') -> bool:
         if not method.has_permission(method._env_user):
-            self.err('err_permission')
+            self.error('err_permissions')
             return False
         for arg in method._args:
             if isinstance(arg, Method):

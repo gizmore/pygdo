@@ -43,7 +43,7 @@ class module_core(GDO_Module):
         Connector.register(Bash)
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
-        if Application.IS_HTTP:
+        if Application.IS_HTTP and not Application.ASGI:
             nest_asyncio.apply(asyncio.new_event_loop())
         else:
             nest_asyncio.apply()
