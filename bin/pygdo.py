@@ -126,10 +126,11 @@ def repl():
             input_line = input(">>> ")
             if input_line == "":
                 input_line = readline.get_history_item(readline.get_current_history_length())
-            if input_line.lower() == "exit":
-                break
-            Application.tick()
-            process_line(input_line)
+            if input_line:
+                if input_line.lower() == "exit":
+                    break
+                Application.tick()
+                process_line(input_line)
         except (GDOModuleException, GDOError) as ex:
             print(str(ex))
         except (KeyboardInterrupt, EOFError):

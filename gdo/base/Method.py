@@ -213,6 +213,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         Application.get_page()._top_bar.add_field(redirect)
         return self
 
+    def href(self, append: str = '', format: str = 'html') -> str:
+        return self.gdo_module().href(self.get_name(), append, format)
+
     ###########
     # Message #
     ###########

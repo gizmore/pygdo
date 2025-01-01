@@ -1,3 +1,6 @@
+from gdo.base.Util import html
+
+
 class WithHREF:
     _href: str
 
@@ -5,5 +8,5 @@ class WithHREF:
         self._href = href
         return self
 
-    def render_href(self):
-        return self._href
+    def render_href(self) -> str:
+        return html(self._href)
