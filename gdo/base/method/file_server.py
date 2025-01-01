@@ -42,6 +42,6 @@ class file_server(Method):
 
         path_ = self.get_path()
         mime_type, _ = mimetypes.guess_type(path_)
-        Application.header('Content-Type', mime_type)
+        Application.header('Content-Type', mime_type or 'application/octet-stream')
         Application.header('Content-Length', str(path.getsize(path_)))
         return GDT_FileOut().path(path_)

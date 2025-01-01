@@ -9,3 +9,4 @@ tomlkit
 typing_extensions
 nest_asyncio
 html-purifier
+multipart

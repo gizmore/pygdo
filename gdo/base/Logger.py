@@ -11,7 +11,7 @@ from gdo.base.Util import Files
 
 class Logger:
     _base: str
-    _user: 'GDO_User'
+    _user: 'GDO_User' = None
 
     @classmethod
     def init(cls, base: str = None):
@@ -21,11 +21,10 @@ class Logger:
             from gdo.base.Application import Application
             cls._base = Application.file_path('protected/logs/')
         Files.create_dir(cls._base)
-        cls._user = None
 
     @classmethod
-    def uid(cls, uid: str):
-        cls._uid = uid
+    def user(cls, user: 'GDO_User'):
+        cls._user = user
 
     @classmethod
     def debug(cls, content: str):

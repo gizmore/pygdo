@@ -8,6 +8,7 @@ from gdo.core.GDT_Object import GDT_Object
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Template import GDT_Template
 from gdo.file.GDT_MimeType import GDT_MimeType
+from gdo.form.GDT_Form import GDT_Form
 
 
 class GDT_File(GDT_Object):
@@ -35,6 +36,9 @@ class GDT_File(GDT_Object):
         self._image_file = False
         self._preview = True
         self.table(GDO_File.table())
+
+    def gdo_added_to_form(self, form: 'GDT_Form'):
+        form.multipart()
 
     ###########
     # Options #
@@ -73,8 +77,8 @@ class GDT_File(GDT_Object):
     def get_value(self):
         files = self.get_initial_files()
         if not files:
-            return super().get_value() or None
-        return files[0]
+            return super().get_value() or []
+        return files
 
     def get_initial_files(self):
         if not Application.has_session():
@@ -113,8 +117,14 @@ class GDT_File(GDT_Object):
     ############
     def validate(self, val: str | None, value: any) -> bool:
         if not value:
-            return super().validate(val, value)
-        return self.validate_file(value)
+            return super().validate(val, None)
+        return self.validate_files(val, value)
+
+    def validate_files(self, val: str | None, value: any) -> bool:
+        for file in value:
+            if not self.validate_file(file):
+                return False
+        return True
 
     def validate_file(self, file: GDO_File):
         if not self.validate_mime(file):

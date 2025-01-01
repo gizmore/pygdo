@@ -124,7 +124,7 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, WithNullable, GDT):
             return " DEFAULT " + self.quote(self._initial)
         return ''
 
-    def error(self, errkey, errargs=None) -> bool:
+    def error(self, errkey: str, errargs: list[str] = None) -> bool:
         if errargs is None:
             errargs = []
         self._errkey = errkey

@@ -7,6 +7,7 @@ err_method_connector_not_supported = "The method does not work inside this conne
 err_method_disabled = "This method is disabled here."
 err_render_mode = "Invalid Render Mode: %s"
 err_permission = "You need the %s permissions to execute this method."
+err_permissions = "You are not allowed to access this method."
 err_not_in_private = "This method does not work in private."
 err_not_in_channel = "This method does not work inside channels."
 err_not_authenticated = "Your account is not authenticated."

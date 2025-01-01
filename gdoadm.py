@@ -147,6 +147,7 @@ class App:
 """)
         elif args.nginx:
             print("""TODO!""")
+            print("curl -X PUT --data-binary @pygdo.asgi.conf --unix-socket /opt/homebrew/var/run/unit/control.sock http://localhost:31336/config")
         else:
             print("Error: Use webconfig --apache or --nginx")
 

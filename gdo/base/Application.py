@@ -168,8 +168,8 @@ class Application:
         cls.STORAGE.environ['headers'] = cls.asgi_headers(scope)
         cls.STORAGE.headers = {}
         cls.init_cookies_asgi(scope)
-        # cls.STORAGE.ip = environ.get('REMOTE_ADDR')
-        # cls.PROTOCOL = environ['REQUEST_SCHEME']
+        cls.STORAGE.ip = scope.get('client')[0]
+        cls.PROTOCOL = scope.get('scheme')
 
     @classmethod
     def asgi_headers(cls, scope):
@@ -253,13 +253,18 @@ class Application:
     @classmethod
     def get_headers_asgi(cls):
         headers_dict = cls.storage('headers', {})
+        Logger.debug(str(headers_dict))
         return [(key.encode(), value.encode()) for key, value in headers_dict.items()]
 
     @classmethod
     def get_client_header(cls, name: str, default: str = None) -> str | None:
         if cls.ASGI:
+            name = name.lower()
             env = cls.STORAGE.environ['headers']
-            return env[name] if name in env else default
+            for key, value in env.items():
+                if key.lower() == name:
+                    return value
+            return default
         else:
             env = cls.STORAGE.environ
             return env[name] if name in env else default

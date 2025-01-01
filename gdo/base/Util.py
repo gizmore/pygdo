@@ -298,7 +298,7 @@ class Files:
         return True
 
     @classmethod
-    def put_contents(cls, path: str, contents: str) -> bool:
+    def put_contents(cls, path: str, contents) -> bool:
         with open(path, 'wb') as f:
             f.write(contents.encode('UTF-8') if isinstance(contents, str) else contents)
         return True

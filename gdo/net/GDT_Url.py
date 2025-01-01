@@ -77,7 +77,7 @@ class GDT_Url(GDT_String):
 
     def val(self, val: str):
         if val.startswith('/'):
-            val = Application.PROTOCOL + '://' + Application.config('core.domain') + val
+            val = Application.PROTOCOL + '://' + Application.config('core.domain') + ':' + Application.config('core.port') + val
         return super().val(val)
 
     def to_value(self, val: str):
@@ -136,12 +136,14 @@ class GDT_Url(GDT_String):
         return True
 
     def validate_exists(self, url):
-        if url['scheme'].startswith('http'):
-            return self.validate_http_exists(url)
-        elif url['tls']:
-            return self.validate_tls_exists(url)
-        else:
-            return self.validate_plain_exists(url)
+        if self._url_reachable:
+            if url['scheme'].startswith('http'):
+                return self.validate_http_exists(url)
+            elif url['tls']:
+                return self.validate_tls_exists(url)
+            else:
+                return self.validate_plain_exists(url)
+        return True
 
     def validate_http_exists(self, url):
         try:
