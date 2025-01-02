@@ -39,6 +39,9 @@ class Mode(Enum):
             cls.TXT,
         ]
 
+    def is_html(self) -> bool:
+        return self.value < 10
+
 
 class Render:
     """

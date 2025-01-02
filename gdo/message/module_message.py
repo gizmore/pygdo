@@ -7,7 +7,7 @@ class module_message(GDO_Module):
 
     def __init__(self):
         super().__init__()
-        self._priority = 35
+        self._priority = 25
 
     def gdo_init(self):
         GDT_Editor.register(EditorHTML)

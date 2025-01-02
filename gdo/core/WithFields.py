@@ -42,12 +42,14 @@ class WithFields:
     # Render #
     ##########
     def render(self, mode: Mode = Mode.HTML):
+        return self.render_fields(mode)
+
+    def render_fields(self, mode: Mode = Mode.HTML):
         output = ""
         if hasattr(self, '_fields'):
             for gdt in self._fields:
                 output += str(gdt.render(mode))
         return output
-
 
     # def render_txt(self) -> str:
     #     output = ""

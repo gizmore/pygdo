@@ -10,10 +10,9 @@ class GDT_H(GDT_Span):
         super().__init__()
         self._level = 1
 
+    def get_tag(self) -> str:
+        return f"h{self._level}"
+
     def render_markdown(self):
         h = "#" * self._level
-        return f"{h} {super().render(Mode.MARKDOWN)}"
-
-    def render_html(self) -> str:
-        tag = f"h{self._level}"
-        return f"<{tag}>{super().render(Mode.HTML)}</{tag}>"
+        return f"{h} {super().render_fields(Mode.MARKDOWN)}"

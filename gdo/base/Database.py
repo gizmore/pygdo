@@ -94,19 +94,14 @@ class Database:
     def create_table(self, gdo: 'GDO'):
         cols = []
         prim = []
-        # uniq = []
         for gdt in gdo.columns():
             if define := gdt.gdo_column_define():
                 cols.append(define)
                 if gdt.is_primary():
                     prim.append(gdt.get_name())
-                # if gdt.is_unique():
-                #     uniq.append(gdt.get_name())
         if prim:
             primary = ",".join(prim)
             cols.append(f"PRIMARY KEY ({primary})")
-        # for unique in uniq:
-        #     cols.append(f"CONSTRAINT {gdo.gdo_table_name()}_UNIQUE UNIQUE ({unique})")
         engine = 'MyISAM' if gdo.gdo_engine_fast() else 'InnoDB'
         query = f"CREATE TABLE IF NOT EXISTS {gdo.gdo_table_name()} (" + ",\n".join(cols) + f") ENGINE = {engine}"
         self.query(query)
@@ -115,15 +110,15 @@ class Database:
         from gdo.core.GDT_Unique import GDT_Unique
         self.delete_all_fk(gdo)
         for gdt in gdo.columns():
-            if isinstance(gdt, GDT_Unique):
-                cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{gdt.get_name()}"
-                self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({', '.join(gdt._column_names)})")
             if fk := gdt.column_define_fk():
                 cn = f"GDO__FK__{gdo.gdo_table_name()}__{gdt.get_name()}"
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} {fk}")
             if gdt.is_unique():
                 cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{gdt.get_name()}"
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({gdt.get_name()})")
+            if isinstance(gdt, GDT_Unique):
+                cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{gdt.get_name()}"
+                self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({', '.join(gdt._column_names)})")
 
 
     def delete_all_fk(self, gdo: 'GDO'):

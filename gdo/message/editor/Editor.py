@@ -29,15 +29,15 @@ class Editor:
             'div': ['style'],
             'span': ['style'],
             'a': ['href', 'style'],
+            'p': [],
+            'b': [],
+            'i': [],
             'h1': [],
             'h2': [],
             'h3': [],
             'h4': [],
             'h5': [],
             'h6': [],
-            'p': [],
-            'b': [],
-            'i': [],
         })
 
     @classmethod
