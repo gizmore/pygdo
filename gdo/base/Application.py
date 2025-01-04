@@ -163,6 +163,7 @@ class Application:
     def init_asgi(cls, scope):
         cls.ASGI = True
         cls.IS_HTTP = True
+        cls.request_method(scope['method'])
         cls.STORAGE.time_start = time.time()
         cls.STORAGE.environ = scope
         cls.STORAGE.environ['headers'] = cls.asgi_headers(scope)
@@ -187,7 +188,6 @@ class Application:
         cls.DB_WRITES = 0
         Logger.init()
         cls.init_thread(None)
-        # Logger.debug("Application.init_common()")
         cls.STORAGE.user = None
         cls.STORAGE.lang = 'en'
 

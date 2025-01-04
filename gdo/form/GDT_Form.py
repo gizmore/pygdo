@@ -1,5 +1,10 @@
 from enum import Enum
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.form.MethodForm import MethodForm
+
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.base.WithError import WithError
@@ -18,9 +23,10 @@ class Encoding(Enum):
 
 
 class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container):
-    _actions: GDT_Menu
     _slim: bool
+    _actions: GDT_Menu
     _encoding: Encoding
+    _method: 'MethodForm'
 
     def __init__(self, name: str = 'form'):
         super().__init__()
@@ -29,6 +35,10 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
         self._actions = GDT_Menu()
         self._slim = False
         self._encoding = Encoding.URLENCODED
+
+    def method(self, method: 'MethodForm'):
+        self._method = method
+        return self
 
     def slim(self, slim: bool = True):
         self._slim = slim

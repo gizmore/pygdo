@@ -5,7 +5,7 @@ from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.base.Util import Files
+from gdo.base.Util import Files, href
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_MD5 import GDT_MD5
@@ -65,7 +65,11 @@ class GDO_File(GDO):
         return self
 
     def get_target_path(self) -> str:
-        return Application.file_path(f"files/gdo_file/{self.get_id()}")
+        return Application.files_path(f"gdo_file/{self.get_id()}")
+
+    def get_preview_href(self) -> str:
+        append = f'&file={self.get_id()}&token={self.gdo_hash()}'
+        return href('file', 'preview', append)
 
     @classmethod
     def from_memory(cls, file_data: tuple):

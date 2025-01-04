@@ -1,4 +1,5 @@
 import asyncio
+import io
 import os
 from urllib.parse import parse_qs
 from multipart import parse_options_header, MultipartParser
@@ -16,34 +17,6 @@ from gdo.base.method.server_error import server_error
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
 from gdo.ui.GDT_Error import GDT_Error
-
-
-class ASGIReader:
-    def __init__(self, receive):
-        self.receive = receive
-        self.buffer = b""
-
-    def read(self, size: int = -1) -> bytearray:
-        while size < 0 or len(self.buffer) < size:
-            message = asyncio.run(self.receive())
-            if message["type"] == "http.disconnect":
-                break
-            if message["type"] == "http.request":
-                self.buffer += message.get("body", b"")
-                if not message.get("more_body", False):
-                    break
-        if size < 0:
-            data, self.buffer = self.buffer, b""
-        else:
-            data, self.buffer = self.buffer[:size], self.buffer[size:]
-        return data
-
-    # async def __aiter__(self):
-    #     while True:
-    #         chunk = await self.read()
-    #         if not chunk:
-    #             break
-    #         yield chunk
 
 FRESH = True
 
@@ -67,11 +40,9 @@ async def app(scope, receive, send):
         else:
             Application.fresh_page()
 
-        Application.request_method(scope['method'])
         Application.init_asgi(scope)
         qs = parse_qs(scope['query_string'].decode())
 
-        scope['path'] = scope['path']
         url = scope['path'] if scope['path'].lstrip('/') else '/core.welcome.html'
 
         scope['REQUEST_URI'] = scope['path'] + '?' + scope['query_string'].decode()
@@ -125,11 +96,19 @@ async def app(scope, receive, send):
                     method = not_found().env_server(server).env_user(user).input('_url', url)
 
             if Application.get_request_method() == 'POST':
+                body = b""
+                while True:
+                    message = await receive()
+                    if message["type"] == "http.disconnect":
+                        return
+                    if message['type'] == 'http.request':
+                        body += message.get('body', b'')
+                        if not message.get('more_body', False):
+                            break
                 content_type, options = parse_options_header(Application.get_client_header('content-type'))
                 if content_type == "multipart/form-data" and 'boundary' in options:
-                    stream = ASGIReader(receive)
-                    boundary = options["boundary"]
-                    parser = MultipartParser(stream, boundary)
+                    stream = io.BytesIO(body)
+                    parser = MultipartParser(stream, options["boundary"])
                     for part in parser:
                         if part.filename:
                             method.add_file(part.name, part.filename, part.raw)
@@ -138,13 +117,6 @@ async def app(scope, receive, send):
                     for part in parser.parts():
                         part.close()
                 else:
-                    body = b""
-                    while True:
-                        message = await receive()
-                        if message['type'] == 'http.request':
-                            body += message.get('body', b'')
-                            if not message.get('more_body', False):
-                                break
                     qs.update(parse_qs(body.decode()))
 
             result = await method.inputs(qs).execute()
@@ -177,19 +149,25 @@ async def app(scope, receive, send):
         try:
             Logger.exception(ex)
             out = Application.get_page().result(GDT_Error.from_exception(ex)).method(server_error()).render(Mode.HTML)
-            await send({
-                'type': 'http.response.start',
-                'status': 500,
-            })
+            try:
+                await send({
+                    'type': 'http.response.start',
+                    'status': 500,
+                })
+            except:
+                pass
             await send({
                 'type': 'http.response.body',
                 'body': out.encode(),
             })
         except Exception:
-            await send({
-                'type': 'http.response.start',
-                'status': 500,
-            })
+            try:
+                await send({
+                    'type': 'http.response.start',
+                    'status': 500,
+                })
+            except:
+                pass
             await send({
                 'type': 'http.response.body',
                 'body': str(ex).encode(),

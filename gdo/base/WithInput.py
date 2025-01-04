@@ -1,6 +1,3 @@
-from gdo.base.Util import dump
-
-
 class WithInput:
     """
     Add arguments array to a GDT.
@@ -15,7 +12,6 @@ class WithInput:
                 for v in val:
                     self.arg(v)
             else:
-                dump(val)
                 self.input(key, val)
         return self
 

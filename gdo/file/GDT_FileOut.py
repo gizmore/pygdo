@@ -22,7 +22,7 @@ class GDT_FileOut(GDT):
     def __next__(self):
         if not hasattr(self, '_handle'):
             self._handle = open(self._path, 'rb')
-        chunk = self._handle.read(int(Application.config('fileblock_size', "4096")))
+        chunk = self._handle.read(int(Application.config('file.block_size', "4096")))
         if chunk:
             return chunk
         else:

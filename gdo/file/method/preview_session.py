@@ -1,26 +1,30 @@
+from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.Util import Files
 from gdo.core.GDO_File import GDO_File
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Token import GDT_Token
-from gdo.core.GDT_UInt import GDT_UInt
-from gdo.file.GDT_File import GDT_File
-from gdo.file.GDT_FileOut import GDT_FileOut
-from gdo.file.MethodFile import MethodFile
+from gdo.file.method.preview import preview
 
 
-class preview_session(MethodFile):
+class preview_session(preview):
 
     def gdo_parameters(self) -> [GDT]:
         return [
-            GDT_String('gdt_name').not_null(),
-            GDT_UInt('gdt_index'),
+            GDT_String('path').not_null(),
+            GDT_Token('token').not_null(),
         ]
 
-    def get_file(self) -> GDO_File:
-        return self.param_value('file')
+    def get_path(self) -> str:
+        return self.param_value('path')
 
-    def gdo_execute(self) -> GDT:
-        file = GDT_File(self.param_value('gdt_name'))
-        index = self.param_value('gdt_index')
-        file = file.get_initial_files()[index]
-        return GDT_FileOut().path(file.get_path())
+    def get_temp_dir(self):
+        sessid = Application.get_session().get_id()
+        files_dir = Application.config('file.directory')
+        return Application.temp_path(f"{files_dir}{self.get_path()}/{sessid}/")
+
+    def get_file(self) -> GDO_File:
+        dir = self.get_temp_dir()
+        if not Files.is_dir(dir):
+            return None
+        return GDO_File.from_dir(dir)

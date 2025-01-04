@@ -1,8 +1,6 @@
-import mimetypes
-
 from gdo.base.Application import Application
 from gdo.base.Method import Method
-from gdo.base.Util import Files
+from gdo.base.Util import Files, href, urlencode
 from gdo.core.GDO_File import GDO_File
 from gdo.core.GDT_Object import GDT_Object
 from gdo.core.GDT_String import GDT_String
@@ -39,12 +37,13 @@ class GDT_File(GDT_Object):
 
     def gdo_added_to_form(self, form: 'GDT_Form'):
         form.multipart()
+        self.upload_path(f"{form._method.gdo_module().get_name()}.{form._method.get_name()}.{self._name}")
 
     ###########
     # Options #
     ###########
     def upload_path(self, path: str):
-        self._upload_path = path
+        self._upload_path = path.strip('/')
         return self
 
     def mimes(self, mimes: dict):
@@ -144,7 +143,14 @@ class GDT_File(GDT_Object):
     ##########
     # Render #
     ##########
-    def html_capture(self):
+    def href_preview(self, file: GDO_File) -> str:
+        if file.is_persisted():
+            return file.get_preview_href()
+        else:
+            append = '&path=' + urlencode(self._upload_path) + "&token=" + file.gdo_hash()
+            return href('file', 'preview_session', append)
+
+    def html_capture(self) -> str:
         return '' if self._no_capture else ' capture=capture'
 
     def render_form(self) -> str:

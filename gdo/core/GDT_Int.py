@@ -99,3 +99,5 @@ class GDT_Int(GDT_String):
     ##########
     # Render #
     ##########
+    def render_toml(self) -> str:
+        return self.get_val()

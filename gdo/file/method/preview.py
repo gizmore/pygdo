@@ -10,9 +10,12 @@ from gdo.file.MethodFile import MethodFile
 
 class preview(MethodFile):
 
+    def gdo_trigger(self) -> str:
+        return ""
+
     def gdo_parameters(self) -> [GDT]:
         return [
-            GDT_File('file'),
+            GDT_File('file').not_null(),
             GDT_Token('token').not_null(),
         ]
 
@@ -22,7 +25,6 @@ class preview(MethodFile):
     def gdo_execute(self) -> GDT:
         file = self.get_file()
         token = self.param_val('token')
-        correct = file.gdo_hash()
-        if token != correct:
+        if token != file.gdo_hash():
             return self.error('err_token')
-        return GDT_FileOut().path(file.get_path())
+        return self.render_file(file)

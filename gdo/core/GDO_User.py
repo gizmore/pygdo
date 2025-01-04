@@ -100,6 +100,9 @@ class GDO_User(GDO):
     def get_displayname(self) -> str:
         return self.gdo_val('user_displayname')
 
+    def get_name_sid(self):
+        return "%s{%s}" % (self.get_name(), self.get_server_id())
+
     ##########
     # Groups #
     ##########

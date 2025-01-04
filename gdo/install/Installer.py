@@ -1,11 +1,7 @@
-import re
-from modulefinder import Module
-
 import tomlkit
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
-from gdo.base.Exceptions import GDOException
 from gdo.base.GDO import GDO
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Logger import Logger
