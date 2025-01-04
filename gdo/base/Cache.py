@@ -71,3 +71,5 @@ class Cache:
                 if delete:
                     del cls.OCACHE[cn][gid]
                 return obj
+
+     #   cls.OCACHE[cn][gid] = None

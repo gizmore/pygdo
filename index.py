@@ -5,9 +5,11 @@ import traceback
 from urllib.parse import parse_qs, unquote
 
 from gdo.base.Application import Application
+from gdo.base.Database import Database
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException, GDOParamNameException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.base.Message import Message
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
@@ -41,20 +43,24 @@ def pygdo_application(environ, start_response):
         GDO.GDO_COUNT = 0
         GDT.GDT_ALIVE = 0
         GDO.GDO_ALIVE = 0
+        Application.DB_TRANSACTIONS = 0
         if FRESH:
-            FRESH = False
+            Logger.init(os.path.dirname(__file__) + "/protected/logs/")
             Application.init(os.path.dirname(__file__))
+            Application.init_common()
             Application.init_web(environ)
             loader = ModuleLoader.instance()
             loader.load_modules_db()
             loader.init_modules(True, True)
             Application.is_http(True)
+            FRESH = False
         else:
             Application.init_common()
             Application.init_web(environ)
-            loader = ModuleLoader.instance()
-            loader.init_modules(True, True)
+            # loader = ModuleLoader.instance()
+            # loader.init_modules(True, True)
             Application.fresh_page()
+
         qs = parse_qs(environ['QUERY_STRING'])
 
         Application.request_method(environ['REQUEST_METHOD'])
@@ -145,13 +151,13 @@ def pygdo_application(environ, start_response):
             if Application.is_html():
                 page = Application.get_page()
                 result = page.result(result).method(method)
-                for module in loader.enabled():
+                for module in ModuleLoader.instance().enabled():
                     module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
 
+            session.save()
             response = result.render(Application.get_mode())
             headers = Application.get_headers()
-            session.save()
             headers.extend([('Content-Length', str(bytelen(response)))])
             start_response(Application.get_status(), headers)
             if isinstance(response, str):
@@ -166,7 +172,7 @@ def pygdo_application(environ, start_response):
         try:
             yield error_page(ex, start_response, server_error(), "500 Fatal Error", True)
         except Exception as ex:
-            msg = str(ex)
+            msg = str(ex) + traceback.format_exc()
             response_headers = [
                 ('Content-Type', 'text/html; Charset=UTF-8'),
                 ('Content-Length', str(bytelen(msg)))

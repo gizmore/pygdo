@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from gdo.core.GDO_Session import GDO_Session
     from gdo.base.Database import Database
     from gdo.ui.GDT_Page import GDT_Page
+    from gdo.base.ModuleLoader import ModuleLoader
 
 from gdo.base.Events import Events
 from gdo.base.Logger import Logger
@@ -23,7 +24,7 @@ class Application:
     RUNNING = True
     PROTOCOL = 'http'
     IS_HTTP = False
-    LOADER: object
+    LOADER: 'ModuleLoader'
     EVENTS: 'Events'
     STORAGE = threading.local()
     LANG_ISO = 'en'
@@ -53,6 +54,7 @@ class Application:
     @classmethod
     def init(cls, path: str, config_file: str = 'protected/config.toml'):
         from gdo.base.ModuleLoader import ModuleLoader
+        Logger.init(path + "/protected/logs")
         # Cache.init()
         cls.PATH = os.path.normpath(path) + '/'
         os.environ['TZ'] = 'UTC'
@@ -134,7 +136,7 @@ class Application:
         return str(Arrays.walk(cls.CONFIG, path)) or str(default)
 
     @classmethod
-    def storage(cls, key: str, default: any) -> any:
+    def storage(cls, key: str, default: any = None) -> any:
         if hasattr(cls.STORAGE, key):
             return cls.STORAGE.__getattribute__(key)
         elif default:
@@ -157,6 +159,9 @@ class Application:
         cls.init_cookies_wsgi(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
         cls.PROTOCOL = environ['REQUEST_SCHEME']
+        cls.mode(Mode.HTML)
+        cls.STORAGE.lang = 'en'
+        cls.STORAGE.user = None
         # cls.SERVER = GDO_Server.get_by_connector('Web')
 
     @classmethod
@@ -186,7 +191,6 @@ class Application:
         cls.tick()
         cls.DB_READS = 0
         cls.DB_WRITES = 0
-        Logger.init()
         cls.init_thread(None)
         cls.STORAGE.user = None
         cls.STORAGE.lang = 'en'
@@ -200,9 +204,10 @@ class Application:
         cls.STORAGE.time_start = cls.TIME
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
-        if 'db' in cls.CONFIG:
-            cfg = cls.CONFIG['db']
-            cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
+        if not cls.storage('db'):
+            if 'db' in cls.CONFIG:
+                cfg = cls.CONFIG['db']
+                cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
 
     @classmethod
     def db(cls) -> 'Database':

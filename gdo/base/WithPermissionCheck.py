@@ -1,3 +1,5 @@
+import functools
+
 from gdo.base.Application import Application
 from gdo.base.Util import module_enabled, href, Arrays, dump, urlencode
 

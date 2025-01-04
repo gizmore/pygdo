@@ -382,6 +382,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return conf
 
     def save_config_server(self, key: str, val: str):
+        return self._save_config_server(key, val, self._env_server)
+
+    def _save_config_server(self, key: str, val: str, server: 'GDO_Server'):
         # Logger.debug(f"{self.get_name()}.save_config_server({key}, {val})")
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValServer import GDO_MethodValServer
@@ -391,11 +394,11 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             if gdt.get_name() == key:
                 table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
                 gdom = GDO_Method.for_method(self)
-                entry = table.get_by_id(gdom.get_id(), self._env_server.get_id(), key)
+                entry = table.get_by_id(gdom.get_id(), server.get_id(), key)
                 if entry is None:
                     table.blank({
                         'mv_method': gdom.get_id(),
-                        'mv_server': self._env_server.get_id(),
+                        'mv_server': server.get_id(),
                         'mv_key': key,
                         'mv_val': gdt.val(val).get_val(),
                     }).insert()
@@ -416,7 +419,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 gdom = GDO_Method.for_method(self)
                 entry = table.get_by_id(gdom.get_id(), server.get_id(), key)
                 if entry:
-                    gdt.initial(entry.get_val())
+                    gdt.initial(entry.gdo_val('mv_val'))
+                else:
+                    self._save_config_server(key, gdt._initial, server)
                 return gdt
 
 

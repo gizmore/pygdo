@@ -265,8 +265,8 @@ class Files:
     @classmethod
     def create_dir(cls, path: str) -> bool:
         from gdo.base.Application import Application
-        mode = int(Application.config('dir.umask', '0700'), 8)
-        os.makedirs(path, mode=mode, exist_ok=True)
+        # mode = int(Application.config('dir.umask', '0700'), 8)
+        os.makedirs(path, mode=0o700, exist_ok=True)
         return True
 
     @classmethod

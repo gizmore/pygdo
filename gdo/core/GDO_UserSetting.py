@@ -18,6 +18,8 @@ class GDO_UserSetting(GDO):
     @classmethod
     def setting_column(cls, key: str, user: GDO_User) -> GDT:
         gdt = GDT_UserSetting.KNOWN[key]
+        if user.get_id() == "0":
+            return gdt
         gdo = cls.get_setting(user, key)
         if gdo:
             return gdt.val(gdo.get_val())

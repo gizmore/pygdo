@@ -25,6 +25,8 @@ class GDO_UserPermission(GDO):
 
     @classmethod
     def has_permission(cls, user: GDO_User, permission: GDO_Permission) -> bool:
+        if user.get_id() == '0':
+            return False
         return cls.table().count_where(f"pu_user={user.get_id()} AND pu_perm={permission.get_id()}") == 1
 
     def gdo_columns(self) -> list[GDT]:

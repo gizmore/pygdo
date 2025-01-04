@@ -11,7 +11,9 @@ from gdo.core.GDT_MD5 import GDT_MD5
 from gdo.core.GDT_Path import GDT_Path
 from gdo.core.GDT_User import GDT_User
 from gdo.core.connector.Bash import Bash
+from gdo.core.connector.Web import Web
 from gdo.core.method.reload import reload
+from gdo.core.method.welcome import welcome
 from gdo.ui.GDT_Page import GDT_Page
 from gdotest.TestUtil import cli_plug, web_gizmore, cli_gizmore, GDOTestCase, web_plug
 
@@ -114,6 +116,12 @@ class CoreTestCase(GDOTestCase):
         out = web_plug('core.welcome.html').exec()
         self.assertIn('Welcome', out, 'Welcome page does not work')
 
+    def test_15_cache_efficiency(self):
+        welcome()._disabled_in_server(Web.get_server())
+        before = Application.DB_READS
+        welcome()._disabled_in_server(Web.get_server())
+        after = Application.DB_READS
+        self.assertEqual(before, after, "Cache does not work")
 
 if __name__ == '__main__':
     unittest.main()
