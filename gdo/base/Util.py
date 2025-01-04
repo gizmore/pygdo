@@ -321,7 +321,7 @@ class Files:
     def md5(cls, path: str) -> str:
         from gdo.base.Application import Application
         hash_md5 = hashlib.md5()
-        block_size = int(Application.config('fileblock_size', "4096"))
+        block_size = int(Application.config('file.block_size', "4096"))
         with open(path, "rb") as f:
             for chunk in iter(lambda: f.read(block_size), b""):
                 hash_md5.update(chunk)

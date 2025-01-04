@@ -76,8 +76,13 @@ class GDT_File(GDT_Object):
     def get_value(self):
         files = self.get_initial_files()
         if not files:
-            return super().get_value() or []
+            super_value = super().get_value()
+            return [super_value] if super_value else []
         return files
+
+    def to_value(self, val: str):
+        value = super().to_value(val)
+        return [value] if value else None
 
     def get_initial_files(self):
         if not Application.has_session():

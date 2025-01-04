@@ -131,7 +131,7 @@ class Application:
 
     @classmethod
     def config(cls, path: str, default: str = '') -> str:
-        return Arrays.walk(cls.CONFIG, path) or default
+        return str(Arrays.walk(cls.CONFIG, path)) or str(default)
 
     @classmethod
     def storage(cls, key: str, default: any) -> any:

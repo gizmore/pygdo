@@ -10,7 +10,7 @@ class WithHTMLAttributes:
             self._attrs = {}
         return self._attrs
 
-    def attr(self, key: str, value: str|None):
+    def attr(self, key: str, value: str = None):
         if value is None:
             return self.get_attrs()[key]
         self.get_attrs()[key] = value

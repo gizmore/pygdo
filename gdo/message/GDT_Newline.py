@@ -8,3 +8,6 @@ class GDT_Newline(GDT):
         if mode == Mode.HTML:
             return "<br/>"
         return "\n"
+
+    def render_markdown(self):
+        return "\n\n"

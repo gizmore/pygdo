@@ -68,23 +68,21 @@ class Database:
     def insert_id(self) -> str:
         return self.get_link().insert_id()
 
-    def query(self, query):
+    def query(self, query: str):
         from gdo.base.Application import Application
-        if Application.config('db.debug') != '0':
-            Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES + 1) + ": " + query)
         try:
             Application.DB_WRITES += 1
             return self.get_link().cmd_query(query)
         except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
 
-    def select(self, query: str, dictionary: bool = True):
+    def select(self, query: str, dictionary: bool = True, gdo: 'GDO' = None):
         from gdo.base.Application import Application
         try:
             Application.DB_READS += 1
             cursor = self.cursor(dictionary)
             cursor.execute(query)
-            return Result(cursor)
+            return Result(cursor, gdo)
         except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
 

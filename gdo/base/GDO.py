@@ -242,7 +242,7 @@ class GDO(WithBulk, GDT):
     def insert_or_replace(self, type_: Type):
         self.before_create()
         query = self.query().type(type_).set_vals(self.insert_vals())
-        self._last_id = query.exec()
+        self._last_id = query.exec()['insert_id']
         self.after_create()
         return self.all_dirty(False)
 

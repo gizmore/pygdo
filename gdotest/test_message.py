@@ -14,7 +14,7 @@ class GDO_Foo(GDO):
 
     def gdo_columns(self) -> list[GDT]:
         return [
-            GDT_Message('foo_msg'),
+            GDT_Message('foo_msg').label_raw('MSG'),
         ]
 
 class MessageTestCase(unittest.TestCase):
@@ -38,7 +38,7 @@ class MessageTestCase(unittest.TestCase):
         self.assertIn('***hello world!***', out, "Message markdown is broken")
         out = gdt.render(Mode.CLI)
         self.assertIn('\x1b[1m\x1b[3mhello world!\x1b[0m\x1b[0m', out, "Message cli is broken")
-        out = gdt.render(Mode.FORM);
+        out = gdt.render(Mode.FORM)
         self.assertIn('<textarea', out, "Message form is broken")
 
 if __name__ == '__main__':
