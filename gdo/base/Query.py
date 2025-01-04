@@ -200,10 +200,14 @@ class Query:
             return f"SELECT {self._columns} FROM {self._table} {self._join}{self._build_where()}{self._build_order()}{self.build_limit()}"
         if self.is_delete():
             return f"DELETE FROM {self._table} WHERE {self._where}"
-        if self.is_insert() or self.is_replace():
+        if self.is_insert():
             keys = ",".join(map(lambda v: GDT.escape(v), self._vals.keys()))
             values = ",".join(map(lambda v: GDT.quote(v), self._vals.values()))
             return f"INSERT INTO {self._table} ({keys}) VALUES ({values})"
+        if self.is_replace():
+            keys = ",".join(map(lambda v: GDT.escape(v), self._vals.keys()))
+            values = ",".join(map(lambda v: GDT.quote(v), self._vals.values()))
+            return f"REPLACE INTO {self._table} ({keys}) VALUES ({values})"
         if self.is_update():
             set_string = ",".join(map(lambda kv: f"{kv[0]}={GDT.quote(kv[1])}", self._vals.items()))
             return f"UPDATE {self._table} SET {set_string} WHERE {self._where}"

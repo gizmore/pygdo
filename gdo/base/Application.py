@@ -139,9 +139,8 @@ class Application:
     def storage(cls, key: str, default: any = None) -> any:
         if hasattr(cls.STORAGE, key):
             return cls.STORAGE.__getattribute__(key)
-        elif default:
-            cls.STORAGE.__setattr__(key, default)
-        return default
+        else:
+            return default
 
     @classmethod
     def init_cli(cls):

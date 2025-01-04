@@ -53,7 +53,7 @@ class Logger:
         with open(f"{cls._base}{path}", 'a') as fo:
             fo.write(f'{content}\n')
         if cls._user:
-            dir_name = f"{cls._base}{cls._user.get_server().get_name()}/{cls._user.get_name()}/"
+            dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
             Files.create_dir(dir_name)
             with open(f"{dir_name}{path}", 'a') as fo:
                 fo.write(f'{content}\n')
