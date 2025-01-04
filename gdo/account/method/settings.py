@@ -51,7 +51,7 @@ class settings(MethodForm):
                 user.save_setting(key, new)
                 gdt.val(new)
                 out.append(t('setting_changed', [key, old, new]))
-        if (len(out)):
+        if len(out):
             self.msg('msg_settings_changed', [" ".join(out)])
         return self.render_page()
 

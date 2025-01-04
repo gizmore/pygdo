@@ -44,7 +44,9 @@ class GDT_User(WithCompletion, GDT_Object):
         val = Strings.substr_to(val, '{', val)
         query = self._table.select()
         if val.isnumeric():
-            query.where(f"user_id={GDT.quote(val)}")
+            if user := self._table.get_by_id(val):
+                return [user]
+            return []
         else:
             query.where(f"user_displayname LIKE '%{GDT.escape(val)}%'")
         if val_serv:

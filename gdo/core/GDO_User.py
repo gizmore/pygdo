@@ -24,7 +24,7 @@ class GDO_User(GDO):
     The holy user object. It should be very slim as users will be scattered around hopefully.
     Attributes are stored in GDO_UserSetting.
     """
-    SYSTEM: GDO
+    SYSTEM: GDO = None
     _authenticated: bool
     _network_user: object  # Like discord message.author
 
@@ -40,13 +40,12 @@ class GDO_User(GDO):
 
     @classmethod
     def system(cls) -> Self:
-        if not hasattr(cls, 'SYSTEM'):
+        if not cls.SYSTEM:
             cls.SYSTEM = GDO_User.table().get_by_vals({
                 'user_id': '1',
                 'user_type': GDT_UserType.SYSTEM,
             })
             if cls.SYSTEM is None:
-                delattr(cls, 'SYSTEM')
                 return cls.ghost()
         return cls.SYSTEM
 

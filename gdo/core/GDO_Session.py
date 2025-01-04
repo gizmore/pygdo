@@ -132,7 +132,6 @@ class GDO_Session(GDO):
         return self.gdo_val('sess_ip')
 
     def get_user(self) -> GDO_User:
-        user = self.gdo_value('sess_user')
-        if user:
-            user.authenticate(self)
+        if user := self.gdo_value('sess_user'):
+            user._authenticated = True
         return user or GDO_User.ghost()

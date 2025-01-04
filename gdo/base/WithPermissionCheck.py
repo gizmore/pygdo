@@ -106,5 +106,5 @@ class WithPermissionCheck:
         return False
 
     def err_generic_permission(self):
-        self.err('err_generic_permission')
+        self.err('err_permissions')
         return False
