@@ -161,7 +161,6 @@ class Application:
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.user = None
-        # cls.SERVER = GDO_Server.get_by_connector('Web')
 
     @classmethod
     def init_asgi(cls, scope):
@@ -203,7 +202,7 @@ class Application:
         cls.STORAGE.time_start = cls.TIME
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
-        if not cls.storage('db'):
+        if not cls.storage('DB'):
             if 'db' in cls.CONFIG:
                 cfg = cls.CONFIG['db']
                 cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])

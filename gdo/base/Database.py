@@ -68,23 +68,35 @@ class Database:
     def insert_id(self) -> str:
         return self.get_link().insert_id()
 
-    def query(self, query: str):
+    def query(self, query: str, debug: bool = False):
         from gdo.base.Application import Application
         try:
+            self.debug_query(query, debug)
             Application.DB_WRITES += 1
             return self.get_link().cmd_query(query)
         except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
 
-    def select(self, query: str, dictionary: bool = True, gdo: 'GDO' = None):
+    def select(self, query: str, dictionary: bool = True, gdo: 'GDO' = None, debug: bool = False):
         from gdo.base.Application import Application
         try:
+            self.debug_query(query, debug)
             Application.DB_READS += 1
             cursor = self.cursor(dictionary)
             cursor.execute(query)
             return Result(cursor, gdo)
         except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
+
+    def debug_query(self, query: str, debug: bool = False):
+        level = Application.config('db.debug')
+        if level != '0' or debug:
+            from gdo.base.Util import msg
+            import traceback
+            msg('%s', [query])
+            Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES + 1) + ": " + query)
+            if level == '2':
+                Logger.debug("\n".join(traceback.format_stack()))
 
     def cursor(self, dictionary=True):
         return self.get_link().cursor(dictionary=dictionary, buffered=True)

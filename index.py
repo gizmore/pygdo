@@ -57,8 +57,6 @@ def pygdo_application(environ, start_response):
         else:
             Application.init_common()
             Application.init_web(environ)
-            # loader = ModuleLoader.instance()
-            # loader.init_modules(True, True)
             Application.fresh_page()
 
         qs = parse_qs(environ['QUERY_STRING'])

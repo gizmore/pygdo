@@ -30,6 +30,10 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     _profile: cProfile
 
     # def setUp(self):
+    #     if not asyncio.get_running_loop():
+    #         asyncio.new_event_loop()
+
+    # def setUp(self):
     #     self._profile = cProfile.Profile()
     #     self._profile.enable()
     #

@@ -6,16 +6,17 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.connector.Web import Web
-from gdotest.TestUtil import cli_plug, web_gizmore
+from gdotest.TestUtil import cli_plug, GDOTestCase
 
 
-class DogTestCase(unittest.TestCase):
+class DogTestCase(GDOTestCase):
     """
     This are just some brief checks.
     The IRC Module has far better tests for a dog connector
     """
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
@@ -23,13 +24,13 @@ class DogTestCase(unittest.TestCase):
         loader.init_cli()
 
     def test_01_connector_gdt(self):
-        gdt = GDT_Connector("conn").initial("Web")
+        gdt = GDT_Connector("conn").initial("web")
         conn = gdt.get_value()
         self.assertIsInstance(conn, Web, "Cannot get initial Web connector")
 
     def test_02_connector_add(self):
         num_servers = GDO_Server.table().count_where()
-        out = cli_plug(None, f"$add_server web_{num_servers + 1} web http://localhost")
+        out = cli_plug(None, f"$add_server web_{num_servers + 1} web http://" + Application.config('core.domain'))
         self.assertIn("web server has been added", out, "Cannot add second Web Connector Server")
 
     def test_03_get_all_servers(self):

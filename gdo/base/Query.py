@@ -232,19 +232,12 @@ class Query:
     def exec(self, use_dict: bool = True) -> Result:
         db = Application.db()
         db.get_link()
-        if Application.config('db.debug') != '0':
-            self.debug()
         query = self.build_query()
         try:
-            if self._debug:
-                Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES + 1) + ": " + query)
-                if Application.config('db.debug') == '2':
-                    Logger.debug("\n".join(traceback.format_stack()))
-                msg('%s', [query])
             if self.is_select():
-                return db.select(query, use_dict, self._fetch_as)
+                return db.select(query, use_dict, self._fetch_as, self._debug)
             else:
-                return Application.db().query(query)
+                return Application.db().query(query, self._debug)
         except AttributeError as ex:
             raise GDODBException(str(ex), query)
         except (InterfaceError, ProgrammingError, DataError, DatabaseError) as ex:
