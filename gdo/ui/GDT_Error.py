@@ -4,6 +4,7 @@ import traceback
 
 from gdo.base.Logger import Logger
 from gdo.base.Render import Render, Mode
+from gdo.base.Trans import Trans
 from gdo.base.Util import html
 from gdo.ui.GDT_Panel import GDT_Panel
 
@@ -12,6 +13,11 @@ class GDT_Error(GDT_Panel):
 
     def __init__(self):
         super().__init__()
+
+    def render(self, mode: Mode = Mode.HTML):
+        with Trans('en'):
+            Logger.message(self.render_text())
+        return super().render(mode)
 
     def render_txt(self):
         return "!!! " + self.render_text(Mode.TXT)

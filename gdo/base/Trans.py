@@ -39,6 +39,19 @@ class Trans:
         'de': {},
     }
 
+    old_iso: str
+    new_iso: str
+
+    def __init__(self, iso: str):
+        self.new_iso = iso
+        self.old_iso = Application.LANG_ISO
+
+    def __enter__(self):
+        Application.LANG_ISO = self.new_iso
+
+    def __exit__(self, *args):
+        Application.LANG_ISO = self.old_iso
+
     @classmethod
     def reload(cls):
         cls.CACHE = {

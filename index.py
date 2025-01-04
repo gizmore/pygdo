@@ -91,6 +91,7 @@ def pygdo_application(environ, start_response):
         else:
             session = GDO_Session.start(True)
             user = session.get_user()
+            Logger.user(user)
             Application.set_current_user(user)
             Application.set_session(session)
             Application.status("200 OK")
