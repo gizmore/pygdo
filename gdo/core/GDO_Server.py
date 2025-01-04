@@ -180,7 +180,7 @@ class GDO_Server(GDO):
     async def send_to_user(self, user: GDO_User, key: str, args: list = None):
         text = tusr(user, key, args)
         message = Message(text, Application.get_mode())
-        message.env_user(user).env_server(self).env_channel(None)
+        message.env_user(user, True).env_server(self).env_channel(None)
         await self.get_connector().send_to_user(message.result(text))
 
     ##########

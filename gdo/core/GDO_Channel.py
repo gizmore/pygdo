@@ -67,7 +67,7 @@ class GDO_Channel(GDO):
             server = self.get_server()
             conn = server.get_connector()
             msg = Message(message, conn.get_render_mode())
-            msg.env_user(GDO_User.system())
+            msg.env_user(GDO_User.system(), True)
             msg.env_server(server).env_channel(self).result(message)
             await conn.send_to_channel(msg)
 

@@ -80,7 +80,7 @@ def pygdo_application(environ, start_response):
         if Files.is_file(path):
             session = GDO_Session.start(False)
             user = session.get_user()
-            method = file_server().env_server(user.get_server()).env_user(user).input('_url', path)
+            method = file_server().env_server(user.get_server()).env_user(user).env_session(session).input('_url', path)
             gdt = method.execute()
             if asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
@@ -90,10 +90,10 @@ def pygdo_application(environ, start_response):
                 yield chunk
         else:
             session = GDO_Session.start(True)
-            Application.set_current_user(session.get_user())
+            user = session.get_user()
+            Application.set_current_user(user)
             Application.set_session(session)
             Application.status("200 OK")
-            user = session.get_user()
             server = user.get_server()
             channel = None
             if Files.is_dir(path):

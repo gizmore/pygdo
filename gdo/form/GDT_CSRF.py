@@ -5,8 +5,9 @@ from gdo.form.GDT_Hidden import GDT_Hidden
 
 
 class GDT_CSRF(GDT_Hidden):
-    TOKEN_LEN = 12
     STORAGE = {}
+    TOKEN_LEN = 12
+    MAX_TOKENS = 24
 
     def __init__(self, name='csrf'):
         super().__init__(name)
@@ -25,18 +26,18 @@ class GDT_CSRF(GDT_Hidden):
         if not uid in self.STORAGE:
             self.STORAGE[uid] = []
         self.STORAGE[uid].append(token)
-        self.STORAGE[uid] = self.STORAGE[uid][-10:]
+        max = self.MAX_TOKENS if uid != "0" else 4096
+        self.STORAGE[uid] = self.STORAGE[uid][-max:]
         return token
 
     def validate(self, val: str | None, value: any) -> bool:
         if Application.is_unit_test():
             return True
-        sess = Application.get_session()
         uid = GDO_User.current().get_id()
+        if not uid in self.STORAGE:
+            self.STORAGE[uid] = []
         tokens = self.STORAGE[uid]
         if value not in tokens:
             return self.error('err_csrf')
         tokens.remove(value)
-        # sess.set('csrf', tokens)
         return True
-

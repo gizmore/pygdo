@@ -68,7 +68,7 @@ def process_line(line: str) -> None:
         append_to_history(line)
         parser = get_parser()
         message = Message(line, Mode.CLI)
-        message.env_server(server).env_user(user)  # .env_session(session)
+        message.env_server(server).env_user(user, True)
         Application.EVENTS.publish('new_message', message)
         if line.startswith(trigger):
             method = parser.parse_line(line[1:])

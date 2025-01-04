@@ -142,8 +142,8 @@ class Parser:
     def decorate_method(self, method: Method):
         if method is None:
             return None
-        return (method.env_user(self._user).env_server(self._server).env_channel(self._channel).env_session(self._session).
-                env_mode(self._mode).env_http(self._is_http))
+        return (method.env_user(self._user).env_server(self._server).env_channel(self._channel).
+                env_session(self._session).env_mode(self._mode).env_http(self._is_http))
 
 
 class WebParser(Parser):

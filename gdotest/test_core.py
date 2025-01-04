@@ -91,7 +91,7 @@ class CoreTestCase(GDOTestCase):
 
     def test_10_reload_restricted(self):
         petra = Bash.get_server().get_or_create_user('Petra')
-        method = reload().env_user(petra)
+        method = reload().env_user(petra, True)
         has = method.has_permission(petra)
         self.assertEqual(has, False, "Permission check is not working")
         out = cli_plug(petra, "$reload")

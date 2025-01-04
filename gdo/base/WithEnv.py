@@ -28,12 +28,12 @@ class WithEnv:
         self._env_mode = mode
         return self
 
-    def env_user(self, user: 'GDO_User'):
+    def env_user(self, user: 'GDO_User', load_session: bool = False):
         self._env_user = user
-        if user:
+        if load_session and user.get_id() != '0':
             from gdo.core.GDO_Session import GDO_Session
-            return self.env_session(GDO_Session.for_user(user))
-        return self.env_session(None)
+            self.env_session(GDO_Session.for_user(user))
+        return self
 
     def env_server(self, server: 'GDO_Server'):
         self._env_server = server
