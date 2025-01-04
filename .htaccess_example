@@ -1,9 +1,9 @@
 ###############################################
 ### This redirects all requests to index.py ###
 ###############################################
-# IMPORTANT: Please enable in your vhost config: AllowEncodedSlashes NoDecode
+# Please enable in your vhost config: AllowEncodedSlashes NoDecode
 RewriteEngine on
-# If your GDO_WEB_ROOT is /foo/, use /foo/index.py (example) in all lines
-RewriteCond %{REQUEST_URI} !^/index.py$
+# If your GDO_WEB_ROOT is /foo/, use /foo/index.php in all lines
+RewriteCond %{REQUEST_URI} !^index.py
 RewriteCond %{REQUEST_URI} !^.well-known/
-RewriteRule ^(.*)$ /index.py?_url=$1&%1 [QSA,L,B,BNP]
+RewriteRule ^(.*)$ index.py?_url=$1%1 [QSA,L,B,BNP,UnsafeAllow3F]
