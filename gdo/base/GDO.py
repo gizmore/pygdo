@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import hashlib
 import traceback
 
@@ -45,6 +46,7 @@ class GDO(WithBulk, GDT):
         self._vals = {}
         self._dirty = []
         self._last_id = None
+        # self.get_id = functools.cache(self.get_id)
 
     def __del__(self):
         GDO.GDO_ALIVE -= 1
@@ -95,10 +97,6 @@ class GDO(WithBulk, GDT):
         return []
 
     def column(self, key: str) -> GDT | any:
-        """
-
-        :rtype: object
-        """
         if gdt := Cache.column_for(self.__class__, key):
             return gdt.gdo(self)
         else:
@@ -211,8 +209,7 @@ class GDO(WithBulk, GDT):
         return " AND ".join(map(lambda gdt: f"{gdt.get_name()}={GDT.quote(gdt._val)}", cols))
 
     def get_by_vals(self, vals: dict[str, str]):
-        cached = Cache.obj_search(self, vals)
-        if cached:
+        if cached := Cache.obj_search(self, vals):
             return cached
         where = []
         for k, v in vals.items():

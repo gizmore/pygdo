@@ -1,3 +1,6 @@
+import functools
+import hashlib
+
 from gdo.base import GDO
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
@@ -8,12 +11,14 @@ class Cache:
     CACHE: dict[str, GDO] = {}  # class => GDO table mapping
     CCACHE: dict[str, list[GDT]] = {}  # class => GDO table columns mapping
     OCACHE: dict[str, dict[str, GDO]] = {}  # id => GDO object cache mapping
+    FCACHE = {}  # @gdo_cached("key") store
 
     @classmethod
     def clear(cls):
         cls.CACHE = {}
         cls.CCACHE = {}
         cls.OCACHE = {}
+        cls.FCACHE = {}
         Files.empty_dir(Application.file_path('cache/'))
 
     @classmethod
@@ -72,4 +77,42 @@ class Cache:
                     del cls.OCACHE[cn][gid]
                 return obj
 
-     #   cls.OCACHE[cn][gid] = None
+    ##########
+    # FCache #
+    ##########
+
+    @classmethod
+    def get(cls, key: str, args_key: str):
+        return cls.FCACHE.get(key, {}).get(args_key)
+
+    @classmethod
+    def set(cls, key: str, args_key: str, value: any):
+        if key not in cls.FCACHE:
+            cls.FCACHE[key] = {}
+        cls.FCACHE[key][args_key] = value
+
+    @classmethod
+    def remove(cls, key: str = None, args_key: str = None):
+        if key is None:
+            cls.FCACHE.clear()
+        elif args_key is None:
+            cls.FCACHE.pop(key, None)
+        else:
+            cls.FCACHE.get(key, {}).pop(args_key, None)
+
+
+def _hash_args(args, kwargs):
+    return hashlib.md5(str((args, frozenset(kwargs.items()))).encode()).hexdigest()
+
+def gdo_cached(cache_key: str):
+    def decorator(func: callable):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            args_key = _hash_args(args, kwargs)
+            if (cached_value := Cache.get(cache_key, args_key)) is not None:
+                return cached_value
+            result = func(*args, **kwargs)
+            Cache.set(cache_key, args_key, result)
+            return result
+        return wrapper
+    return decorator
