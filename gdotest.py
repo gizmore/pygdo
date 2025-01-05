@@ -54,7 +54,7 @@ def suite():
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
     runner.verbosity = 4
-    with yappi.run():
-        runner.run(suite())
-    yappi.stop()
-    yappi.get_func_stats().print_all()
+    # with yappi.run():
+    runner.run(suite())
+    # yappi.stop()
+    # yappi.get_func_stats().print_all()

@@ -19,8 +19,8 @@ class DogTestCase(GDOTestCase):
         super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
-        loader.load_modules_db(True)
-        loader.init_modules()
+        loader.load_modules_db()
+        loader.init_modules(True, True)
         loader.init_cli()
 
     def test_01_connector_gdt(self):
@@ -30,7 +30,7 @@ class DogTestCase(GDOTestCase):
 
     def test_02_connector_add(self):
         num_servers = GDO_Server.table().count_where()
-        out = cli_plug(None, f"$add_server web_{num_servers + 1} web http://" + Application.config('core.domain'))
+        out = cli_plug(None, f"$add_server web_{num_servers + 1} web http://" + Application.config('core.domain') + ":" + Application.config('core.port'))
         self.assertIn("web server has been added", out, "Cannot add second Web Connector Server")
 
     def test_03_get_all_servers(self):
