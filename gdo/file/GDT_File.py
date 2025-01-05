@@ -111,7 +111,7 @@ class GDT_File(GDT_Object):
                 Files.put_contents(dir + "name", file_data[1])
 
     def get_temp_dir(self):
-        sessid = Application.get_session().get_id()
+        sessid = Application.get_session().get_id() or '1'
         files_dir = Application.config('file.directory')
         dir = Application.temp_path(f"{files_dir}{self._upload_path}/{sessid}/")
         return dir

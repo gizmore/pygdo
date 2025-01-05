@@ -22,7 +22,7 @@ class GDT_Message(GDT_Composite, GDT_Text):
         return components
 
     def get_editor(self) -> type['Editor']:
-        return self._gdo.gdo_value(f"{self._name}_editor")
+        return GDT_Editor.EDITORS[self._gdo.gdo_val(f"{self._name}_editor")]
 
     def get_input(self) -> str:
         return self._gdo.gdo_val(f"{self._name}")

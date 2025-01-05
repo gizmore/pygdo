@@ -102,11 +102,10 @@ class GDO_File(GDO):
 
     @classmethod
     def from_path(cls, path: str, delete: bool = False):
-        mime_type = Files.mime(path)
         file = cls.blank({
             'file_name': os.path.basename(path),
             'file_size': str(Files.size(path)),
-            'file_mime': mime_type,
+            'file_mime': Files.mime(path),
         })
         file.temp_path(path)
         return file.no_delete(not delete)

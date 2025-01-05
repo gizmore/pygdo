@@ -301,6 +301,7 @@ class App:
         parser = argparse.ArgumentParser(description='Create / assign an admin user for a connector (web by default).'
                                                      'Example: ./gdo_adm.sh admin gizmore 11111111 gizmore@gizmore.org')
         parser.add_argument('--connector', default='bash')
+        parser.add_argument('--server', default=None)
         parser.add_argument('username')
         parser.add_argument('password')
         parser.add_argument('email', nargs='?')
@@ -310,7 +311,11 @@ class App:
         loader.load_modules_db()
         loader.init_modules(True, True)
 
-        server = GDO_Server.get_by_connector(args.connector)
+        if args.server:
+            server = GDO_Server.table().get_by_id(args.server)
+        else:
+            server = GDO_Server.get_by_connector(args.connector)
+
         user = server.get_or_create_user(args.username)
         GDO_UserPermission.grant(user, GDO_Permission.ADMIN)
         GDO_UserPermission.grant(user, GDO_Permission.STAFF)

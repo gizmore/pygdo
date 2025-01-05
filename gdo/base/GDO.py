@@ -222,7 +222,7 @@ class GDO(WithBulk, GDT):
     ####################
 
     def soft_replace(self):
-        old = self.get_by_id(*self.get_id().split(':'))
+        old = self.get_by_id(*self.get_id().split(self.ID_SEPARATOR))
         if old is not None:
             return self.save()
         return self.insert()

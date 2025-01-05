@@ -23,7 +23,7 @@ class GDO_UserPermission(GDO):
 
     @classmethod
     def users_with_perm_id(cls, perm_id: str) -> list[GDO_User]:
-        return cls.table().select('pu_user_t.*').fetch_as(GDO_User.table()).join_object('pu_user').where(f'pu_perm={GDT.quote(perm_id)}').exec().fetch_all()
+        return cls.table().select('pu_user_t.*').fetch_as(GDO_User.table()).join_object('pu_user').where(f'pu_perm={GDT.quote(perm_id)} AND pu_has').exec().fetch_all()
 
     @classmethod
     def has_permission(cls, user: GDO_User, permission: GDO_Permission) -> bool:
@@ -34,8 +34,8 @@ class GDO_UserPermission(GDO):
         cls.blank({
             'pu_user': user.get_id(),
             'pu_perm': permission.get_id(),
-            'pu_has': '0',
         }).insert()
+        return False
 
     def gdo_columns(self) -> list[GDT]:
         return [

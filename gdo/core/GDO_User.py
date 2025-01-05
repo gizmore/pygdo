@@ -2,6 +2,7 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 
+from gdo.base.Cache import gdo_cached
 from gdo.base.Util import module_enabled
 from gdo.core.GDT_UserName import GDT_UserName
 

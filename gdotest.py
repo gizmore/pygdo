@@ -1,5 +1,7 @@
 import unittest
 
+import yappi
+
 from gdotest.test_admin import AdminTestCase
 from gdotest.test_cli import CLITestCase
 from gdotest.test_configure import ConfigureTestCase
@@ -52,4 +54,7 @@ def suite():
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
     runner.verbosity = 4
-    runner.run(suite())
+    with yappi.run():
+        runner.run(suite())
+    yappi.stop()
+    yappi.get_func_stats().print_all()

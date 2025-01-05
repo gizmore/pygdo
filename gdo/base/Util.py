@@ -293,13 +293,17 @@ class Files:
     @classmethod
     def put_contents(cls, path: str, contents) -> bool:
         with open(path, 'wb') as f:
-            f.write(contents.encode('UTF-8') if isinstance(contents, str) else contents)
+            f.write(contents.encode() if isinstance(contents, str) else contents)
         return True
 
     @classmethod
     def get_contents(cls, path: str):
-        with open(path, 'r') as f:
-            return f.read()
+        try:
+            with open(path, 'r') as f:
+                return f.read()
+        except FileNotFoundError as ex:
+            from gdo.base.Logger import Logger
+            Logger.exception(ex)
 
     @classmethod
     def mime(cls, path: str):
