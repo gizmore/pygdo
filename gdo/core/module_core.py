@@ -5,6 +5,7 @@ import nest_asyncio
 from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.core import GDO_MethodValServerBlob
 from gdo.core.Connector import Connector
 from gdo.core.GDO_Channel import GDO_Channel
@@ -43,10 +44,13 @@ class module_core(GDO_Module):
         Connector.register(Bash)
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
-        if Application.IS_HTTP and not Application.ASGI:
-            nest_asyncio.apply(asyncio.new_event_loop())
-        else:
-            nest_asyncio.apply()
+        try:
+            if Application.IS_HTTP and not Application.ASGI:
+                nest_asyncio.apply(asyncio.new_event_loop())
+            else:
+                nest_asyncio.apply()
+        except Exception as ex:
+            Logger.exception(ex)
 
     def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):
