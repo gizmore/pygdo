@@ -9,5 +9,5 @@ class module_admin(GDO_Module):
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         user = GDO_User.current()
         if user.is_admin():
-            page._right_bar.add_field(GDT_Link().href(self.href('dashboard')).text('module_admin'))
+            page._right_bar.add_field(GDT_Link().href(self.href('modules')).text('module_admin'))
 

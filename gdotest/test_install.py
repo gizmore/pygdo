@@ -8,6 +8,7 @@ from gdo.base.Exceptions import GDODBException
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_User import GDO_User
+from gdo.core.method.clear_cache import clear_cache
 from gdo.install.Installer import Installer
 from gdotest.TestUtil import reinstall_module
 
@@ -82,10 +83,11 @@ class InstallTestCase(unittest.TestCase):
         self.assertIsNotNone(result, "Install all")
 
     def test_08_install_admin_user(self):
-        subprocess.run(["python3", Application.file_path("gdoadm.py"), 'admin', '-u', "gizmore", "11111111", "gizmore@gizmore.org"], capture_output=True)
+        subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'admin', "gizmore", "11111111", "gizmore@gizmore.org"], capture_output=True)
         admins = GDO_User.admins()
         self.assertEqual(1, len(admins), "Cannot install admin user")
-        subprocess.run(["python3", Application.file_path("gdoadm.py"), 'admin', '-u', "gizmore", "11111111", "gizmore@gizmore.org"], capture_output=True)
+        clear_cache().gdo_execute()
+        subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'admin', "gizmore", "11111111", "gizmore@gizmore.org"], capture_output=True)
         self.assertEqual(1, len(admins), "Cannot install admin user #2")
 
     def test_09_reinstall_module(self):

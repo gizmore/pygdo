@@ -317,6 +317,7 @@ class App:
             server = GDO_Server.get_by_connector(args.connector)
 
         user = server.get_or_create_user(args.username)
+        GDO_UserPermission.grant(user, GDO_Permission.OWNER)
         GDO_UserPermission.grant(user, GDO_Permission.ADMIN)
         GDO_UserPermission.grant(user, GDO_Permission.STAFF)
         GDO_UserPermission.grant(user, GDO_Permission.VOICE)
