@@ -23,6 +23,7 @@ from gdo.base.method.file_server import file_server
 from gdo.base.method.server_error import server_error
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
+from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
 
 FRESH = True
@@ -132,13 +133,6 @@ def pygdo_application(environ, start_response):
                 post_variables = parse_qs(post_data_decoded)
                 method.inputs(post_variables)
 
-            if Application.is_html():
-                Application.header('Content-Type', 'text/html; Charset=UTF-8')
-            elif Application.get_mode() == Mode.JSON:
-                Application.header('Content-Type', 'application/json; Charset=UTF-8')
-            elif Application.get_mode() == Mode.TXT:
-                Application.header('Content-Type', 'text/plain; Charset=UTF-8')
-
             try:
                 result = method.execute()
             except Exception as ex:
@@ -148,6 +142,20 @@ def pygdo_application(environ, start_response):
 
             while asyncio.iscoroutine(result):
                 result = asyncio.run(result)
+
+            if isinstance(result, GDT_FileOut):
+                headers = Application.get_headers()
+                start_response(Application.get_status(), headers)
+                for chunk in result:
+                    yield chunk
+                return
+
+            if Application.is_html():
+                Application.header('Content-Type', 'text/html; Charset=UTF-8')
+            elif Application.get_mode() == Mode.JSON:
+                Application.header('Content-Type', 'application/json; Charset=UTF-8')
+            elif Application.get_mode() == Mode.TXT:
+                Application.header('Content-Type', 'text/plain; Charset=UTF-8')
 
             if Application.is_html():
                 page = Application.get_page()

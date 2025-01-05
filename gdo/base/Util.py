@@ -1,4 +1,5 @@
 from __future__ import annotations
+import magic
 
 import getpass
 import hashlib
@@ -307,8 +308,10 @@ class Files:
 
     @classmethod
     def mime(cls, path: str):
-        mime_type = mimetypes.guess_type(path)
-        return mime_type[0] if mime_type[0] else 'application/octet-stream'
+        return magic.Magic(mime=True).from_file(path)
+        # mime_type = mimetypes.guess_type(path)
+        # dump(mime_type)
+        # return mime_type[0] if mime_type[0] else 'application/octet-stream'
 
     @classmethod
     def size(cls, path: str) -> int:
