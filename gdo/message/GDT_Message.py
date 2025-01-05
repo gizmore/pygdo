@@ -36,11 +36,11 @@ class GDT_Message(GDT_Composite, GDT_Text):
     def get_output_gdt_key(self, mode: Mode) -> str:
         return f"{self._name}_{mode.name.lower()}"
 
-    #######
-    # GDT #
-    #######
-    def val(self, val: str):
-        return self
+    # #######
+    # # GDT #
+    # #######
+    # def val(self, val: str):
+    #     return self
 
     ##########
     # Render #

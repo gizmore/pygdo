@@ -24,7 +24,7 @@ class Mail:
     _attachments: dict[str, str]
 
     @classmethod
-    def _cfg(cls, key: str) -> dict[str, str]:
+    def _cfg(cls, key: str) -> str:
         return Application.config(f'mail.{key}')
 
     @classmethod
