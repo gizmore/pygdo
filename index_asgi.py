@@ -50,6 +50,7 @@ async def app(scope, receive, send):
             Application.DB_TRANSACTIONS = 0
             Application.DB_READS = 0
             Application.DB_WRITES = 0
+            Logger.LINES_WRITTEN = 0
             Application.fresh_page()
 
         Application.init_asgi(scope)
