@@ -179,7 +179,7 @@ class GDO_User(GDO):
         return self
 
     def is_authenticated(self) -> bool:
-        return hasattr(self, '_authenticated')
+        return self._authenticated
 
     def is_ghost(self) -> bool:
         return self.is_type('ghost')
