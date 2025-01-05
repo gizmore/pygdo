@@ -2,6 +2,7 @@ import asyncio
 import cgi
 import os.path
 import traceback
+from inspect import isgenerator
 from urllib.parse import parse_qs, unquote
 
 from gdo.base.Application import Application
@@ -107,7 +108,7 @@ def pygdo_application(environ, start_response):
                 method = not_found().env_server(server).env_user(session.get_user()).input('_url', url)
 
             method.inputs(qs)  # GET PARAMS
-            method._message = Message(f"${method.gdo_trigger()}", Mode.HTML).env_copy(method)
+            #method._message = Message(f"${method.gdo_trigger()}", Mode.HTML).env_copy(method)
 
             if environ['REQUEST_METHOD'] == 'POST' and environ['CONTENT_TYPE'].startswith('multipart/form-data'):
                 post_variables = cgi.FieldStorage(

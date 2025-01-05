@@ -26,5 +26,6 @@ class preview(MethodFile):
         file = self.get_file()
         token = self.param_val('token')
         if token != file.gdo_hash():
-            return self.error('err_token')
+            return self.err('err_token')
+
         return self.render_file(file)

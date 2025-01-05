@@ -97,6 +97,7 @@ class Application:
     def set_current_user(cls, user):
         cls.STORAGE.user = user
         cls.STORAGE.lang = user.get_lang_iso()
+        Logger.user(user)
 
     @classmethod
     def fresh_page(cls):

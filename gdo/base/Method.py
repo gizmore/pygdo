@@ -8,7 +8,6 @@ if TYPE_CHECKING:
     from gdo.core.GDO_Channel import GDO_Channel
     from gdo.core.GDO_Server import GDO_Server
     from gdo.core.GDO_User import GDO_User
-    from gdo.base.Message import Message
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError, GDOParamError
@@ -17,7 +16,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Trans import t, thas
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, err_raw
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
 from gdo.base.WithInput import WithInput
@@ -263,6 +262,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             if not self._prepare_nested_permissions(self):
                 return self
             return await self._nested_execute(self, True)
+        except GDOParamError as ex:
+            err_raw(str(ex))
+ #           return GDT_Error().title_raw(self.gdo_module().get_name()).text_raw(str(ex))
         except Exception as ex:
             if tr:
                 db.rollback()
@@ -282,7 +284,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         if return_gdt:
             return gdt
         else:
-            return gdt.render_txt()
+            return gdt.render(Mode.TXT)
 
     def _nested_parse(self):
         from gdo.core.GDT_Repeat import GDT_Repeat

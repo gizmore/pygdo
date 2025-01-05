@@ -4,6 +4,7 @@ import os.path
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.Util import Files, href
 from gdo.core.GDT_AutoInc import GDT_AutoInc
@@ -43,6 +44,9 @@ class GDO_File(GDO):
 
     def get_name(self):
         return self.gdo_val('file_name')
+
+    def get_size(self) -> int:
+        return self.gdo_value('file_size')
 
     def get_mime(self) -> str:
         return self.gdo_val('file_mime')
@@ -90,9 +94,10 @@ class GDO_File(GDO):
                 'file_size': str(Files.size(f"{dir}0")),
                 'file_mime': Files.get_contents(f"{dir}mime"),
             })
-            file.temp_path(f"{dir}/0")
+            file.temp_path(f"{dir}0")
             return file
-        except FileNotFoundError:
+        except FileNotFoundError as ex:
+            Logger.exception(ex)
             return None
 
     @classmethod

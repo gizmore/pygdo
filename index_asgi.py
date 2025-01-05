@@ -5,17 +5,20 @@ from urllib.parse import parse_qs
 from multipart import parse_options_header, MultipartParser
 
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOModuleException
+from gdo.base.Exceptions import GDOModuleException, GDOMethodException
+from gdo.base.GDO import GDO
+from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import WebParser
 from gdo.base.Render import Mode
-from gdo.base.Util import dump, Files
+from gdo.base.Util import Files
 from gdo.base.method.dir_server import dir_server
 from gdo.base.method.file_server import file_server
 from gdo.base.method.server_error import server_error
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
+from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
 
 FRESH = True
@@ -38,6 +41,15 @@ async def app(scope, receive, send):
             ModuleLoader.instance().load_modules_db()
             ModuleLoader.instance().init_modules(True, True)
         else:
+            GDT.GDT_MAX = 0
+            GDO.GDO_MAX = 0
+            GDT.GDT_COUNT = 0
+            GDO.GDO_COUNT = 0
+            GDT.GDT_ALIVE = 0
+            GDO.GDO_ALIVE = 0
+            Application.DB_TRANSACTIONS = 0
+            Application.DB_READS = 0
+            Application.DB_WRITES = 0
             Application.fresh_page()
 
         Application.init_asgi(scope)
@@ -92,7 +104,7 @@ async def app(scope, receive, send):
                 parser = WebParser(user, server, channel, session)
                 try:
                     method = parser.parse(url.lstrip('/'))
-                except GDOModuleException:
+                except (GDOModuleException, GDOMethodException):
                     method = not_found().env_server(server).env_user(user).input('_url', url)
 
             if Application.get_request_method() == 'POST':
@@ -123,6 +135,22 @@ async def app(scope, receive, send):
             while asyncio.iscoroutine(result):
                 result = await result
 
+            if isinstance(result, GDT_FileOut):
+                size = int(Application.get_header('Content-Length'))
+                await send({
+                    'type': 'http.response.start',
+                    'status': Application.get_status_code(),
+                    'headers': Application.get_headers_asgi(),
+                })
+                for chunk in result:
+                    size -= len(chunk)
+                    await send({
+                        'type': 'http.response.body',
+                        'body': chunk,
+                        'more_body': size > 0,
+                    })
+                return
+
             if Application.is_html():
                 Application.header('Content-Type', 'text/html; charset=UTF-8')
                 page = Application.get_page()
@@ -132,6 +160,7 @@ async def app(scope, receive, send):
                     module.gdo_init_sidebar(page)
 
             out = result.render(Mode.HTML).encode()
+            session.save()
 
             Application.header('Content-Length', str(len(out)))
             await send({
@@ -144,7 +173,6 @@ async def app(scope, receive, send):
                 'body': out,
                 'more_body': False,
             })
-            session.save()
     except Exception as ex:
         try:
             Logger.exception(ex)

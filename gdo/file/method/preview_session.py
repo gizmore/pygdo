@@ -19,7 +19,7 @@ class preview_session(preview):
         return self.param_value('path')
 
     def get_temp_dir(self):
-        sessid = Application.get_session().get_id()
+        sessid = self._env_session.get_id()
         files_dir = Application.config('file.directory')
         return Application.temp_path(f"{files_dir}{self.get_path()}/{sessid}/")
 

@@ -139,7 +139,7 @@ class GDO_Module(WithModuleConfig, GDO):
         dirname = self.file_path('method')
         if Files.exists(dirname):
             for file_name in os.listdir(dirname):
-                full_path = os.path.join(dirname, file_name)
+                # full_path = os.path.join(dirname, file_name)
                 if not file_name.startswith('_'):
                     try:
                         method = self.instantiate_method(file_name[:-3])

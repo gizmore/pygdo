@@ -15,4 +15,7 @@ class GDT_Editor(GDT_Enum):
         cls.EDITORS[editor.get_name()] = editor
 
     def gdo_choices(self) -> dict:
-        return self.EDITORS
+        choices = {}
+        for name, editor in self.EDITORS.items():
+            choices[name] = name
+        return choices

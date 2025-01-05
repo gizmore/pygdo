@@ -117,13 +117,6 @@ class CLI:
         name = getpass.getuser()
         return Bash.get_server().get_or_create_user(name)
 
-    # @classmethod
-    # def parse(cls, line):
-    #     from gdo.base.Parser import Parser
-    #     method = Parser(line, cls.get_current_user()).parse()
-    #     return method
-
-
 class Strings:
     @classmethod
     def substr_from(cls, s: str, frm: str, default='') -> str:
@@ -309,8 +302,8 @@ class Files:
             return f.read()
 
     @classmethod
-    def mime(cls, path):
-        mime_type = mimetypes.MimeTypes().guess_type(path)
+    def mime(cls, path: str):
+        mime_type = mimetypes.guess_type(path)
         return mime_type[0] if mime_type[0] else 'application/octet-stream'
 
     @classmethod

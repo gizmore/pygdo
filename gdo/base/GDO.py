@@ -71,7 +71,7 @@ class GDO(WithBulk, GDT):
         hash_me = hashlib.sha256()
         for gdt in self.columns():
             val = gdt.get_val()
-            hash_me.update(val.encode('utf-8') if val is not None else b'')
+            hash_me.update(val.encode() if val is not None else b'')
         return hash_me.hexdigest()[0:24]
 
     def render_name(self):
@@ -126,9 +126,6 @@ class GDO(WithBulk, GDT):
         return self.column(key).get_value()
 
     def set_val(self, key, val: str, dirty: bool = True):
-        # if key in self._vals.keys():
-        #     if val == self._vals[key]:
-        #         dirty = False
         if isinstance(val, bytearray):
             val = val.decode()
         if self._vals[key] == val:
