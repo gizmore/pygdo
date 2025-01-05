@@ -3,6 +3,8 @@ import functools
 
 from typing import TYPE_CHECKING
 
+from mysql.connector import OperationalError
+
 if TYPE_CHECKING:
     from gdo.base.GDO_Module import GDO_Module
     from gdo.core.GDO_Channel import GDO_Channel
@@ -264,7 +266,11 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             return await self._nested_execute(self, True)
         except GDOParamError as ex:
             err_raw(str(ex))
- #           return GDT_Error().title_raw(self.gdo_module().get_name()).text_raw(str(ex))
+            return self
+            # return GDT_Error().title_raw(self.gdo_module().get_name()).text_raw(str(ex))
+        except OperationalError as ex:
+            db.reconnect()
+            raise ex
         except Exception as ex:
             if tr:
                 db.rollback()

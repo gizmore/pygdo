@@ -10,4 +10,4 @@ typing_extensions
 nest_asyncio
 html-purifier
 multipart
-magic
+python-magic

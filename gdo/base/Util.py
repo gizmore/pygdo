@@ -327,6 +327,10 @@ class Files:
                 hash_md5.update(chunk)
         return hash_md5.hexdigest()
 
+    @classmethod
+    def dirname(cls, path: str) -> str:
+        return os.path.dirname(path)
+
 
 class Arrays:
     """

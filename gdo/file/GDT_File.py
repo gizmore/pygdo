@@ -1,6 +1,7 @@
 from gdo.base.Application import Application
+from gdo.base.GDO import GDO
 from gdo.base.Method import Method
-from gdo.base.Util import Files, href, urlencode
+from gdo.base.Util import Files, href, urlencode, dump
 from gdo.core.GDO_File import GDO_File
 from gdo.core.GDT_Object import GDT_Object
 from gdo.core.GDT_String import GDT_String
@@ -75,6 +76,7 @@ class GDT_File(GDT_Object):
     #######
     def get_value(self):
         files = self.get_initial_files()
+        dump(files, 'a')
         if not files:
             super_value = super().get_value()
             return [super_value] if super_value else []
@@ -82,6 +84,7 @@ class GDT_File(GDT_Object):
 
     def to_value(self, val: str):
         value = super().to_value(val)
+        dump(value, 'b')
         return [value] if value else None
 
     def get_initial_files(self):
@@ -93,6 +96,11 @@ class GDT_File(GDT_Object):
         if file := GDO_File.from_dir(dir):
             return [file]
         return []
+
+    def get_persisted_file(self) -> GDO_File:
+        if files := self.get_value():
+            if files[0].is_persisted():
+                return files[0]
 
     ##########
     # Upload #
@@ -109,6 +117,15 @@ class GDT_File(GDT_Object):
                 Files.put_contents(path, file_data[2])
                 Files.put_contents(dir + "mime", Files.mime(path))
                 Files.put_contents(dir + "name", file_data[1])
+        self.deletion(method)
+
+    def deletion(self, method: Method):
+        if f"--{self._name}.sess.delete" in method._args:
+            self.cleanup_temp_dir()
+        if f"--{self._name}.file.delete" in method._args:
+            if file := self.get_persisted_file():
+                file.delete()
+                self.val("")
 
     def get_temp_dir(self):
         sessid = Application.get_session().get_id() or '1'
@@ -120,9 +137,12 @@ class GDT_File(GDT_Object):
     # Validate #
     ############
     def validate(self, val: str | None, value: any) -> bool:
+        dump(val, value)
         if not value:
             return super().validate(val, None)
-        return self.validate_files(val, value)
+        if self.validate_files(val, value):
+            return True
+        return False
 
     def validate_files(self, val: str | None, value: any) -> bool:
         for file in value:
@@ -160,6 +180,23 @@ class GDT_File(GDT_Object):
 
     def render_form(self) -> str:
         return GDT_Template().template('file', 'test.html', {'field': self}).render()
+
+    ###########
+    # Cleanup #
+    ###########
+
+    def cleanup_temp_dir(self):
+        Files.delete_dir(self.get_temp_dir())
+
+    def cleanup_temp_files(self, files: list[GDO_File]):
+        for file in files:
+            self.cleanup_temp_file(file)
+
+    def cleanup_temp_file(self, file: GDO_File):
+        path = file.get_path()
+        dir = Files.dirname(path)
+        Files.delete_dir(dir)
+
 
     ##########
     # Upload #

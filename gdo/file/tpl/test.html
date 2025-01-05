@@ -2,7 +2,10 @@
 <div id="gdo-file-preview-<%=field.get_name()%>"></div>
 <%
 for gdo_file in field.get_value():
-	delete_button = '' if field._no_delete else '<input type="submit" name="%s[delete][%s]" value="Remove File" onclick="return confirm(\'%s\')"/>' % (field.get_name(), gdo_file.get_id(), t('confirm_delete'))
+	if gdo_file.is_persisted():
+		delete_button = '' if field._no_delete else '<input type="submit" name="%s.file.delete" value="Remove File" onclick="return confirm(\'%s\')"/>' % (field.get_name(), t('confirm_delete'))
+	else:
+		delete_button = '' if field._no_delete else '<input type="submit" name="%s.sess.delete" value="Remove File" onclick="return confirm(\'%s\')"/>' % (field.get_name(), t('confirm_delete'))
 	if field._preview:
 		write('<div class="gdo-file-preview"><img src="%s" />%s (%s)</div>' % (field.href_preview(gdo_file), delete_button, html(gdo_file.get_name())))
 	else:

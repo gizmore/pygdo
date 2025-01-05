@@ -65,6 +65,9 @@ class Database:
             self.query("SET time_zone = '+00:00'")
         return self.link
 
+    def reconnect(self):
+        self.link = None
+
     def insert_id(self) -> str:
         return self.get_link().insert_id()
 
@@ -129,7 +132,6 @@ class Database:
             if isinstance(gdt, GDT_Unique):
                 cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{gdt.get_name()}"
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({', '.join(gdt._column_names)})")
-
 
     def delete_all_fk(self, gdo: 'GDO'):
         from gdo.base.Application import Application

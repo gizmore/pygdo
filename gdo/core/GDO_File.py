@@ -89,13 +89,11 @@ class GDO_File(GDO):
     def from_dir(cls, dir: str):
         try:
             filename = Files.get_contents(f"{dir}name")
-            file = cls.blank({
+            return cls.blank({
                 'file_name': filename,
                 'file_size': str(Files.size(f"{dir}0")),
                 'file_mime': Files.get_contents(f"{dir}mime"),
-            })
-            file.temp_path(f"{dir}0")
-            return file
+            }).temp_path(f"{dir}0")
         except FileNotFoundError as ex:
             Logger.exception(ex)
             return None
