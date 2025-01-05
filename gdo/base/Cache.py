@@ -90,6 +90,7 @@ class Cache:
         if key not in cls.FCACHE:
             cls.FCACHE[key] = {}
         cls.FCACHE[key][args_key] = value
+        return value
 
     @classmethod
     def remove(cls, key: str = None, args_key: str = None):
