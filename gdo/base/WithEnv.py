@@ -30,7 +30,7 @@ class WithEnv:
 
     def env_user(self, user: 'GDO_User', load_session: bool = False):
         self._env_user = user
-        if load_session and user.get_id() != '0':
+        if load_session and user is not None and user.get_id() != '0':
             from gdo.core.GDO_Session import GDO_Session
             self.env_session(GDO_Session.for_user(user))
         return self
