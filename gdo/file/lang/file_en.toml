@@ -1,4 +1,7 @@
 module_file = "Files"
 
-err_upload_mime = "The file format is not supported."
+############
+# GDT_File #
+############
+err_upload_mime = "The file format %s is not supported."
 confirm_delete = "Really delete this?"

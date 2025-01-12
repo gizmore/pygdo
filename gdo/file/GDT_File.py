@@ -152,7 +152,7 @@ class GDT_File(GDT_Object):
 
     def validate_file(self, file: GDO_File):
         if not self.validate_mime(file):
-            return self.error_mime()
+            return self.error_mime(file)
         return True
 
     def validate_mime(self, file: GDO_File):
@@ -162,8 +162,8 @@ class GDT_File(GDT_Object):
             return False
         return True
 
-    def error_mime(self):
-        return self.error('err_upload_mime')
+    def error_mime(self, file: GDO_File):
+        return self.error('err_upload_mime', [file.get_mime()])
 
     ##########
     # Render #
