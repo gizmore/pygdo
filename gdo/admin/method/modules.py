@@ -55,7 +55,7 @@ class modules(MethodTable):
         name = Render.green(name, Mode.CLI) if gdo.installed() else name
         return f'{name}'
 
-    def render_module_enabled(self, gdt: GDT_Bool) -> str:
+    def render_module_enabled(self, gdt: GDT_Bool, gdo: GDO_Module) -> str:
         if gdt._gdo.is_persisted():
             return 'Y' if gdt._val == '1' else 'N'
         return ''

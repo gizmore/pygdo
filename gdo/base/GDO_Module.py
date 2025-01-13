@@ -107,7 +107,7 @@ class GDO_Module(WithModuleConfig, GDO):
         return self.is_persisted()
 
     def is_enabled(self):
-        return self.gdo_val('module_enabled') == '1'
+        return self.is_persisted() and self.gdo_val('module_enabled') == '1'
 
     def is_installable(self) -> bool:
         return True
