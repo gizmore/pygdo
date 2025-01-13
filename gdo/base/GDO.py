@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import hashlib
 import traceback
+from typing import Self
 
 from gdo.base.Exceptions import GDOException
 from gdo.base.Logger import Logger
@@ -342,6 +343,14 @@ class GDO(WithBulk, GDT):
 
     def all(self, where: str = '1', result_type: ResultType = ResultType.OBJECT) -> list['GDO']:
         return self.table().select().where(where).exec().iter(result_type).fetch_all()
+
+    def all_cached(self, where: str = '1', result_type: ResultType = ResultType.OBJECT) -> list['Self']:
+        cache_key = f"{self.gdo_table_name()}_all"
+        if cached := Cache.get(cache_key, where):
+            return cached
+        cached = self.all(where, result_type)
+        Cache.set(cache_key, where, cached)
+        return cached
 
     ########
     # Name #
