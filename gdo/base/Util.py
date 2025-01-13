@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+import string
+
 import magic
 
 import getpass
@@ -507,3 +510,41 @@ class Permutations:
             if self.last_permutation[i] < len(self.values[i]):
                 break
             self.last_permutation[i] = 0
+
+
+class NumericUtil:
+
+    DIGITS = string.digits + string.ascii_uppercase + string.ascii_lowercase + "+/"
+    DIGITS_BASE64 = string.ascii_uppercase + string.ascii_lowercase + string.digits + "+/"
+
+    @staticmethod
+    def output_prefix(base: int) -> str:
+        return {2: '0b', 8: '0o', 16: '0x'}.get(base, '')
+
+    @staticmethod
+    def to_base(n: int, base: int, charset: str = DIGITS) -> str:
+        if n == 0:
+            return charset[0]
+        neg = n < 0
+        n = abs(n)
+        result = []
+        while n > 0:
+            result.append(charset[n % base])
+            n //= base
+        if neg:
+            result.append('-')
+        return ''.join(reversed(result))
+
+    @staticmethod
+    def from_base(s: str, base: int, charset: str = DIGITS) -> int:
+        s = s.strip()
+        neg = 1
+        if s.startswith('-'):
+            neg = -1
+            s = s[1:]
+        num = 0
+        for char in s:
+            if char not in charset:
+                raise ValueError(f"Invalid character {char} for NumericUtil encoding")
+            num = num * base + charset.index(char)
+        return num * neg

@@ -1,5 +1,6 @@
 import sys
 
+from gdo.base.Util import NumericUtil
 from gdo.core.GDT_String import GDT_String
 
 
@@ -8,6 +9,7 @@ class GDT_Int(GDT_String):
     _max: int
     _bytes: int
     _signed: bool
+    _base: int
 
     def __init__(self, name: str):
         super().__init__(name)
@@ -15,6 +17,7 @@ class GDT_Int(GDT_String):
         self._bytes = 4
         self._min = -sys.maxsize - 1
         self._max = sys.maxsize
+        self._base = 10
 
     def is_orderable(self) -> bool:
         return True
@@ -41,13 +44,18 @@ class GDT_Int(GDT_String):
         self._bytes = _bytes
         return self
 
-    def signed(self, signed: bool):
+    def signed(self, signed: bool = True):
         self._signed = signed
         return self
 
-    def unsigned(self, unsigned=True):
+    def unsigned(self, unsigned: bool = True):
         self._signed = not unsigned
         return self
+
+    def base(self, base: int):
+        self._base = base
+        return self
+
 
     #######
     # GDO #
@@ -99,5 +107,9 @@ class GDT_Int(GDT_String):
     ##########
     # Render #
     ##########
-    def render_toml(self) -> str:
-        return f"{self.get_name()} = {self.get_val()}\n"
+    # def render_toml(self) -> str:
+    #     prefix = NumericUtil.output_prefix(self._base)
+    #     return f"{self.get_name()} = {prefix}{self.get_val()}\n"
+    #
+    # def getBasePrefix(self):
+    #     pass

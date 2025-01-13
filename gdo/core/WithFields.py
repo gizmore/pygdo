@@ -48,7 +48,7 @@ class WithFields:
         output = ""
         if hasattr(self, '_fields'):
             for gdt in self._fields:
-                output += str(gdt.render(mode))
+                output += gdt.render(mode)
         return output
 
     # def render_txt(self) -> str:

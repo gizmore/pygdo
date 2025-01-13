@@ -1,4 +1,3 @@
-import time
 from functools import wraps
 
 from gdo.base.Application import Application
@@ -43,6 +42,7 @@ def WithRateLimit(func=None, max_calls: int = 6, within: float = 60.0):
             if len(calls_made) >= max_calls:
                 min_wait_time = within - (t - calls_made[0])
                 raise GDOError('err_rate_limit_exceeded', [max_calls, Time.human_duration(within), Time.human_duration(min_wait_time)])
+
             calls_made.append(t)
             return func(*args, **kwargs)
 

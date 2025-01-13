@@ -15,7 +15,7 @@ class GDT_ProfileLink(GDT_Link):
 
     def user(self, user: GDO_User):
         self._user = user
-        self.href(href('user', 'profile', f'&user={user.get_id()}'))
+        self.href(href('user', 'profile', f'&for={user.get_id()}'))
         return self
 
     def with_username(self, with_username: bool = True):

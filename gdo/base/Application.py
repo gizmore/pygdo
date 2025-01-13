@@ -175,6 +175,7 @@ class Application:
         cls.init_cookies_asgi(scope)
         cls.STORAGE.ip = scope.get('client')[0]
         cls.PROTOCOL = scope.get('scheme')
+        cls.tick()
 
     @classmethod
     def asgi_headers(cls, scope):
