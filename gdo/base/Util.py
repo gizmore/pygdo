@@ -308,7 +308,7 @@ class Files:
 
     @classmethod
     def mime(cls, path: str):
-        return magic.Magic(mime=True).from_file(path)
+        return magic.Magic(mime=True, keep_going=True).from_file(path)
         # mime_type = mimetypes.guess_type(path)
         # dump(mime_type)
         # return mime_type[0] if mime_type[0] else 'application/octet-stream'

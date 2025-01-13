@@ -176,8 +176,9 @@ class GDO_Module(WithModuleConfig, GDO):
     # Assets #
     ##########
     def get_minify_append(self) -> str:
-        from gdo.core.module_core import module_core
-        return '.min' if module_core.instance().cfg_minify() != 'no' else ''
+        return ''
+        # from gdo.core.module_core import module_core
+        # return '.min' if module_core.instance().cfg_minify() != 'no' else ''
 
     def add_css(self, filename: str):
         from gdo.ui.GDT_Page import GDT_Page
@@ -189,7 +190,6 @@ class GDO_Module(WithModuleConfig, GDO):
         return self.add_css(f'node_modules/{filename}')
 
     def add_js(self, filename: str):
-        from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"
         Application.get_page()._js.append(path)
         return self
@@ -198,7 +198,6 @@ class GDO_Module(WithModuleConfig, GDO):
         return self.add_js(f'node_modules/{filename}')
 
     def add_js_inline(self, code: str):
-        from gdo.ui.GDT_Page import GDT_Page
         Application.get_page()._js_inline += f"<script>{code}\n</script>\n"
         return self
 

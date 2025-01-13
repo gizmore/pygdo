@@ -17,9 +17,10 @@ class GDT_Page(GDT):
     _right_bar: GDT_Bar
     _bottom_bar: GDT_Container
 
-    _js: list
+    _js: list[str]
     _js_inline: str
-    _css: list
+    _css: list[str]
+    _css_inline: str
 
     @classmethod
     def instance(cls):
@@ -33,6 +34,7 @@ class GDT_Page(GDT):
         self._js = []
         self._css = []
         self._js_inline = ''
+        self._css_inline = ''
         self._title_bar = GDT_Bar().horizontal()
         self._top_bar = GDT_Container()
         self._left_bar = GDT_Bar('left').vertical()
@@ -48,8 +50,8 @@ class GDT_Page(GDT):
         self._method = method
         return self
 
-    def add_css(self, url: str):
-        self._css.append(url)
+    # def add_css(self, url: str):
+    #     self._css.append(url)
 
     def render_html(self):
         return GDT_Template.python('ui', 'page.html', {'field': self, 'result': self._result.render(Mode.HTML)})

@@ -123,5 +123,9 @@ class CoreTestCase(GDOTestCase):
         after = Application.DB_READS
         self.assertEqual(before, after, "Cache does not work")
 
+    def test_16_asset_file(self):
+        out = web_plug('/gdo/core/css/pygdo.css').exec()
+        self.assertIn('*', out, "css asset loading failed")
+
 if __name__ == '__main__':
     unittest.main()

@@ -20,4 +20,4 @@ class WithHTMLAttributes:
         out = ""
         for key, value in self.get_attrs().items():
             out += f' {key}="{html(value)}"'
-        return out.strip()
+        return out #.strip()

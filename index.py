@@ -85,12 +85,16 @@ def pygdo_application(environ, start_response):
             user = session.get_user()
             method = file_server().env_server(user.get_server()).env_user(user).env_session(session).input('_url', path)
             gdt = method.execute()
-            if asyncio.iscoroutine(gdt):
+            while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
-            for chunk in gdt:
-                yield chunk
+            if isinstance(gdt, GDT_FileOut):
+                for chunk in gdt:
+                    yield chunk
+                return
+            yield gdt.render(Mode.HTML).encode()
+            return
         else:
             session = GDO_Session.start(True)
             user = session.get_user()
@@ -102,7 +106,7 @@ def pygdo_application(environ, start_response):
             channel = None
             if Files.is_dir(path):
                 session = GDO_Session.start(False)
-                method = dir_server().env_server(server).input('_url', path)
+                method = dir_server().env_user(user, False).env_session(session).env_server(server).input('_url', path)
             else:
                 parser = WebParser(user, server, channel, session)
                 method = parser.parse(url)

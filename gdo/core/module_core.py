@@ -75,7 +75,8 @@ class module_core(GDO_Module):
             GDT_Bool('guest_system').initial('1'),
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
-            GDT_Enum('minify').choices({"no": 'No', 'yes': 'Yes', 'concat': 'Concat'}).initial('no'),
+            GDT_Bool('allow_gdo_assets').initial('0'),
+            # GDT_Enum('minify').choices({"no": 'No', 'yes': 'Yes', 'concat': 'Concat'}).initial('no'),
             GDT_UInt('asset_version').initial('1'),
         ]
 
@@ -87,20 +88,24 @@ class module_core(GDO_Module):
             GDT_User("deletor"),
         ]
 
+    def cfg_guest_system(self) -> bool:
+        return self.get_config_value('guest_system')
+
     def cfg_403_mails(self) -> bool:
         return self.get_config_value('send_403_mails')
 
     def cfg_404_mails(self) -> bool:
         return self.get_config_value('send_404_mails')
 
-    def cfg_guest_system(self) -> bool:
-        return self.get_config_value('guest_system')
+    def cfg_allow_gdo_assets(self) -> bool:
+        return self.get_config_value('allow_gdo_assets')
 
-    def cfg_minify(self) -> str:
-        return self.get_config_value('minify')
+    # def cfg_minify(self) -> str:
+    #     return self.get_config_value('minify')
 
     def get_minify_append(self) -> str:
-        return '.min' if self.cfg_minify() != 'no' else ''
+        return ''
+        # return '.min' if self.cfg_minify() != 'no' else ''
 
     def gdo_classes(self):
         return [

@@ -1,10 +1,11 @@
 from gdo.base.Trans import t
 from gdo.file.GDT_File import GDT_File
+from gdo.message.WithHTMLAttributes import WithHTMLAttributes
 from gdo.ui.WithHREF import WithHREF
 from gdo.ui.WithSize import WithSize
 
 
-class GDT_Image(WithSize, WithHREF, GDT_File):
+class GDT_Image(WithSize, WithHREF, WithHTMLAttributes, GDT_File):
     _alt_key: str|None
     _alt_args: list|None
 
@@ -36,7 +37,7 @@ class GDT_Image(WithSize, WithHREF, GDT_File):
         return t(self._alt_key, self._alt_args) if self._alt_key else t('no_alt_text_an_image')
 
     def render_html(self) -> str:
-        return f'<img src="{self.render_href()}"{self.html_alternate()} width="{self._width}" height="{self._height}" />'
+        return f'<img{self.html_attrs()} src="{self.render_href()}"{self.html_alternate()} width="{self._width}" height="{self._height}" />'
 
     def render_form(self) -> str:
         return self.render_html()
