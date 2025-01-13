@@ -2,6 +2,7 @@ from gdo.admin.GDT_Module import GDT_Module
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t
+from gdo.base.Util import href
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
 from gdo.form.MethodForm import MethodForm
@@ -34,6 +35,7 @@ class settings(MethodForm):
         form.text('md_account_settings', [module.render_name()])
         for gdt in module.all_user_settings():
             form.add_field(gdt)
+        form.href(href('account', 'all_settings', f'&module={module.get_name()}'))
         form.actions().add_field(GDT_Submit(f'submit_{module.get_name()}').calling(self.form_submitted))
         # super().gdo_create_form(form)
 

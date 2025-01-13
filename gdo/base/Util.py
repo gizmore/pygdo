@@ -302,7 +302,7 @@ class Files:
     @classmethod
     def get_contents(cls, path: str):
         try:
-            with open(path, 'r') as f:
+            with open(path, 'r', encoding='UTF-8') as f:
                 return f.read()
         except FileNotFoundError as ex:
             from gdo.base.Logger import Logger

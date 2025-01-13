@@ -268,6 +268,7 @@ class GDO(WithBulk, GDT):
             query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
             query.exec()
             self.after_update()
+            Cache.obj_for(self)._vals.update(self._vals)
             return self.all_dirty(False)
         else:
             return self

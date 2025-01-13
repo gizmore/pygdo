@@ -167,8 +167,7 @@ class GDT_Template(GDT):
             return cls.render_template(path, vals)
         except Exception as ex:
             Logger.exception(ex)
-            tb = traceback.format_exc()
-            return f"Exception: {ex}\nTraceback: {tb}"
+            raise ex
 
     @classmethod
     def register_theme(cls, name: str, path: str):

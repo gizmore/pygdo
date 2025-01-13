@@ -1,4 +1,9 @@
 import asyncio
+import os
+
+os.environ['BETTER_EXCEPTIONS'] = '1'
+
+import better_exceptions
 
 import nest_asyncio
 
@@ -25,7 +30,6 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
-from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_UInt import GDT_UInt
 from gdo.core.GDT_User import GDT_User
 from gdo.core.InstallCore import InstallCore
@@ -44,6 +48,7 @@ class module_core(GDO_Module):
         Connector.register(Bash)
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
+        better_exceptions.hook()
         try:
             if Application.IS_HTTP and not Application.ASGI:
                 nest_asyncio.apply(asyncio.new_event_loop())

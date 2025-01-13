@@ -20,9 +20,8 @@ class GDO_UserSetting(GDO):
         gdt = GDT_UserSetting.KNOWN[key]
         if user.get_id() == "0":
             return gdt
-        gdo = cls.get_setting(user, key)
-        if gdo:
-            return gdt.val(gdo.get_val())
+        if gdo := cls.get_setting(user, key):
+            return gdt.initial(gdo.get_val())
         else:
             cls.blank({
                 'uset_user': user.get_id(),

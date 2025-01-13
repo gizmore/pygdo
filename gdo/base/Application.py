@@ -103,6 +103,7 @@ class Application:
     def fresh_page(cls):
         from gdo.ui.GDT_Page import GDT_Page
         cls.STORAGE.page = GDT_Page()
+        cls.status('200 OK')
         return cls.STORAGE.page
 
     @classmethod
@@ -258,7 +259,6 @@ class Application:
     @classmethod
     def get_headers_asgi(cls):
         headers_dict = cls.storage('headers', {})
-        Logger.debug(str(headers_dict))
         return [(key.encode(), value.encode()) for key, value in headers_dict.items()]
 
     @classmethod
