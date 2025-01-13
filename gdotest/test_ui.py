@@ -38,7 +38,7 @@ class UITestCase(GDOTestCase):
         self.assertIn('<form', result, 'erroneous page does not render fallback')
 
     def test_05_human_filesize(self):
-        self.assertEqual(GDT_FileSize.to_human(1024), '1.00kb', "human file size 1kb failed")
+        self.assertEqual(GDT_FileSize.to_human(1024), '1.00 KB', "human file size 1kb failed")
 
 
 

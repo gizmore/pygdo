@@ -21,6 +21,7 @@ from gdotest.TestUtil import cli_plug, web_gizmore, cli_gizmore, GDOTestCase, we
 class CoreTestCase(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
@@ -28,7 +29,6 @@ class CoreTestCase(GDOTestCase):
         loader.init_cli()
         web_gizmore()
         cli_gizmore()
-        super().setUp()
 
     def test_01_md5_string(self):
         hash = GDT_MD5.hash_for_str("abc")
@@ -40,11 +40,11 @@ class CoreTestCase(GDOTestCase):
         self.assertEqual(hash, 'fdd53b0e66e073d3b100c098010e3f09', "MD5 hashing of testamentum file failed.")
 
     def test_03_path(self):
-        gdt = GDT_Path('file').initial(Application.file_path('DOCS')).existing_dir()
+        gdt = GDT_Path('file').initial('DOCS').existing_dir()
         self.assertIsNotNone(gdt.validated(), "Checking GDT_File for an existing dir fails.")
-        gdt = GDT_Path('file').initial(Application.file_path('DOCS/README.md')).existing_file()
+        gdt = GDT_Path('file').initial('DOCS/README.md').existing_file()
         self.assertIsNotNone(gdt.validated(), "Checking GDT_File for an existing dir fails.")
-        gdt = GDT_Path('file').initial(Application.file_path('DOCS/README_NOT.md')).existing_file()
+        gdt = GDT_Path('file').initial('DOCS/README_NOT.md').existing_file()
         self.assertIsNone(gdt.validated(), "Checking GDT_File for an existing file should fail.")
 
     def test_04_float_rendering(self):
@@ -124,7 +124,7 @@ class CoreTestCase(GDOTestCase):
         self.assertEqual(before, after, "Cache does not work")
 
     def test_16_asset_file(self):
-        out = web_plug('/gdo/core/css/pygdo.css').exec()
+        out = web_plug('gdo/core/css/pygdo.css').exec()
         self.assertIn('*', out, "css asset loading failed")
 
 if __name__ == '__main__':
