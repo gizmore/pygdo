@@ -27,7 +27,7 @@ class IconProvider:
             for provider in reversed(IconProvider.PROVIDERS):
                 if provider.has_icon(name):
                     return provider.display_icon_html(name, alt, color, size)
-        return IconUTF8.MAP[name]
+        return IconUTF8.MAP()[name]
 
     @classmethod
     def display_icon_html(cls, name: str, mode: Mode, alt: str, color: str = None, size: str = None) -> str:

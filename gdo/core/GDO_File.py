@@ -1,20 +1,18 @@
-import mimetypes
 import os.path
 
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
-from gdo.base.Method import Method
 from gdo.base.Util import Files, href
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_MD5 import GDT_MD5
 from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_String import GDT_String
-from gdo.core.GDT_UInt import GDT_UInt
 from gdo.date.GDT_Created import GDT_Created
 from gdo.date.GDT_Duration import GDT_Duration
+from gdo.file.GDT_FileSize import GDT_FileSize
 from gdo.ui.GDT_Height import GDT_Height
 from gdo.ui.GDT_Width import GDT_Width
 
@@ -32,7 +30,7 @@ class GDO_File(GDO):
         return [
             GDT_AutoInc('file_id'),
             GDT_Name('file_name').not_null(),
-            GDT_UInt('file_size').not_null(),
+            GDT_FileSize('file_size').not_null(),
             GDT_String('file_mime').not_null(),
             GDT_MD5('file_hash'),
             GDT_Duration('file_duration'),

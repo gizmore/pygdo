@@ -1,4 +1,5 @@
-from gdo.base.Util import Files, html
+from gdo.base.Application import Application
+from gdo.base.Util import Files, html, dump
 from gdo.core.GDT_String import GDT_String
 
 
@@ -37,6 +38,7 @@ class GDT_Path(GDT_String):
         if value is None:
             return True
 
+        value = Application.file_path(value.lstrip('/'))
         if self._path_existing:
             if not Files.exists(value):
                 self.error('err_path_not_exists', [html(value)])
@@ -44,10 +46,10 @@ class GDT_Path(GDT_String):
 
         if self._path_is_file:
             if not Files.is_file(value):
-                self.error('err_path_not_file', [html(value)])
+                return self.error('err_path_not_file', [html(value)])
 
         if self._path_is_dir:
             if not Files.is_dir(value):
-                self.error('err_path_not_dir', [html(value)])
+                return self.error('err_path_not_dir', [html(value)])
 
         return True

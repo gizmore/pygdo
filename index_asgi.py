@@ -1,6 +1,7 @@
 import asyncio
 import io
 import os
+from asyncio import iscoroutine
 from urllib.parse import parse_qs
 from multipart import parse_options_header, MultipartParser
 
@@ -72,8 +73,10 @@ async def app(scope, receive, send):
             session = GDO_Session.start(False)
             user = session.get_user()
             Logger.user(user)
-            method = file_server().env_server(user.get_server()).env_user(user).input('_url', path)
+            method = file_server().env_server(user.get_server()).env_user(user).input('_url', url)
             gdt = await method.execute()
+            while iscoroutine(gdt):
+                gdt = await gdt
             await send({
                 'type': 'http.response.start',
                 'status': Application.get_status_code(),
@@ -93,7 +96,7 @@ async def app(scope, receive, send):
                 session = GDO_Session.start(False)
                 user = session.get_user()
                 Logger.user(user)
-                method = dir_server().env_server(user.get_server()).env_user(user).input('_url', path)
+                method = dir_server().env_server(user.get_server()).env_user(user).input('_url', url)
             else:
                 session = GDO_Session.start(True)
                 user = session.get_user()

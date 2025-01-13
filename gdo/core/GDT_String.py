@@ -1,7 +1,5 @@
-import json
 from enum import Enum
 
-from gdo.base.GDT import GDT
 from gdo.base.Trans import t
 from gdo.base.Util import jsn, dump
 from gdo.core.GDT_Field import GDT_Field

@@ -1,11 +1,11 @@
 from gdo.base.GDO_Module import GDO_Module
-from gdo.core.GDO_File import GDO_File
 from gdo.ui.GDT_Page import GDT_Page
 
 
 class module_file(GDO_Module):
 
     def gdo_classes(self):
+        from gdo.core.GDO_File import GDO_File
         return [
             GDO_File,
         ]

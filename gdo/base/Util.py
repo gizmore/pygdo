@@ -4,7 +4,6 @@ import magic
 import getpass
 import hashlib
 import json
-import mimetypes
 import os.path
 import random
 import re
@@ -316,6 +315,20 @@ class Files:
     @classmethod
     def size(cls, path: str) -> int:
         return os.path.getsize(path)
+
+    @classmethod
+    def dir_size_recursive(cls, dir_name: str) -> int:
+        total_size = 0
+        try:
+            with os.scandir(dir_name) as entries:
+                for entry in entries:
+                    if entry.is_file(follow_symlinks=False):
+                        total_size += entry.stat().st_size
+                    elif entry.is_dir(follow_symlinks=False):
+                        total_size += cls.dir_size_recursive(entry.path)
+        except PermissionError as ex:
+            pass
+        return total_size
 
     @classmethod
     def md5(cls, path: str) -> str:

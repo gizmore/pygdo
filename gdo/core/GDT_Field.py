@@ -38,7 +38,7 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, WithNullable, GDT):
         return self._name
 
     def get_val(self):
-        if not self._val:
+        if self._val is None or self._val == '':
             return None
         return self._val
 

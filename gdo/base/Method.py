@@ -275,7 +275,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             if tr:
                 db.rollback()
                 tr = False
-                raise ex
+            raise ex
         finally:
             if tr:
                 db.commit()

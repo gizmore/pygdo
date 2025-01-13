@@ -15,6 +15,7 @@ err_token = "Your token is invalid."
 err_select_candidates = "Too many results: %s."
 err_invalid_choice = "Invalid choice. Suggestions: %s."
 err_invalid_choice_no_suggestions = "Invalid choice."
+err_path_not_exists = "The file %s does not exist."
 
 ################
 ### Messages ###
@@ -41,6 +42,7 @@ creator = "Created by"
 deleted = "Deleted at"
 deletor = "Deleted by"
 count = "Count"
+directory = "Directory"
 
 ##################
 ### GDT_Select ###

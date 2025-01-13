@@ -24,7 +24,7 @@ class file_server(Method):
         return ""
 
     def get_path(self):
-        return self.param_val('_url')
+        return Application.file_path(self.param_val('_url').lstrip('/'))
 
     def gdo_execute(self) -> GDT:
         file_path = self.get_path()
@@ -40,8 +40,7 @@ class file_server(Method):
             Application.status("304 Not Modified")
             return GDT_HTML()
 
-        path_ = self.get_path()
-        mime_type, _ = mimetypes.guess_type(path_)
+        mime_type, _ = mimetypes.guess_type(file_path)
         Application.header('Content-Type', mime_type or 'application/octet-stream')
-        Application.header('Content-Length', str(path.getsize(path_)))
-        return GDT_FileOut().path(path_)
+        Application.header('Content-Length', str(path.getsize(file_path)))
+        return GDT_FileOut().path(file_path)

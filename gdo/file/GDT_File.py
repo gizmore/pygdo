@@ -76,7 +76,6 @@ class GDT_File(GDT_Object):
     #######
     def get_value(self):
         files = self.get_initial_files()
-        dump(files, 'a')
         if not files:
             super_value = super().get_value()
             return [super_value] if super_value else []
@@ -84,7 +83,6 @@ class GDT_File(GDT_Object):
 
     def to_value(self, val: str):
         value = super().to_value(val)
-        dump(value, 'b')
         return [value] if value else None
 
     def get_initial_files(self):
@@ -137,7 +135,6 @@ class GDT_File(GDT_Object):
     # Validate #
     ############
     def validate(self, val: str | None, value: any) -> bool:
-        dump(val, value)
         if not value:
             return super().validate(val, None)
         if self.validate_files(val, value):
