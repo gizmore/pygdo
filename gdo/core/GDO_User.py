@@ -27,7 +27,7 @@ class GDO_User(GDO):
     """
     # SYSTEM: GDO = None
     _authenticated: bool
-    _network_user: object  # Like discord message.author
+    _network_user: object  # User on a server netowrk. Like discord's - message.author
 
     __slots__ = (
         '_authenticated',
@@ -42,10 +42,7 @@ class GDO_User(GDO):
     @classmethod
     def system(cls) -> Self:
         if not hasattr(cls, 'SYSTEM'):
-            cls.SYSTEM = GDO_User.table().get_by_vals({
-                'user_id': '1',
-                # 'user_type': GDT_UserType.SYSTEM,
-            })
+            cls.SYSTEM = GDO_User.table().get_by_id('1')
             if cls.SYSTEM is None:
                 delattr(cls, 'SYSTEM')
                 return cls.ghost()

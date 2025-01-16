@@ -2,16 +2,13 @@ import asyncio
 import cgi
 import os.path
 import traceback
-from inspect import isgenerator
 from urllib.parse import parse_qs, unquote
 
 from gdo.base.Application import Application
-from gdo.base.Database import Database
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException, GDOParamNameException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
-from gdo.base.Message import Message
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import WebParser

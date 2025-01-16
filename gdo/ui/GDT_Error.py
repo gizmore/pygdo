@@ -41,4 +41,4 @@ class GDT_Error(GDT_Panel):
         file = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         line = exc_tb.tb_lineno
         exc_type = html(str(exc_type))
-        return cls().title_raw(title).text_raw(str(ex) + f"{exc_type} in {file} line {line}\n<pre>Backtrace:\n{traceback.format_exc()}\n</pre>", False)
+        return cls().title_raw(title).text_raw(str(ex) + f"{exc_type} in {file} line {line}\n<pre>Backtrace:\n{traceback.format_exc()}\n</pre>\n", False)

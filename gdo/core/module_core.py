@@ -1,10 +1,4 @@
 import asyncio
-import os
-
-os.environ['BETTER_EXCEPTIONS'] = '1'
-
-import better_exceptions
-
 import nest_asyncio
 
 from gdo.base.Application import Application
@@ -48,7 +42,6 @@ class module_core(GDO_Module):
         Connector.register(Bash)
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
-        better_exceptions.hook()
         try:
             if Application.IS_HTTP and not Application.ASGI:
                 nest_asyncio.apply(asyncio.new_event_loop())
@@ -81,7 +74,6 @@ class module_core(GDO_Module):
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
             GDT_Bool('allow_gdo_assets').initial('0'),
-            # GDT_Enum('minify').choices({"no": 'No', 'yes': 'Yes', 'concat': 'Concat'}).initial('no'),
             GDT_UInt('asset_version').initial('1'),
         ]
 
@@ -104,13 +96,6 @@ class module_core(GDO_Module):
 
     def cfg_allow_gdo_assets(self) -> bool:
         return self.get_config_value('allow_gdo_assets')
-
-    # def cfg_minify(self) -> str:
-    #     return self.get_config_value('minify')
-
-    def get_minify_append(self) -> str:
-        return ''
-        # return '.min' if self.cfg_minify() != 'no' else ''
 
     def gdo_classes(self):
         return [
@@ -136,5 +121,5 @@ class module_core(GDO_Module):
         InstallCore.now()
 
     def gdo_load_scripts(self, page):
-        self.add_css('css/pygdo.css')
         self.add_js('js/pygdo.js')
+        self.add_css('css/pygdo.css')
