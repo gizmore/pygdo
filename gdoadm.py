@@ -336,23 +336,20 @@ class App:
         parser.add_argument('--all', '-a', action='store_true')
         parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
-
         if args.all:
             Application.db().query(f"DROP DATABASE IF EXISTS {Application.db().db_name}")
             Application.db().query(f"CREATE DATABASE {Application.db().db_name}")
-            print("All Done!")
-            exit(0)
         elif args.module:
-            modules = ModuleLoader.instance().load_modules_fs(args.module, True)
+            modules = ModuleLoader.instance().load_modules_fs(args.module, False)
             modules = list(modules.values())
+            for module in modules:
+                if module := ModuleLoader.instance().load_module_db(module.get_name()):
+                    print(f"Wiping module {module.get_name()}")
+                    Installer.wipe(module)
+                else:
+                    print(f"Module is not installed.")
         else:
             parser.print_help()
-            exit(0)
-
-        for module in modules:
-            print(f"Wiping module {module.get_name()}")
-            Installer.wipe(module)
-
         print("All Done!")
 
     def migrate(self):
