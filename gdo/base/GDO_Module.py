@@ -22,7 +22,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.0")
-    CORE_REV = PyGDOv8.0.0-r1143
+    CORE_REV = "PyGDOv8.0.0-r1144"
 
     _priority: int
     _inited: bool
@@ -175,13 +175,7 @@ class GDO_Module(WithModuleConfig, GDO):
     ##########
     # Assets #
     ##########
-    def get_minify_append(self) -> str:
-        return ''
-        # from gdo.core.module_core import module_core
-        # return '.min' if module_core.instance().cfg_minify() != 'no' else ''
-
     def add_css(self, filename: str):
-        from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"
         Application.get_page()._css.append(path)
         return self
@@ -198,7 +192,7 @@ class GDO_Module(WithModuleConfig, GDO):
         return self.add_js(f'node_modules/{filename}')
 
     def add_js_inline(self, code: str):
-        Application.get_page()._js_inline += f"<script>{code}\n</script>\n"
+        Application.get_page()._js_inline += f"<script>\n{code}\n</script>\n"
         return self
 
     ##########
@@ -209,4 +203,3 @@ class GDO_Module(WithModuleConfig, GDO):
 
     def subscribe(self, event_name: str, callback: callable, times: int = 2_000_000_000):
         Application.EVENTS.subscribe_times(event_name, callback, times)
-

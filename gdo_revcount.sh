@@ -3,5 +3,13 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 PYTHON_FILE="gdo/base/GDO_Module.py"
+REVISION=$(grep -oP 'r\d+' "$PYTHON_FILE" | head -1 | sed 's/r//')
 
-sed -i -E 's/(CORE_REV\s*=\s*\x22PyGDOv[0-9]+\.[0-9]+\.[0-9]+-r)([0-9]+)(\x22)/echo "    \1$((\2 + 1))\3"/e' "$PYTHON_FILE"
+if [[ "$REVISION" =~ ^[0-9]{4}$ ]]; then
+    NEW_REVISION=$((REVISION + 1))
+    sed -i -E "s/r$REVISION/r$NEW_REVISION/" "$PYTHON_FILE"
+    echo "Updated revision from r$REVISION to r$NEW_REVISION"
+else
+    echo "Error: Could not extract a valid revision number."
+    exit 1
+fi
