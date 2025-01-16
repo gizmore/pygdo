@@ -9,9 +9,11 @@ from gdo.date.GDO_Timezone import GDO_Timezone
 
 class DateInstall:
     BULK = []
+    HAVE = []
 
     @classmethod
     def now(cls, module: module_date):
+        cls.load_timezones()
         cls.install_timezone('UTC', 0)
         cls.install_timezone('USRT', 0)
         cls.install_timezone('FAMT', 31337)
@@ -21,10 +23,14 @@ class DateInstall:
         GDO_Timezone.table().bulk_insert_gdo(cls.BULK)
 
     @classmethod
+    def load_timezones(cls):
+        cls.HAVE = GDO_Timezone.table().select('tz_name').exec().fetch_column()
+
+    @classmethod
     def install_timezone(cls, tz_name: str, offset=None):
         if offset is None:
             offset = cls.get_timezone_offset(tz_name)
-        if not GDO_Timezone.get_by_name(tz_name):
+        if tz_name not in cls.HAVE:
             gdo_tz = GDO_Timezone.blank({
                 'tz_id': '0',
                 'tz_name': tz_name,

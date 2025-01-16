@@ -17,6 +17,9 @@ python3 gdoproviders.py
 echo "Are you sure? Press Enter!"
 read
 
+echo "Counting up revision number."
+bash gdo_revcount.sh
+
 echo "Syncing core..."
 pwd && git add -A . && git commit -am "$message" && git pull && git push
 sleep 1
