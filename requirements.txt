@@ -12,3 +12,4 @@ html-purifier
 multipart
 python-magic
 msgpack
+redis

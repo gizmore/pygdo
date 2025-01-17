@@ -2,6 +2,9 @@ import json
 import pickle
 from enum import Enum
 
+import msgpack
+
+from gdo.base.WithSerialization import WithSerialization
 from gdo.core.GDT_Text import GDT_Text
 
 
@@ -28,6 +31,8 @@ class GDT_Serialize(GDT_Text):
     def to_val(self, value) -> bytes | str | None:
         if not value:
             return None
+        if self._mode == Mode.GDOPACK:
+            return value.gdopack()
         if self._mode == Mode.MSGPACK:
             return msgpack.dumps(value)
         if self._mode == Mode.JSON:
@@ -37,6 +42,8 @@ class GDT_Serialize(GDT_Text):
     def to_value(self, val: bytes | str):
         if val is None:
             return None
+        if self._mode == Mode.GDOPACK:
+            return WithSerialization.gdounpack(val)
         if self._mode == Mode.MSGPACK:
             return msgpack.loads(val)
         if self._mode == Mode.JSON:
