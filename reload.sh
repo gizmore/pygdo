@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 # Dev Helper shell script to reload apache when files are changed
 #
 systemctl restart apache2   
-while inotifywait -r -e modify,move,create,delete --exclude '/(assets|.git|protected|files|__pycache__|workspace.xml*)/.*' .; do
+while inotifywait -r -e modify,move,create,delete --exclude '/(temp|assets|.git|protected|files|__pycache__|workspace.xml*)/.*' .; do
     echo "Changes detected, restarting Apache..."
     systemctl restart apache2
 done

@@ -3,7 +3,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 PYTHON_FILE="gdo/base/GDO_Module.py"
-REVISION=$(grep -oE 'r\d{4}' "$PYTHON_FILE" | head -1 | sed 's/r//')
+REVISION=$(grep -oP 'r\d{4}' "$PYTHON_FILE" | head -1 | sed 's/r//')
 
 if [[ "$REVISION" =~ ^[0-9]{4}$ ]]; then
     NEW_REVISION=$((REVISION + 1))
