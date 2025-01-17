@@ -4,9 +4,6 @@ from gdo.date.Time import Time
 
 class GDT_Created(GDT_Timestamp):
 
-    def __init__(self, name):
-        super().__init__(name)
-
     def gdo_before_create(self, gdo):
         gdo.set_val(self._name, Time.get_date())
         return self

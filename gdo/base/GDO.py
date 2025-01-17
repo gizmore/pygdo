@@ -25,7 +25,7 @@ class GDO(WithBulk, GDT):
     GDO_ALIVE = 0
     GDO_MAX = 0
 
-    _vals: dict[str, str]
+    _vals: dict[str, str|bytes]
     _dirty: list[str]
     _last_id: int|None
     _my_id: str|None
@@ -90,8 +90,11 @@ class GDO(WithBulk, GDT):
     def gdo_table_name(self) -> str:
         return self.__class__.__name__.lower()
 
-    def gdo_engine_fast(self) -> bool:
-        return False
+    def gdo_table_engine(self) -> str:
+        return 'InnoDB'
+
+    def gdo_cached(self) -> bool:
+        return True
 
     def gdo_columns(self) -> list[GDT]:
         """
@@ -129,11 +132,12 @@ class GDO(WithBulk, GDT):
         return self.column(key).get_value()
 
     def set_val(self, key, val: str, dirty: bool = True):
-        if isinstance(val, bytearray):
-            val = val.decode()
         if self._vals[key] == val:
             dirty = False
-        self._vals[key] = Strings.nullstr(val)
+        if not isinstance(val, bytes):
+            self._vals[key] = Strings.nullstr(val)
+        else:
+            self._vals[key] = val
         return self.dirty(key, dirty)
 
     def set_value(self, key, value, dirty=True):

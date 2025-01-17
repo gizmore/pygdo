@@ -6,6 +6,7 @@ from urllib.parse import parse_qs
 from multipart import parse_options_header, MultipartParser
 
 from gdo.base.Application import Application
+from gdo.base.Cache import Cache
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
@@ -31,11 +32,20 @@ async def app(scope, receive, send):
         if scope['type'] == 'lifespan':
             message = await receive()
             if message['type'] == 'lifespan.startup':
+                # Cache.TCACHE = scope['state'].get('GDO_TCACHE', {})
+                # Cache.OCACHE = scope['state'].get('GDO_OCACHE', {})
+                # Cache.CCACHE = scope['state'].get('GDO_CCACHE', {})
+                # Cache.FCACHE = scope['state'].get('GDO_FCACHE', {})
                 await send({'type': 'lifespan.startup.complete'})
             elif message['type'] == 'lifespan.shutdown':
+                # scope['state']['GDO_TCACHE'] = Cache.TCACHE
+                # scope['state']['GDO_CCACHE'] = Cache.CCACHE
+                # scope['state']['GDO_OCACHE'] = Cache.OCACHE
+                # scope['state']['GDO_FCACHE'] = Cache.FCACHE
                 await send({'type': 'lifespan.shutdown.complete'})
             return
         assert scope['type'] == 'http', f"Type {scope['type']} not supported"
+
         if FRESH:
             FRESH = False
             Application.init(os.path.dirname(__file__))
@@ -164,8 +174,9 @@ async def app(scope, receive, send):
                     module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
 
-            out = result.render(Mode.HTML).encode()
             session.save()
+
+            out = result.render(Mode.HTML).encode()
 
             Application.header('Content-Length', str(len(out)))
             await send({
@@ -178,6 +189,7 @@ async def app(scope, receive, send):
                 'body': out,
                 'more_body': False,
             })
+
     except Exception as ex:
         try:
             Logger.exception(ex)

@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from gdo.base.GDO import GDO
 
 import mysql.connector
-from mysql.connector import ProgrammingError, DatabaseError, IntegrityError
+from mysql.connector import ProgrammingError, DatabaseError, IntegrityError, FieldFlag
 from mysql.connector.conversion import MySQLConverter
 
 from gdo.base.Exceptions import GDODBException
@@ -17,19 +17,12 @@ from gdo.base.Result import Result
 
 class NopeConverter(MySQLConverter):
     def row_to_python(self, row_data: tuple[bytearray], desc: list):
-        return map(lambda val: val.decode('utf-8') if val is not None else val, row_data)
-
-    # def row_to_python(self, row_data, desc):
-    #     return [self._decode_binary(val) if desc[i][1] == FieldType.BLOB else val for i, val in enumerate(row_data)]
-    #
-    # def _decode_binary(self, value):
-    #     if isinstance(value, bytearray):
-    #         # If it's binary data, handle it appropriately
-    #         # For example, you might want to decode it using a specific encoding
-    #         return value.decode('utf-8')
-    #     else:
-    #         # If it's not binary data, return it as is
-    #         return value
+        return tuple(
+            val.decode('utf-8') if val is not None and not (desc[i][7] & FieldFlag.BLOB)
+            else val
+            for i, val in enumerate(row_data)
+        )
+#        return map(lambda val: val.decode('utf-8') if val is not None else val, row_data)
 
 
 class Database:
@@ -64,6 +57,7 @@ class Database:
             self.link.database = self.db_name
             self.query('SET NAMES utf8mb4')
             self.query("SET time_zone = '+00:00'")
+            # self.query("SET GLOBAL query_cache_size = 1000000")
         return self.link
 
     def reconnect(self):
@@ -75,17 +69,18 @@ class Database:
     def query(self, query: str, debug: bool = False):
         from gdo.base.Application import Application
         try:
-            self.debug_query(query, debug)
+            link = self.get_link()
             Application.DB_WRITES += 1
-            return self.get_link().cmd_query(query)
+            self.debug_query(query, debug)
+            return link.cmd_query(query)
         except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
 
     def select(self, query: str, dictionary: bool = True, gdo: 'GDO' = None, debug: bool = False):
         from gdo.base.Application import Application
         try:
-            self.debug_query(query, debug)
             Application.DB_READS += 1
+            self.debug_query(query, debug)
             cursor = self.cursor(dictionary)
             cursor.execute(query)
             return Result(cursor, gdo)
@@ -96,10 +91,10 @@ class Database:
         level = Application.config('db.debug')
         if level != '0' or debug:
             from gdo.base.Util import msg
-            import traceback
             msg('%s', [query])
-            Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES + 1) + ": " + query)
+            Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES) + ": " + query)
             if level == '2':
+                import traceback
                 Logger.debug("\n".join(traceback.format_stack()))
 
     def cursor(self, dictionary=True):
@@ -116,7 +111,7 @@ class Database:
         if prim:
             primary = ",".join(prim)
             cols.append(f"PRIMARY KEY ({primary})")
-        engine = 'MyISAM' if gdo.gdo_engine_fast() else 'InnoDB'
+        engine = gdo.gdo_table_engine()
         query = f"CREATE TABLE IF NOT EXISTS {gdo.gdo_table_name()} (" + ",\n".join(cols) + f") ENGINE = {engine}"
         self.query(query)
 
@@ -149,7 +144,6 @@ class Database:
 
     def delete_fk(self, gdo: 'GDO', constraint_name: str):
         from gdo.base.Application import Application
-        db_name = Application.config('db.name')
         if "UNIQUE" in constraint_name:
             query = f"ALTER TABLE {gdo.gdo_table_name()} DROP INDEX {constraint_name}"
         else:
@@ -160,7 +154,6 @@ class Database:
         return self.db_host is not None
 
     def drop_table(self, tablename):
-        # Logger.debug(f"Dropping table {tablename}")
         query = f"DROP TABLE IF EXISTS {tablename}"
         self.query(query)
 

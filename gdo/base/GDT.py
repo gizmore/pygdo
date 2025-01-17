@@ -1,3 +1,4 @@
+import binascii
 import traceback
 
 from typing_extensions import TYPE_CHECKING
@@ -24,17 +25,21 @@ class GDT:
     __slots__ = ()
 
     @classmethod
-    def escape(cls, val: str) -> str:
+    def escape(cls, val: str | bytes) -> str:
         if val is None:
             return ''
+        if isinstance(val, bytes):
+            return binascii.hexlify(val).decode('ascii')
         return (val.replace('\\', '\\\\').
                 replace('"', '\\"').
                 replace("'", "\\'"))
 
     @classmethod
-    def quote(cls, val: str) -> str:
+    def quote(cls, val: str | bytes) -> str:
         if val is None or val == '':
             return cls.NULL_STRING
+        if isinstance(val, bytes):
+            return f"UNHEX('{cls.escape(val)}')"
         return f"'{cls.escape(val)}'"
 
     def __init__(self):

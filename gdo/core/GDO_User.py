@@ -10,6 +10,7 @@ from gdo.core.GDT_UserName import GDT_UserName
 
 if TYPE_CHECKING:
     from gdo.core.GDO_Server import GDO_Server
+    from gdo.core.GDO_Session import GDO_Session
 
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
@@ -30,16 +31,19 @@ class GDO_User(GDO):
     # SYSTEM: GDO = None
     _authenticated: bool
     _network_user: object  # User on a server netowrk. Like discord's - message.author
+    _session: 'GDO_Session'
 
     __slots__ = (
         '_authenticated',
         '_network_user',
+        '_session',
     )
 
     def __init__(self):
         super().__init__()
         self._authenticated = False
         self._network_user = None
+        self._session = None
 
     @classmethod
     def system(cls) -> Self:

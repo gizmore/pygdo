@@ -10,7 +10,7 @@ class clear_cache(Method):
     """
 
     def gdo_user_permission(self) -> str | None:
-        return 'admin'
+        return 'staff'
 
     def gdo_trigger(self) -> str:
         return "cc"

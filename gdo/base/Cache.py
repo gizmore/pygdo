@@ -8,14 +8,14 @@ from gdo.base.Util import Files
 
 
 class Cache:
-    CACHE: dict[str, GDO] = {}  # class => GDO table mapping
+    TCACHE: dict[str, GDO] = {}  # class => GDO table mapping
     CCACHE: dict[str, list[GDT]] = {}  # class => GDO table columns mapping
     OCACHE: dict[str, dict[str, GDO]] = {}  # id => GDO object cache mapping
     FCACHE = {}  # @gdo_cached("key") store
 
     @classmethod
     def clear(cls):
-        cls.CACHE = {}
+        cls.TCACHE = {}
         cls.CCACHE = {}
         cls.OCACHE = {}
         cls.FCACHE = {}
@@ -24,11 +24,11 @@ class Cache:
     @classmethod
     def table_for(cls, gdo: GDO):
         cn = gdo
-        if cn not in cls.CACHE:
-            cls.CACHE[cn] = gdo()
+        if cn not in cls.TCACHE:
+            cls.TCACHE[cn] = gdo()
             cls.CCACHE[cn] = cls.build_ccache(gdo)
             cls.OCACHE[cn] = {}
-        return cls.CACHE[gdo]
+        return cls.TCACHE[gdo]
 
     @classmethod
     def columns_for(cls, gdo: GDO):
@@ -38,7 +38,7 @@ class Cache:
     @classmethod
     def build_ccache(cls, gdo: GDO):
         cache = []
-        columns = cls.CACHE[gdo].gdo_columns()
+        columns = cls.TCACHE[gdo].gdo_columns()
         for column in columns:
             cache.append(column)
             cache.extend(column.gdo_components())
@@ -46,15 +46,16 @@ class Cache:
 
     @classmethod
     def obj_for(cls, gdo: GDO) -> GDO:
-        gid = gdo.get_id()
-        cn = gdo.__class__
-        if gid not in cls.OCACHE[cn]:
-            cls.OCACHE[cn][gid] = gdo
-        else:
-            gdo2 = gdo
-            gdo = cls.OCACHE[cn][gid]
-            gdo._vals.update(gdo2._vals)
-            gdo.all_dirty(False)
+        if gdo.gdo_cached():
+            gid = gdo.get_id()
+            cn = gdo.__class__
+            if gid not in cls.OCACHE[cn]:
+                cls.OCACHE[cn][gid] = gdo
+            else:
+                gdo2 = gdo
+                gdo = cls.OCACHE[cn][gid]
+                gdo._vals.update(gdo2._vals)
+                gdo.all_dirty(False)
         return gdo
 
     @classmethod
@@ -66,24 +67,25 @@ class Cache:
     @classmethod
     def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False):
         cn = gdo.__class__
-        for gid, obj in cls.OCACHE[cn].items():
-            found = True
-            for key, val in vals.items():
-                if obj.gdo_val(key) != val:
-                    found = False
-                    break
-            if found:
-                if delete:
-                    del cls.OCACHE[cn][gid]
-                return obj
+        if gdo.gdo_cached():
+            for gid, obj in cls.OCACHE[cn].items():
+                found = True
+                for key, val in vals.items():
+                    if obj.gdo_val(key) != val:
+                        found = False
+                        break
+                if found:
+                    if delete:
+                        del cls.OCACHE[cn][gid]
+                    return obj
 
     ##########
     # FCache #
     ##########
 
     @classmethod
-    def get(cls, key: str, args_key: str):
-        return cls.FCACHE.get(key, {}).get(args_key)
+    def get(cls, key: str, args_key: str, default: any = None):
+        return cls.FCACHE.get(key, {}).get(args_key, default)
 
     @classmethod
     def set(cls, key: str, args_key: str, value: any):

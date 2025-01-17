@@ -6,10 +6,12 @@ from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Serialize import GDT_Serialize
 from gdo.core.GDT_Token import GDT_Token
 from gdo.core.GDT_User import GDT_User
+from gdo.date.GDT_Edited import GDT_Edited
 from gdo.net.GDT_IP import GDT_IP
 
 
 class GDO_Session(GDO):
+    LIFETIME = 60 * 60 * 24 * 7
     COOKIE_NAME = 'GDO'
     DEFAULT_COOKIE = 'gdo_like_16_byte'
     _data: dict[str, any]
@@ -45,7 +47,11 @@ class GDO_Session(GDO):
 
     @classmethod
     def set_cookie_header(cls, cookie: str):
-        Application.header('Set-Cookie', f"{cls.COOKIE_NAME}={cookie}; Path=/")
+        http_only = ' HttpOnly;'
+        # secure = ' Secure;'
+        secure = ''
+        same_site = ' SameSite=Lax;'
+        Application.header('Set-Cookie', f"{cls.COOKIE_NAME}={cookie}; Path=/;{http_only}{secure}{same_site}")
 
     @classmethod
     def blank_error(cls):
@@ -69,6 +75,7 @@ class GDO_Session(GDO):
         ip = instance.get_ip()
         if ip and ip != GDT_IP.current():
             return cls.blank_error()
+        instance._data = instance.gdo_value('sess_data') or {}
         return instance
 
     @classmethod
@@ -84,10 +91,16 @@ class GDO_Session(GDO):
                 'sess_token': GDT_Token.random(),
                 'sess_user': user.get_id(),
             }).insert()
+        else:
+            session._data = session.gdo_value('sess_data') or {}
+        user._session = session
         return session
 
-    def gdo_engine_fast(self) -> bool:
-        return True
+    def gdo_table_engine(self) -> str:
+        return 'MEMORY'
+
+    def gdo_cached(self) -> bool:
+        return False
 
     def gdo_columns(self) -> list[GDT]:
         return [
@@ -96,6 +109,7 @@ class GDO_Session(GDO):
             GDT_User('sess_user'),
             GDT_IP('sess_ip'),
             GDT_Serialize('sess_data'),
+            GDT_Edited('sess_time'),
         ]
 
     def save(self):
@@ -135,4 +149,5 @@ class GDO_Session(GDO):
     def get_user(self) -> GDO_User:
         if user := self.gdo_value('sess_user'):
             user._authenticated = True
+            user._session = self
         return user or GDO_User.ghost()
