@@ -1,5 +1,5 @@
-import functools
 import hashlib
+import functools
 
 import msgpack
 from redis import Redis
@@ -14,30 +14,33 @@ from gdo.base.WithSerialization import WithSerialization
 class Cache:
     """
     The wonderful pygdo cache in 187 lines of code.
-    There are 3 caches:
-    1) TCACHE holds GDO.table() objects to re-use GDTs
-    2) CCACHE holds GDO.gdo_columns() GDTs to re-use them
-    3) REDIS O/F/CACHE holds an object - and arbitrary kv store
-    (c) 2025 by gizmore@wechall.net and chappy@chappy-bot.net
+    There are 4 caches:
+    1) TCACHE holds GDO.table() objects to re-use GDTs.
+    2) CCACHE holds GDO.gdo_columns() GDTs to re-use them.
+    3) OCACHE holds GDO entities for single identity cache.
+    3) REDIS (FCACHE) is the tad slower process shared memory cache.
+    (c) 2025 by gizmore@wechall.net and chappy@chappy-bot.net.
     """
     HITS = 0
     MISS = 0
     UPDATES = 0
     REMOVES = 0
 
-    TCACHE: dict[str, GDO] = {}  # class => GDO table mapping
-    CCACHE: dict[str, list[GDT]] = {}  # class => GDO table GDT columns mapping
-    REDIS: Redis = None
+    TCACHE: dict[str, GDO] = {}             # class_name => GDO.table() mapping
+    CCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() mapping
+    OCACHE: dict[str, dict[str, GDO]] = {}  # table_name => dict[id, GDO] mapping
+    RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
 
     @classmethod
     def init(cls, host: str = 'localhost', port: int = 6379, db: int = 0):
-        cls.REDIS = Redis(host=host, port=port, db=db, decode_responses=False)
+        cls.RCACHE = Redis(host=host, port=port, db=db, decode_responses=False)
 
     @classmethod
     def clear(cls):
         cls.TCACHE = {}
         cls.CCACHE = {}
-        cls.REDIS.flushdb()
+        cls.OCACHE = {}
+        cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
 
     @classmethod
@@ -54,6 +57,7 @@ class Cache:
         if cn not in cls.TCACHE:
             cls.TCACHE[cn] = gdo_klass()
             cls.CCACHE[cn] = cls.build_ccache(gdo_klass)
+            cls.OCACHE[gdo_klass.gdo_table_name()] = {}
         return cls.TCACHE[cn]
 
     @classmethod
@@ -85,22 +89,27 @@ class Cache:
         if gdo.gdo_cached():
             gid = gdo.get_id()
             cn = gdo.gdo_table_name()
-            cached = cls.get(cn, gid)
-            if not cached:
-                cls.set(cn, gid, gdo)
-            elif gdo != cached:
-                gdo2 = gdo
-                gdo = cached
-                gdo._vals.update(gdo2._vals)
-                gdo.all_dirty(False)
-            else:
-                gdo = cached
+            rcached = cls.get(cn, gid)
+            if ocached := cls.OCACHE[cn].get(gid):
+                if rcached: # Update ocache from redis
+                    ocached._vals.update(rcached._vals)
+                    gdo = ocached
+                else: # No RCACHE. Populate
+                    cls.set(cn, gid, ocached)
+                    gdo = ocached
+            else:  # No OCACHE. Populate
+                if rcached:
+                    cls.OCACHE[cn][gid] = rcached
+                    gdo = rcached
+                else: # Neither found it
+                    cls.OCACHE[cn][gid] = gdo
+                    cls.set(cn, gid, gdo)
         return gdo
 
     @classmethod
     def update_for(cls, gdo: GDO):
         cls.set(gdo.gdo_table_name(), gdo.get_id(), gdo)
-        return gdo
+        return cls.obj_for(gdo)
 
     @classmethod
     def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False):
@@ -108,7 +117,7 @@ class Cache:
             cn = gdo.gdo_table_name()
             cursor = 0
             while True:
-                cursor, keys = cls.REDIS.scan(cursor, match=f"{cn}:*")
+                cursor, keys = cls.RCACHE.scan(cursor, match=f"{cn}:*")
                 for key in keys:
                     key = key.decode()
                     if obj := cls.get(key):
@@ -121,7 +130,11 @@ class Cache:
                             cls.HITS += 1
                             if delete:
                                 cls.remove(key)
-                            return obj
+                                id = obj.get_id()
+                                if id in cls.OCACHE[cn]:
+                                    del cls.OCACHE[cn][id]
+                                return obj
+                            return cls.obj_for(obj)
                 if cursor == 0:
                     break
             cls.MISS += 1
@@ -133,7 +146,7 @@ class Cache:
     @classmethod
     def get(cls, key: str, args_key: str = None, default: any = None):
         key = f"{key}:{args_key}" if args_key else key
-        if packed := cls.REDIS.get(key):
+        if packed := cls.RCACHE.get(key):
             cls.HITS += 1
             return WithSerialization.gdounpack(packed)
         cls.MISS += 1
@@ -145,27 +158,28 @@ class Cache:
             value = value.gdopack()
         else:
             value = msgpack.dumps(value)
-        key = f"{key}:{args_key}" if args_key else key
-        cls.REDIS.set(key, value)
         cls.UPDATES += 1
+        key = f"{key}:{args_key}" if args_key else key
+        cls.RCACHE.set(key, value)
 
     @classmethod
     def remove(cls, key: str = None, args_key: str = None):
         if key is None:
-            cls.REDIS.flushdb()
+            cls.REMOVES += 1
+            cls.RCACHE.flushdb()
         elif args_key is None:
             cursor = 0
             while True:
-                cursor, keys = cls.REDIS.scan(cursor, match=f"{key}:*")
+                cursor, keys = cls.RCACHE.scan(cursor, match=f"{key}:*")
                 if keys:
                     cls.REMOVES += 1
-                    cls.REDIS.delete(*keys)
+                    cls.RCACHE.delete(*keys)
                 if cursor == 0:
                     break
         else:
             cls.REMOVES += 1
             redis_key = f"{key}:{args_key}"
-            cls.REDIS.delete(redis_key)
+            cls.RCACHE.delete(redis_key)
 
 
 #############
@@ -173,7 +187,7 @@ class Cache:
 #############
 
 def _hash_args(args, kwargs):
-    # todo sort kwargs by key?
+    # todo sort kwargs by key
     return hashlib.md5(str((args, frozenset(kwargs.items()))).encode()).hexdigest()
 
 def gdo_cached(cache_key: str):

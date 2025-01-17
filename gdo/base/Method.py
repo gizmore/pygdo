@@ -140,6 +140,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def gdo_execute(self) -> GDT:
         raise GDOError('err_stub')
 
+    def gdo_after_execute(self):
+        pass
+
     def gdo_render_title(self) -> str:
         return t(self._mome_tkey('mt'))
 
@@ -306,9 +309,11 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                     else:
                         gdt.val(val)
 
-    async def _nested_execute_parse(self):
+    async def _nested_execute_parse(self) -> 'GDT':
         self._nested_parse()
-        return self.gdo_execute()
+        result = self.gdo_execute()
+        self.gdo_after_execute()
+        return result
 
     def _prepare_nested_permissions(self, method: 'Method') -> bool:
         if not method.has_permission(method._env_user):
