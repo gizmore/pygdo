@@ -1,6 +1,6 @@
 <div class="gdt-form-field">
     <label for="<%=field.get_name()%>"><%=field.render_label(Mode.HTML)%></label>
-    <input id="<%=field.get_name()%>" name="<%=field.get_name()%>" type="<%=field._input_type%>"
+    <input id="<%=field.get_name()%>" name="<%=field.get_name()%>" type="<%=field._input_type%>" class="<%=' is-invalid' if field.has_error() else '' %>"
            <%=field.html_readonly()%>
            <%=field.html_pattern()%>
            <%=field.html_required()%>

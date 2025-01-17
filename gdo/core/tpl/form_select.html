@@ -8,7 +8,8 @@
             writeln(f'<option{field.html_selected(key)} value="{key}">{gdt}</option>')
         %>
     </select>
+    aaa
     <% if field.has_error():
-        write(f'<div class="form-field-error">%s</div>' % field.render_error())
+        writeln(f'<div class="form-field-error">%s</div>' % field.render_error())
     %>
 </div>
