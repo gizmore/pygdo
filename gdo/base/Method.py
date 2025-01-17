@@ -71,7 +71,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return f"{module.get_name()}.{self.get_name()}"
 
     def gdo_transactional(self) -> bool:
-        return True
+        return Application.get_request_method() != 'GET'
 
     def gdo_parameters(self) -> [GDT]:
         return []
@@ -247,10 +247,6 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         mn = Strings.substr_to(mn, '.')
         return ModuleLoader.instance()._cache[mn]
 
-    # def message(self, message: 'Message') -> 'Method':
-    #     self._message = message
-    #     return self
-
     ########
     # Exec #
     ########
@@ -267,7 +263,6 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         except (GDOParamError, GDOError) as ex:
             err_raw(str(ex))
             return self
-            # return GDT_Error().title_raw(self.gdo_module().get_name()).text_raw(str(ex))
         except OperationalError as ex:
             db.reconnect()
             raise ex
