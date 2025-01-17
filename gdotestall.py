@@ -3,7 +3,6 @@ import os.path
 import unittest
 from pstats import Stats
 
-import gdotest
 from gdo.base.Application import Application
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
@@ -19,9 +18,11 @@ from gdotest.test_dog import DogTestCase
 from gdotest.test_events import EventsTestCase
 from gdotest.test_finish import FinishTestCase
 from gdotest.test_forms import FormTestCase
+from gdotest.test_gdopack import GDOPackTestCase
 from gdotest.test_install import InstallTestCase
 from gdotest.test_mail import MailTestCase
 from gdotest.test_math import MathTestCase
+from gdotest.test_message import MessageTestCase
 from gdotest.test_module_config import ModuleConfigTestCase
 from gdotest.test_session import SessionTestCase
 from gdotest.test_ui import UITestCase
@@ -36,11 +37,13 @@ def suite():
     loader = unittest.TestLoader()
     mysuite.addTests(loader.loadTestsFromTestCase(InstallTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(ConfigureTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(CoreTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(GDOPackTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(ModuleConfigTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(AdminTestCase))
-    mysuite.addTests(loader.loadTestsFromTestCase(CoreTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DateTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(MathTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(MessageTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DBTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(FormTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(EventsTestCase))
@@ -52,6 +55,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(WebTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(MailTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DogTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(FinishTestCase))
     return mysuite
 
 

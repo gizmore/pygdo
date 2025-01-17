@@ -12,6 +12,7 @@ from gdotest.test_dog import DogTestCase
 from gdotest.test_events import EventsTestCase
 from gdotest.test_finish import FinishTestCase
 from gdotest.test_forms import FormTestCase
+from gdotest.test_gdopack import GDOPackTestCase
 from gdotest.test_install import InstallTestCase
 from gdotest.test_mail import MailTestCase
 from gdotest.test_math import MathTestCase
@@ -31,6 +32,7 @@ def suite():
     mysuite.addTests(loader.loadTestsFromTestCase(InstallTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(ConfigureTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(CoreTestCase))
+    mysuite.addTests(loader.loadTestsFromTestCase(GDOPackTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(ModuleConfigTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(AdminTestCase))
     mysuite.addTests(loader.loadTestsFromTestCase(DateTestCase))

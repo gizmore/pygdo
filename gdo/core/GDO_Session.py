@@ -97,10 +97,10 @@ class GDO_Session(GDO):
         return session
 
     def gdo_table_engine(self) -> str:
-        return 'MEMORY'
+        return 'InnoDB'
 
     def gdo_cached(self) -> bool:
-        return False
+        return True
 
     def gdo_columns(self) -> list[GDT]:
         return [

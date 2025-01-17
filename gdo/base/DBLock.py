@@ -1,4 +1,5 @@
 from gdo.base.Application import Application
+from gdo.base.Exceptions import GDOException
 
 
 class DBLock:
@@ -14,8 +15,7 @@ class DBLock:
     def __enter__(self):
         if Application.db().lock(self.lock_name, self.timeout):
             self.locked = True
-        return self
+        raise GDOException(f"cannot acquire lock {self.lock_name}")
 
     def __exit__(self, exc_type, exc, tb):
-        if self.locked:
-            Application.db().unlock(self.lock_name)
+        Application.db().unlock(self.lock_name)

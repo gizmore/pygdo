@@ -11,3 +11,4 @@ nest_asyncio
 html-purifier
 multipart
 python-magic
+msgpack

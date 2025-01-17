@@ -3,6 +3,8 @@ import traceback
 
 from typing_extensions import TYPE_CHECKING
 
+from gdo.base.WithSerialization import WithSerialization
+
 if TYPE_CHECKING:
     from gdo.form.GDT_Form import GDT_Form
     from gdo.base.Method import Method
@@ -11,7 +13,7 @@ from gdo.base.Render import Mode
 from gdo.base.Util import Strings
 
 
-class GDT:
+class GDT(WithSerialization):
     """
     Base class of every other class.
     @version 8.0.0
@@ -53,6 +55,9 @@ class GDT:
 
     def __del__(self):
         GDT.GDT_ALIVE -= 1
+
+    def __repr__(self):
+        return f"{self.get_name()}: {self.__dict__}"
 
     #############
     ### Hooks ###
@@ -156,7 +161,6 @@ class GDT:
         self.reset_error()
         if self.validate(self.get_val(), self.get_value()):
             return self
-        return None
 
     def is_positional(self) -> bool:
         return False
@@ -211,12 +215,7 @@ class GDT:
         return self.render_gdt(mode)
 
     def render_gdt(self, mode: Mode):
-        """
-        Call the appropriate render method
-        """
-        method_name = f'render_{mode.name.lower()}'
-        method = getattr(self, method_name)
-        return method()
+        return getattr(self, f'render_{mode.name.lower()}')()
 
     def render_toml(self) -> str:
         return f"{self.get_name()} = \"{self.get_val()}\"\n"

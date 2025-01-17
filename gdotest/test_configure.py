@@ -4,12 +4,13 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.install.Config import Config
+from gdotest.TestUtil import GDOTestCase
 
 
-class ConfigureTestCase(unittest.TestCase):
+class ConfigureTestCase(GDOTestCase):
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
-        return self
 
     def test_01_configure(self):
         ModuleLoader.instance().load_modules_db(True)

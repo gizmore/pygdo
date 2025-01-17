@@ -2,71 +2,20 @@ import json
 import pickle
 from enum import Enum
 
-import msgpack
-
-# from gdo.base.WithMsgpackSupport import WithMsgpackSupport
 from gdo.core.GDT_Text import GDT_Text
-
-
 
 
 class Mode(Enum):
     JSON = 1
     PICKLE = 2
     MSGPACK = 3
-
-
-# class DictSerializableMixin:
-#     def to_dict(self):
-#         """Convert object to a dictionary, recursively handling nested objects."""
-#         return {
-#             key: value.to_dict() if isinstance(value, DictSerializableMixin) else value
-#             for key, value in self.__dict__.items()
-#         }
-#
-#     @classmethod
-#     def from_dict(cls, data):
-#         """Create an object from a dictionary, recursively instantiating nested objects."""
-#         obj = cls.__new__(cls)  # Create an empty instance without calling __init__
-#         for key, value in data.items():
-#             setattr(obj, key, value)
-#         return obj
-
-
-# class GDODict(WithMsgpackSupport):
-#
-#     def __init__(self, **kwargs):
-#         for key, value in kwargs.items():
-#             if isinstance(value, dict):
-#                 value = GDODict(**value)
-#             setattr(self, key, value)
-#
-#     def __getitem__(self, key):
-#         return getattr(self, key)
-#
-#     def __setitem__(self, key, value):
-#         setattr(self, key, value)
-#
-#     def __contains__(self, key):
-#         return hasattr(self, key)
-#
-#     def items(self):
-#         return self.__dict__.items()
-#
-#     def keys(self):
-#         return self.__dict__.keys()
-#
-#     def values(self):
-#         return self.__dict__.values()
-#
-#     def __repr__(self):
-#         return f"GDODict({self.__dict__})"
+    GDOPACK = 4
 
 
 class GDT_Serialize(GDT_Text):
     _mode: Mode
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__(name)
         self._mode = Mode.JSON
         self.binary()
