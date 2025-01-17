@@ -148,6 +148,7 @@ class GDO_User(GDO):
                 'uset_key': key,
                 'uset_val': val,
             }).soft_replace()
+            Application.EVENTS.publish(f'user_setting_{key}_changed', self, val)
         return self
 
     def increase_setting(self, key: str, by: float | int):
@@ -175,6 +176,7 @@ class GDO_User(GDO):
         if bind_ip:
             session.set_val('sess_ip', GDT_IP.current())
         session.save()
+        Application.EVENTS.publish('user_login', self)
         return self
 
     def logout(self, session: object):
@@ -187,6 +189,7 @@ class GDO_User(GDO):
                 'sess_data': None,
             })
             Application.set_current_user(GDO_User.ghost())
+            Application.EVENTS.publish('user_logout', self)
         return self
 
     def is_authenticated(self) -> bool:

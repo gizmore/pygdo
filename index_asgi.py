@@ -48,6 +48,7 @@ async def app(scope, receive, send):
             GDO.GDO_COUNT = 0
             GDT.GDT_ALIVE = 0
             GDO.GDO_ALIVE = 0
+            Application.EVENT_COUNT = 0
             Application.DB_TRANSACTIONS = 0
             Application.DB_READS = 0
             Application.DB_WRITES = 0
@@ -72,7 +73,7 @@ async def app(scope, receive, send):
         if Files.is_file(path):
             session = GDO_Session.start(False)
             user = session.get_user()
-            Logger.user(user)
+            Application.set_current_user(user)
             method = file_server().env_server(user.get_server()).env_user(user).input('_url', url)
             gdt = await method.execute()
             while iscoroutine(gdt):
@@ -95,12 +96,12 @@ async def app(scope, receive, send):
             if Files.is_dir(path):
                 session = GDO_Session.start(False)
                 user = session.get_user()
+                Application.set_current_user(user)
                 Logger.user(user)
                 method = dir_server().env_server(user.get_server()).env_user(user).input('_url', url)
             else:
                 session = GDO_Session.start(True)
                 user = session.get_user()
-                Logger.user(user)
                 Application.set_current_user(user)
                 Application.set_session(session)
                 server = user.get_server()
