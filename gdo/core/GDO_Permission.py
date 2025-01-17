@@ -49,6 +49,9 @@ class GDO_Permission(GDO):
             GDT_Name('perm_name').unique(),
         ]
 
+    def get_name(self) -> str:
+        return self.gdo_val('perm_name')
+
     def count(self) -> int:
         from gdo.core.GDO_UserPermission import GDO_UserPermission
         return GDO_UserPermission.table().count_where(f'pu_perm={self.get_id()}')

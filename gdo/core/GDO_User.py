@@ -115,6 +115,7 @@ class GDO_User(GDO):
         return cls.with_permission('staff')
 
     @classmethod
+    @gdo_cached(cache_key='users_with_permission')
     def with_permission(cls, perm_name: str):
         from gdo.core.GDO_Permission import GDO_Permission
         return GDO_Permission.get_by_name(perm_name).users()

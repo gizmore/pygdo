@@ -1,6 +1,7 @@
 from math import floor
 
 from gdo.base.Application import Application
+from gdo.base.Cache import Cache
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.core.GDO_User import GDO_User
@@ -23,6 +24,12 @@ class module_user(GDO_Module):
 
     def cfg_activity_accuracy(self) -> int:
         return self.get_config_value('activity_accuracy')
+
+    def gdo_init(self):
+        Application.EVENTS.subscribe('permission_granted', self.on_permission_granted)
+
+    def on_permission_granted(self, user: GDO_User, perm_name: str):
+        Cache.remove('users_with_permission')
 
     def gdo_user_settings(self) -> list[GDT]:
         return [

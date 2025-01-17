@@ -1,3 +1,4 @@
+from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.core.GDO_Permission import GDO_Permission
@@ -20,6 +21,7 @@ class GDO_UserPermission(GDO):
             'pu_perm': permission.get_id(),
             'pu_has': '1',
         }).soft_replace()
+        Application.EVENTS.publish('permission_granted', user, permission.get_name())
 
     @classmethod
     def users_with_perm_id(cls, perm_id: str) -> list[GDO_User]:
