@@ -246,7 +246,9 @@ class GDO(WithBulk, GDT):
         query = self.query().type(type_).set_vals(self.insert_vals())
         self._last_id = query.exec()['insert_id']
         self.after_create()
-        return self.all_dirty(False)
+        self.all_dirty(False)
+        return Cache.obj_for(self)
+
 
     def dirty_vals(self) -> dict:
         from gdo.core.GDT_Field import GDT_Field
