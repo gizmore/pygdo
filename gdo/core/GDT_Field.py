@@ -11,6 +11,7 @@ from gdo.ui.WithTooltip import WithTooltip
 class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullable, GDT):
     _name: str
     _val: str
+    _prev: str
     _initial: str
     _converted: bool
     _primary: bool
@@ -50,6 +51,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         return self._value
 
     def val(self, val: str | list):
+        self._prev = self._val
         self._val = val[0] if isinstance(val, list) and not self._multiple else val
         self._converted = False
         return self
@@ -57,6 +59,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     def value(self, value):
         self._converted = True
         self._value = value
+        self._prev = self._val
         self._val = self.to_val(value)
         return self
 

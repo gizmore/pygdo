@@ -1,8 +1,9 @@
 from gdo.admin.GDT_Module import GDT_Module
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
+from gdo.base.Render import Render
 from gdo.base.Trans import t
-from gdo.base.Util import href
+from gdo.base.Util import href, html
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
 from gdo.form.MethodForm import MethodForm
@@ -43,15 +44,16 @@ class settings(MethodForm):
         module = self.get_module()
         out = []
         for gdt in module.all_user_settings():
-            key = gdt.get_name()
-            self._nested_parse()
-            if gdt.get_val() != gdt.get_initial():
-                old = gdt.get_initial()
-                new = gdt.get_val()
-                gdt.val(old)
-                user.save_setting(key, new)
-                gdt.val(new)
-                out.append(t('setting_changed', [key, old, new]))
+            if gdt.is_writable():
+                key = gdt.get_name()
+                self._nested_parse()
+                if gdt.get_val() != gdt._prev:
+                    old = gdt._prev
+                    new = gdt.get_val()
+                    gdt.val(old)
+                    user.save_setting(key, new)
+                    gdt.val(new)
+                    out.append(t('setting_changed', [key, Render.italic(html(old), self._env_mode), Render.italic(html(new), self._env_mode)]))
         if len(out):
             self.msg('msg_settings_changed', [" ".join(out)])
         return self.render_page()

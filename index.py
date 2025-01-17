@@ -24,7 +24,7 @@ from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
 
 FRESH = True
-
+SIDEBARS = False
 
 def application(environ, start_response):
     return pygdo_application(environ, start_response)
@@ -36,6 +36,8 @@ def pygdo_application(environ, start_response):
     url = 'core.welcome.html'
     try:
         global FRESH
+        global SIDEBARS
+        SIDEBARS = False
         GDT.GDT_MAX = 0
         GDO.GDO_MAX = 0
         GDT.GDT_COUNT = 0
@@ -112,7 +114,6 @@ def pygdo_application(environ, start_response):
                 method = not_found().env_server(server).env_user(session.get_user()).input('_url', url)
 
             method.inputs(qs)  # GET PARAMS
-            #method._message = Message(f"${method.gdo_trigger()}", Mode.HTML).env_copy(method)
 
             if environ['REQUEST_METHOD'] == 'POST' and environ['CONTENT_TYPE'].startswith('multipart/form-data'):
                 post_variables = cgi.FieldStorage(
@@ -165,6 +166,7 @@ def pygdo_application(environ, start_response):
                 for module in ModuleLoader.instance().enabled():
                     module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
+                SIDEBARS = True
 
             session.save()
             response = result.render(Application.get_mode())
@@ -194,15 +196,17 @@ def pygdo_application(environ, start_response):
 
 
 def error_page(ex, start_response, method: Method, status: str, trace: bool = True):
+    global SIDEBARS
     loader = ModuleLoader.instance()
     if trace:
         result = GDT_Error.from_exception(ex)
     else:
         result = GDT_Error().title_raw('PyGDO').text_raw(str(ex))
     page = Application.get_page()
-    for module in loader._cache.values():
-        module.gdo_load_scripts(page)
-        module.gdo_init_sidebar(page)
+    if not SIDEBARS:
+        for module in loader.enabled():
+            module.gdo_load_scripts(page)
+            module.gdo_init_sidebar(page)
     response_body = page.method(method).result(result).render(Mode.HTML)
     response_headers = [
         ('Content-Type', 'text/html; Charset=UTF-8'),

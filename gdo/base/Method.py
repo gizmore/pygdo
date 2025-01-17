@@ -341,7 +341,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 else:
                     parser.add_argument(name, nargs='?')
             else:
-                parser.add_argument(f'--{name}', default=gdt.get_initial())
+                parser.add_argument(f'--{name}', default=gdt.get_val())
         self._parser = parser
         return parser
 
@@ -355,9 +355,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 continue
             name = gdt.get_name()
             if gdt.is_multiple():
-                parser.add_argument(f'--{name}', default=gdt.get_initial(), nargs='*')
+                parser.add_argument(f'--{name}', default=gdt.get_val(), nargs='*')
             else:
-                parser.add_argument(f'--{name}', default=gdt.get_initial())
+                parser.add_argument(f'--{name}', default=gdt.get_val())
         self._parser = parser
         return parser
 

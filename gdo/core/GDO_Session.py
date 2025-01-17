@@ -118,7 +118,8 @@ class GDO_Session(GDO):
         return self
 
     def remove(self, key: str):
-        del self._data[key]
+        if key in self._data:
+            del self._data[key]
         return self
 
     def get_token(self) -> str:

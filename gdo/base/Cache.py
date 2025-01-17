@@ -102,6 +102,10 @@ class Cache:
             cls.FCACHE.get(key, {}).pop(args_key, None)
 
 
+#############
+# Decorator #
+#############
+
 def _hash_args(args, kwargs):
     return hashlib.md5(str((args, frozenset(kwargs.items()))).encode()).hexdigest()
 
