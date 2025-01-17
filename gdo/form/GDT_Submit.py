@@ -16,5 +16,7 @@ class GDT_Submit(GDT_Button):
         self._default_button = default_button
         return self
 
-    def render_form(self):
-        return GDT_Template.python('form', 'submit.html', {'field': self})
+    def render(self, mode: Mode = Mode.HTML):
+        if mode.is_html():
+            return GDT_Template.python('form', 'submit.html', {'field': self})
+        return ''

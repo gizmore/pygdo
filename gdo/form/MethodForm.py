@@ -20,17 +20,20 @@ class MethodForm(Method):
     def gdo_captcha(self) -> bool:
         return False
 
+    def gdo_submit_button(self) -> GDT_Submit:
+        return GDT_Submit().calling(self.form_submitted).default_button()
+
     def gdo_create_form(self, form: GDT_Form) -> None:
         if Application.IS_HTTP:
             form.add_field(GDT_CSRF())
         if self.gdo_captcha() and module_enabled('captcha'):
             from gdo.captcha.GDT_Captcha import GDT_Captcha
             form.add_field(GDT_Captcha())
-        form.actions().add_field(GDT_Submit().calling(self.form_submitted).default_button())
+        form.actions().add_field(self.gdo_submit_button())
 
     def get_form(self, reset: bool = False) -> GDT_Form:
         if not hasattr(self, '_form') or reset:
-            self._form = GDT_Form().href(self.href()).method(self)
+            self._form = GDT_Form().href(self.href()).method(self).title_raw(self.gdo_render_title())
             self.gdo_create_form(self._form)
         if reset:
             delattr(self, '_parameters')

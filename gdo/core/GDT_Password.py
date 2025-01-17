@@ -9,14 +9,15 @@ class GDT_Password(GDT_String):
         super().__init__(name)
         self.minlen(4)
         self._input_type = 'password'
+        self.icon('password')
 
     @classmethod
     def check(cls, hash_: str, plain: str) -> bool:
-        return bcrypt.checkpw(plain.encode('utf-8'), hash_.encode('utf-8'))
+        return bcrypt.checkpw(plain.encode(), hash_.encode())
 
     @classmethod
     def hash(cls, plain: str):
-        return bcrypt.hashpw(plain.encode('utf-8'), bcrypt.gensalt(cls.SALT_LEN)).decode('utf-8')
+        return bcrypt.hashpw(plain.encode(), bcrypt.gensalt(cls.SALT_LEN)).decode()
 
     def val(self, val: str | list):
         if len(val) == 0 or val[0] == '$':

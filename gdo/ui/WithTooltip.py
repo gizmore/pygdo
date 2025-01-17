@@ -1,4 +1,5 @@
 from gdo.base.Trans import t
+from gdo.base.Util import html
 
 
 class WithTooltip:
@@ -6,10 +7,10 @@ class WithTooltip:
     _tt_args: list
     _tt_escaped: bool
 
-    def tooltip(self, key: str, args: list = None):
+    def tooltip(self, key: str, args: list = None, escaped: bool = False):
         self._tt_key = key
         self._tt_args = args
-        return self.tt_escaped(False)
+        return self.tt_escaped(escaped)
 
     def tooltip_raw(self, tooltip: str, escaped: bool = True):
         self._tt_key = '%s'
@@ -23,5 +24,6 @@ class WithTooltip:
     def has_tooltip(self) -> bool:
         return hasattr(self, '_tt_key')
 
-    def get_tooltip_text(self) -> str:
-        return t(self._tt_key, self._tt_args)
+    def render_tooltip(self) -> str:
+        tt = t(self._tt_key, self._tt_args)
+        return html(tt) if self._tt_escaped else tt
