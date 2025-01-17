@@ -11,4 +11,4 @@ class GDT_Name(GDT_String):
         self._minlen = 2
         self._maxlen = 64
         self._case_s = True
-        self.pattern(r'^[a-z][a-z_0-9]+$', re.IGNORECASE)
+        self.pattern(r'^[a-zA-Z][A-Za-z_0-9]+$', re.IGNORECASE)
