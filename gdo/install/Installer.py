@@ -9,6 +9,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Result import ResultType
 from gdo.base.Util import Arrays, msg, Files
 from gdo.core.GDO_UserSetting import GDO_UserSetting
+from gdo.core.method.clear_cache import clear_cache
 
 
 class Installer:
@@ -42,6 +43,7 @@ class Installer:
             except Exception as ex:
                 Logger.exception(ex)
                 return False
+        clear_cache().gdo_execute()
         return True
 
     @classmethod

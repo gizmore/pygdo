@@ -33,11 +33,11 @@ class GDO_User(GDO):
     _network_user: object  # User on a server netowrk. Like discord's - message.author
     _session: 'GDO_Session'
 
-    __slots__ = (
-        '_authenticated',
-        '_network_user',
-        '_session',
-    )
+    # __slots__ = (
+    #     '_authenticated',
+    #     '_network_user',
+    #     '_session',
+    # )
 
     def __init__(self):
         super().__init__()

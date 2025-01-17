@@ -1,4 +1,3 @@
-import json
 import os.path
 import unittest
 
@@ -14,7 +13,6 @@ from gdo.core.connector.Bash import Bash
 from gdo.core.connector.Web import Web
 from gdo.core.method.reload import reload
 from gdo.core.method.welcome import welcome
-from gdo.ui.GDT_Page import GDT_Page
 from gdotest.TestUtil import cli_plug, web_gizmore, cli_gizmore, GDOTestCase, web_plug
 
 
@@ -115,6 +113,10 @@ class CoreTestCase(GDOTestCase):
     def test_14_welcome(self):
         out = web_plug('core.welcome.html').exec()
         self.assertIn('Welcome', out, 'Welcome page does not work')
+        web_plug('core.welcome.html').exec()
+        web_plug('core.welcome.html').exec()
+        web_plug('core.welcome.html').exec()
+        self.assertEqual(0, Application.DB_READS+Application.DB_WRITES, "Cache seems borked.")
 
     def test_15_cache_efficiency(self):
         welcome()._disabled_in_server(Web.get_server())

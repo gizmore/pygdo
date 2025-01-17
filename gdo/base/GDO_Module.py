@@ -22,17 +22,17 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.0")
-    CORE_REV = "PyGDOv8.0.0-r1165"
+    CORE_REV = "PyGDOv8.0.0-r1166"
 
     _priority: int
     _inited: bool
     _license: str
 
-    __slots__ = (
-        '_priority',
-        '_inited',
-        '_license',
-    )
+    # __slots__ = (
+    #     '_priority',
+    #     '_inited',
+    #     '_license',
+    # )
 
     @classmethod
     def instance(cls) -> Self:
@@ -43,6 +43,9 @@ class GDO_Module(WithModuleConfig, GDO):
         self._priority = 50
         self._inited = False
         self._license = 'PyGDOv8'
+
+    def __repr__(self):
+        return self.__class__.__name__
 
     def is_core_module(self) -> bool:
         from gdo.core.module_core import module_core
@@ -73,7 +76,8 @@ class GDO_Module(WithModuleConfig, GDO):
     def get_name(cls):
         return cls.__name__[7:]
 
-    def gdo_table_name(self) -> str:
+    @classmethod
+    def gdo_table_name(cls) -> str:
         return 'gdo_module'
 
     def gdo_dependencies(self) -> list:

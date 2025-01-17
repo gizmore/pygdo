@@ -17,13 +17,14 @@ if TYPE_CHECKING:
 from gdo.base.Events import Events
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
-from gdo.base.Util import Arrays, dump
+from gdo.base.Util import Arrays
 
 
 class Application:
     RUNNING = True
     PROTOCOL = 'http'
     IS_HTTP = False
+    ASGI = False
     LOADER: 'ModuleLoader'
     EVENTS: 'Events'
     STORAGE = threading.local()
@@ -40,8 +41,6 @@ class Application:
     CONFIG_PATH: str = ''
     CONFIG: dict[str, str] = {}
 
-    ASGI = False
-
     @classmethod
     def tick(cls):
         t = time.time()
@@ -57,12 +56,11 @@ class Application:
         from gdo.base.ModuleLoader import ModuleLoader
         cls.PATH = os.path.normpath(path) + '/'
         Logger.init(cls.PATH + "protected/logs/")
-        # Cache.init()
         os.environ['TZ'] = 'UTC'
         time.tzset()
         cls.LOADER = ModuleLoader()
         cls.EVENTS = Events()
-        config_path = 'protected/config_test.toml' if 'unittest' in sys.modules.keys() else config_file
+        config_path = 'protected/config_test.toml' if cls.is_unit_test() else config_file
         config_path = os.path.join(cls.PATH, config_path)
         cls.CONFIG_PATH = config_path
         if os.path.isfile(config_path):
@@ -72,11 +70,11 @@ class Application:
         else:
             from gdo.install.Config import Config
             cls.CONFIG = Config.defaults()
+        from gdo.base.Cache import Cache
+        Cache.init(cls.config('redis.host', 'localhost'),
+                   int(cls.config('redis.port', '6379')),
+                   int(cls.config('redis.db', '0')))
         Application.init_common()
-
-    @classmethod
-    def reset(cls):
-        cls.get_page().init()
 
     @classmethod
     def has_db(cls):
@@ -105,9 +103,9 @@ class Application:
     @classmethod
     def fresh_page(cls):
         from gdo.ui.GDT_Page import GDT_Page
-        cls.STORAGE.page = GDT_Page()
+        cls.STORAGE.page = page = GDT_Page()
         cls.status('200 OK')
-        return cls.STORAGE.page
+        return page
 
     @classmethod
     def get_page(cls) -> 'GDT_Page':
@@ -138,7 +136,9 @@ class Application:
 
     @classmethod
     def config(cls, path: str, default: str = '') -> str:
-        return str(Arrays.walk(cls.CONFIG, path)) or str(default)
+        if val := Arrays.walk(cls.CONFIG, path):
+            return str(val)
+        return str(default)
 
     @classmethod
     def storage(cls, key: str, default: any = None) -> any:
@@ -230,7 +230,7 @@ class Application:
         cookies = {}
         if cookies_str:
             for cookie in cookies_str.split(';'):
-                parts = cookie.strip().split('=', 1)
+                # parts = cookie.strip().split('=', 1)
                 name, value = cookie.split('=', 1)
                 cookies[name] = value
         cls.STORAGE.cookies = cookies

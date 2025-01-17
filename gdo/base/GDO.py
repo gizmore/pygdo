@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import functools
 import hashlib
 import traceback
 from typing import Self
 
 from gdo.base.Exceptions import GDOException
-from gdo.base.Logger import Logger
 from gdo.base.Result import ResultType
 
 from gdo.base.Cache import Cache
@@ -30,12 +28,12 @@ class GDO(WithBulk, GDT):
     _last_id: int|None
     _my_id: str|None
 
-    __slots__ = (
-        '_vals',
-        '_dirty',
-        '_last_id',
-        '_my_id',
-    )
+    # __slots__ = (
+    #     '_vals',
+    #     '_dirty',
+    #     '_last_id',
+    #     '_my_id',
+    # )
 
     def __init__(self):
         super().__init__()
@@ -46,13 +44,16 @@ class GDO(WithBulk, GDT):
         if Application.config('core.gdo_debug') == '2':
             from gdo.base.Logger import Logger
             Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
+        self.gdo_wake_up()
+
+    def __del__(self):
+        GDO.GDO_ALIVE -= 1
+
+    def gdo_wake_up(self):
         self._vals = {}
         self._dirty = []
         self._last_id = None
         self._my_id = None
-
-    def __del__(self):
-        GDO.GDO_ALIVE -= 1
 
     @classmethod
     def table(cls) -> 'GDO':
@@ -87,8 +88,9 @@ class GDO(WithBulk, GDT):
         id_ = self.get_id()
         return len(id_) > 0 and id_ != '0' and not id_.startswith(':')
 
-    def gdo_table_name(self) -> str:
-        return self.__class__.__name__.lower()
+    @classmethod
+    def gdo_table_name(cls) -> str:
+        return cls.__name__.lower()
 
     def gdo_table_engine(self) -> str:
         return 'InnoDB'
@@ -225,7 +227,7 @@ class GDO(WithBulk, GDT):
             return self._my_id
         cols = self.get_pk_columns()
         id_ = self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', cols))
-        if not id_.startswith('0'):
+        if not id_.startswith('0') and not id_.startswith(':'):
             self._my_id = id_
         return id_
 
@@ -251,7 +253,7 @@ class GDO(WithBulk, GDT):
         self._last_id = query.exec()['insert_id']
         self.after_create()
         self.all_dirty(False)
-        return Cache.obj_for(self)
+        return Cache.update_for(self)
 
 
     def dirty_vals(self) -> dict:
@@ -282,9 +284,9 @@ class GDO(WithBulk, GDT):
             query.exec()
             self.after_update()
             # obj = Cache.obj_for(self)._vals.update(self._vals)
-            return self.all_dirty(False)
-        else:
-            return self
+            self.all_dirty(False)
+            Cache.update_for(self)
+        return self
 
     ##########
     # Delete #
@@ -298,7 +300,7 @@ class GDO(WithBulk, GDT):
             self.before_delete()
             self.delete_query().where(self.pk_where()).exec()
             vals = {gdt.get_name(): gdt.get_val() for gdt in self.get_pk_columns()}
-            Cache.obj_search(self.table(), vals, True)
+            Cache.obj_search(self, vals, True)
             self.after_delete()
             self.all_dirty(True)
         return self
@@ -336,7 +338,7 @@ class GDO(WithBulk, GDT):
         self.gdo_before_update(self)
 
     def after_update(self):
-        Cache.obj_for(self).set_vals(self._vals, False)  # After a blanked update this is required.
+        # Cache.obj_for(self).set_vals(self._vals, False)  # After a blanked update this is required.
         self.gdo_after_update(self)
         for gdt in self.columns():
             gdt.gdo_after_update(self)

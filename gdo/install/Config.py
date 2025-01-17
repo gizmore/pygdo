@@ -50,6 +50,7 @@ class Config:
             GDT_Section().title_raw('Cache'),
             cls.data_str('redis.host', 'localhost'),
             cls.data_int('redis.port', 6379),
+            cls.data_int('redis.db', 0),
             GDT_Section().title_raw('Locale'),
             GDT_Select('i18n.iso').choices({'en': 'English', 'de': 'Deutsch'}).initial('en'),
             GDT_Section().title_raw('Session'),

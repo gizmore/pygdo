@@ -24,7 +24,7 @@ class GDT(WithSerialization):
     GDT_COUNT = 0
     GDT_ALIVE = 0
 
-    __slots__ = ()
+    # __slots__ = ()
 
     @classmethod
     def escape(cls, val: str | bytes) -> str:

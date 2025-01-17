@@ -32,15 +32,19 @@ class GDO_Server(GDO):
     _users: dict[str, 'GDO_User']
     _has_loop: bool
 
-    __slots__ = (
-        '_connector',
-        '_channels',
-        '_users',
-        '_has_loop',
-    )
+    # __slots__ = (
+    #     '_connector',
+    #     '_channels',
+    #     '_users',
+    #     '_has_loop',
+    #)
 
     def __init__(self):
         super().__init__()
+        self.gdo_wake_up()
+
+    def gdo_wake_up(self):
+        super().gdo_wake_up()
         self._connector = None
         self._channels = {}
         self._users = {}
@@ -118,7 +122,7 @@ class GDO_Server(GDO):
         Application.EVENTS.publish('user_created', user)
         return user
 
-    def get_user_by_name(self, username) -> GDO_User:
+    def get_user_by_name(self, username: str) -> GDO_User:
         return GDO_User.table().get_by_vals({
             'user_server': self.get_id(),
             'user_name': username,
@@ -140,7 +144,6 @@ class GDO_Server(GDO):
         from gdo.core.GDO_Channel import GDO_Channel
         channel = self.get_channel_by_name(name)
         if not channel:
-            print(f"NO CHAN for {name} yet!")
             channel = GDO_Channel.blank({
                 'chan_name': name,
                 'chan_displayname': display_name or name,

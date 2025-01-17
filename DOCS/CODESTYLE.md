@@ -47,9 +47,6 @@ PyGDO makes use of multi inheritance a lot. The most right inheritance, the base
 Then there are mixins which are named "WithFoo" etc. Example [WithInput](../gdo/base/WithInput.py).
 Do **not** add any attribute to the GDT superclass.
 
-Sadly i cannot use `__slots__` everywhere, because of the multi inheritance,
-but at least the [GDO](../gdo/base/GDO.py) objects are slotted.
-
 
 ## File and Dir paths
 

@@ -294,8 +294,6 @@ class App:
         if not modules:
             print("No modules found!", file=sys.stderr)
             exit(-1)
-        # loader.load_modules_db()
-        # loader.init_modules(True, True)
         Installer.install_modules(modules, True)
         self._run_yarn_script()
         print("All Done!")

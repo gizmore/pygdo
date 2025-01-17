@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO
+    from gdo.core.GDT_Dict import GDT_Dict
+    from gdo.core.GDT_List import GDT_List
 
 from gdo.base.Cache import Cache
 
@@ -53,11 +55,13 @@ class Result:
             raise StopIteration
         return data
 
-    def fetch_all(self) -> list['GDO']:
-        return [row for row in self]
+    def fetch_all(self) -> 'GDT_List':
+        from gdo.core.GDT_List import GDT_List
+        return GDT_List(*[row for row in self])
 
-    def fetch_all_dict(self) -> dict:
-        result = {}
+    def fetch_all_dict(self) -> 'GDT_Dict':
+        from gdo.core.GDT_Dict import GDT_Dict
+        result = GDT_Dict()
         if self._iter == ResultType.OBJECT:
             for row in self:
                 result[row.get_id()] = row
@@ -91,7 +95,6 @@ class Result:
         """
         row = self.fetch_row()
         result = None if row is None else row[0]
-#        self.close()
         return result
 
     def fetch_object(self) -> 'GDO':

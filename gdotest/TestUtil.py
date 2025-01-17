@@ -86,7 +86,7 @@ class WebPlug:
         self._ip = '::1'
         self._environ = {}
         Application.mode(Mode.HTML)
-        Application.reset()
+        Application.fresh_page()
 
     def ip(self, ip: str):
         self._ip = ip

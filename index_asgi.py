@@ -32,23 +32,16 @@ async def app(scope, receive, send):
         if scope['type'] == 'lifespan':
             message = await receive()
             if message['type'] == 'lifespan.startup':
-                # Cache.TCACHE = scope['state'].get('GDO_TCACHE', {})
-                # Cache.OCACHE = scope['state'].get('GDO_OCACHE', {})
-                # Cache.CCACHE = scope['state'].get('GDO_CCACHE', {})
-                # Cache.FCACHE = scope['state'].get('GDO_FCACHE', {})
                 await send({'type': 'lifespan.startup.complete'})
             elif message['type'] == 'lifespan.shutdown':
-                # scope['state']['GDO_TCACHE'] = Cache.TCACHE
-                # scope['state']['GDO_CCACHE'] = Cache.CCACHE
-                # scope['state']['GDO_OCACHE'] = Cache.OCACHE
-                # scope['state']['GDO_FCACHE'] = Cache.FCACHE
                 await send({'type': 'lifespan.shutdown.complete'})
             return
-        assert scope['type'] == 'http', f"Type {scope['type']} not supported"
+        assert scope['type'] == 'http', f"Type {scope['type']} not supported."
 
         if FRESH:
             FRESH = False
             Application.init(os.path.dirname(__file__))
+            # Cache.clear()
             ModuleLoader.instance().load_modules_db()
             ModuleLoader.instance().init_modules(True, True)
         else:
@@ -63,6 +56,7 @@ async def app(scope, receive, send):
             Application.DB_READS = 0
             Application.DB_WRITES = 0
             Logger.LINES_WRITTEN = 0
+            Cache.clear_stats()
             Application.fresh_page()
 
         Application.init_asgi(scope)
