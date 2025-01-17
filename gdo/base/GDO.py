@@ -83,7 +83,7 @@ class GDO(WithBulk, GDT):
 
     def is_persisted(self):
         id_ = self.get_id()
-        return len(id_) > 0 and not id_.startswith(':')
+        return len(id_) > 0 and id_ != '0' and not id_.startswith(':')
 
     def gdo_table_name(self) -> str:
         return self.__class__.__name__.lower()
