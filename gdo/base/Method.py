@@ -365,6 +365,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     # Config #
     ##########
 
+    def get_sqn(self) -> str:
+        return f"{self.gdo_module().get_name()}.{self.get_name()}"
+
     def get_fqn(self) -> str:
         return self.__module__ + "." + self.__class__.__name__
 

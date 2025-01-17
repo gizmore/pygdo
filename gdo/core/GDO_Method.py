@@ -1,3 +1,4 @@
+from gdo.base import Method
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.core.GDT_AutoInc import GDT_AutoInc
@@ -15,8 +16,8 @@ class GDO_Method(GDO):
         }).insert()
 
     @classmethod
-    def for_method(cls, method: object):
-        return cls.get_by_name(method.get_fqn())
+    def for_method(cls, method: 'Method'):
+        return cls.get_by_name(method.get_sqn())
 
     def gdo_columns(self) -> list[GDT]:
         return [
