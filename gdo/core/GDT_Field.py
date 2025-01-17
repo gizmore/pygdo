@@ -149,6 +149,6 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     def validate_unique(self, value):
         self._gdo.table().select()
 
-    def render_html(self) -> str:
-        return self.render_label() + super().render_html()
+    # def render_html(self) -> str:
+    #     return self.render_label() + super().render_html()
 
