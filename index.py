@@ -43,6 +43,7 @@ def pygdo_application(environ, start_response):
         GDT.GDT_ALIVE = 0
         GDO.GDO_ALIVE = 0
         Application.DB_TRANSACTIONS = 0
+        Application.EVENT_COUNT = 0
         Logger.LINES_WRITTEN = 0
         if FRESH:
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")

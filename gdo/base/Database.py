@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from gdo.base.Application import Application
+from gdo.base.Util import dump
 
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO
@@ -167,11 +168,11 @@ class Database:
         query = f"SET FOREIGN_KEY_CHECKS = %i" % state
         return self.query(query)
 
-    def lock(self, name: str):
-        return self.query(f"GET LOCK '{name}'")
+    def lock(self, name: str, timeout: float = 10.0) -> bool:
+        return self.select(f"SELECT GET_LOCK('{name}', {timeout})", False).fetch_val() == '1'
 
     def unlock(self, name: str):
-        return self.query(f"RELEASE LOCK '{name}'")
+        return self.select(f"SELECT RELEASE_LOCK('{name}')", False).fetch_val() == '1'
 
     def affected_rows(self) -> int:
         return self.get_link().num_rows

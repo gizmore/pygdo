@@ -47,11 +47,13 @@ class Events:
             self._subscribers[event_name] = [sub for sub in self._subscribers[event_name] if sub['callback'] != subscriber]
 
     def publish(self, event_name, *args, **kwargs):
+        from gdo.base.Application import Application
+        Application.EVENT_COUNT += 1
         to_delete = []
         if event_name in self._subscribers:
             for subscriber in self._subscribers[event_name]:
                 result = subscriber['callback'](*args, **kwargs)
-                if asyncio.iscoroutine(result):
+                while asyncio.iscoroutine(result):
                     asyncio.run(result)
                 subscriber['count'] -= 1
                 if subscriber['count'] == 0:
