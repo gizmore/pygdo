@@ -4,7 +4,6 @@ from gdo.base.Trans import t
 from gdo.base.Util import jsn, dump
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template
-from gdo.core.WithLabel import WithLabel
 from gdo.form.GDT_Hidden import GDT_Hidden
 
 
@@ -14,7 +13,7 @@ class Encoding(Enum):
     BINARY = 3
 
 
-class GDT_String(WithLabel, GDT_Field):
+class GDT_String(GDT_Field):
     _encoding: Encoding
     _case_s: bool
 

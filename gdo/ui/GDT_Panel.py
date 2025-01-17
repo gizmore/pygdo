@@ -12,7 +12,10 @@ class GDT_Panel(WithTitle, WithText, GDT_Container):
     def __init__(self):
         super().__init__()
 
+    def render_super_fields(self, mode: Mode = Mode.HTML):
+        return super().render_fields(mode)
+
     def render_fields(self, mode: Mode = Mode.HTML):
         if mode == Mode.HTML:
             return GDT_Template.python('ui', 'panel.html', {'field': self})
-        return (self.render_title(mode) + " " + self.render_text(mode) + " " + super().render_fields(mode)).strip()
+        return (self.render_title(mode) + " " + self.render_text(mode) + " " + self.render_super_fields(mode)).strip()

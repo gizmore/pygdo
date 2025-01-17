@@ -3,6 +3,8 @@ from typing_extensions import Self
 from typing import TYPE_CHECKING
 
 from gdo.base.Cache import gdo_cached
+from gdo.base.Query import Query
+from gdo.base.Result import Result
 from gdo.base.Util import module_enabled
 from gdo.core.GDT_UserName import GDT_UserName
 
@@ -120,6 +122,16 @@ class GDO_User(GDO):
     ############
     # Settings #
     ############
+    def with_setting_query(self, settings: list[tuple[str, str, str]]) -> Query:
+        from gdo.core.GDO_UserSetting import GDO_UserSetting
+        return GDO_UserSetting.get_users_with_settings_query(None, settings)
+
+    def with_setting_result(self, settings: list[tuple[str, str, str]]) -> Result:
+        return self.with_setting_query(settings).exec()
+
+    def with_setting(self, settings: list[tuple[str, str, str]]) -> list['GDO_User']:
+        return self.with_setting_result(settings).fetch_all()
+
     def get_setting_val(self, key: str) -> str:
         from gdo.core.GDO_UserSetting import GDO_UserSetting
         return GDO_UserSetting.setting_column(key, self).get_val()
@@ -191,6 +203,9 @@ class GDO_User(GDO):
 
     def is_admin(self) -> bool:
         return self.has_permission('admin')
+
+    def is_staff(self) -> bool:
+        return self.has_permission('staff')
 
     def has_permission(self, permission: str) -> bool:
         from gdo.core.GDO_Permission import GDO_Permission

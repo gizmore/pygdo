@@ -1,24 +1,26 @@
+from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 
 
 class WithFields:
-    _fields: list
+    _fields: list[GDT]
 
-    def add_field(self, *fields):
+    def get_fields(self) -> list[GDT]:
         if not hasattr(self, '_fields'):
             self._fields = []
-        self._fields.extend(fields)
+        return self._fields
+
+    def add_field(self, *fields):
+        self.get_fields().extend(fields)
         return self
 
     def get_field(self, name: str):
-        for gdt in self._fields:
+        for gdt in self.fields():
             if gdt.get_name() == name:
                 return gdt
             if gdt.has_fields():
-                gdt2 = gdt.get_field_named(name)
-                if gdt2:
+                if gdt2 := gdt.get_field(name):
                     return gdt2
-        return None
 
     def has_fields(self) -> bool:
         return True
@@ -50,38 +52,3 @@ class WithFields:
             for gdt in self._fields:
                 output += gdt.render(mode)
         return output
-
-    # def render_txt(self) -> str:
-    #     output = ""
-    #     if hasattr(self, '_fields'):
-    #         for gdt in self._fields:
-    #             output += gdt.render_txt()
-    #     return output
-    #
-    # def render_cli(self) -> str:
-    #     output = ""
-    #     if hasattr(self, '_fields'):
-    #         for gdt in self._fields:
-    #             output += gdt.render_cli()
-    #     return output
-    #
-    # def render_irc(self) -> str:
-    #     output = ""
-    #     if hasattr(self, '_fields'):
-    #         for gdt in self._fields:
-    #             output += gdt.render_irc()
-    #     return output
-    #
-    # def render_html(self) -> str:
-    #     output = ""
-    #     if hasattr(self, '_fields'):
-    #         for gdt in self._fields:
-    #             output += gdt.render_html()
-    #     return output
-    #
-    # def render_form(self) -> str:
-    #     # if hasattr(self, '_fields'):
-    #     output = ""
-    #     for gdt in self.fields():
-    #         output += gdt.render_form()
-    #     return output

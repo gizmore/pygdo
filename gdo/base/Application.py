@@ -99,6 +99,8 @@ class Application:
         cls.STORAGE.user = user
         cls.STORAGE.lang = user.get_lang_iso()
         Logger.user(user)
+        from gdo.user.module_user import module_user
+        module_user.instance().set_last_activity(user)
 
     @classmethod
     def fresh_page(cls):

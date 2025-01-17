@@ -103,12 +103,12 @@ class GDO_Session(GDO):
         if self.get_token() == self.DEFAULT_COOKIE:
             return self
         self.set_value('sess_data', self._data)
-        self.set_last_activity(self.get_user())
+        # self.set_last_activity(self.get_user())
         return super().save()
 
-    def set_last_activity(self, user: GDO_User):
-        if user.is_persisted():
-            module_user.instance().set_last_activity(self.get_user())
+    # def set_last_activity(self, user: GDO_User):
+    #     if user.is_persisted():
+    #         module_user.instance().set_last_activity(self.get_user())
 
     def set_header(self):
         self.set_cookie_header(self.cookie_value())

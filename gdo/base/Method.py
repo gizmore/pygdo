@@ -299,7 +299,6 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 if isinstance(val, list):
                     gdt.val(val)
                 else:
-                    # val = val.rstrip()
                     if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
                         vals = [val]
                         vals.extend(unknown_args)

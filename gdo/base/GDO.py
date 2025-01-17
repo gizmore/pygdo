@@ -28,11 +28,13 @@ class GDO(WithBulk, GDT):
     _vals: dict[str, str]
     _dirty: list[str]
     _last_id: int|None
+    _my_id: str|None
 
     __slots__ = (
         '_vals',
         '_dirty',
         '_last_id',
+        '_my_id',
     )
 
     def __init__(self):
@@ -47,7 +49,7 @@ class GDO(WithBulk, GDT):
         self._vals = {}
         self._dirty = []
         self._last_id = None
-        # self.get_id = functools.cache(self.get_id)
+        self._my_id = None
 
     def __del__(self):
         GDO.GDO_ALIVE -= 1
@@ -215,8 +217,13 @@ class GDO(WithBulk, GDT):
         return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
 
     def get_id(self) -> str:
+        if self._my_id:
+            return self._my_id
         cols = self.get_pk_columns()
-        return self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', cols))
+        id_ = self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', cols))
+        if not id_.startswith('0'):
+            self._my_id = id_
+        return id_
 
     ####################
     # Insert / Replace #
@@ -268,7 +275,7 @@ class GDO(WithBulk, GDT):
             query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
             query.exec()
             self.after_update()
-            Cache.obj_for(self)._vals.update(self._vals)
+            # obj = Cache.obj_for(self)._vals.update(self._vals)
             return self.all_dirty(False)
         else:
             return self

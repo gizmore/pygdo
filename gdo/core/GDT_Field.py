@@ -2,12 +2,13 @@ from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.WithError import WithError
 from gdo.core.WithGDO import WithGDO
+from gdo.core.WithLabel import WithLabel
 from gdo.core.WithNullable import WithNullable
 from gdo.ui.WithIcon import WithIcon
 from gdo.ui.WithTooltip import WithTooltip
 
 
-class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, WithNullable, GDT):
+class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullable, GDT):
     _name: str
     _val: str
     _initial: str
@@ -147,3 +148,7 @@ class GDT_Field(WithGDO, WithTooltip, WithIcon, WithError, WithNullable, GDT):
 
     def validate_unique(self, value):
         self._gdo.table().select()
+
+    def render_html(self) -> str:
+        return self.render_label() + super().render_html()
+

@@ -1,3 +1,5 @@
+from math import floor
+
 from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
@@ -32,6 +34,11 @@ class module_user(GDO_Module):
             GDT_Timestamp('last_activity'),
         ]
 
-    def set_last_activity(self, user: GDO_User):
+    def get_activity_cut_date(self) -> str:
         if seconds := int(self.cfg_activity_accuracy()):
-            user.save_setting('last_activity', Time.get_date(int(round(Application.TIME / seconds) * seconds)))
+            return Time.get_date(int(floor(Application.TIME / seconds) * seconds))
+        return Time.get_date(Application.TIME)
+
+    def set_last_activity(self, user: GDO_User):
+        if self.cfg_activity_accuracy() and user.is_persisted():
+            user.save_setting('last_activity', self.get_activity_cut_date())
