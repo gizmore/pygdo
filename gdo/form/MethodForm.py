@@ -2,6 +2,7 @@ from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.Render import Render
+from gdo.base.Util import module_enabled
 from gdo.form.GDT_CSRF import GDT_CSRF
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
@@ -16,9 +17,15 @@ class MethodForm(Method):
     def gdo_parameters(self) -> [GDT]:
         return []
 
+    def gdo_captcha(self) -> bool:
+        return False
+
     def gdo_create_form(self, form: GDT_Form) -> None:
-        if Application.is_html():
+        if Application.IS_HTTP:
             form.add_field(GDT_CSRF())
+        if self.gdo_captcha() and module_enabled('captcha'):
+            from gdo.captcha.GDT_Captcha import GDT_Captcha
+            form.add_field(GDT_Captcha())
         form.actions().add_field(GDT_Submit().calling(self.form_submitted).default_button())
 
     def get_form(self, reset: bool = False) -> GDT_Form:

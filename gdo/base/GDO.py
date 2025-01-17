@@ -307,8 +307,8 @@ class GDO(WithBulk, GDT):
         query = self.delete_query()
         for key, val in vals.items():
             query.where(f"{key}={self.quote(val)}")
-        Cache.obj_search(self.table(), vals, True)
         query.exec()
+        Cache.obj_search(self, vals, True)
 
     ##########
     # Events #

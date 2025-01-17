@@ -37,7 +37,6 @@ class settings(MethodForm):
             form.add_field(gdt)
         form.href(href('account', 'all_settings', f'&module={module.get_name()}'))
         form.actions().add_field(GDT_Submit(f'submit_{module.get_name()}').calling(self.form_submitted))
-        # super().gdo_create_form(form)
 
     def form_submitted(self):
         user = self._env_user

@@ -45,7 +45,6 @@ class ModuleLoader:
             })
             module.init_language()
             return module
-        return None
 
     def __init__(self):
         self._cache = self.__dict__.get('_cache', {})
@@ -178,9 +177,6 @@ class ModuleLoader:
         for config in result:
             module_name, key, val = config
             self.get_module(module_name).config_column(key).initial(val)
-
-    def load_modules_cached(self):
-        return self.load_modules_db(True)
 
     def init_cli(self):
         """

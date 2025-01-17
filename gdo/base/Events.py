@@ -54,7 +54,7 @@ class Events:
             for subscriber in self._subscribers[event_name]:
                 result = subscriber['callback'](*args, **kwargs)
                 while asyncio.iscoroutine(result):
-                    asyncio.run(result)
+                    result = asyncio.run(result)
                 subscriber['count'] -= 1
                 if subscriber['count'] == 0:
                     to_delete.append(subscriber['callback'])

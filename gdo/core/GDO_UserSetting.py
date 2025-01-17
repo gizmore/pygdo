@@ -8,20 +8,13 @@ from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 
 class GDO_UserSetting(GDO):
-    """
-    Store settings for a user.
-    The Settings table uses enums for keys, which makes the install a bit tricky.
-    After every module install, a migration is executed. Make sure you only *add* to the list of enums.
-    To add a setting, add a GDT to modules gdo_user_config() and gdo_user_settings(). Config is not user editable, settings are user editable.
-    """
-
     @classmethod
     def setting_column(cls, key: str, user: GDO_User) -> GDT:
         gdt = GDT_UserSetting.KNOWN[key]
         if user.get_id() == "0":
             return gdt
         if gdo := cls.get_setting(user, key):
-            return gdt.initial(gdo.get_val())
+            return gdt.val(gdo.get_val())
         else:
             cls.blank({
                 'uset_user': user.get_id(),
@@ -29,6 +22,13 @@ class GDO_UserSetting(GDO):
                 'uset_val': gdt.get_initial(),
             }).insert()
             return gdt.val(gdt.get_initial())
+
+    """
+    Store settings for a user.
+    The Settings table uses enums for keys, which makes the install a bit tricky.
+    After every module install, a migration is executed. Make sure you only *add* to the list of enums.
+    To add a setting, add a GDT to modules gdo_user_config() and gdo_user_settings(). Config is not user editable, settings are user editable.
+    """
 
     @classmethod
     def get_setting(cls, user, key: str):
@@ -40,8 +40,8 @@ class GDO_UserSetting(GDO):
     #######
     # GDO #
     #######
-    def gdo_cached(self) -> bool:  # Not cached
-        return False
+    # def gdo_cached(self) -> bool:  # Not cached
+    #     return False
 
     def gdo_columns(self) -> list[GDT]:
         return [

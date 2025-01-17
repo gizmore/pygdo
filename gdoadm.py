@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import getpass
 import os
 import subprocess
@@ -293,6 +294,8 @@ class App:
         if not modules:
             print("No modules found!", file=sys.stderr)
             exit(-1)
+        # loader.load_modules_db()
+        # loader.init_modules(True, True)
         Installer.install_modules(modules, True)
         self._run_yarn_script()
         print("All Done!")
@@ -418,7 +421,7 @@ class App:
         pass
 
 
-def run_pygdo_admin():
+async def run_pygdo_admin():
     try:
         path = os.path.dirname(__file__) + "/"
         parser = argparse.ArgumentParser()
@@ -443,4 +446,4 @@ def run_pygdo_admin():
 
 
 if __name__ == "__main__":
-    run_pygdo_admin()
+    asyncio.run(run_pygdo_admin())
