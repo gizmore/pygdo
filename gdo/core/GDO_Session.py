@@ -7,6 +7,7 @@ from gdo.core.GDT_Serialize import GDT_Serialize
 from gdo.core.GDT_Token import GDT_Token
 from gdo.core.GDT_User import GDT_User
 from gdo.net.GDT_IP import GDT_IP
+from gdo.user.module_user import module_user
 
 
 class GDO_Session(GDO):
@@ -102,7 +103,12 @@ class GDO_Session(GDO):
         if self.get_token() == self.DEFAULT_COOKIE:
             return self
         self.set_value('sess_data', self._data)
+        self.set_last_activity(self.get_user())
         return super().save()
+
+    def set_last_activity(self, user: GDO_User):
+        if user.is_persisted():
+            module_user.instance().set_last_activity(self.get_user())
 
     def set_header(self):
         self.set_cookie_header(self.cookie_value())

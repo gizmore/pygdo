@@ -130,11 +130,12 @@ class GDO_User(GDO):
 
     def save_setting(self, key: str, val: str):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
-        GDO_UserSetting.blank({
-            'uset_user': self.get_id(),
-            'uset_key': key,
-            'uset_val': val,
-        }).soft_replace()
+        if val != self.get_setting_val(key):
+            GDO_UserSetting.blank({
+                'uset_user': self.get_id(),
+                'uset_key': key,
+                'uset_val': val,
+            }).soft_replace()
         return self
 
     def increase_setting(self, key: str, by: float | int):
