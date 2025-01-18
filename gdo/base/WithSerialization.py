@@ -31,7 +31,7 @@ class WithSerialization:
             value = getattr(self, key)
             if isinstance(value, WithSerialization):
                 data[key] = value.gdopack2()
-            if isinstance(value, dict):
+            elif isinstance(value, dict):
                 data[key] = {}
                 for k, v in value.items():
                     if isinstance(v, WithSerialization):
