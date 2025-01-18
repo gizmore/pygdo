@@ -1,5 +1,6 @@
 import hashlib
 import functools
+import zlib
 
 import msgpack
 from redis import Redis
@@ -7,6 +8,7 @@ from redis import Redis
 from gdo.base import GDO
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.base.Util import Files
 from gdo.base.WithSerialization import WithSerialization
 
@@ -202,11 +204,14 @@ class Cache:
     @classmethod
     def get(cls, key: str, args_key: str = None, default: any = None):
         if cls.RCACHE:
-            key = f"{key}:{args_key}" if args_key else key
-            if packed := cls.RCACHE.get(key):
-                cls.HITS += 1
-                return WithSerialization.gdounpack(packed)
-            cls.MISS += 1
+            try:
+                key = f"{key}:{args_key}" if args_key else key
+                if packed := cls.RCACHE.get(key):
+                    cls.HITS += 1
+                    return WithSerialization.gdounpack(zlib.decompress(packed))
+                cls.MISS += 1
+            except Exception as ex:
+                Logger.exception(ex)
         return default
 
     @classmethod
@@ -218,7 +223,7 @@ class Cache:
                 value = msgpack.dumps(value)
             cls.UPDATES += 1
             key = f"{key}:{args_key}" if args_key else key
-            cls.RCACHE.set(key, value)
+            cls.RCACHE.set(key, zlib.compress(value))
 
     @classmethod
     def remove(cls, key: str = None, args_key: str = None):

@@ -1,6 +1,7 @@
 import asyncio
 import io
 import os
+import traceback
 from asyncio import iscoroutine
 from urllib.parse import parse_qs
 from multipart import parse_options_header, MultipartParser
@@ -199,6 +200,7 @@ async def app(scope, receive, send):
                 'body': out.encode(),
             })
         except Exception:
+            trace = "\n".join(traceback.format_exception(ex))
             try:
                 await send({
                     'type': 'http.response.start',
@@ -208,5 +210,5 @@ async def app(scope, receive, send):
                 pass
             await send({
                 'type': 'http.response.body',
-                'body': str(ex).encode(),
+                'body': f"{str(ex)}\n{trace}".encode(),
             })
