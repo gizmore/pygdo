@@ -108,6 +108,8 @@ class GDO_File(GDO):
 
     def gdo_after_create(self, gdo):
         dest = gdo.get_target_path()
+        Files.create_dir(dest)
+        dest += "/0"
         if hasattr(gdo, '_temp_path'):
             Files.copy(gdo._temp_path, dest)
         elif hasattr(gdo, '_file_data'):
@@ -116,6 +118,9 @@ class GDO_File(GDO):
         gdo.set_val('file_hash', Files.md5(dest))
         gdo.save()
         gdo.clear_temp_dir()
+
+    def gdo_after_delete(self, gdo):
+        Files.delete_dir(gdo.get_target_path())
 
     def clear_temp_dir(self):
         if hasattr(self, '_temp_path'):

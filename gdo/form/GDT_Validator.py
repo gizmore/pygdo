@@ -14,8 +14,7 @@ class GDT_Validator(WithError, GDT):
     _validator_func: callable
 
     def dummy_func(self, form: GDT_Form, field: GDT, value: any) -> bool:
-        dump(form, field, value)
-        return True
+        return field.error('err_validator_stub')
 
     def __init__(self):
         super().__init__()

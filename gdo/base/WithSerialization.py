@@ -1,6 +1,7 @@
 import importlib
 
 import msgpack
+from tomlkit import value
 
 
 class WithSerialization:
@@ -10,6 +11,9 @@ class WithSerialization:
     """
 
     MAGIC_KEY = "__GDT__"
+
+    def gdo_redis_fields(self) -> list[str]:
+        return []
 
     def gdo_wake_up(self):
         """
@@ -23,9 +27,17 @@ class WithSerialization:
     def gdopack2(self) -> dict[str, any]:
         data = {}
         data[self.MAGIC_KEY] = f"{self.__module__}.{self.__class__.__name__}"
-        for key, value in self.__dict__.items():
+        for key in self.gdo_redis_fields():
+            value = getattr(self, key)
             if isinstance(value, WithSerialization):
                 data[key] = value.gdopack2()
+            if isinstance(value, dict):
+                data[key] = {}
+                for k, v in value.items():
+                    if isinstance(v, WithSerialization):
+                        data[key][k] = v.gdopack2()
+                    else:
+                        data[key][k] = v
             elif isinstance(value, list):
                 data[key] = [item.gdopack2() if isinstance(item, WithSerialization) else item for item in value]
             else:
@@ -49,7 +61,7 @@ class WithSerialization:
         module = importlib.import_module(module_name)
         klass = getattr(module, class_name)
         obj = klass.__new__(klass)
-        obj.gdo_wake_up()
+        # obj.gdo_wake_up()
         for key, value in dic.items():
             setattr(obj, key, cls.gdopinstances(value) if isinstance(value, (dict, list)) else value)
         return obj

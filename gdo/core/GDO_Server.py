@@ -32,23 +32,30 @@ class GDO_Server(GDO):
     _users: dict[str, 'GDO_User']
     _has_loop: bool
 
-    # __slots__ = (
-    #     '_connector',
-    #     '_channels',
-    #     '_users',
-    #     '_has_loop',
-    #)
+    __slots__ = (
+        '_connector',
+        '_channels',
+        '_users',
+        '_has_loop',
+    )
 
     def __init__(self):
         super().__init__()
-        self.gdo_wake_up()
-
-    def gdo_wake_up(self):
-        super().gdo_wake_up()
-        self._connector = None
-        self._channels = {}
         self._users = {}
         self._has_loop = False
+        self._channels = {}
+        self._connector = None
+        # self.gdo_wake_up()
+
+    # def gdo_redis_fields(self) -> list[str]:
+    #     return []
+
+    # def gdo_wake_up(self):
+    #     super().gdo_wake_up()
+    #     self._connector = None
+    #     self._channels = {}
+    #     self._users = {}
+    #     self._has_loop = False
 
     @classmethod
     def get_by_connector(cls, name: str):

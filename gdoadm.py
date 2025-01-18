@@ -9,6 +9,7 @@ import tomlkit
 
 from gdo.base import Util
 from gdo.base.Application import Application
+from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
@@ -296,6 +297,7 @@ class App:
             exit(-1)
         Installer.install_modules(modules, True)
         self._run_yarn_script()
+        Cache.clear()
         print("All Done!")
 
     def admin(self):

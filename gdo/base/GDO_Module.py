@@ -28,11 +28,11 @@ class GDO_Module(WithModuleConfig, GDO):
     _inited: bool
     _license: str
 
-    # __slots__ = (
-    #     '_priority',
-    #     '_inited',
-    #     '_license',
-    # )
+    __slots__ = (
+        '_priority',
+        '_inited',
+        '_license',
+    )
 
     @classmethod
     def instance(cls) -> Self:
@@ -143,7 +143,6 @@ class GDO_Module(WithModuleConfig, GDO):
         dirname = self.file_path('method')
         if Files.exists(dirname):
             for file_name in os.listdir(dirname):
-                # full_path = os.path.join(dirname, file_name)
                 if not file_name.startswith('_'):
                     try:
                         method = self.instantiate_method(file_name[:-3])

@@ -9,6 +9,5 @@ class welcome(Method):
     def gdo_trigger(self) -> str:
         return ''
 
-    @gdo_cached('core.welcome')
     def gdo_execute(self) -> GDT:
         return GDT_Success().text('msg_gdo_working')

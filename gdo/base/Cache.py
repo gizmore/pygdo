@@ -85,31 +85,39 @@ class Cache:
     ##########
 
     @classmethod
-    def obj_for(cls, gdo: GDO) -> GDO:
+    def obj_for(cls, gdo: GDO, after_write: bool = False, is_rc = False) -> GDO:
         if gdo.gdo_cached():
             gid = gdo.get_id()
             cn = gdo.gdo_table_name()
-            rcached = cls.get(cn, gid)
+            rcached = None
+            if is_rc:
+                rcached = gdo
+            elif not after_write:
+                rcached = cls.get(cn, gid)
             if ocached := cls.OCACHE[cn].get(gid):
                 if rcached: # Update ocache from redis
                     ocached._vals.update(rcached._vals)
                     gdo = ocached
                 else: # No RCACHE. Populate
+                    ocached._vals.update(gdo._vals)
                     cls.set(cn, gid, ocached)
                     gdo = ocached
             else:  # No OCACHE. Populate
                 if rcached:
-                    cls.OCACHE[cn][gid] = rcached
-                    gdo = rcached
+                    if is_rc:
+                        gdo = gdo.blank()
+                    cls.OCACHE[cn][gid] = gdo
+                    gdo._vals.update(rcached._vals)
                 else: # Neither found it
                     cls.OCACHE[cn][gid] = gdo
-                    cls.set(cn, gid, gdo)
+                    if not after_write:
+                        cls.set(cn, gid, gdo)
         return gdo
 
     @classmethod
     def update_for(cls, gdo: GDO):
         cls.set(gdo.gdo_table_name(), gdo.get_id(), gdo)
-        return cls.obj_for(gdo)
+        return cls.obj_for(gdo, True)
 
     @classmethod
     def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False):
@@ -120,21 +128,21 @@ class Cache:
                 cursor, keys = cls.RCACHE.scan(cursor, match=f"{cn}:*")
                 for key in keys:
                     key = key.decode()
-                    if obj := cls.get(key):
+                    if rc := cls.get(key):
                         found = True
                         for k, v in vals.items():
-                            if obj.gdo_val(k) != v:
+                            if rc.gdo_val(k) != v:
                                 found = False
                                 break
                         if found:
                             cls.HITS += 1
                             if delete:
                                 cls.remove(key)
-                                id = obj.get_id()
+                                id = rc.get_id()
                                 if id in cls.OCACHE[cn]:
                                     del cls.OCACHE[cn][id]
-                                return obj
-                            return cls.obj_for(obj)
+                                    return None
+                            return cls.obj_for(rc, after_write=True, is_rc=True)
                 if cursor == 0:
                     break
             cls.MISS += 1

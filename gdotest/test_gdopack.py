@@ -9,8 +9,9 @@ from gdo.base.WithSerialization import WithSerialization
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Dict import GDT_Dict
+from gdo.install.Installer import Installer
 from gdo.message.GDT_HTML import GDT_HTML
-from gdotest.TestUtil import cli_gizmore, GDOTestCase
+from gdotest.TestUtil import cli_gizmore, GDOTestCase, reinstall_module, install_module
 
 
 class GDOPackTestCase(GDOTestCase):
@@ -18,7 +19,11 @@ class GDOPackTestCase(GDOTestCase):
     def setUp(self):
         super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
+        Cache.clear()
+        install_module('core')
         loader = ModuleLoader.instance()
+        Cache.clear()
+        loader.reset()
         loader.load_modules_db(True)
         loader.init_modules()
         loader.init_cli()
@@ -55,6 +60,7 @@ class GDOPackTestCase(GDOTestCase):
         self.assertEqual(gdo3, gdo2, 'GDO OCache not working #2')
 
     def test_05_gdo_serial(self):
+        Cache.clear()
         bash = GDO_Server.table().get_by_id('1')
         packed = bash.gdopack()
         unpack = WithSerialization.gdounpack(packed)

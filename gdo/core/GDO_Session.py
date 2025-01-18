@@ -16,9 +16,16 @@ class GDO_Session(GDO):
     DEFAULT_COOKIE = 'gdo_like_16_byte'
     _data: dict[str, any]
 
+    __slots__ = (
+        '_data',
+    )
+
     def __init__(self):
         super().__init__()
         self._data = {}
+
+    # def gdo_wake_up(self):
+    #     self._data = {}
 
     @classmethod
     def start(cls, create_session: bool):
@@ -113,9 +120,9 @@ class GDO_Session(GDO):
         ]
 
     def save(self):
+        self.set_value('sess_data', self._data)
         if self.get_token() == self.DEFAULT_COOKIE:
             return self
-        self.set_value('sess_data', self._data)
         return super().save()
 
     def set_header(self):

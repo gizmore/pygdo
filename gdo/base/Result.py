@@ -1,6 +1,10 @@
 from enum import Enum
+from marshal import dumps
+
 from mysql.connector.cursor import MySQLCursorDict
 from typing import TYPE_CHECKING
+
+from gdo.base.Util import dump
 
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO

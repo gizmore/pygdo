@@ -8,12 +8,18 @@ class GDT_List(GDT):
 
     _items: list[any]
 
+    __slots__ = (
+        '_items',
+    )
+
     def __init__(self, *items):
         super().__init__()
         self._items = list(items)
 
-    def gdo_wake_up(self):
-        self._items = []
+    def gdo_redis_fields(self) -> list[str]:
+        return [
+            '_items',
+        ]
 
     def __iter__(self):
         return iter(self._items)

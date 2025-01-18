@@ -259,7 +259,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         try:
             if tr:
                 db.begin()
-            Application.set_current_user(self._env_user)
+#            Application.set_current_user(self._env_user)
             if not self._prepare_nested_permissions(self):
                 return self
             return await self._nested_execute(self, True)
@@ -394,8 +394,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     def save_config_server(self, key: str, val: str):
         return self._save_config_server(key, val, self._env_server)
 
-    def _save_config_server(self, key: str, val: str, server: 'GDO_Server'):
-        # Logger.debug(f"{self.get_name()}.save_config_server({key}, {val})")
+    def _save_config_server(self, key: str, val: str, server: 'GDO_Server', known_fresh: bool = False):
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValServer import GDO_MethodValServer
         from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
@@ -404,7 +403,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             if gdt.get_name() == key:
                 table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
                 gdom = GDO_Method.for_method(self)
-                entry = table.get_by_id(gdom.get_id(), server.get_id(), key)
+                entry = None if known_fresh else table.get_by_id(gdom.get_id(), server.get_id(), key)
                 if entry is None:
                     table.blank({
                         'mv_method': gdom.get_id(),
@@ -431,7 +430,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 if entry:
                     gdt.initial(entry.gdo_val('mv_val'))
                 else:
-                    self._save_config_server(key, gdt._initial, server)
+                    self._save_config_server(key, gdt._initial, server, True)
                 return gdt
 
 

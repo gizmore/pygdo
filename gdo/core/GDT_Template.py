@@ -131,11 +131,11 @@ class GDT_Template(GDT):
     _t_file: str
     _t_vals: dict
 
-    # __slots__ = (
-    #     '_t_module',
-    #     '_t_file',
-    #     '_t_vals',
-    # )
+    __slots__ = (
+        '_t_module',
+        '_t_file',
+        '_t_vals',
+    )
 
     def __init__(self):
         super().__init__()

@@ -23,7 +23,8 @@ class WithObject:
         pk = self._table.primary_key_column()
         define = pk.gdo_column_define()
         define = define.replace(pk._name, self._name)
-        define = define.replace(' NOT NULL', '')
+        if not self.is_not_null():
+            define = define.replace(' NOT NULL', '')
         define = define.replace(' PRIMARY KEY', '')
         define = define.replace(' AUTO_INCREMENT', '')
         #$define = preg_replace('#,FOREIGN KEY .* ON UPDATE (?:CASCADE|RESTRICT|SET NULL)#', '', $define);

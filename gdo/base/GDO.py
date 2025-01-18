@@ -16,7 +16,7 @@ from gdo.base.WithBulk import WithBulk
 
 class GDO(WithBulk, GDT):
     """
-    A GDO (Gizmore Data Object) is just a GDT(Gizmore Data Type) with s are GDT
+    A GDO (Gizmore Data Object) is just a GDT(Gizmore Data Type) with fields that are GDT
     """
     ID_SEPARATOR = ':'  # Multiple primary keys supported
     GDO_COUNT = 0
@@ -28,12 +28,12 @@ class GDO(WithBulk, GDT):
     _last_id: int|None
     _my_id: str|None
 
-    # __slots__ = (
-    #     '_vals',
-    #     '_dirty',
-    #     '_last_id',
-    #     '_my_id',
-    # )
+    __slots__ = (
+        '_vals',
+        '_dirty',
+        '_last_id',
+        '_my_id',
+    )
 
     def __init__(self):
         super().__init__()
@@ -44,16 +44,26 @@ class GDO(WithBulk, GDT):
         if Application.config('core.gdo_debug') == '2':
             from gdo.base.Logger import Logger
             Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
-        self.gdo_wake_up()
-
-    def __del__(self):
-        GDO.GDO_ALIVE -= 1
-
-    def gdo_wake_up(self):
         self._vals = {}
         self._dirty = []
         self._last_id = None
         self._my_id = None
+        # self.gdo_wake_up()
+
+    def __del__(self):
+        GDO.GDO_ALIVE -= 1
+
+    def gdo_redis_fields(self) -> list[str]:
+        return [
+            # '_my_id',
+            '_vals',
+        ]
+
+    # def gdo_wake_up(self):
+    #     self._vals = {}
+    #     self._dirty = []
+    #     self._last_id = None
+    #     self._my_id = None
 
     @classmethod
     def table(cls) -> 'GDO':
@@ -223,12 +233,12 @@ class GDO(WithBulk, GDT):
         return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
 
     def get_id(self) -> str:
-        if self._my_id:
-            return self._my_id
+        # if self._my_id:
+        #     return self._my_id
         cols = self.get_pk_columns()
         id_ = self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', cols))
-        if not id_.startswith('0') and not id_.startswith(':'):
-            self._my_id = id_
+        # if not id_.startswith('0') and not id_.startswith(':'):
+        #     self._my_id = id_
         return id_
 
     ####################
@@ -255,7 +265,6 @@ class GDO(WithBulk, GDT):
         self.all_dirty(False)
         return Cache.update_for(self)
 
-
     def dirty_vals(self) -> dict:
         from gdo.core.GDT_Field import GDT_Field
         vals = {}
@@ -278,15 +287,15 @@ class GDO(WithBulk, GDT):
     def save(self):
         if not self.is_persisted():
             return self.insert()
+        obj = self
         if len(self._dirty):
             self.before_update()
             query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
             query.exec()
             self.after_update()
-            # obj = Cache.obj_for(self)._vals.update(self._vals)
             self.all_dirty(False)
-            Cache.update_for(self)
-        return self
+            obj = Cache.update_for(self)
+        return obj
 
     ##########
     # Delete #
