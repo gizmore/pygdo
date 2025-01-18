@@ -1,3 +1,4 @@
+import datetime
 import sys
 
 from typing import TYPE_CHECKING
@@ -54,15 +55,9 @@ class Logger:
 
     @classmethod
     def write(cls, path: str, content: str):
-        pre = ""
-        try:
-            from gdo.base.Application import Application
-            from gdo.date.Time import Time
-            pre += f"{Time.display_timestamp(Application.TIME)} - "
-            if cls._user:
-                pre += cls._user.get_name() + " - "
-        except:
-            pass
+        pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
+        if cls._user:
+            pre += cls._user.get_name() + " - "
 
         with open(f"{cls._base}{path}", 'a') as fo:
             fo.write(f'{pre}{content}\n')

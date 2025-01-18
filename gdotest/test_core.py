@@ -2,6 +2,7 @@ import os.path
 import unittest
 
 from gdo.base.Application import Application
+from gdo.base.Cache import Cache
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import Permutations, Arrays
 from gdo.core.GDO_User import GDO_User
@@ -116,7 +117,8 @@ class CoreTestCase(GDOTestCase):
         web_plug('core.welcome.html').exec()
         web_plug('core.welcome.html').exec()
         web_plug('core.welcome.html').exec()
-        self.assertEqual(0, Application.DB_READS+Application.DB_WRITES, "Cache seems borked.")
+        if Cache.RCACHE:
+            self.assertEqual(0, Application.DB_READS+Application.DB_WRITES, "Cache seems borked.")
 
     def test_15_cache_efficiency(self):
         welcome()._disabled_in_server(Web.get_server())

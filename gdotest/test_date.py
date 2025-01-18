@@ -7,10 +7,10 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.date.GDO_Timezone import GDO_Timezone
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 from gdo.date.Time import Time
-from gdotest.TestUtil import install_module
+from gdotest.TestUtil import install_module, GDOTestCase
 
 
-class DateTestCase(unittest.TestCase):
+class DateTestCase(GDOTestCase):
 
     def setUp(self):
         Application.init(os.path.dirname(__file__) + "/../")
@@ -72,6 +72,11 @@ class DateTestCase(unittest.TestCase):
         col = GDT_Timestamp('test').val('2023-11-09 14:12:11.123')
         dt = col.get_value()
         self.assertIsInstance(dt, datetime, 'Conversion does not yield an object.')
+
+    def test_tz_cache(self):
+        tz1 = GDO_Timezone.get_by_name('UTC')
+        tz2 = GDO_Timezone.get_by_name('UTC')
+        self.assertEqual(tz1, tz2, "Single Identity cache for TZ broken")
 
 
 

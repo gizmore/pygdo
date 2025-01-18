@@ -5,8 +5,6 @@ import os
 import readline
 import sys
 
-from gdo.base.Logger import Logger
-
 
 def pygdo():
     from gdo.base.Application import Application
@@ -27,7 +25,7 @@ def pygdo():
     loader.load_modules_db()
     loader.init_modules(True, True)
     loader.init_cli()
-    Files.create_dir(Application.file_path('cache/repl/'))
+    Files.create_dir(Application.files_path('repl/'))
 
     if len(rest):
         args = []
@@ -108,7 +106,6 @@ def reload_history():
     from gdo.base.Application import Application
     from gdo.base.Util import Files
     user = CLI.get_current_user()
-    Files.create_dir(Application.files_path('repl/'))
     path = Application.files_path(f'repl/{user.get_id()}.repl.log')
     try:
         with open(path, "r") as file:
@@ -139,6 +136,7 @@ def repl():
             print("\nExiting...")
             break
         except Exception as ex:
+            from gdo.base.Logger import Logger
             Logger.exception(ex)
 
 

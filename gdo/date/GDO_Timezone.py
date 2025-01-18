@@ -30,6 +30,9 @@ class GDO_Timezone(GDO):
             GDT_Int('tz_offset').not_null().initial('0')
         ]
 
+    def gdo_persistent(self) -> bool:
+        return True
+
     ##########
     # Getter #
     ##########

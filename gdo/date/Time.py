@@ -199,7 +199,7 @@ class Time:
     def display_timestamp_iso(cls, iso: str, timestamp: float, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
         if timestamp <= 0:
             return default
-        dt = datetime.utcfromtimestamp(timestamp)
+        dt = datetime.fromtimestamp(timestamp, cls.get_timezone_object(tz or cls.TIMEZONE))
         return cls.display_datetime_iso(iso, dt, fmt, default, tz)
 
     @classmethod
@@ -404,5 +404,5 @@ class Time:
     @classmethod
     def is_day(cls, day: str, time: int = 0, timezone_id: str = 'UTC') -> bool:
         time = time or datetime.now(tz=cls.get_timezone_object(timezone_id)).timestamp()
-        dt = datetime.utcfromtimestamp(time).strftime('%u')
+        dt = datetime.fromtimestamp(time).strftime('%u')
         return dt == day
