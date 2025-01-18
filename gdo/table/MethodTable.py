@@ -23,8 +23,6 @@ class MethodTable(WithGDO, MethodForm):
         super().__init__()
 
     def parameters(self, reset: bool = False) -> dict[str, GDT]:
-        # if hasattr(self, '_parameters') and not reset:
-        #     return self._parameters
         params = super().parameters()
         for gdt in self.table_parameters():
             params[gdt.get_name()] = gdt
@@ -123,6 +121,10 @@ class MethodTable(WithGDO, MethodForm):
         table.method(self)
         self.gdo_create_table(table)
         return table
+
+    def get_table_result(self) -> Result:
+        result = self.gdo_table_result()
+        return result
 
     ########
     # Exec #
