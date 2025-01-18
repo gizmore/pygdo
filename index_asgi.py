@@ -41,7 +41,6 @@ async def app(scope, receive, send):
         if FRESH:
             FRESH = False
             Application.init(os.path.dirname(__file__))
-            # Cache.clear()
             ModuleLoader.instance().load_modules_db()
             ModuleLoader.instance().init_modules(True, True)
         else:

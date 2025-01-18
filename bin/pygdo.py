@@ -98,7 +98,7 @@ def append_to_history(line: str):
     from gdo.base.Application import Application
     from gdo.base.Util import Files
     user = CLI.get_current_user()
-    path = Application.file_path(f'cache/repl/{user.get_id()}.repl.log')
+    path = Application.files_path(f'repl/{user.get_id()}.repl.log')
     Files.append_content(path, f"{line}\n", create=True)
 
 
@@ -107,7 +107,8 @@ def reload_history():
     from gdo.base.Application import Application
     from gdo.base.Util import Files
     user = CLI.get_current_user()
-    path = Application.file_path(f'cache/repl/{user.get_id()}.repl.log')
+    Files.create_dir(Application.files_path('repl/'))
+    path = Application.files_path(f'repl/{user.get_id()}.repl.log')
     try:
         with open(path, "r") as file:
             for line in file:

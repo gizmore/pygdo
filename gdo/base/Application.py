@@ -71,7 +71,8 @@ class Application:
             from gdo.install.Config import Config
             cls.CONFIG = Config.defaults()
         from gdo.base.Cache import Cache
-        Cache.init(cls.config('redis.host', 'localhost'),
+        Cache.init(int(cls.config('redis.enabled', '0')),
+                   cls.config('redis.host', 'localhost'),
                    int(cls.config('redis.port', '6379')),
                    int(cls.config('redis.db', '0')))
         Application.init_common()

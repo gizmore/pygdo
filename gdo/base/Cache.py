@@ -32,15 +32,17 @@ class Cache:
     RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
 
     @classmethod
-    def init(cls, host: str = 'localhost', port: int = 6379, db: int = 0):
-        cls.RCACHE = Redis(host=host, port=port, db=db, decode_responses=False)
+    def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0):
+        if enabled:
+            cls.RCACHE = Redis(host=host, port=port, db=db, decode_responses=False)
 
     @classmethod
     def clear(cls):
         cls.TCACHE = {}
         cls.CCACHE = {}
         cls.OCACHE = {}
-        cls.RCACHE.flushdb()
+        if cls.RCACHE:
+            cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
 
     @classmethod
@@ -199,41 +201,44 @@ class Cache:
 
     @classmethod
     def get(cls, key: str, args_key: str = None, default: any = None):
-        key = f"{key}:{args_key}" if args_key else key
-        if packed := cls.RCACHE.get(key):
-            cls.HITS += 1
-            return WithSerialization.gdounpack(packed)
-        cls.MISS += 1
+        if cls.RCACHE:
+            key = f"{key}:{args_key}" if args_key else key
+            if packed := cls.RCACHE.get(key):
+                cls.HITS += 1
+                return WithSerialization.gdounpack(packed)
+            cls.MISS += 1
         return default
 
     @classmethod
     def set(cls, key: str, args_key: str | None, value: WithSerialization):
-        if isinstance(value, WithSerialization):
-            value = value.gdopack()
-        else:
-            value = msgpack.dumps(value)
-        cls.UPDATES += 1
-        key = f"{key}:{args_key}" if args_key else key
-        cls.RCACHE.set(key, value)
+        if cls.RCACHE:
+            if isinstance(value, WithSerialization):
+                value = value.gdopack()
+            else:
+                value = msgpack.dumps(value)
+            cls.UPDATES += 1
+            key = f"{key}:{args_key}" if args_key else key
+            cls.RCACHE.set(key, value)
 
     @classmethod
     def remove(cls, key: str = None, args_key: str = None):
-        if key is None:
-            cls.REMOVES += 1
-            cls.RCACHE.flushdb()
-        elif args_key is None:
-            cursor = 0
-            while True:
-                cursor, keys = cls.RCACHE.scan(cursor, match=f"{key}:*")
-                if keys:
-                    cls.REMOVES += 1
-                    cls.RCACHE.delete(*keys)
-                if cursor == 0:
-                    break
-        else:
-            cls.REMOVES += 1
-            redis_key = f"{key}:{args_key}"
-            cls.RCACHE.delete(redis_key)
+        if cls.RCACHE:
+            if key is None:
+                cls.REMOVES += 1
+                cls.RCACHE.flushdb()
+            elif args_key is None:
+                cursor = 0
+                while True:
+                    cursor, keys = cls.RCACHE.scan(cursor, match=f"{key}:*")
+                    if keys:
+                        cls.REMOVES += 1
+                        cls.RCACHE.delete(*keys)
+                    if cursor == 0:
+                        break
+            else:
+                cls.REMOVES += 1
+                redis_key = f"{key}:{args_key}"
+                cls.RCACHE.delete(redis_key)
 
 
 
