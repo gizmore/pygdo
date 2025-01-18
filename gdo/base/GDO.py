@@ -215,9 +215,6 @@ class GDO(WithBulk, GDT):
         return self.get_by_vals({key: val})
 
     def get_by_id(self, *id_: str):
-        from gdo.core.GDO_Session import GDO_Session
-        if isinstance(self, GDO_Session):
-            pass
         cols = self.get_pk_columns()
         vals = {col.get_name(): Strings.nullstr(val) for col, val in zip(cols, id_)}
         if cached := Cache.obj_search_id(self, vals):

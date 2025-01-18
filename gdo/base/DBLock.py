@@ -15,7 +15,8 @@ class DBLock:
     def __enter__(self):
         if Application.db().lock(self.lock_name, self.timeout):
             self.locked = True
-        raise GDOException(f"cannot acquire lock {self.lock_name}")
+        else:
+            raise GDOException(f"cannot acquire lock {self.lock_name}")
 
     def __exit__(self, exc_type, exc, tb):
         Application.db().unlock(self.lock_name)
