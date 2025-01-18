@@ -13,3 +13,4 @@ multipart
 python-magic
 msgpack
 redis
+better_exceptions

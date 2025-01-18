@@ -1,7 +1,8 @@
-import traceback
 import sys
 
 from typing import TYPE_CHECKING
+
+import better_exceptions
 
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
@@ -45,10 +46,11 @@ class Logger:
 
     @classmethod
     def exception(cls, ex: Exception):
+        stack = "".join(better_exceptions.format_exception(*sys.exc_info()))
         sys.stderr.write(str(ex)+"\n")
-        sys.stderr.write(traceback.format_exc() + "\n")
+        sys.stderr.write(stack + "\n")
         cls.write('exception.log', str(ex))
-        cls.write('exception.log', traceback.format_exc())
+        cls.write('exception.log', stack)
 
     @classmethod
     def write(cls, path: str, content: str):

@@ -4,7 +4,8 @@ import functools
 import os
 import readline
 import sys
-import traceback
+
+from gdo.base.Logger import Logger
 
 
 def pygdo():
@@ -138,8 +139,7 @@ def repl():
             print("\nExiting...")
             break
         except Exception as ex:
-            print(str(ex))
-            traceback.print_exception(ex)
+            Logger.exception(ex)
 
 
 if __name__ == '__main__':

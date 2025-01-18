@@ -1,7 +1,6 @@
 import os
 import re
 import sys
-import traceback
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT

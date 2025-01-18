@@ -1,5 +1,3 @@
-import traceback
-
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.ui.GDT_Error import GDT_Error

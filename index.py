@@ -1,8 +1,10 @@
 import asyncio
 import cgi
 import os.path
-import traceback
+import sys
 from urllib.parse import parse_qs, unquote
+
+import better_exceptions
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException, GDOParamNameException
@@ -142,9 +144,8 @@ def pygdo_application(environ, start_response):
             try:
                 result = method.execute()
             except Exception as ex:
-                err('%s', [str(ex)])
-                err('%s', [traceback.format_exc()])
-                result = method
+                Logger.exception(ex)
+                result = GDT_Error.from_exception(ex)
 
             while asyncio.iscoroutine(result):
                 result = asyncio.run(result)
@@ -188,9 +189,9 @@ def pygdo_application(environ, start_response):
         try:
             yield error_page(ex, start_response, server_error(), "500 Fatal Error", True)
         except Exception as ex:
-            msg = str(ex) + traceback.format_exc()
+            msg = str(ex) + "".join(better_exceptions.format_exception(*sys.exc_info()))
             response_headers = [
-                ('Content-Type', 'text/html; Charset=UTF-8'),
+                ('Content-Type', 'text/plain; Charset=UTF-8'),
                 ('Content-Length', str(bytelen(msg)))
             ]
             status = '500 PyGDO Totally Fatal Error'

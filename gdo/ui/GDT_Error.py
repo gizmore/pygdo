@@ -1,6 +1,6 @@
-import os
 import sys
-import traceback
+
+import better_exceptions
 
 from gdo.base.Logger import Logger
 from gdo.base.Render import Render, Mode
@@ -11,8 +11,20 @@ from gdo.ui.GDT_Panel import GDT_Panel
 
 class GDT_Error(GDT_Panel):
 
+    _trace: bool
+
     def __init__(self):
         super().__init__()
+        self._trace = False
+
+    def trace(self, trace: bool = True):
+        self._trace = trace
+        return self
+
+    def html_class(self):
+        if self._trace:
+            return 'gdt-exception'
+        return super().html_class()
 
     def render(self, mode: Mode = Mode.HTML):
         with Trans('en'):
@@ -35,10 +47,7 @@ class GDT_Error(GDT_Panel):
     #     return Render.red(f"{t('error')}: {self.render_title(Mode.HTML)}: {self.render_text(Mode.HTML)}", Mode.HTML)
 
     @classmethod
-    def from_exception(cls, ex: Exception, title: str = 'Core'):
-        Logger.exception(ex)
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        file = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        line = exc_tb.tb_lineno
-        exc_type = html(str(exc_type))
-        return cls().title_raw(title).text_raw(str(ex) + f"{exc_type} in {file} line {line}\n<pre>Backtrace:\n{traceback.format_exc()}\n</pre>\n", False)
+    def from_exception(cls, ex: Exception, title: str = 'PyGDO'):
+        text = html(str(ex))
+        trace = html("".join(better_exceptions.format_exception(*sys.exc_info())))
+        return cls().trace().title_raw(title).text_raw(f"<pre>{text}\n{trace}</pre>\n", False)

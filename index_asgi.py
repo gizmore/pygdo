@@ -1,9 +1,11 @@
 import asyncio
 import io
 import os
-import traceback
+import sys
 from asyncio import iscoroutine
 from urllib.parse import parse_qs
+
+import better_exceptions
 from multipart import parse_options_header, MultipartParser
 
 from gdo.base.Application import Application
@@ -200,7 +202,7 @@ async def app(scope, receive, send):
                 'body': out.encode(),
             })
         except Exception:
-            trace = "\n".join(traceback.format_exception(ex))
+            trace = "".join(better_exceptions.format_exception(*sys.exc_info()))
             try:
                 await send({
                     'type': 'http.response.start',
