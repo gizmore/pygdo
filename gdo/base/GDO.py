@@ -373,7 +373,7 @@ class GDO(WithBulk, GDT):
     # All #
     #######
 
-    def all(self, where: str = '1', result_type: ResultType = ResultType.OBJECT) -> list['GDO']:
+    def all(self, where: str = '1', result_type: ResultType = ResultType.OBJECT) -> list['Self']:
         return self.table().select().where(where).exec().iter(result_type).fetch_all()
 
     def all_cached(self, where: str = '1', result_type: ResultType = ResultType.OBJECT) -> list['Self']:

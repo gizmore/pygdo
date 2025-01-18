@@ -45,17 +45,6 @@ class GDO_Server(GDO):
         self._has_loop = False
         self._channels = {}
         self._connector = None
-        # self.gdo_wake_up()
-
-    # def gdo_redis_fields(self) -> list[str]:
-    #     return []
-
-    # def gdo_wake_up(self):
-    #     super().gdo_wake_up()
-    #     self._connector = None
-    #     self._channels = {}
-    #     self._users = {}
-    #     self._has_loop = False
 
     @classmethod
     def get_by_connector(cls, name: str):

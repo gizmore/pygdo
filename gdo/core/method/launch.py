@@ -19,6 +19,8 @@ from gdo.date.GDT_Duration import GDT_Duration
 
 class launch(Method):
 
+    SERVERS: list[GDO_Server] = []
+
     def gdo_trigger(self) -> str:
         return 'launch'
 
@@ -62,11 +64,12 @@ class launch(Method):
         Logger.debug("Launching DOG Bot")
         sleep_ms = self.sleep_ms()
         try:
+            self.SERVERS = GDO_Server.table().all('serv_enabled')
             while Application.RUNNING:
                 Application.tick()
                 if self.tried_connecting():
                     await Application.EVENTS.update_timers(Application.TIME)
-                for server in GDO_Server.table().all('serv_enabled'):
+                for server in self.SERVERS:
                     self.mainloop_step_server(server)
                 await self.mainloop_process_ai()
                 await asyncio.sleep(sleep_ms)
