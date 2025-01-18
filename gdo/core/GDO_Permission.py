@@ -49,6 +49,9 @@ class GDO_Permission(GDO):
             GDT_Name('perm_name').unique(),
         ]
 
+    def gdo_persistent(self) -> bool:
+        return True
+
     def get_name(self) -> str:
         return self.gdo_val('perm_name')
 

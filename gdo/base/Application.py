@@ -180,6 +180,8 @@ class Application:
         cls.STORAGE.ip = scope.get('client')[0]
         cls.PROTOCOL = scope.get('scheme')
         cls.tick()
+        from gdo.base.Cache import Cache
+        Cache.clear_ocache()
 
     @classmethod
     def asgi_headers(cls, scope):

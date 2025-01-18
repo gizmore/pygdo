@@ -47,6 +47,16 @@ class Cache:
     def clear_stats(cls):
         cls.UPDATES = cls.MISS = cls.REMOVES = cls.HITS = 0
 
+    @classmethod
+    def clear_ocache(cls):
+        """
+        Clear request OCACHE for non persistent GDO
+        """
+        for gdo_klass, gdo in cls.TCACHE.items():
+            t = gdo.gdo_table_name()
+            if not gdo.gdo_persistent():
+                cls.OCACHE[t].clear()
+
     #############
     # T/C/Cache #
     #############
@@ -89,12 +99,18 @@ class Cache:
         if gdo.gdo_cached():
             gid = gdo.get_id()
             cn = gdo.gdo_table_name()
+
+            ocached = cls.OCACHE[cn].get(gid)
+            if ocached:
+                ocached._vals.update(gdo._vals)
+                return ocached
+
             rcached = None
             if is_rc:
                 rcached = gdo
             elif not after_write:
                 rcached = cls.get(cn, gid)
-            if ocached := cls.OCACHE[cn].get(gid):
+            if ocached:
                 if rcached: # Update ocache from redis
                     ocached._vals.update(rcached._vals)
                     gdo = ocached
@@ -105,7 +121,7 @@ class Cache:
             else:  # No OCACHE. Populate
                 if rcached:
                     if is_rc:
-                        gdo = gdo.blank()
+                        gdo = gdo.blank().all_dirty(False)
                     cls.OCACHE[cn][gid] = gdo
                     gdo._vals.update(rcached._vals)
                 else: # Neither found it
@@ -120,7 +136,37 @@ class Cache:
         return cls.obj_for(gdo, True)
 
     @classmethod
+    def obj_search_id(cls, gdo: GDO, vals: dict):
+        tn = gdo.gdo_table_name()
+        gid = ":".join(v for v in vals.values())
+        if ocached := cls.OCACHE[tn].get(gid):
+            return ocached
+        if rcached := cls.get(tn, gid):
+            return cls.obj_for(rcached, is_rc=True)
+
+    @classmethod
     def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False):
+        return cls.obj_search_pygdo(gdo, vals, delete)
+
+    @classmethod
+    def obj_search_pygdo(cls, gdo: GDO, vals: dict, delete: bool = False):
+        if gdo.gdo_cached():
+            cn = gdo.gdo_table_name()
+            for oc in cls.OCACHE[cn].values():
+                found = True
+                for k, v in vals.items():
+                    if oc.gdo_val(k) != v:
+                        found = False
+                        break
+                if found:
+                    cls.HITS += 1
+                    if delete:
+                        cls.remove(oc.get_id())
+                        del cls.OCACHE[oc.get_id()]
+                    return oc
+
+    @classmethod
+    def obj_search_redis(cls, gdo: GDO, vals: dict, delete: bool = False):
         if gdo.gdo_cached():
             cn = gdo.gdo_table_name()
             cursor = 0
@@ -188,6 +234,7 @@ class Cache:
             cls.REMOVES += 1
             redis_key = f"{key}:{args_key}"
             cls.RCACHE.delete(redis_key)
+
 
 
 #############

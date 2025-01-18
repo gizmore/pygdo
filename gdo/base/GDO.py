@@ -48,7 +48,6 @@ class GDO(WithBulk, GDT):
         self._dirty = []
         self._last_id = None
         self._my_id = None
-        # self.gdo_wake_up()
 
     def __del__(self):
         GDO.GDO_ALIVE -= 1
@@ -58,12 +57,6 @@ class GDO(WithBulk, GDT):
             # '_my_id',
             '_vals',
         ]
-
-    # def gdo_wake_up(self):
-    #     self._vals = {}
-    #     self._dirty = []
-    #     self._last_id = None
-    #     self._my_id = None
 
     @classmethod
     def table(cls) -> 'GDO':
@@ -107,6 +100,12 @@ class GDO(WithBulk, GDT):
 
     def gdo_cached(self) -> bool:
         return True
+
+    def gdo_persistent(self) -> bool:
+        """
+        Mark this table as not being uncached
+        """
+        return False
 
     def gdo_columns(self) -> list[GDT]:
         """
@@ -153,7 +152,7 @@ class GDO(WithBulk, GDT):
         return self.dirty(key, dirty)
 
     def set_value(self, key, value, dirty=True):
-        val = self.column(key).value(value).to_val(value)
+        val = self.column(key).value(value).get_val()
         return self.set_val(key, val, dirty)
 
     def set_vals(self, vals: dict, dirty=True):
@@ -216,9 +215,17 @@ class GDO(WithBulk, GDT):
         return self.get_by_vals({key: val})
 
     def get_by_id(self, *id_: str):
+        from gdo.core.GDO_Session import GDO_Session
+        if isinstance(self, GDO_Session):
+            pass
         cols = self.get_pk_columns()
-        return self.get_by_vals({
-            col.get_name(): Strings.nullstr(val) for col, val in zip(cols, id_)})
+        vals = {col.get_name(): Strings.nullstr(val) for col, val in zip(cols, id_)}
+        if cached := Cache.obj_search_id(self, vals):
+            return cached
+        where = []
+        for k, v in vals.items():
+            where.append(f'{k}={self.quote(v)}')
+        return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
 
     def pk_where(self) -> str:
         cols = self.get_pk_columns()
@@ -293,8 +300,8 @@ class GDO(WithBulk, GDT):
             query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
             query.exec()
             self.after_update()
-            self.all_dirty(False)
             obj = Cache.update_for(self)
+            obj.all_dirty(False)
         return obj
 
     ##########

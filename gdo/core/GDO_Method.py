@@ -25,3 +25,5 @@ class GDO_Method(GDO):
             GDT_Name('m_name'),
         ]
 
+    def gdo_persistent(self) -> bool:
+        return True

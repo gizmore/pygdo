@@ -110,8 +110,8 @@ class Result:
             return None
         obj = self._table.__class__()
         obj._vals.update(row)
-        obj.all_dirty(False)
-        return Cache.obj_for(obj)
+        obj = Cache.obj_for(obj)
+        return obj.all_dirty(False)
 
     def fetch_column(self, col_num: int = 0) -> list[str]:
         result = []
