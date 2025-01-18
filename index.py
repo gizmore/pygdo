@@ -44,6 +44,8 @@ def pygdo_application(environ, start_response):
         GDO.GDO_COUNT = 0
         GDT.GDT_ALIVE = 0
         GDO.GDO_ALIVE = 0
+        from gdo.base.Cache import Cache
+        Cache.clear_stats()
         Application.DB_TRANSACTIONS = 0
         Application.EVENT_COUNT = 0
         Logger.LINES_WRITTEN = 0
