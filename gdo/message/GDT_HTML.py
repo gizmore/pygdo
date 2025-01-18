@@ -9,6 +9,7 @@ class GDT_HTML(GDT):
 
     def __init__(self):
         super().__init__()
+        self._html = ''
 
     def gdo_redis_fields(self) -> list[str]:
         return [

@@ -54,9 +54,12 @@ class InstallTestCase(GDOTestCase):
         loader.init_modules()
         self.assertGreater(len(modules), 5, 'Some modules can be loaded')
 
-        subprocess.run(["python3", Application.file_path("gdoadm.py"), "-u", "install", "Core"], capture_output=True)
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), "-u", "install", "Core"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         mc_one = GDO_Module.table().count_where()
         need = len(module_core.instance().gdo_dependencies())
+        if mc_one < need:
+            print(result.stderr)
+            print(result.stdout)
         self.assertGreater(mc_one, need, "Test if core module is installed with dependencies")
 
         subprocess.run(["python3", Application.file_path("gdoadm.py"), "-u", "install", "Core"], capture_output=True)
