@@ -27,8 +27,6 @@ class GDT_Error(GDT_Panel):
         return super().html_class()
 
     def render(self, mode: Mode = Mode.HTML):
-        with Trans('en'):
-            Logger.message(self.render_text())
         return super().render(mode)
 
     def render_txt(self):

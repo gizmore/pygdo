@@ -54,12 +54,22 @@ class Logger:
 
     @classmethod
     def write(cls, path: str, content: str):
+        pre = ""
+        try:
+            from gdo.base.Application import Application
+            from gdo.date.Time import Time
+            pre += f"{Time.display_timestamp(Application.TIME)} - "
+            if cls._user:
+                pre += cls._user.get_name() + " - "
+        except:
+            pass
+
         with open(f"{cls._base}{path}", 'a') as fo:
-            fo.write(f'{content}\n')
+            fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1
         if cls._user:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
             Files.create_dir(dir_name)
             with open(f"{dir_name}{path}", 'a') as fo:
-                fo.write(f'{content}\n')
+                fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1
