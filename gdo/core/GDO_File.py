@@ -108,8 +108,8 @@ class GDO_File(GDO):
 
     def gdo_after_create(self, gdo):
         dest = gdo.get_target_path()
-        Files.create_dir(dest)
-        dest += "/0"
+        # Files.create_dir(dest)
+        # dest += "/0"
         if hasattr(gdo, '_temp_path'):
             Files.copy(gdo._temp_path, dest)
         elif hasattr(gdo, '_file_data'):

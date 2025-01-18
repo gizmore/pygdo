@@ -43,6 +43,7 @@ deleted = "Deleted at"
 deletor = "Deleted by"
 count = "Count"
 directory = "Directory"
+please_choose = "Please choose..."
 
 ##################
 ### GDT_Select ###

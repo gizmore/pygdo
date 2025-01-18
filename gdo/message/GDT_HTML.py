@@ -9,8 +9,12 @@ class GDT_HTML(GDT):
 
     def __init__(self):
         super().__init__()
-        self.gdo_wake_up()
-        
+
+    def gdo_redis_fields(self) -> list[str]:
+        return [
+            '_html',
+        ]
+
     def gdo_wake_up(self):
         self._html = ''
 
