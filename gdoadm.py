@@ -439,6 +439,7 @@ async def run_pygdo_admin():
             Application.init_cli()
         except Exception as ex:
             Logger.exception(ex)
+        Cache.clear()
         App().argparser()
     except Exception as ex:
         Logger.exception(ex)
