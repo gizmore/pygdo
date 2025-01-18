@@ -15,7 +15,7 @@ class all_settings(Method):
         return 'member,guest'
 
     async def gdo_execute(self) -> GDT:
-        cont = GDT_Bar().vertical()
+        cont = GDT_Container()
         loader = ModuleLoader.instance()
         for module in loader._cache.values():
             for _ in module.all_user_settings():

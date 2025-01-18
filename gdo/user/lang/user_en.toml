@@ -1,1 +1,4 @@
 module_user = "User"
+
+gender = "Gender"
+last_activity = "Last Activity"

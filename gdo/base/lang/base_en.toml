@@ -11,6 +11,7 @@ err_permissions = "You are not allowed to access this method."
 err_not_in_private = "This method does not work in private."
 err_not_in_channel = "This method does not work inside channels."
 err_not_authenticated = "Your account is not authenticated."
+err_violate_unique = "A record for this already exists."
 
 and = "and"
 decimal_point = '.'

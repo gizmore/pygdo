@@ -22,7 +22,7 @@ class module_language(GDO_Module):
 
     def gdo_user_settings(self) -> list[GDT]:
         return [
-            GDT_Language('language').initial('en').tooltip('tt_core_language'),
+            GDT_Language('language').not_null().icon('language').initial('en').tooltip('tt_core_language'),
         ]
 
     def get_language(self, user: GDO_User) -> GDO_Language:

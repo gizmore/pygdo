@@ -28,8 +28,6 @@ class GDT_Validator(WithError, GDT):
         return self
 
     def validate(self, val: str | None, value: any) -> bool:
-        if value is None:
-            return True
         form = self._validator_form
         gdt = form.get_field(self._validator_field)
         value = gdt.get_value()

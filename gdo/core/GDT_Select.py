@@ -1,3 +1,4 @@
+from gdo.base.Trans import t
 from gdo.base.Util import Arrays
 from gdo.core.GDT_ComboBox import GDT_ComboBox
 from gdo.core.GDT_Template import tpl
@@ -14,6 +15,8 @@ class GDT_Select(GDT_ComboBox):
     def init_choices(self):
         if not hasattr(self, '_choices'):
             self._choices = {}
+        if not self.is_not_null():
+            self._choices['0'] = t('please_choose')
         self._choices.update(self.gdo_choices())
         return self._choices
 
