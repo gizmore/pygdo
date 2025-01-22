@@ -140,12 +140,18 @@ class Cache:
         return cls.obj_for(gdo, True)
 
     @classmethod
-    def obj_search_id(cls, gdo: GDO, vals: dict):
+    def obj_search_id(cls, gdo: GDO, vals: dict, delete: bool = False):
         tn = gdo.gdo_table_name()
         gid = ":".join(v for v in vals.values())
         if ocached := cls.OCACHE[tn].get(gid):
+            if delete:
+                del cls.OCACHE[tn][gid]
+                cls.remove(tn, gid)
             return ocached
         if rcached := cls.get(tn, gid):
+            if delete:
+                cls.remove(tn, gid)
+                return rcached
             return cls.obj_for(rcached, is_rc=True)
 
     @classmethod

@@ -34,6 +34,7 @@ class Config:
             cls.data_int('core.event_debug', 0),
             cls.data_int('core.gdt_debug', 0),
             cls.data_int('core.gdo_debug', 0),
+            cls.data_int('core.profile', 0),
             GDT_Section().title_raw('File'),
             cls.data_int('file.block_size', 4096),
             cls.data_str('file.directory', 'files/'),
@@ -56,6 +57,7 @@ class Config:
             GDT_Select('i18n.iso').choices({'en': 'English', 'de': 'Deutsch'}).initial('en'),
             GDT_Section().title_raw('Session'),
             cls.data_str('sess.name', 'PyGDO'),
+            cls.data_str('sess.same_site', 'lax'),
             GDT_Section().title_raw('Mail'),
             cls.data_int('mail.debug', 1),
             cls.data_str('mail.host', 'localhost'),
@@ -66,7 +68,6 @@ class Config:
             cls.data_str('mail.sender', 'pygdo@localhost'),
             cls.data_str('mail.sender_name', 'PyGDO System'),
             cls.data_str('mail.errors_to', 'errors@pygdo.com'),
-
         ]
         dic = {}
         for gdt in lst:

@@ -329,7 +329,18 @@ class GDO(WithBulk, GDT):
         for key, val in vals.items():
             query.where(f"{key}={self.quote(val)}")
         query.exec()
-        Cache.obj_search(self, vals, True)
+        Cache.obj_search_pygdo(self, vals, True)
+        Cache.obj_search_redis(self, vals, True)
+
+    def delete_by_id(self, *ids: str, with_hooks: bool = False):
+        cols = self.get_pk_columns()
+        vals = {col.get_name(): Strings.nullstr(val) for col, val in zip(cols, ids)}
+        if cached := Cache.obj_search_id(self, vals):
+            return cached
+        where = []
+        for k, v in vals.items():
+            where.append(f'{k}={self.quote(v)}')
+        return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
 
     ##########
     # Events #

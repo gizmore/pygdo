@@ -26,40 +26,44 @@ from gdo.core.method.not_found import not_found
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
 
-FRESH = True
-
 async def app(scope, receive, send):
     try:
-        global FRESH
         Logger.init(os.path.dirname(__file__)+"/protected/logs/")
         if scope['type'] == 'lifespan':
             message = await receive()
             if message['type'] == 'lifespan.startup':
+                Application.init(os.path.dirname(__file__))
+                if Application.config('core.profile', '0') == '1':
+                    import yappi
+                    yappi.start()
+                ModuleLoader.instance().load_modules_db()
+                ModuleLoader.instance().init_modules(True, True)
+                from gdo.base.Trans import Trans
+                Trans._load('en')
+                Trans._load('de')
                 await send({'type': 'lifespan.startup.complete'})
             elif message['type'] == 'lifespan.shutdown':
+                if Application.config('core.profile', '0') == '1':
+                    import yappi
+                    with open(Application.file_path('temp/yappi.log'), 'w') as f:
+                        yappi.get_func_stats().print_all(stdout=f)
                 await send({'type': 'lifespan.shutdown.complete'})
             return
         assert scope['type'] == 'http', f"Type {scope['type']} not supported."
 
-        if FRESH:
-            FRESH = False
-            Application.init(os.path.dirname(__file__))
-            ModuleLoader.instance().load_modules_db()
-            ModuleLoader.instance().init_modules(True, True)
-        else:
-            GDT.GDT_MAX = 0
-            GDO.GDO_MAX = 0
-            GDT.GDT_COUNT = 0
-            GDO.GDO_COUNT = 0
-            GDT.GDT_ALIVE = 0
-            GDO.GDO_ALIVE = 0
-            Application.EVENT_COUNT = 0
-            Application.DB_TRANSACTIONS = 0
-            Application.DB_READS = 0
-            Application.DB_WRITES = 0
-            Logger.LINES_WRITTEN = 0
-            Cache.clear_stats()
-            Application.fresh_page()
+        GDT.GDT_MAX = 0
+        GDO.GDO_MAX = 0
+        GDT.GDT_COUNT = 0
+        GDO.GDO_COUNT = 0
+        GDT.GDT_ALIVE = 0
+        GDO.GDO_ALIVE = 0
+        Application.EVENT_COUNT = 0
+        Application.DB_TRANSACTIONS = 0
+        Application.DB_READS = 0
+        Application.DB_WRITES = 0
+        Logger.LINES_WRITTEN = 0
+        Cache.clear_stats()
+        Application.fresh_page()
 
         Application.init_asgi(scope)
         qs = parse_qs(scope['query_string'].decode())
@@ -185,6 +189,13 @@ async def app(scope, receive, send):
                 'body': out,
                 'more_body': False,
             })
+
+            if Application.config('core.profile', '0') == '1':
+                import yappi
+                if qs.get('__yappi', None):
+                    with open(Application.file_path('temp/yappi.log'), 'w') as f:
+                        yappi.get_func_stats().print_all(out=f)
+
 
     except Exception as ex:
         try:

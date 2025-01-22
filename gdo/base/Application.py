@@ -54,8 +54,9 @@ class Application:
     @classmethod
     def init(cls, path: str, config_file: str = 'protected/config.toml'):
         from gdo.base.ModuleLoader import ModuleLoader
+        from gdo.base.Trans import Trans
         cls.PATH = os.path.normpath(path) + '/'
-        Logger.init(cls.PATH + "protected/logs/")
+        # Logger.init(cls.PATH + "protected/logs/")
         os.environ['TZ'] = 'UTC'
         time.tzset()
         cls.LOADER = ModuleLoader()

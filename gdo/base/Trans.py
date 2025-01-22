@@ -18,8 +18,8 @@ def tusr(user: object, key: str, args: list = None):
 
 
 def tiso(iso: str, key: str, args=None):
-    if args is None:
-        args = []
+    # if args is None:
+    #     args = []
     return Trans.tiso(iso, key, args)
 
 
@@ -68,7 +68,7 @@ class Trans:
     def _load(cls, iso: str):
         if not len(cls.CACHE[iso]):
             for path in cls.BASES:
-                file_path = f"{path}_{iso}.toml"  # Construct the file path
+                file_path = f"{path}_{iso}.toml"
                 if Files.exists(file_path):
                     with open(file_path, 'r') as f:
                         try:
@@ -86,11 +86,11 @@ class Trans:
     @classmethod
     def tiso(cls, iso, key: str, args: list):
         try:
-            data = cls._load(iso)
-            fmt = data[key]
-            if args:
-                return fmt % tuple(args)
-            return fmt
+            data = cls.CACHE[iso]
+            # fmt = data[key]
+            # if args:
+            return data[key] % tuple(args)
+            # return fmt
         except KeyError:
             cls.FAILURES[key] = 1
             return f"__{key}: {json.dumps(args)}"
