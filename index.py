@@ -73,6 +73,10 @@ def pygdo_application(environ, start_response):
 
         Application.request_method(environ['REQUEST_METHOD'])
 
+        if Application.config('core.profile') == '1':
+            import yappi
+            yappi.start()
+
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
             # get_params = parse_qs(url)
@@ -183,6 +187,11 @@ def pygdo_application(environ, start_response):
                 yield response.encode('utf-8')
             else:
                 yield response
+            if Application.config('core.profile') == '1':
+                if qs.get('__yappi', None):
+                    with open(Application.file_path('temp/yappi.log'), 'w') as f:
+                        yappi.get_func_stats().print_all(out=f)
+
     except (GDOModuleException, GDOMethodException) as ex:
         yield error_page(ex, start_response, not_found().input('_url', url), '404 Not Found', False)
     except GDOParamNameException as ex:

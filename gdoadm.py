@@ -58,6 +58,8 @@ class App:
         loader = ModuleLoader.instance()
         loader.load_modules_fs()
         loader.init_modules(False, False)
+        from gdo.base.Trans import Trans
+        Trans.init()
         parser = argparse.ArgumentParser(description='Configure modules. Example: ./gdo_adm.sh configure --interactive --unittests')
         parser.add_argument('--interactive', '-i', action='store_true')
         parser.add_argument('--unittests', '-u', action='store_true')

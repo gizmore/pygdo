@@ -1,3 +1,4 @@
+import functools
 import os
 import queue
 import sys
@@ -137,6 +138,7 @@ class Application:
         return cls.get_mode().value < 10
 
     @classmethod
+    @functools.cache
     def config(cls, path: str, default: str = '') -> str:
         if val := Arrays.walk(cls.CONFIG, path):
             return str(val)
