@@ -124,9 +124,11 @@ class MethodTable(WithGDO, MethodForm):
         return table
 
     def get_table_result(self) -> Result:
-        result = self.gdo_table_result()
+        result = self.gdo_table_result()._data
         if self.gdo_ordered():
             result = GDOSorter.sort(result, self.parameter(self.gdo_order_name()))
+        if self.gdo_filtered():
+            result = GDOSorter.filter(result, self.parameter(self.gdo_filter_name()))
         return result
 
     ########

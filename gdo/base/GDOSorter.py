@@ -2,13 +2,14 @@ from functools import cmp_to_key
 
 from gdo.base.GDO import GDO
 from gdo.base.ResultArray import ResultArray
+from gdo.table.GDT_Filter import GDT_Filter
 from gdo.table.GDT_Order import GDT_Order
 
 
 class GDOSorter:
 
     @staticmethod
-    def sort(result: ResultArray, order: GDT_Order) -> list[GDO]:
+    def sort(result: list[GDO], order: GDT_Order) -> list[GDO]:
         sort_dict = order.get_order_dict()
         def compare(gdo1: GDO, gdo2: GDO):
             for key, direction in sort_dict.items():
@@ -19,4 +20,8 @@ class GDOSorter:
                     return cmp
             return 0  # Equal values
 
-        return sorted(result._data, key=cmp_to_key(compare))
+        return sorted(result, key=cmp_to_key(compare))
+
+    @classmethod
+    def filter(cls, result: list[GDO], filter: GDT_Filter) ->list[GDO]:
+        return result

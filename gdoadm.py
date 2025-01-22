@@ -303,8 +303,8 @@ class App:
     def admin(self):
         parser = argparse.ArgumentParser(description='Create / assign an admin user for a connector (web by default).'
                                                      'Example: ./gdo_adm.sh admin gizmore 11111111 gizmore@gizmore.org')
-        parser.add_argument('--connector', default='bash')
-        parser.add_argument('--server', default=None)
+        parser.add_argument('--connector', '-c', default='bash')
+        parser.add_argument('--server', '-s' , default=None)
         parser.add_argument('username')
         parser.add_argument('password')
         parser.add_argument('email', nargs='?')
