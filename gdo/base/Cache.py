@@ -89,8 +89,8 @@ class Cache:
         return cls.CCACHE[gdo_klass]
 
     @classmethod
-    def column_for(cls, gdo: GDO, key: str) -> GDT:
-        for gdt in cls.columns_for(gdo):
+    def column_for(cls, gdo_klass: GDO, key: str) -> GDT:
+        for gdt in cls.columns_for(gdo_klass):
             if gdt.get_name() == key:
                 return gdt
 
