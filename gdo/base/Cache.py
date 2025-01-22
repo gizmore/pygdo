@@ -165,8 +165,9 @@ class Cache:
                 if found:
                     cls.HITS += 1
                     if delete:
-                        cls.remove(oc.get_id())
-                        del cls.OCACHE[oc.get_id()]
+                        gid = oc.get_id()
+                        cls.remove(gid)
+                        del cls.OCACHE[cn][gid]
                     return oc
 
     @classmethod
