@@ -36,7 +36,7 @@ class UtilityTestCase(unittest.TestCase):
     def test_i18n(self):
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
-        trans = t('%s', ['Hello world'])
+        trans = t('%s', ('Hello world',))
         self.assertEqual(trans, 'Hello world', 'Basic %s translation does not work')
 
     def test_dict_index(self):

@@ -160,7 +160,7 @@ class GDT_File(GDT_Object):
         return True
 
     def error_mime(self, file: GDO_File):
-        return self.error('err_upload_mime', [file.get_mime()])
+        return self.error('err_upload_mime', (file.get_mime(),))
 
     ##########
     # Render #

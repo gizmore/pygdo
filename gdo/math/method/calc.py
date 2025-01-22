@@ -8,7 +8,7 @@ class calc(MethodForm):
     LAST_RESULT = {}
 
     def gdo_render_descr(self) -> str:
-        return t('md_math_calc', [self.render_allowed_functions()])
+        return t('md_math_calc', (self.render_allowed_functions(),))
 
     def render_allowed_functions(self) -> str:
         values = list(GDT_MathExpression('expression').get_namespace().keys())
@@ -18,7 +18,7 @@ class calc(MethodForm):
         return 'calc'
 
     def gdo_create_form(self, form: GDT_Form) -> None:
-        form.text('md_math_calc', [self.render_allowed_functions()])
+        form.text('md_math_calc', (self.render_allowed_functions(),))
         form.add_field(GDT_MathExpression('expression').not_null())
         super().gdo_create_form(form)
 
@@ -27,7 +27,7 @@ class calc(MethodForm):
         expr = gdt.get_value().lower().replace('_', self.last_value())
         result = str(eval(expr, GDT_MathExpression('x').get_namespace()))
         self.LAST_RESULT[self._env_user] = result
-        self.msg('%s', [result])
+        self.msg('%s', (result,))
         return self.render_page()
 
     def last_value(self):

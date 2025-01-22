@@ -167,7 +167,7 @@ class WebParser(Parser):
             self._mode = mode
             Application.mode(mode)
         except KeyError as ex:
-            err('err_render_mode', [ext.upper()])
+            err('err_render_mode', (ext.upper(),))
         line = Strings.rsubstr_to(line, '.')  # remove extension
         parts = line.split(';')
         cmd = parts[0]  # command part

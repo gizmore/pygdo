@@ -24,9 +24,9 @@ class not_found(Method):
             self.send_mail()
         url = self.param_val('_url')
         Application.status("404 Not Found")
-        return GDT_Error().title('module_core').text('err_not_found', [Strings.html(f'"{url}"')])
+        return GDT_Error().title('module_core').text('err_not_found', (Strings.html(f'"{url}"'),))
 
     def send_mail(self):
         mail = Mail.from_bot()
-        mail.subject(t('mails_error', [sitename()]))
+        mail.subject(t('mails_error', (sitename(),)))
         pass

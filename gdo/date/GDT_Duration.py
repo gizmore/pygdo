@@ -45,7 +45,7 @@ class GDT_Duration(GDT_String):
         if not super().validate(val, value):
             return False
         if value < self._min:
-            return self.error('err_int_min', [self._min])
+            return self.error('err_int_min', (self._min,))
         if self._max is not None and value > self._max:
-            return self.error('err_int_max', [self._max])
+            return self.error('err_int_max', (self._max,))
         return True

@@ -8,7 +8,7 @@ class stats(Method):
 
     def gdo_execute(self) -> GDT:
         app = Application
-        return self.reply('msg_stats', [
+        return self.reply('msg_stats', (
             Time.human_duration(app.runtime()),
             (app.DB_READS + app.DB_WRITES) / app.runtime(),
-        ])
+        ))

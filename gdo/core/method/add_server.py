@@ -48,4 +48,4 @@ class add_server(Method):
             'serv_password': self.get_server_password(),
             'serv_connector': conn.get_name(),
         }).insert()
-        return self.msg('msg_added_dog_server', [conn.get_name(), self.get_server_name(), server.get_id()])
+        return self.msg('msg_added_dog_server', (conn.get_name(), self.get_server_name(), server.get_id()))

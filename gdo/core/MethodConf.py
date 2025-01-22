@@ -40,13 +40,13 @@ class MethodConf(Method):
         out = []
         for gdt in self.get_configs(method):
             out.append(f"{gdt.get_name()}({gdt.get_val()})")
-        return self.reply('msg_configs', [method.gdo_trigger(), ', '.join(out)])
+        return self.reply('msg_configs', (method.gdo_trigger(), ', '.join(out)))
 
     def show_config(self, method: Method, key: str) -> GDT:
-        return self.reply('msg_config', [method.gdo_trigger(), key, html(self.get_config_val(method, key))])
+        return self.reply('msg_config', (method.gdo_trigger(), key, html(self.get_config_val(method, key))))
 
     def set_config(self, method: Method, key: str, val: str):
         old = self.get_config_val(method, key)
         self.set_config_val(method, key, val)
         new = self.get_config_val(method, key)
-        return self.reply('msg_config_set', [method.gdo_trigger(), key, html(old), html(new)])
+        return self.reply('msg_config_set', (method.gdo_trigger(), key, html(old), html(new)))

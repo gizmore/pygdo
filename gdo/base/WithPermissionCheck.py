@@ -81,7 +81,7 @@ class WithPermissionCheck:
             back_to = f"&_back_to={urlencode(Application.current_href())}"
             link1 = GDT_Link().text('link_login_before_continue').href(href('login', 'form', back_to)).render()
             link2 = GDT_Link().text('link_continue_as_guest').href(href('register', 'guest', back_to)).render()
-            self.err('err_type_guest', [link1, link2])
+            self.err('err_type_guest', (link1, link2))
             return False
         else:
             return self.err_type_members_only()
@@ -91,18 +91,18 @@ class WithPermissionCheck:
             from gdo.ui.GDT_Link import GDT_Link
             back_to = f"&_back_to={urlencode(Application.current_href())}"
             link = GDT_Link().text('link_login_before_continue').href(href('login', 'form', back_to)).render()
-            self.err('err_type_member', [link])
+            self.err('err_type_member', (link,))
             return False
         else:
             return self.err_type_not_allowed(['guest'])
 
     def err_type_not_allowed(self, types: list[str]):
         print_types = Arrays.human_join(types)
-        self.err('err_type', [print_types])
+        self.err('err_type', (print_types,))
         return False
 
     def err_permission(self, perm: str):
-        self.err('err_permission', [perm])
+        self.err('err_permission', (perm,))
         return False
 
     def err_generic_permission(self):

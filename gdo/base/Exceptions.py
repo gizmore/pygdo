@@ -7,14 +7,14 @@ All GDO Errors and Exceptions
 
 class GDOError(Exception):
 
-    def __init__(self, key: str, args: list[str] = None):
+    def __init__(self, key: str, args: tuple[str] = None):
         from gdo.base.Trans import t
         super().__init__(t(key, args))
 
 
 class GDOParamError(GDOError):
 
-    def __init__(self, key: str, args: list[str] = None):
+    def __init__(self, key: str, args: tuple[str] = None):
         super().__init__(key, args)
 
 
@@ -47,10 +47,10 @@ class GDOMethodException(Exception):
 class GDOValidationException(Exception):
 
     def __init__(self, module_name: str, key: str, val: str):
-        super().__init__(t('err_gdt_validation', [module_name, key, val]))
+        super().__init__(t('err_gdt_validation',  (module_name, key, val)))
 
 
 class GDOParamNameException(GDOException):
 
     def __init__(self, cmd: str, line: str):
-        super().__init__(t('err_web_param_wrong', [cmd, line]))
+        super().__init__(t('err_web_param_wrong', (cmd, line)))

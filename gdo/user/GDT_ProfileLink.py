@@ -20,7 +20,7 @@ class GDT_ProfileLink(GDT_Link):
 
     def with_username(self, with_username: bool = True):
         self._with_username = with_username
-        self.text('%s', [self._user.render_name()])
+        self.text('%s', (self._user.render_name(),))
         return self
 
     def with_avatar(self, with_avatar: bool = True):

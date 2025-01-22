@@ -18,6 +18,6 @@ class WithNullable:
     def error_not_null(self):
         suggestions = self.render_suggestion()
         if suggestions:
-            return self.error('err_not_null', [self.render_suggestion()])
+            return self.error('err_not_null', (self.render_suggestion(),))
         else:
             return self.error('err_not_null_no_suggestions')

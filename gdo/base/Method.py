@@ -29,7 +29,6 @@ class MyArgParser(argparse.ArgumentParser):
 
     def error(self, message):
         pass
-        # err('%s', [message])
 
 
 class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
@@ -194,7 +193,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 if gdt.validate(val, value):
                     return gdt.get_val()
                 elif throw:
-                    raise GDOParamError('err_param', [name, gdt.render_error()])
+                    raise GDOParamError('err_param', (name, gdt.render_error()))
         return None
 
     def param_value(self, key: str, throw: bool = True) -> any:
@@ -205,7 +204,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 if gdt.validate(val, value):
                     return value
                 elif throw:
-                    raise GDOParamError('err_param', [name, gdt.render_error()])
+                    raise GDOParamError('err_param', (name, gdt.render_error()))
         return None
 
     ############
@@ -231,15 +230,15 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             html.text(text)
         return html
 
-    def reply(self, key: str, args: list = None):
+    def reply(self, key: str, args: tuple[str] = None):
         from gdo.core.GDT_String import GDT_String
         return GDT_String('reply').text(key, args)
 
-    def msg(self, key: str, args: list = None):
+    def msg(self, key: str, args: tuple[str] = None):
         self.gdo_module().msg(key, args)
         return self
 
-    def err(self, key: str, args: list = None):
+    def err(self, key: str, args: tuple[str] = None):
         self.gdo_module().err(key, args)
         return self
 

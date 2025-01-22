@@ -45,9 +45,9 @@ class help(Method):
             usage = parser.format_usage().rstrip()
             usage = usage.replace("\n", '')
             usage = re.sub(r'\s+', ' ', usage)
-            return GDT_String('help').text('msg_help_for', [Render.bold(trigger, mode), method.gdo_render_descr(), usage])
+            return GDT_String('help').text('msg_help_for', (Render.bold(trigger, mode), method.gdo_render_descr(), usage))
         else:
-            return self.err('err_module', [html(trigger)])
+            return self.err('err_module', (html(trigger)))
 
     def show_all_commands(self):
         loader = ModuleLoader.instance()
@@ -75,4 +75,4 @@ class help(Method):
 
         group_rendered = ", ".join(f"{module}: {triggers}" for module, triggers in group_part_one.items())
 
-        return GDT_String('help').text('msg_help_all_commands', [group_rendered])
+        return GDT_String('help').text('msg_help_all_commands', (group_rendered,))

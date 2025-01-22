@@ -7,19 +7,15 @@ from gdo.base.Logger import Logger
 from gdo.base.Util import Files
 
 
-def t(key: str, args=None):
-    # if args is None:
-    #     args = []
+def t(key: str, args: tuple=None):
     return Trans.t(key, args)
 
 
-def tusr(user: object, key: str, args: list = None):
+def tusr(user: object, key: str, args: tuple = None):
     return Trans.tiso(user.get_lang_iso(), key, args)
 
 
-def tiso(iso: str, key: str, args=None):
-    # if args is None:
-    #     args = []
+def tiso(iso: str, key: str, args: tuple = None):
     return Trans.tiso(iso, key, args)
 
 
@@ -80,19 +76,19 @@ class Trans:
         return cls.CACHE[iso]
 
     @classmethod
-    def t(cls, key: str, args: list=None):
+    def t(cls, key: str, args: tuple=None):
         iso = Application.STORAGE.lang
         return tiso(iso, key, args)
 
     @classmethod
-    def tiso(cls, iso, key: str, args: list=None):
+    def tiso(cls, iso, key: str, args: tuple=None):
         try:
-            # data = cls.CACHE[iso]
-            # fmt = data[key]
+            k = cls.CACHE[iso][key]
             if args:
-                return cls.CACHE[iso][key] % tuple(args)
-            return cls.CACHE[iso][key]
-        except KeyError:
+                return k % args
+            return k
+        except KeyError as ex:
+            Logger.exception(ex)
             cls.FAILURES[key] = 1
             return f"__{key}: {json.dumps(args)}"
         except TypeError as ex:

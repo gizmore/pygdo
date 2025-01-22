@@ -26,5 +26,5 @@ class profile(Method):
         if module_enabled('avatar'):
             from gdo.avatar.GDT_Avatar import GDT_Avatar
             card.image(GDT_Avatar('avatar').for_user(user))
-        card.title('whose_profile', [user.render_name()])
+        card.title('whose_profile', (user.render_name(),))
         return card

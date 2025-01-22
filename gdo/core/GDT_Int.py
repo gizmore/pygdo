@@ -102,9 +102,9 @@ class GDT_Int(GDT_String):
 
     def validate_min_max(self, value):
         if value < self._min:
-            return self.error('err_int_min', [self._min])
+            return self.error('err_int_min', (self._min,))
         if value > self._max:
-            return self.error('err_int_max', [self._max])
+            return self.error('err_int_max', (self._max,))
         return True
 
     ##########

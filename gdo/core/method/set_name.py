@@ -32,5 +32,5 @@ class set_name(MethodForm):
     def form_submitted(self):
         name = self.param_val('name')
         self._env_user.save_val('user_displayname', name)
-        return self.msg('msg_username_set', [html(name)])
+        return self.msg('msg_username_set', (html(name),))
 

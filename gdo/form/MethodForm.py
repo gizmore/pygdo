@@ -74,9 +74,9 @@ class MethodForm(Method):
                 name = Render.red(Render.bold(gdt.get_name(), self._env_mode), self._env_mode)
                 error = Render.red(gdt.render_error(), self._env_mode)
                 errors.append(f"{name}: {error}")
-        self.err('err_form_invalid', [" ".join(errors)])
+        self.err('err_form_invalid', (" ".join(errors),))
         if not Application.is_html():
-            self.err('%s', ['\n' + self.get_arg_parser(True).format_usage()])
+            self.err('%s', ('\n' + self.get_arg_parser(True).format_usage(),))
         return self.get_form()
 
     def parameters(self, reset: bool = False) -> dict[str, GDT]:

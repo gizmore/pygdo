@@ -49,5 +49,5 @@ class GDT_MathExpression(GDT_RestOfText):
         tokens = re.findall(r'[a-zA-Z]+|[\d.]|.', value.lower())
         for token in tokens:
             if token not in allowed and token not in operators:
-                return self.error('err_expression', [html(token, Application.get_mode())])
+                return self.error('err_expression', (html(token, Application.get_mode()),))
         return True

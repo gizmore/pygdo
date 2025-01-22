@@ -25,7 +25,7 @@ class reload(Method):
                 try:
                     importlib.reload(module)
                 except Exception as e:
-                    self.err('err_reload_module', [module_name, str(e)])
+                    self.err('err_reload_module', (module_name, str(e)))
 
         Trans.reload()
         ModuleLoader.instance().reload_modules()

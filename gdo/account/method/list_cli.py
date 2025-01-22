@@ -24,4 +24,4 @@ class list_cli(Method):
                 gdt = GDO_UserSetting.setting_column(gdt.get_name(), user)
                 vals[gdt.get_name()] = f"{gdt.get_name()}({gdt.render_val()})"
         sorted_vals = [vals[key] for key in sorted(vals.keys())]  # Get sorted values based on sorted keys
-        return self.reply('msg_cli_settings', [", ".join(sorted_vals)])
+        return self.reply('msg_cli_settings', (", ".join(sorted_vals),))

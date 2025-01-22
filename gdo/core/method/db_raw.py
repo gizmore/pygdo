@@ -45,8 +45,8 @@ class db_raw(Method):
                     out.append('\t'.join(list(map(str, row.values()))))
                 count += 1
             if count > max:
-                out.append(t('and_n_more', [count - max]))
-            return self.reply('%s', ["\n".join(out)])
+                out.append(t('and_n_more', (count - max,)))
+            return self.reply('%s', ("\n".join(out),))
         else:
             result = db.query(query)
-            return self.reply('msg_db_raw_write', [result['info_msg']])
+            return self.reply('msg_db_raw_write', (result['info_msg'],))

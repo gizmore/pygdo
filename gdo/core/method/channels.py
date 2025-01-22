@@ -24,4 +24,4 @@ class channels(Method):
         channels = serv.query_channels()
         for chan in channels:
             out.append(f"{chan.get_id()}-{chan.render_name()}")
-        return self.reply('msg_channels', [len(channels), serv.render_name(), ", ".join(out)])
+        return self.reply('msg_channels', (len(channels), serv.render_name(), ", ".join(out)))

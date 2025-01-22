@@ -91,11 +91,11 @@ class Database:
         level = Application.config('db.debug')
         if level != '0' or debug:
             from gdo.base.Util import msg
-            msg('%s', [query])
+            msg('%s', (query,))
             Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES) + ": " + query)
             if level == '2':
                 import traceback
-                Logger.debug("\n".join(traceback.format_stack()))
+                Logger.debug("".join(traceback.format_stack()))
 
     def cursor(self, dictionary=True):
         return self.get_link().cursor(dictionary=dictionary, buffered=True)

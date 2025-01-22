@@ -42,7 +42,7 @@ class config(Method):
             return self.list_module(module)
         gdt = module.config_column(config_name)
         if not gdt:
-            return self.err('err_module_config_gdt', [html(config_name)])
+            return self.err('err_module_config_gdt', (html(config_name),))
         value = self.param_val('config_value')
         if not value:
             return self.show_value(module, gdt)
@@ -66,7 +66,7 @@ class config(Method):
         output = ""
         for module, attributes in sorted_modules.items():
             output += f"{module}: {', '.join(attributes)}. "
-        return self.reply('msg_all_modules_conf', [output.strip()])
+        return self.reply('msg_all_modules_conf', (output.strip(),))
 
     def list_module(self, module: GDO_Module):
         name = Render.bold(module.render_name(), self._env_mode)
@@ -74,17 +74,17 @@ class config(Method):
         out = []
         for conf in confs:
             out.append(conf.get_name() + "(" + Render.italic(conf.render_val(), self._env_mode) + ")")
-        return self.reply('msg_module_conf', [name, ", ".join(out)])
+        return self.reply('msg_module_conf', (name, ", ".join(out)))
 
     def show_value(self, module: GDO_Module, gdt: GDT):
         tt = ''
         if gdt.has_tooltip():
             tt = f" ({gdt.get_tooltip_text()})"
         val = Render.italic(gdt.render_val(), self._env_mode)
-        return self.reply('msg_module_conf_options', [module.render_name(), gdt.get_name(), tt, val, gdt.render_suggestion()])
+        return self.reply('msg_module_conf_options', (module.render_name(), gdt.get_name(), tt, val, gdt.render_suggestion()))
 
     def set_value(self, module: GDO_Module, gdt: GDT, value: str):
         old = Render.italic(gdt.render_val(), self._env_mode)
         module.save_config_val(gdt.get_name(), value)
         new = Render.italic(gdt.display_val(value), self._env_mode)
-        return self.reply('msg_module_conf_changed', [module.render_name(), gdt.get_name(), old, new])
+        return self.reply('msg_module_conf_changed', (module.render_name(), gdt.get_name(), old, new))

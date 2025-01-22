@@ -20,5 +20,5 @@ class whoami(Method):
             ps.append(p)
 
         authed = 'authenticated' if u._authenticated else 'not_authenticated'
-        text = t('info_who_am_i', [u.render_name(), t(authed), Arrays.human_join(ps)])
+        text = t('info_who_am_i', (u.render_name(), t(authed), Arrays.human_join(ps)))
         return GDT_String('result').val(text)

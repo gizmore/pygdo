@@ -14,4 +14,4 @@ class version(Method):
         return False
 
     def execute(self):
-        return GDT_String('result').text('msg_version', [sys.version, str(module_base.instance().CORE_REV)])
+        return GDT_String('result').text('msg_version', (sys.version, str(module_base.instance().CORE_REV)))

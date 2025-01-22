@@ -72,9 +72,9 @@ class GDT_Float(GDT_String):
 
     def validate_min_max(self, value):
         if self._min is not None and value < self._min:
-            return self.error('err_int_min', [self._min])
+            return self.error('err_int_min', (self._min,))
         if self._max is not None and value > self._max:
-            return self.error('err_int_max', [self._max])
+            return self.error('err_int_max', (self._max,))
         return True
 
     ##########

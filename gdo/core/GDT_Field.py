@@ -128,9 +128,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
             return " DEFAULT " + self.quote(self._initial)
         return ''
 
-    def error(self, errkey: str, errargs: list[str] = None) -> bool:
-        if errargs is None:
-            errargs = []
+    def error(self, errkey: str, errargs: tuple[str] = None) -> bool:
         self._errkey = errkey
         self._errargs = errargs
         return False

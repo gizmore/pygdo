@@ -131,7 +131,7 @@ class GDT_Url(GDT_String):
         if len(self._url_schemes) == 0:
             return True
         if url['scheme'] not in self._url_schemes:
-            self.error('err_url_scheme', [html(url['scheme'])])
+            self.error('err_url_scheme', (html(url['scheme']),))
             return False
         return True
 
@@ -152,10 +152,10 @@ class GDT_Url(GDT_String):
             if response.status < 400:
                 return True
             else:
-                self.error('err_http_url_available', [html(url['raw']), response.status])
+                self.error('err_http_url_available', (html(url['raw']), response.status))
                 return False
         except (httplib2.HttpLib2Error, ConnectionRefusedError):
-            self.error('err_http_url_available', [html(url['raw']), "ERROR"])
+            self.error('err_http_url_available', (html(url['raw']), "ERROR"))
             return False
 
     def validate_plain_exists(self, url):
@@ -163,7 +163,7 @@ class GDT_Url(GDT_String):
             with socket.create_connection((url['host'], url['port'])) as sock:
                 return True
         except (socket.timeout, ConnectionError, OSError):
-            self.error('err_url_available', [html(url['raw'])])
+            self.error('err_url_available', (html(url['raw']),))
             return False
 
     def validate_tls_exists(self, url) -> bool:
@@ -172,7 +172,7 @@ class GDT_Url(GDT_String):
                 with ssl.create_default_context().wrap_socket(sock, server_hostname=url['host']) as tls_sock:
                     return True  # TLS connection successful, URL with TLS exists
         except (socket.timeout, ConnectionError, OSError, ssl.SSLError):
-            self.error('err_url_available', [html(url['raw'])])
+            self.error('err_url_available', (html(url['raw']),))
         return False
 
     def validate_internal_external(self, url: dict) -> bool:

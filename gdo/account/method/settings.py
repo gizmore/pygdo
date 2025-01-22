@@ -18,10 +18,10 @@ class settings(MethodForm):
         return 'member,guest'
 
     def gdo_render_title(self) -> str:
-        return t('mt_account_settings', [self.get_module().render_name()])
+        return t('mt_account_settings', (self.get_module().render_name()))
 
     def gdo_render_descr(self) -> str:
-        return t('md_account_settings', ['OOPS'])
+        return t('md_account_settings', ('OOPS',))
 
     def gdo_parameters(self) -> [GDT]:
         return [
@@ -33,7 +33,7 @@ class settings(MethodForm):
 
     def gdo_create_form(self, form: GDT_Form) -> None:
         module = self.get_module()
-        form.text('md_account_settings', [module.render_name()])
+        form.text('md_account_settings', (module.render_name(),))
         for gdt in module.all_user_settings():
             form.add_field(gdt)
         form.href(href('account', 'all_settings', f'&module={module.get_name()}'))
@@ -53,8 +53,8 @@ class settings(MethodForm):
                     gdt.val(old)
                     user.save_setting(key, new)
                     gdt.val(new)
-                    out.append(t('setting_changed', [key, Render.italic(html(old), self._env_mode), Render.italic(html(new), self._env_mode)]))
+                    out.append(t('setting_changed', (key, Render.italic(html(old), self._env_mode), Render.italic(html(new), self._env_mode))))
         if len(out):
-            self.msg('msg_settings_changed', [" ".join(out)])
+            self.msg('msg_settings_changed', (" ".join(out),))
         return self.render_page()
 

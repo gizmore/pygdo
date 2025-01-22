@@ -78,7 +78,7 @@ class WithObject:
         if len(middles) == 1:
             return list(middles.values())[0]
 
-        self.error('err_select_candidates', ['|'.join(middles.keys())])
+        self.error('err_select_candidates', ('|'.join(middles.keys()),))
         return None
 
         ##########
