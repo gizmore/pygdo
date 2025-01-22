@@ -77,6 +77,13 @@ class GDT_String(GDT_Field):
         self._re_options = options
         return self
 
+    def val(self, val: str | list):
+        if self._multiple:
+            return super().val(val)
+        if val is None:
+            return None
+        return super().val(self.utf8_normalize(val))
+
     #######
     # DBA #
     #######
@@ -114,6 +121,9 @@ class GDT_String(GDT_Field):
             return (s1 > s2) - (s1 < s2)
         return 0
 
+    def gdo_filter(self, val: str) -> bool:
+        return self.get_val().index(val) >= 0
+
     ############
     # Validate #
     ############
@@ -140,8 +150,8 @@ class GDT_String(GDT_Field):
     def text(self, key: str, args: list[str] = None):
         return self.val(t(key, args))
 
-    def utf8_normalize(value: str) -> str:
-        return unicodedata.normalize('NFC', value) if isinstance(value, str) else value
+    def utf8_normalize(self, val: str) -> str:
+        return unicodedata.normalize('NFC', val)
 
     ##########
     # Render #

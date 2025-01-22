@@ -95,6 +95,12 @@ class GDT(WithSerialization):
     def gdo_compare(self, gdt: 'GDT') -> int:
         return 0
 
+    def gdo_filter(self, val: str) -> bool:
+        """
+        Return true when val matches this gdt and the row should be kept.
+        """
+        return True
+
     ##########
     # Errors #
     ##########

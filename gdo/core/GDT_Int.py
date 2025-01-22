@@ -61,6 +61,9 @@ class GDT_Int(GDT_String):
     # GDO #
     #######
 
+    def gdo_filter(self, val: str) -> bool:
+        return self.get_val() == val
+
     def to_value(self, val: str):
         if val is None:
             return None
