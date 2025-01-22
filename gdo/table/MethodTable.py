@@ -1,6 +1,7 @@
 import functools
 
 from gdo.base.GDO import GDO
+from gdo.base.GDOSorter import GDOSorter
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.base.Result import Result
@@ -124,6 +125,8 @@ class MethodTable(WithGDO, MethodForm):
 
     def get_table_result(self) -> Result:
         result = self.gdo_table_result()
+        if self.gdo_ordered():
+            result = GDOSorter.sort(result, self.parameter(self.gdo_order_name()))
         return result
 
     ########

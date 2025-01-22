@@ -28,6 +28,12 @@ class GDT_Order(WithHREF, GDT_String):
             for val in vals:
                 query.order(val)
 
+    def get_order_dict(self) -> dict[str, str]:
+        if val := self.get_val():
+            return {key: direction for key, direction in (s.split() for s in val)}
+        else:
+            return {}
+
     def href_order(self, gdt: GDT, dir: str):
         url = Application.environ('REQUEST_URI')
         find = f"&{self.get_name()}={gdt.get_name()}"

@@ -92,6 +92,9 @@ class GDT(WithSerialization):
     def gdo_components(self) -> list['GDT']:
         return []
 
+    def gdo_compare(self, gdt: 'GDT') -> int:
+        return 0
+
     ##########
     # Errors #
     ##########

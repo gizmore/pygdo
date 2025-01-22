@@ -1,5 +1,7 @@
+import unicodedata
 from enum import Enum
 
+from gdo.base.GDT import GDT
 from gdo.base.Trans import t
 from gdo.base.Util import jsn, dump
 from gdo.core.GDT_Field import GDT_Field
@@ -102,6 +104,16 @@ class GDT_String(GDT_Field):
             append = '_bin'
         return f" COLLATE {self.gdo_column_define_charset()}{append}"
 
+    def gdo_compare(self, gdt: GDT) -> int:
+        s1, s2 = self.get_value(), gdt.get_value()
+        if s2 is None and s1:
+            return 1
+        if s1 is None and s2:
+            return -1
+        if s1 and s2:
+            return (s1 > s2) - (s1 < s2)
+        return 0
+
     ############
     # Validate #
     ############
@@ -127,6 +139,9 @@ class GDT_String(GDT_Field):
 
     def text(self, key: str, args: list[str] = None):
         return self.val(t(key, args))
+
+    def utf8_normalize(value: str) -> str:
+        return unicodedata.normalize('NFC', value) if isinstance(value, str) else value
 
     ##########
     # Render #
