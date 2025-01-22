@@ -4,6 +4,7 @@ import zlib
 
 import msgpack
 from redis import Redis
+from functools import lru_cache, wraps
 
 from gdo.base import GDO
 from gdo.base.Application import Application
@@ -272,5 +273,18 @@ def gdo_cached(cache_key: str):
             result = func(*args, **kwargs)
             Cache.set(cache_key, args_key, result)
             return result
+        return wrapper
+    return decorator
+
+
+
+def gdo_instance_cached():
+    def decorator(method):
+        @wraps(method)
+        def wrapper(self, *args, **kwargs):
+            cache_name = f"_{method.__name__}_cache"
+            if not hasattr(self, cache_name):
+                setattr(self, cache_name, lru_cache(None)(method.__get__(self, type(self))))
+            return getattr(self, cache_name)(*args, **kwargs)
         return wrapper
     return decorator

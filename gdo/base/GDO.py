@@ -7,7 +7,7 @@ from typing import Self
 from gdo.base.Exceptions import GDOException
 from gdo.base.Result import ResultType
 
-from gdo.base.Cache import Cache
+from gdo.base.Cache import Cache, gdo_instance_cached
 from gdo.base.GDT import GDT
 from gdo.base.Query import Type, Query
 from gdo.base.Util import Strings
@@ -204,11 +204,14 @@ class GDO(WithBulk, GDT):
             return 0
         return int(col)
 
+    @gdo_instance_cached()
     def get_pk_columns(self) -> list[GDT]:
         cols = []
         for gdt in self.columns():
             if gdt.is_primary():
                 cols.append(gdt.gdo(self))
+            else:
+                break
         return cols
 
     def get_by(self, key: str, val: str):
