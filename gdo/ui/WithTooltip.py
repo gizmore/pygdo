@@ -4,10 +4,10 @@ from gdo.base.Util import html
 
 class WithTooltip:
     _tt_key: str
-    _tt_args: tuple[str]
+    _tt_args: tuple
     _tt_escaped: bool
 
-    def tooltip(self, key: str, args: tuple[str] = None, escaped: bool = False):
+    def tooltip(self, key: str, args: tuple = None, escaped: bool = False):
         self._tt_key = key
         self._tt_args = args
         return self.tt_escaped(escaped)

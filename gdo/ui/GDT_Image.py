@@ -7,7 +7,7 @@ from gdo.ui.WithSize import WithSize
 
 class GDT_Image(WithSize, WithHREF, WithHTMLAttributes, GDT_File):
     _alt_key: str|None
-    _alt_args: tuple[str]|None
+    _alt_args: tuple|None
 
     def __init__(self, name: str):
         super().__init__(name)
@@ -16,7 +16,7 @@ class GDT_Image(WithSize, WithHREF, WithHTMLAttributes, GDT_File):
         self._width = '100%'
         self._height = 'auto'
 
-    def alternate(self, alt_key: str, alt_args: tuple[str] = None):
+    def alternate(self, alt_key: str, alt_args: tuple = None):
         self._alt_key = alt_key
         self._alt_args = alt_args
         return self

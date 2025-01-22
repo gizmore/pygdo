@@ -7,14 +7,14 @@ All GDO Errors and Exceptions
 
 class GDOError(Exception):
 
-    def __init__(self, key: str, args: tuple[str] = None):
+    def __init__(self, key: str, args: tuple = None):
         from gdo.base.Trans import t
         super().__init__(t(key, args))
 
 
 class GDOParamError(GDOError):
 
-    def __init__(self, key: str, args: tuple[str] = None):
+    def __init__(self, key: str, args: tuple = None):
         super().__init__(key, args)
 
 

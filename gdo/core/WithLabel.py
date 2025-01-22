@@ -5,10 +5,10 @@ from gdo.base.Trans import t
 
 class WithLabel:
     _label_key: str
-    _label_args: tuple[str]
+    _label_args: tuple
     _label_escape: bool
 
-    def label(self, key: str, args: tuple[str]=None):
+    def label(self, key: str, args: tuple=None):
         self._label_key = key
         self._label_args = args
         self._label_escape = False

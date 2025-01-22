@@ -59,7 +59,7 @@ def bytelen(s: str, encoding: str = 'utf-8') -> int:
     # return sys.getsizeof(s) - sys.getsizeof("") does not work!
 
 
-def err(key: str, args: tuple[str] = None, title: str = 'PyGDO'):
+def err(key: str, args: tuple = None, title: str = 'PyGDO'):
     from gdo.base.Application import Application
     from gdo.ui.GDT_Error import GDT_Error
     error = GDT_Error().text(key, args).title_raw(title)
@@ -70,7 +70,7 @@ def err_raw(message: str, title: str = 'PyGDO'):
     err('%s', (message))
 
 
-def msg(key: str, args: tuple[str] = None, title: str = 'PyGDO'):
+def msg(key: str, args: tuple = None, title: str = 'PyGDO'):
     from gdo.base.Application import Application
     from gdo.ui.GDT_Success import GDT_Success
     message = GDT_Success().text(key, args).title_raw(title)

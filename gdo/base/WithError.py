@@ -3,7 +3,7 @@ from gdo.base.Trans import t
 
 class WithError:
     _errkey: str
-    _errargs: tuple[str]
+    _errargs: tuple
 
     def has_error(self) -> bool:
         return hasattr(self, '_errkey')
@@ -14,7 +14,7 @@ class WithError:
     def render_error(self) -> str:
         return t(self._errkey, self._errargs)
 
-    def error(self, key: str, args: tuple[str] = None):
+    def error(self, key: str, args: tuple = None):
         self._errkey = key
         self._errargs = args
         return self

@@ -230,15 +230,15 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             html.text(text)
         return html
 
-    def reply(self, key: str, args: tuple[str] = None):
+    def reply(self, key: str, args: tuple = None):
         from gdo.core.GDT_String import GDT_String
         return GDT_String('reply').text(key, args)
 
-    def msg(self, key: str, args: tuple[str] = None):
+    def msg(self, key: str, args: tuple = None):
         self.gdo_module().msg(key, args)
         return self
 
-    def err(self, key: str, args: tuple[str] = None):
+    def err(self, key: str, args: tuple = None):
         self.gdo_module().err(key, args)
         return self
 

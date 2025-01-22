@@ -176,7 +176,7 @@ class GDO_Server(GDO):
     ###########
     # Message #
     ###########
-    async def send_to_user(self, user: GDO_User, key: str, args: tuple[str] = None):
+    async def send_to_user(self, user: GDO_User, key: str, args: tuple = None):
         text = tusr(user, key, args)
         message = Message(text, Application.get_mode())
         message.env_user(user, True).env_server(self).env_channel(None)
