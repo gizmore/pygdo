@@ -204,7 +204,6 @@ class GDO(WithBulk, GDT):
             return 0
         return int(col)
 
-    @gdo_instance_cached()
     def get_pk_columns(self) -> list[GDT]:
         cols = []
         for gdt in self.columns():
