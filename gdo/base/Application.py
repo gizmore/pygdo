@@ -170,8 +170,6 @@ class Application:
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.user = None
-        from gdo.base.Trans import Trans
-        Trans.init()
 
     @classmethod
     def init_asgi(cls, scope):

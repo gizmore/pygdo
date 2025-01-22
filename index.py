@@ -56,10 +56,12 @@ def pygdo_application(environ, start_response):
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")
             Application.init(os.path.dirname(__file__))
             Application.init_common()
+            Application.init_web(environ)
             loader = ModuleLoader.instance()
             loader.load_modules_db()
             loader.init_modules(True, True)
-            Application.init_web(environ)
+            from gdo.base.Trans import Trans
+            Trans.init()
             Application.is_http(True)
             FRESH = False
         else:
