@@ -10,6 +10,7 @@ def pygdo():
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
     from gdo.base.Util import Files
+    from gdo.base.Logger import Logger
 
     parser = argparse.ArgumentParser(description='Run a pygdo command or the pygdo repl interpreter.')
     parser.add_argument('--test', action='store_true')
@@ -19,11 +20,12 @@ def pygdo():
     if args.test:
         import unittest  # Required for unittest detection later
 
+    Logger.init(os.path.dirname(__file__)+"/../../protected/logs/")
     Application.init(__file__ + "/../../", args.config)
-    Application.init_cli()
     loader = ModuleLoader.instance()
     loader.load_modules_db()
     loader.init_modules(True, True)
+    Application.init_cli()
     loader.init_cli()
     Files.create_dir(Application.files_path('repl/'))
 

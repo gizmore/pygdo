@@ -39,8 +39,7 @@ async def app(scope, receive, send):
                 ModuleLoader.instance().load_modules_db()
                 ModuleLoader.instance().init_modules(True, True)
                 from gdo.base.Trans import Trans
-                Trans._load('en')
-                Trans._load('de')
+                Trans.init()
                 await send({'type': 'lifespan.startup.complete'})
             elif message['type'] == 'lifespan.shutdown':
                 if Application.config('core.profile', '0') == '1':

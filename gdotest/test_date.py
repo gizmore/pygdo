@@ -15,9 +15,9 @@ class DateTestCase(GDOTestCase):
     def setUp(self):
         Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
-        ModuleLoader.instance().init_modules()
+        ModuleLoader.instance().init_modules(True, True)
+        Application.init_cli()
         install_module('date')
-        return self
 
     def test_installed(self):
         self.assertEqual(Time.UTC, '1', "test if UTC is timezone 1")

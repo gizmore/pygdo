@@ -138,7 +138,6 @@ class ModuleLoader:
             fs._is_persisted = True
         else:
             return None
-        fs.init_language()
         if enabled:
             if not fs.is_enabled():
                 return None
@@ -182,6 +181,8 @@ class ModuleLoader:
         """
         Init all methods
         """
+        from gdo.base.Trans import Trans
+        Trans.init()
         self._methods = {}
         for module in self._cache.values():
             for method in module.get_methods():

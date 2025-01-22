@@ -8,8 +8,8 @@ from gdo.base.Util import Files
 
 
 def t(key: str, args=None):
-    if args is None:
-        args = []
+    # if args is None:
+    #     args = []
     return Trans.t(key, args)
 
 
@@ -58,11 +58,12 @@ class Trans:
             'en': {},
             'de': {},
         }
+        cls.init()
 
     @classmethod
     def add_language(cls, base_path):
-        # if base_path not in cls.BASES:
-        cls.BASES.append(base_path)
+        if base_path not in cls.BASES:
+            cls.BASES.append(base_path)
 
     @classmethod
     def _load(cls, iso: str):
@@ -79,22 +80,23 @@ class Trans:
         return cls.CACHE[iso]
 
     @classmethod
-    def t(cls, key: str, args: list):
+    def t(cls, key: str, args: list=None):
         iso = Application.STORAGE.lang
         return tiso(iso, key, args)
 
     @classmethod
-    def tiso(cls, iso, key: str, args: list):
+    def tiso(cls, iso, key: str, args: list=None):
         try:
-            data = cls.CACHE[iso]
+            # data = cls.CACHE[iso]
             # fmt = data[key]
-            # if args:
-            return data[key] % tuple(args)
-            # return fmt
+            if args:
+                return cls.CACHE[iso][key] % tuple(args)
+            return cls.CACHE[iso][key]
         except KeyError:
             cls.FAILURES[key] = 1
             return f"__{key}: {json.dumps(args)}"
-        except TypeError:
+        except TypeError as ex:
+            Logger.exception(ex)
             cls.FAILURES[key] = 2
             return f"_xx_{key}: {json.dumps(args)}"
 
@@ -102,3 +104,8 @@ class Trans:
     def has(cls, key: str) -> bool:
         data = cls._load(Application.LANG_ISO)
         return key in data.keys()
+
+    @classmethod
+    def init(cls):
+        cls._load('en')
+        cls._load('de')

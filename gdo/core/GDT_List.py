@@ -36,5 +36,5 @@ class GDT_List(GDT):
     def append(self, item):
         self._items.append(item)
 
-    def reversed(self) -> list[any]:
+    def reverse(self) -> list[any]:
         return self._items.reverse()

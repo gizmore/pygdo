@@ -45,6 +45,9 @@ class Installer:
             except Exception as ex:
                 Logger.exception(ex)
                 return False
+        module.init_language()
+        from gdo.base.Trans import Trans
+        Trans.init()
         clear_cache().gdo_execute()
         return True
 
