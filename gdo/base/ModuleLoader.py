@@ -42,6 +42,7 @@ class ModuleLoader:
         if classname in mn.__dict__.keys():
             self._cache[name] = module = mn.__dict__[classname].blank({
                 'module_name': name,
+                'module_enabled': '0',
             })
             module.init_language()
             return module

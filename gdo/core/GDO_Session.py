@@ -82,7 +82,10 @@ class GDO_Session(GDO):
         ip = instance.get_ip()
         if ip and ip != GDT_IP.current():
             return cls.blank_error()
-        instance._data = instance.gdo_value('sess_data') or {}
+        if instance.gdo_val('sess_data'):
+            instance._data = instance.gdo_value('sess_data')
+        else:
+            instance._data = {}
         return instance
 
     @classmethod
@@ -120,7 +123,8 @@ class GDO_Session(GDO):
         ]
 
     def save(self):
-        self.set_value('sess_data', self._data)
+        if self._data:
+            self.set_value('sess_data', self._data)
         if self.get_token() == self.DEFAULT_COOKIE:
             return self
         return super().save()

@@ -40,18 +40,20 @@ def pygdo_application(environ, start_response):
         global FRESH
         global SIDEBARS
         SIDEBARS = False
+        from gdo.base.Cache import Cache
+        #PYPP#BEGIN#
         GDT.GDT_MAX = 0
         GDO.GDO_MAX = 0
         GDT.GDT_COUNT = 0
         GDO.GDO_COUNT = 0
         GDT.GDT_ALIVE = 0
         GDO.GDO_ALIVE = 0
-        from gdo.base.Cache import Cache
         Cache.clear_stats()
-        Cache.clear_ocache()
         Application.DB_TRANSACTIONS = 0
         Application.EVENT_COUNT = 0
         Logger.LINES_WRITTEN = 0
+        #PYPP#END#
+        Cache.clear_ocache()
         if FRESH:
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")
             Application.init(os.path.dirname(__file__))
@@ -73,9 +75,11 @@ def pygdo_application(environ, start_response):
 
         Application.request_method(environ['REQUEST_METHOD'])
 
+        #PYPP#BEGIN#
         if Application.config('core.profile') == '1':
             import yappi
             yappi.start()
+        #PYPP#END#
 
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
@@ -187,10 +191,12 @@ def pygdo_application(environ, start_response):
                 yield response.encode('utf-8')
             else:
                 yield response
+            #PYPP#BEGIN#
             if Application.config('core.profile') == '1':
                 if qs.get('__yappi', None):
                     with open(Application.file_path('temp/yappi.log'), 'w') as f:
                         yappi.get_func_stats().print_all(out=f)
+            #PYPP#END#
 
     except (GDOModuleException, GDOMethodException) as ex:
         yield error_page(ex, start_response, not_found().input('_url', url), '404 Not Found', False)

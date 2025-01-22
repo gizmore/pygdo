@@ -5,6 +5,7 @@ from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
+from gdo.base.Method import Method
 from gdo.base.Util import dump
 from gdo.core import GDO_MethodValServerBlob
 from gdo.core.Connector import Connector
@@ -54,6 +55,7 @@ class module_core(GDO_Module):
     def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):
             delattr(GDO_User, 'SYSTEM')
+        Method.HTM_PARSER_CACHE = {}
 
     def gdo_dependencies(self) -> list:
         return [

@@ -12,7 +12,7 @@ from gdo.base.Util import Files
 
 
 class Logger:
-    LINES_WRITTEN = 0
+    LINES_WRITTEN = 0 #PYPP#DELETE#
 
     _base: str
     _user: 'GDO_User' = None
@@ -61,10 +61,10 @@ class Logger:
 
         with open(f"{cls._base}{path}", 'a') as fo:
             fo.write(f'{pre}{content}\n')
-            cls.LINES_WRITTEN += 1
+            cls.LINES_WRITTEN += 1 #PYPP#DELETE#
         if cls._user:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
             Files.create_dir(dir_name)
             with open(f"{dir_name}{path}", 'a') as fo:
                 fo.write(f'{pre}{content}\n')
-            cls.LINES_WRITTEN += 1
+            cls.LINES_WRITTEN += 1 #PYPP#DELETE#

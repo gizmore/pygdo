@@ -20,17 +20,21 @@ class Cache:
     There are 4 caches:
     1) TCACHE holds GDO.table() objects to re-use GDTs.
     2) CCACHE holds GDO.gdo_columns() GDTs to re-use them.
+    2) PCACHE holds PK GDO.gdo_columns() GDTs to re-use them.
     3) OCACHE holds GDO entities for single identity cache.
     3) REDIS (FCACHE) is the tad slower process shared memory cache.
     (c) 2025 by gizmore@wechall.net and chappy@chappy-bot.net.
     """
+    #PYPP#BEGIN#
     HITS = 0
     MISS = 0
     UPDATES = 0
     REMOVES = 0
+    #PYPP#END#
 
     TCACHE: dict[str, GDO] = {}             # class_name => GDO.table() mapping
     CCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() mapping
+    PCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() mapping
     OCACHE: dict[str, dict[str, GDO]] = {}  # table_name => dict[id, GDO] mapping
     RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
 
@@ -42,6 +46,7 @@ class Cache:
     @classmethod
     def clear(cls):
         cls.TCACHE = {}
+        cls.PCACHE = {}
         cls.CCACHE = {}
         cls.OCACHE = {}
         if cls.RCACHE:
@@ -58,9 +63,8 @@ class Cache:
         Clear request OCACHE for non persistent GDO
         """
         for gdo_klass, gdo in cls.TCACHE.items():
-            t = gdo.gdo_table_name()
             if not gdo.gdo_persistent():
-                cls.OCACHE[t].clear()
+                cls.OCACHE[gdo.gdo_table_name()].clear()
 
     #############
     # T/C/Cache #
@@ -72,6 +76,7 @@ class Cache:
         if cn not in cls.TCACHE:
             cls.TCACHE[cn] = gdo_klass()
             cls.CCACHE[cn] = cls.build_ccache(gdo_klass)
+            cls.PCACHE[cn] = cls.build_pkcache(gdo_klass)
             cls.OCACHE[gdo_klass.gdo_table_name()] = {}
         return cls.TCACHE[cn]
 
@@ -85,6 +90,18 @@ class Cache:
         return cache
 
     @classmethod
+    def build_pkcache(cls, gdo_klass: type[GDO]):
+        cache = []
+        columns = cls.TCACHE[gdo_klass].gdo_columns()
+        for column in columns:
+            if column.is_primary():
+                cache.append(column)
+            else:
+                break
+        return cache
+
+
+    @classmethod
     def columns_for(cls, gdo_klass: type[GDO]):
         cls.table_for(gdo_klass)
         return cls.CCACHE[gdo_klass]
@@ -94,6 +111,11 @@ class Cache:
         for gdt in cls.columns_for(gdo_klass):
             if gdt.get_name() == key:
                 return gdt
+
+    @classmethod
+    def pk_columns_for(cls, gdo_klass: type[GDO]):
+        cls.table_for(gdo_klass)
+        return cls.PCACHE[gdo_klass]
 
     ##########
     # OCACHE #
@@ -105,8 +127,7 @@ class Cache:
             gid = gdo.get_id()
             cn = gdo.gdo_table_name()
 
-            ocached = cls.OCACHE[cn].get(gid)
-            if ocached:
+            if ocached := cls.OCACHE[cn].get(gid):
                 ocached._vals.update(gdo._vals)
                 return ocached
 
@@ -115,24 +136,16 @@ class Cache:
                 rcached = gdo
             elif not after_write:
                 rcached = cls.get(cn, gid)
-            if ocached:
-                if rcached: # Update ocache from redis
-                    ocached._vals.update(rcached._vals)
-                    gdo = ocached
-                else: # No RCACHE. Populate
-                    ocached._vals.update(gdo._vals)
-                    cls.set(cn, gid, ocached)
-                    gdo = ocached
-            else:  # No OCACHE. Populate
-                if rcached:
-                    if is_rc:
-                        gdo = gdo.blank().all_dirty(False)
-                    cls.OCACHE[cn][gid] = gdo
-                    gdo._vals.update(rcached._vals)
-                else: # Neither found it
-                    cls.OCACHE[cn][gid] = gdo
-                    if not after_write:
-                        cls.set(cn, gid, gdo)
+
+            if rcached:
+                if is_rc:
+                    gdo = gdo.blank().all_dirty(False)
+                cls.OCACHE[cn][gid] = gdo
+                gdo._vals.update(rcached._vals)
+            else:
+                cls.OCACHE[cn][gid] = gdo
+                if not after_write:
+                    cls.set(cn, gid, gdo)
         return gdo
 
     @classmethod
@@ -252,7 +265,6 @@ class Cache:
                 cls.REMOVES += 1
                 redis_key = f"{key}:{args_key}"
                 cls.RCACHE.delete(redis_key)
-
 
 
 #############

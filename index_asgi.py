@@ -50,6 +50,7 @@ async def app(scope, receive, send):
             return
         assert scope['type'] == 'http', f"Type {scope['type']} not supported."
 
+        #PYPP#BEGIN#
         GDT.GDT_MAX = 0
         GDO.GDO_MAX = 0
         GDT.GDT_COUNT = 0
@@ -62,9 +63,11 @@ async def app(scope, receive, send):
         Application.DB_WRITES = 0
         Logger.LINES_WRITTEN = 0
         Cache.clear_stats()
-        Application.fresh_page()
+        #PYPP#END#
 
         Application.init_asgi(scope)
+        Application.fresh_page()
+
         qs = parse_qs(scope['query_string'].decode())
 
         url = scope['path'] if scope['path'].lstrip('/') else '/core.welcome.html'

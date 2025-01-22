@@ -177,6 +177,8 @@ class Installer:
         result = db.select(query, False)
         rows = result.iter(ResultType.ROW).fetch_all()
         new = map(lambda c: c[0], rows)
+        if old == new:
+            return []
         if old and new:
             return list(set(old).intersection(new))
         return []

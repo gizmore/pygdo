@@ -44,6 +44,7 @@ class GDT(WithSerialization):
             return f"UNHEX('{cls.escape(val)}')"
         return f"'{cls.escape(val)}'"
 
+    #PYPP#BEGIN#
     def __init__(self):
         from gdo.base.Application import Application
         if Application.config('core.gdt_debug') == '2':
@@ -55,9 +56,9 @@ class GDT(WithSerialization):
 
     def __del__(self):
         GDT.GDT_ALIVE -= 1
-
+    #PYPP#END#
     def __repr__(self):
-        return f"{self.get_name()}: {self.__dict__}"
+        return f"{self.get_name()}: {self.__slots__}"
 
     #############
     ### Hooks ###

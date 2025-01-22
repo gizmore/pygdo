@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 
 from mysql.connector import OperationalError
 
+from gdo.base.Cache import gdo_instance_cached, Cache
+
 if TYPE_CHECKING:
     from gdo.base.GDO_Module import GDO_Module
     from gdo.core.GDO_Channel import GDO_Channel
@@ -26,16 +28,17 @@ from gdo.base.WithPermissionCheck import WithPermissionCheck
 
 
 class MyArgParser(argparse.ArgumentParser):
-
     def error(self, message):
         pass
 
 
 class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
-    # _message: 'Message'
     _parameters: dict[str, GDT]
     _next_method: 'Method'  # Method chaining
     _result: str
+
+    CLI_PARSER_CACHE = {}
+    HTM_PARSER_CACHE = {}
 
     def __init__(self):
         super().__init__()
@@ -258,7 +261,6 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         try:
             if tr:
                 db.begin()
-#            Application.set_current_user(self._env_user)
             if not self._prepare_nested_permissions(self):
                 return self
             return await self._nested_execute(self, True)
@@ -325,9 +327,8 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return True
 
     def get_arg_parser(self, for_usage: bool):
-        return self._get_arg_parser_http(for_usage) if self._env_http else self._get_arg_parser_cli(for_usage)
+        return self._get_arg_parser_http() if self._env_http else self._get_arg_parser_cli(for_usage)
 
-    @functools.cache
     def _get_arg_parser_cli(self, for_usage: bool):
         from gdo.form.GDT_Submit import GDT_Submit
         from gdo.core.GDT_Field import GDT_Field
@@ -346,11 +347,12 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                     parser.add_argument(name, nargs='?')
             else:
                 parser.add_argument(f'--{name}', default=gdt.get_val())
-        self._parser = parser
         return parser
 
-    @functools.cache
-    def _get_arg_parser_http(self, for_usage: bool):
+    def _get_arg_parser_http(self):
+        if self.__class__ in self.HTM_PARSER_CACHE:
+            Cache.HITS += 1 #PYPP#DELETE#
+            return self.HTM_PARSER_CACHE[self.__class__]
         from gdo.core.GDT_Field import GDT_Field
         prog = self.get_name()
         parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
@@ -362,7 +364,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 parser.add_argument(f'--{name}', default=gdt.get_val(), nargs='*')
             else:
                 parser.add_argument(f'--{name}', default=gdt.get_val())
-        self._parser = parser
+        self.HTM_PARSER_CACHE[self.__class__] = parser
         return parser
 
     ##########

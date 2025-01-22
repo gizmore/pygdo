@@ -22,7 +22,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.0")
-    CORE_REV = "PyGDOv8.0.0-r1200"
+    CORE_REV = "PyGDOv8.0.0-r1201"
 
     _priority: int
     _inited: bool
@@ -111,7 +111,7 @@ class GDO_Module(WithModuleConfig, GDO):
         return self.is_persisted()
 
     def is_enabled(self):
-        return self.is_persisted() and self.gdo_val('module_enabled') == '1'
+        return self.gdo_val('module_enabled') == '1'
 
     def is_installable(self) -> bool:
         return True

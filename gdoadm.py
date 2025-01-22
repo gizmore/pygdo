@@ -5,9 +5,6 @@ import os
 import subprocess
 import sys
 
-import tomlkit
-
-from gdo.base import Util
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
@@ -41,6 +38,7 @@ class App:
             migrate     Auto-Migrate the database for modules.
             admin       Create a user that is admin
             wipe        Remove modules from the database.
+            cc          Clear redis cache.
             update      Triggers after update hooks.
             skel        Create a module skeleton inside an existing module folder.
         ''')
@@ -74,6 +72,10 @@ class App:
             self.configure_interactive(path, data)
         else:
             Config.rewrite(path, data)
+        print("All Done!")
+
+    def cc(self):
+        Cache.remove()
         print("All Done!")
 
     def database(self):

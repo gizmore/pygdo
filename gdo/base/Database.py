@@ -70,8 +70,10 @@ class Database:
         from gdo.base.Application import Application
         try:
             link = self.get_link()
+            #PYPP#BEGIN#
             Application.DB_WRITES += 1
             self.debug_query(query, debug)
+            #PYPP#END#
             return link.cmd_query(query)
         except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
@@ -79,14 +81,17 @@ class Database:
     def select(self, query: str, dictionary: bool = True, gdo: 'GDO' = None, debug: bool = False):
         from gdo.base.Application import Application
         try:
+            #PYPP#BEGIN#
             Application.DB_READS += 1
             self.debug_query(query, debug)
+            #PYPP#END#
             cursor = self.cursor(dictionary)
             cursor.execute(query)
             return Result(cursor, gdo)
         except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
 
+    #PYPP#BEGIN#
     def debug_query(self, query: str, debug: bool = False):
         level = Application.config('db.debug')
         if level != '0' or debug:
@@ -96,6 +101,7 @@ class Database:
             if level == '2':
                 import traceback
                 Logger.debug("".join(traceback.format_stack()))
+    #PYPP#END#
 
     def cursor(self, dictionary=True):
         return self.get_link().cursor(dictionary=dictionary, buffered=True)
@@ -175,7 +181,7 @@ class Database:
     ###############
 
     def begin(self):
-        Application.DB_TRANSACTIONS += 0.5
+        Application.DB_TRANSACTIONS += 0.5 #PYPP#DELETE#
         self.get_link().start_transaction()
         return self
 
@@ -183,11 +189,11 @@ class Database:
         return self.get_link().in_transaction
 
     def commit(self):
-        Application.DB_TRANSACTIONS += 0.5
+        Application.DB_TRANSACTIONS += 0.5 #PYPP#DELETE#
         self.get_link().commit()
         return self
 
     def rollback(self):
-        Application.DB_TRANSACTIONS += 0.25
+        Application.DB_TRANSACTIONS += 0.25 #PYPP#DELETE#
         self.get_link().rollback()
         return self

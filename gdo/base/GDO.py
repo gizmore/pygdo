@@ -37,6 +37,7 @@ class GDO(WithBulk, GDT):
 
     def __init__(self):
         super().__init__()
+        #PYPP#BEGIN#
         GDO.GDO_COUNT += 1
         GDO.GDO_ALIVE += 1
         GDO.GDO_MAX = max(GDO.GDO_MAX, GDO.GDO_ALIVE)
@@ -44,17 +45,20 @@ class GDO(WithBulk, GDT):
         if Application.config('core.gdo_debug') == '2':
             from gdo.base.Logger import Logger
             Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
+        #PYPP#END#
         self._vals = {}
         self._dirty = []
         self._last_id = None
         self._my_id = None
 
+    #PYPP#BEGIN#
     def __del__(self):
         GDO.GDO_ALIVE -= 1
+    #PYPP#END#
 
     def gdo_redis_fields(self) -> list[str]:
         return [
-            # '_my_id',
+            '_my_id',
             '_vals',
         ]
 
@@ -89,7 +93,7 @@ class GDO(WithBulk, GDT):
 
     def is_persisted(self):
         id_ = self.get_id()
-        return len(id_) > 0 and id_ != '0' and not id_.startswith(':')
+        return len(id_) > 0 and id_ != '0' and not id_.startswith(self.ID_SEPARATOR)
 
     @classmethod
     def gdo_table_name(cls) -> str:
@@ -176,7 +180,7 @@ class GDO(WithBulk, GDT):
     def get_name(cls):
         return cls.__name__
 
-    def dirty(self, key, dirty=True):
+    def dirty(self, key, dirty: bool = True):
         if key in self._dirty:
             if not dirty:
                 self._dirty.remove(key)
@@ -205,13 +209,7 @@ class GDO(WithBulk, GDT):
         return int(col)
 
     def get_pk_columns(self) -> list[GDT]:
-        cols = []
-        for gdt in self.columns():
-            if gdt.is_primary():
-                cols.append(gdt.gdo(self))
-            else:
-                break
-        return cols
+       return [gdt.gdo(self) for gdt in Cache.pk_columns_for(self.__class__)]
 
     def get_by(self, key: str, val: str):
         return self.get_by_vals({key: val})
@@ -227,8 +225,7 @@ class GDO(WithBulk, GDT):
         return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
 
     def pk_where(self) -> str:
-        cols = self.get_pk_columns()
-        return " AND ".join(map(lambda gdt: f"{gdt.get_name()}={GDT.quote(gdt._val)}", cols))
+        return " AND ".join(map(lambda gdt: f"{gdt.get_name()}={GDT.quote(gdt._val)}", self.get_pk_columns()))
 
     def get_by_vals(self, vals: dict[str, str]):
         if cached := Cache.obj_search(self, vals):
@@ -239,12 +236,11 @@ class GDO(WithBulk, GDT):
         return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
 
     def get_id(self) -> str:
-        # if self._my_id:
-        #     return self._my_id
-        cols = self.get_pk_columns()
-        id_ = self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', cols))
-        # if not id_.startswith('0') and not id_.startswith(':'):
-        #     self._my_id = id_
+        if self._my_id:
+            return self._my_id
+        id_ = self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', self.get_pk_columns()))
+        if id_ and not id_.startswith('0') and not id_.startswith(':'):
+            self._my_id = id_
         return id_
 
     ####################
@@ -252,9 +248,8 @@ class GDO(WithBulk, GDT):
     ####################
 
     def soft_replace(self):
-        old = self.get_by_id(*self.get_id().split(self.ID_SEPARATOR))
-        if old is not None:
-            return self.save()
+        if old := self.get_by_id(*self.get_id().split(self.ID_SEPARATOR)):
+            return old.save()
         return self.insert()
 
     def insert(self):
@@ -334,15 +329,10 @@ class GDO(WithBulk, GDT):
         Cache.obj_search_pygdo(self, vals, True)
         Cache.obj_search_redis(self, vals, True)
 
-    def delete_by_id(self, *ids: str, with_hooks: bool = False):
-        cols = self.get_pk_columns()
-        vals = {col.get_name(): Strings.nullstr(val) for col, val in zip(cols, ids)}
-        if cached := Cache.obj_search_id(self, vals):
-            return cached
-        where = []
-        for k, v in vals.items():
-            where.append(f'{k}={self.quote(v)}')
-        return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
+    def delete_by_id(self, *ids: str):
+        if gdo := self.get_by_id(*ids):
+            gdo.delete()
+            return gdo
 
     ##########
     # Events #
