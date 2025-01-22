@@ -315,6 +315,8 @@ class App:
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules(True, True)
+        from gdo.base.Trans import Trans
+        Trans.init()
 
         if args.server:
             server = GDO_Server.table().get_by_id(args.server)

@@ -28,6 +28,8 @@ class Installer:
         if verbose:
             print("Re-Loading installed modules.")
         loader = ModuleLoader.instance()
+        from gdo.base.Trans import Trans
+        Trans.init()
         Cache.clear()
         loader.reset()
         modules = loader.load_modules_db()

@@ -103,5 +103,9 @@ class Trans:
 
     @classmethod
     def init(cls):
+        cls.CACHE = {
+            'en': {},
+            'de': {},
+        }
         cls._load('en')
         cls._load('de')
