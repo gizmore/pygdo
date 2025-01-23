@@ -32,13 +32,11 @@ class Templite(object):
         self.caching = caching
         if delimiters:
             start, end = delimiters
-            # if len(start) != 2 or len(end) != 2:
-            #     raise ValueError('each delimiter must be two characters long')
             self.delimiters = delimiters
         cache = self.cache
         if caching and key in cache and cache[key][0] == mtime:
             from gdo.base.Cache import Cache
-            Cache.HITS += 1
+            Cache.HITS += 1 #PYPP#DELETE#
             self._code = cache[key][1]
             return
         # read file

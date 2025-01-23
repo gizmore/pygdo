@@ -53,9 +53,11 @@ class Cache:
             cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
 
+    #PYPP#BEGIN#
     @classmethod
     def clear_stats(cls):
         cls.UPDATES = cls.MISS = cls.REMOVES = cls.HITS = 0
+    #PYPP#END#
 
     @classmethod
     def clear_ocache(cls):
@@ -183,7 +185,7 @@ class Cache:
                         found = False
                         break
                 if found:
-                    cls.HITS += 1
+                    cls.HITS += 1 #PYPP#DELETE#
                     if delete:
                         gid = oc.get_id()
                         cls.remove(gid)
@@ -206,7 +208,7 @@ class Cache:
                                 found = False
                                 break
                         if found:
-                            cls.HITS += 1
+                            cls.HITS += 1 #PYPP#DELETE#
                             if delete:
                                 cls.remove(key)
                                 id = rc.get_id()
@@ -216,7 +218,7 @@ class Cache:
                             return cls.obj_for(rc, after_write=True, is_rc=True)
                 if cursor == 0:
                     break
-            cls.MISS += 1
+            cls.MISS += 1 #PYPP#DELETE#
 
     ##########
     # FCACHE #
@@ -228,9 +230,9 @@ class Cache:
             try:
                 key = f"{key}:{args_key}" if args_key else key
                 if packed := cls.RCACHE.get(key):
-                    cls.HITS += 1
+                    cls.HITS += 1 #PYPP#DELETE#
                     return WithSerialization.gdounpack(zlib.decompress(packed))
-                cls.MISS += 1
+                cls.MISS += 1 #PYPP#DELETE#
             except Exception as ex:
                 Logger.exception(ex)
         return default
@@ -242,7 +244,7 @@ class Cache:
                 value = value.gdopack()
             else:
                 value = msgpack.dumps(value)
-            cls.UPDATES += 1
+            cls.UPDATES += 1 #PYPP#DELETE#
             key = f"{key}:{args_key}" if args_key else key
             cls.RCACHE.set(key, zlib.compress(value))
 
@@ -250,19 +252,19 @@ class Cache:
     def remove(cls, key: str = None, args_key: str = None):
         if cls.RCACHE:
             if key is None:
-                cls.REMOVES += 1
+                cls.REMOVES += 1 #PYPP#DELETE#
                 cls.RCACHE.flushdb()
             elif args_key is None:
                 cursor = 0
                 while True:
                     cursor, keys = cls.RCACHE.scan(cursor, match=f"{key}:*")
                     if keys:
-                        cls.REMOVES += 1
+                        cls.REMOVES += 1 #PYPP#DELETE#
                         cls.RCACHE.delete(*keys)
                     if cursor == 0:
                         break
             else:
-                cls.REMOVES += 1
+                cls.REMOVES += 1 #PYPP#DELETE#
                 redis_key = f"{key}:{args_key}"
                 cls.RCACHE.delete(redis_key)
 
@@ -287,7 +289,6 @@ def gdo_cached(cache_key: str):
             return result
         return wrapper
     return decorator
-
 
 
 def gdo_instance_cached():
