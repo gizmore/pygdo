@@ -41,7 +41,7 @@ class Logger:
     async def arequest(cls, url: str, qs: str):
         from gdo.base.Application import Application
         content = f"{Application.get_request_method()} - {url}{qs}"
-        await cls.awrite('messages.log', content)
+        await cls.awrite('message.log', content)
 
     @classmethod
     def debug(cls, content: str):
