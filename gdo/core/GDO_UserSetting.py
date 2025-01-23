@@ -31,7 +31,7 @@ class GDO_UserSetting(GDO):
     """
 
     @classmethod
-    def get_setting(cls, user, key: str):
+    def get_setting(cls, user: GDO_User, key: str):
         return cls.table().get_by_id(user.get_id(), key)
 
     #######

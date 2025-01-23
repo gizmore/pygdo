@@ -16,23 +16,30 @@ from gdo.base.WithBulk import WithBulk
 
 class GDO(WithBulk, GDT):
     """
-    A GDO (Gizmore Data Object) is just a GDT(Gizmore Data Type) with fields that are GDT
+    A GDO (Gizmore Data Object) is just a GDT(Gizmore Data Type) with fields that are GDT.
+    There is one GDO acting as the table instance, and other entitites are rows.
     """
     ID_SEPARATOR = ':'  # Multiple primary keys supported
+    HASH_LENGTH = 16
+
+    #PYPP#BEGIN#
     GDO_COUNT = 0
     GDO_ALIVE = 0
     GDO_MAX = 0
+    #PYPP#END#
 
     _vals: dict[str, str|bytes]
     _dirty: list[str]
     _last_id: int|None
     _my_id: str|None
+    # _my_gid: str|None
 
     __slots__ = (
         '_vals',
         '_dirty',
         '_last_id',
         '_my_id',
+        # '_my_gid',
     )
 
     def __init__(self):
@@ -50,6 +57,7 @@ class GDO(WithBulk, GDT):
         self._dirty = []
         self._last_id = None
         self._my_id = None
+        self._my_gid = None
 
     #PYPP#BEGIN#
     def __del__(self):
@@ -59,6 +67,7 @@ class GDO(WithBulk, GDT):
     def gdo_redis_fields(self) -> list[str]:
         return [
             '_my_id',
+            # '_my_gid',
             '_vals',
         ]
 
@@ -72,26 +81,25 @@ class GDO(WithBulk, GDT):
         gdo = cls.table()
         for gdt in gdo.columns():
             name = gdt.get_name()
-            vals[name] = vals[name] if name in vals.keys() else gdt.get_initial()
+            vals[name] = vals.get(name, gdt.get_initial())
         back = cls()
-        back._vals.update(vals)
-        back.all_dirty()
-        return back
+        back._vals = vals
+        return back.all_dirty()
 
     def gdo_hash(self) -> str:
         hash_me = hashlib.sha256()
         for gdt in self.columns():
             val = gdt.get_val()
             hash_me.update(val.encode() if val is not None else b'')
-        return hash_me.hexdigest()[0:24]
+        return hash_me.hexdigest()[0:self.HASH_LENGTH]
 
     def render_name(self):
         return self.get_name()
 
-    def primary_key_column(self):
+    def primary_key_column(self) -> GDT:
         return self.columns()[0]
 
-    def is_persisted(self):
+    def is_persisted(self) -> bool:
         id_ = self.get_id()
         return len(id_) > 0 and id_ != '0' and not id_.startswith(self.ID_SEPARATOR)
 
@@ -107,7 +115,7 @@ class GDO(WithBulk, GDT):
 
     def gdo_persistent(self) -> bool:
         """
-        Mark this table as not being uncached
+        Mark this table as not being un-cached.
         """
         return False
 
@@ -115,7 +123,7 @@ class GDO(WithBulk, GDT):
         """
         Return the columns for your GDO right with this method
         """
-        return []
+        raise GDOException(f"{self.__class__.__name__} does not provide any columns.")
 
     def column(self, key: str) -> GDT | any:
         if gdt := Cache.column_for(self.__class__, key):
@@ -126,36 +134,35 @@ class GDO(WithBulk, GDT):
     def columns(self) -> list[GDT]:
         return Cache.columns_for(self.__class__)
 
-    def columns_only(self, *names: str):
+    def columns_only(self, *names: str) -> list[GDT]:
         cols = []
         for key in names:
             cols.append(self.column(key))
         return cols
 
-    def column_by_type(self, klass: type) -> 'GDT':
+    def column_by_type(self, klass: type[GDT]) -> 'GDT':
         for gdt in self.columns():
             if isinstance(gdt, klass):
                 return gdt
         raise GDOException(f"{self.get_name()} has no GDT of type {klass}")
 
-    def gdo_val(self, key):
-        if key not in self._vals:
-            return None
-        return self._vals[key]
+    def gdo_val(self, key: str):
+        return self._vals.get(key, None)
 
     def gdo_value(self, key: str):
         return self.column(key).get_value()
 
     def set_val(self, key, val: str, dirty: bool = True):
         if self._vals[key] == val:
-            dirty = False
+            return self
+            # dirty = False
         if not isinstance(val, bytes):
             self._vals[key] = Strings.nullstr(val)
         else:
             self._vals[key] = val
         return self.dirty(key, dirty)
 
-    def set_value(self, key, value, dirty=True):
+    def set_value(self, key: str, value: any, dirty: bool=True):
         val = self.column(key).value(value).get_val()
         return self.set_val(key, val, dirty)
 
@@ -180,7 +187,7 @@ class GDO(WithBulk, GDT):
     def get_name(cls):
         return cls.__name__
 
-    def dirty(self, key, dirty: bool = True):
+    def dirty(self, key: str, dirty: bool = True):
         if key in self._dirty:
             if not dirty:
                 self._dirty.remove(key)
@@ -189,24 +196,22 @@ class GDO(WithBulk, GDT):
                 self._dirty.append(key)
         return self
 
-    def all_dirty(self, dirty=True):
+    def all_dirty(self, dirty: bool=True):
         if dirty:
             self._dirty = list(map(lambda gdt: gdt.get_name(), self.columns()))
         else:
-            self._dirty = []
+            self._dirty.clear()
         return self
 
     def query(self) -> Query:
         return Query().table(self.gdo_table_name()).gdo(self)
 
-    def select(self, columns='*') -> Query:
+    def select(self, columns: str='*') -> Query:
         return self.query().select(columns)
 
-    def count_where(self, where='1') -> int:
+    def count_where(self, where: str='1') -> int:
         col = self.select('COUNT(*)').where(where).exec(False).iter(ResultType.ROW).fetch_val()
-        if col is None:
-            return 0
-        return int(col)
+        return 0 if col is None else int(col)
 
     def get_pk_columns(self) -> list[GDT]:
        return [gdt.gdo(self) for gdt in Cache.pk_columns_for(self.__class__)]
@@ -215,14 +220,14 @@ class GDO(WithBulk, GDT):
         return self.get_by_vals({key: val})
 
     def get_by_id(self, *id_: str):
-        cols = self.get_pk_columns()
-        vals = {col.get_name(): Strings.nullstr(val) for col, val in zip(cols, id_)}
-        if cached := Cache.obj_search_id(self, vals):
-            return cached
-        where = []
-        for k, v in vals.items():
-            where.append(f'{k}={self.quote(v)}')
-        return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
+        if len(id_) == 1:
+            if (c := Cache.obj_search_gid(self, id_[0])): return c
+        else:
+            if (c := Cache.obj_search_gid(self, self.ID_SEPARATOR.join(id_))): return c
+        return self.table().select().where(' AND '.join(
+            [f'{gdt._name}={self.quote(gdt.val(id_[i])._val)}'
+             for i, gdt in enumerate(self.get_pk_columns())])
+        ).first().exec().fetch_object()
 
     def pk_where(self) -> str:
         return " AND ".join(map(lambda gdt: f"{gdt.get_name()}={GDT.quote(gdt._val)}", self.get_pk_columns()))
@@ -379,7 +384,7 @@ class GDO(WithBulk, GDT):
         return self.table().select().where(where).exec().iter(result_type).fetch_all()
 
     def all_cached(self, where: str = '1', result_type: ResultType = ResultType.OBJECT) -> list['Self']:
-        cache_key = f"{self.gdo_table_name()}_all"
+        cache_key = f"{self.gdo_table_name()}_all_{where}_{result_type}"
         if cached := Cache.get(cache_key, where):
             return cached
         cached = self.all(where, result_type)
@@ -393,10 +398,7 @@ class GDO(WithBulk, GDT):
         from gdo.core.GDT_Name import GDT_Name
         return self.column_of(GDT_Name)
 
-    def column_of(self, type) -> GDT:
+    def column_of(self, type: type[GDT]) -> GDT:
         for gdt in self.columns():
             if isinstance(gdt, type):
                 return gdt
-
-
-

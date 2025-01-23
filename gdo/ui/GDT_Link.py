@@ -20,7 +20,7 @@ class GDT_Link(WithHREF, WithTitle, WithText, WithName, GDT):
     def render_html(self) -> str:
         return GDT_Template.python('ui', 'link.html', {'field': self})
 
-    def render_text(self, mode: Mode):
+    def render_text(self, mode: Mode = Mode.HTML) -> str:
         if self.has_text():
             return super().render_text(mode)
         return Strings.html(self.render_href(), Mode.HTML)

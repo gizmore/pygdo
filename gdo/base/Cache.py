@@ -150,14 +150,18 @@ class Cache:
         return gdo
 
     @classmethod
-    def update_for(cls, gdo: GDO):
+    def update_for(cls, gdo: GDO) -> GDO:
         cls.set(gdo.gdo_table_name(), gdo.get_id(), gdo)
         return cls.obj_for(gdo, True)
 
     @classmethod
-    def obj_search_id(cls, gdo: GDO, vals: dict, delete: bool = False):
-        tn = gdo.gdo_table_name()
+    def obj_search_id(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
         gid = ":".join(v for v in vals.values())
+        return cls.obj_search_gid(gdo, gid, delete)
+
+    @classmethod
+    def obj_search_gid(cls, gdo: GDO, gid: str, delete: bool = False) -> GDO:
+        tn = gdo.gdo_table_name()
         if ocached := cls.OCACHE[tn].get(gid):
             if delete:
                 del cls.OCACHE[tn][gid]

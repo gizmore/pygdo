@@ -6,8 +6,8 @@ from gdo.ui.GDT_Panel import GDT_Panel
 
 class GDT_Success(GDT_Panel):
 
-    def __init__(self):
-        super().__init__()
+    # def __init__(self):
+    #     super().__init__()
 
     def render(self, mode: Mode = Mode.HTML):
         with Trans('en'):

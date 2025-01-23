@@ -1,8 +1,10 @@
+import functools
 import os
 import re
 import sys
 
 from gdo.base.Application import Application
+from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
@@ -16,36 +18,24 @@ class Templite(object):
     cache = {}
     delimiters = ('<%', '%>')
 
-    def __init__(self, text=None, filename=None, encoding='utf-8', delimiters=None, caching=True):
-        """Loads a template from string or file."""
-        if filename:
-            filename = os.path.abspath(filename)
-            mtime = os.path.getmtime(filename)
-            self.file = key = filename
-        elif text is not None:
-            self.file = mtime = None
-            key = hash(text)
-        else:
-            raise ValueError('either text or filename required')
-        # set attributes
+    def __init__(self, filename: str=None, encoding: str='utf-8', caching: bool=True):
+        filename = os.path.abspath(filename)
+        self.file = key = filename
         self.encoding = encoding
         self.caching = caching
-        if delimiters:
-            start, end = delimiters
-            self.delimiters = delimiters
         cache = self.cache
-        if caching and key in cache and cache[key][0] == mtime:
-            from gdo.base.Cache import Cache
-            Cache.HITS += 1 #PYPP#DELETE#
-            self._code = cache[key][1]
-            return
-        # read file
-        if filename:
-            with open(filename) as fh:
-                text = fh.read()
+        if caching:
+            if key in cache:
+                Cache.HITS += 1  # PYPP#DELETE#
+                self._code = cache[key]
+                return
+            else:
+                Cache.MISS += 1
+        with open(filename) as fh:
+            text = fh.read()
         self._code = self._compile(text)
         if caching:
-            cache[key] = (mtime, self._code)
+            cache[key] = self._code
 
     def _compile(self, source):
         offset = 0
@@ -82,14 +72,13 @@ class Templite(object):
             tokens.append(part)
         if offset:
             raise SyntaxError('%i block statement(s) not terminated' % offset)
-        return compile('\n'.join(tokens), self.file or '<string>', 'exec')
+        return compile('\n'.join(tokens), self.file, 'exec')
 
     def render(self, **namespace):
         """Renders the template according to the given namespace."""
         stack = []
         namespace['__file__'] = self.file
 
-        # add write method
         def write(*args):
             for value in args:
                 stack.append(str(value))
@@ -108,8 +97,7 @@ class Templite(object):
                 else:
                     base = os.path.dirname(sys.argv[0])
                 file = os.path.join(base, file)
-            t = Templite(None, file, self.encoding,
-                         self.delimiters, self.caching)
+            t = Templite(file, self.encoding, self.caching)
             stack.append(t.render(**namespace))
 
         namespace['include'] = include
@@ -156,7 +144,7 @@ class GDT_Template(GDT):
             "Application": Application,
         }
         data.update(vals)
-        lite = Templite(None, path)
+        lite = Templite(path)
         return lite.render(**data)
 
     @classmethod
@@ -173,6 +161,7 @@ class GDT_Template(GDT):
         cls.THEMES[name] = path
 
     @classmethod
+    @functools.cache
     def get_path(cls, modulename: str, path: str):
         for theme_path in cls.THEMES.values():
             p = f"{theme_path}{modulename}/{path}"

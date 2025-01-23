@@ -14,15 +14,16 @@ class GDO_Session(GDO):
     LIFETIME = 60 * 60 * 24 * 7
     COOKIE_NAME = 'GDO'
     DEFAULT_COOKIE = 'gdo_like_16_byte'
+
     _data: dict[str, any]
 
     __slots__ = (
         '_data',
     )
 
-    def __init__(self):
-        super().__init__()
-        self._data = {}
+    # def __init__(self):
+    #     super().__init__()
+    #     self._data = {}
 
     # def gdo_wake_up(self):
     #     self._data = {}
@@ -57,7 +58,7 @@ class GDO_Session(GDO):
         http_only = ' HttpOnly;'
         # secure = ' Secure;'
         secure = ''
-        same_site = ' SameSite=Lax;'
+        same_site = f' SameSite={Application.config('sess.same_site', 'lax')};'
         Application.header('Set-Cookie', f"{cls.COOKIE_NAME}={cookie}; Path=/;{http_only}{secure}{same_site}")
 
     @classmethod
@@ -109,9 +110,6 @@ class GDO_Session(GDO):
     def gdo_table_engine(self) -> str:
         return 'InnoDB'
 
-    def gdo_cached(self) -> bool:
-        return True
-
     def gdo_columns(self) -> list[GDT]:
         return [
             GDT_AutoInc('sess_id'),
@@ -136,7 +134,7 @@ class GDO_Session(GDO):
         return f"{self.get_id()}:{self.get_token()}"
 
     def get(self, key: str, default: any = None):
-        return self._data[key] if key in self._data else default
+        return self._data.get(key, default)
 
     def set(self, key: str, value):
         self._data[key] = value
