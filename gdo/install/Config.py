@@ -52,6 +52,7 @@ class Config:
             cls.data_int('db.debug', 0),
             GDT_Section().title_raw('Cache'),
             cls.data_int('redis.enabled', 0),
+            cls.data_str('redis.uds', ""),
             cls.data_str('redis.host', 'localhost'),
             cls.data_int('redis.port', 6379),
             cls.data_int('redis.db', 0),
