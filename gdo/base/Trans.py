@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 
 import tomlkit
@@ -79,7 +80,7 @@ class Trans:
 
     @classmethod
     def tiso(cls, iso: str, key: str, args: tuple=None):
-        k = cls.CACHE.get(iso, cls.EN).get(key, key)
+        k = cls.CACHE.get(iso, cls.EN).get(key, cls.EN.get(key))
         return k % args if args else k
 
     @classmethod

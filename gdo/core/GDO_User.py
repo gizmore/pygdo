@@ -232,12 +232,16 @@ class GDO_User(GDO):
     # Hooks #
     #########
     def gdo_after_create(self, gdo):
+        current = self.current()
+        current = current if current.is_persisted() else self.system()
         self.save_setting('created', Time.get_date())
-        self.save_setting('creator', self.current().get_id())
+        self.save_setting('creator', current.get_id())
 
     def gdo_before_delete(self, gdo):
+        current = self.current()
+        current = current if current.is_persisted() else self.system()
         self.save_setting('deleted', Time.get_date())
-        self.save_setting('deletor', self.current().get_id())
+        self.save_setting('deletor', current.get_id())
 
     #############
     # Messaging #

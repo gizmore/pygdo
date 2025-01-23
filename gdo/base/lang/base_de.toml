@@ -1,0 +1,63 @@
+"%s" = "%s" # Nicht löschen :)
+module_base = "Basis"
+
+err_web_param_wrong = "Ein Methodenparameter konnte für Befehl %s nicht geparst werden. Im Kontext '%s'"
+err_param = "Ungültiger Wert für Parameter %s: %s"
+err_method_connector_not_supported = "Diese Methode funktioniert in diesem Connector nicht."
+err_method_disabled = "Diese Methode ist hier deaktiviert."
+err_render_mode = "Ungültiger Render-Modus: %s"
+err_permission = "Du benötigst die %s-Berechtigungen, um diese Methode auszuführen."
+err_permissions = "Du hast keine Berechtigung, auf diese Methode zuzugreifen."
+err_not_in_private = "Diese Methode funktioniert nicht in privaten Nachrichten."
+err_not_in_channel = "Diese Methode funktioniert nicht in Kanälen."
+err_not_authenticated = "Dein Konto ist nicht authentifiziert."
+err_violate_unique = "Ein Eintrag hierfür existiert bereits."
+
+and = "und"
+decimal_point = '.'
+thousands_sep = ','
+authenticate = "authentifizieren"
+
+##############
+# Decorators #
+##############
+err_rate_limit_exceeded = "Du hast das Limit von %s Nutzungen pro %s überschritten. Bitte warte %s."
+err_decorate_only_instance_methods = "Kann nur Instanzmethoden dekorieren. Am besten gdo_execute()."
+##############
+# GDO_Module #
+##############
+module_priority = "Priorität"
+
+######################
+# Method permissions #
+######################
+err_type = "Diese Methode ist auf %s beschränkt."
+err_stub = "Diese Methode ist noch nicht implementiert."
+err_type_member = "Nur Mitglieder dürfen diese Methode ausführen. Bitte %s zuerst und komme dann hierher zurück."
+link_login_before_continue = "authentifizieren"
+err_type_guest = "Du musst %s, bevor du diese Methode ausführen kannst. Es ist auch möglich, %s."
+link_continue_as_guest = "als Gast fortfahren"
+
+################
+# Server Error #
+################
+mt_base_server_error = "Serverfehler"
+md_base_server_error = "Der Server hat einen Fehler gemacht... wahrscheinlich kaputter Code oder eine fehlerhafte Konfiguration."
+
+################
+# Client Error #
+################
+mt_base_client_error = "Client-Fehler"
+md_base_client_error = "Der Server konnte deine Parameter nicht verarbeiten."
+
+##############
+# Fileserver #
+##############
+mt_base_file_server = "Datei"
+md_base_file_server = "Lade eine Datei von dieser Website herunter."
+
+#############
+# dirserver #
+#############
+mt_base_dir_server = "Verzeichnis"
+md_base_dir_server = "Liste ein Verzeichnis auf diesem Server auf."

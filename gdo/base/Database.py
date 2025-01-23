@@ -43,7 +43,7 @@ class Database:
     def __del__(self):
         if self.link:
             self.link.close()
-            delattr(self, 'link')
+            self.link = None
 
     def get_link(self):
         if self.link is None:
@@ -57,7 +57,6 @@ class Database:
             self.link.database = self.db_name
             self.query('SET NAMES utf8mb4')
             self.query("SET time_zone = '+00:00'")
-            # self.query("SET GLOBAL query_cache_size = 1000000")
         return self.link
 
     def reconnect(self):
