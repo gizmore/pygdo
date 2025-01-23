@@ -1,5 +1,7 @@
 import importlib
 import os
+import sys
+
 from typing_extensions import Self
 
 from typing import TYPE_CHECKING
@@ -22,7 +24,9 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.1")
-    CORE_REV = "PyGDOv8.0.1-r1221"
+    CORE_REV = "PyGDOv8.0.1-r1222"
+
+    METHOD_CACHE = {}
 
     _priority: int
     _inited: bool
@@ -144,21 +148,25 @@ class GDO_Module(WithModuleConfig, GDO):
         if Files.exists(dirname):
             for file_name in os.listdir(dirname):
                 if not file_name.startswith('_'):
-                    try:
-                        method = self.instantiate_method(file_name[:-3])
-                        methods.append(method)
-                    except KeyError as ex:
-                        Logger.exception(ex)
+                    method = self.instantiate_method(file_name[:-3])
+                    methods.append(method)
         return methods
 
     def get_method(self, name: str) -> 'Method':
         return self.instantiate_method(name)
 
     def instantiate_method(self, name: str) -> 'Method':
+        module_path = f"gdo.{self.get_name()}.method.{name}"
+        if method_class := self.METHOD_CACHE.get(module_path):
+            return method_class()
         try:
-            mn = importlib.import_module("gdo." + self.get_name() + ".method." + name)
-            return mn.__dict__[name]()
-        except (ModuleNotFoundError, KeyError):
+            mn = importlib.import_module(module_path)
+            method_class = getattr(mn, name, None)
+            if not method_class:
+                raise GDOMethodException(self.get_name(), name)
+            self.METHOD_CACHE[module_path] = method_class
+            return method_class()
+        except ModuleNotFoundError:
             raise GDOMethodException(self.get_name(), name)
 
     def href(self, method_name: str, append: str = '', format: str = 'html'):

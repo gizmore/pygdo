@@ -34,7 +34,7 @@ class ModuleLoader:
                 yield module
 
     def reset(self):
-        self._cache = {}
+        self._cache.clear()
 
     def gdo_import(self, name: str) -> 'GDO_Module':
         mn = importlib.import_module("gdo." + name)
@@ -135,7 +135,6 @@ class ModuleLoader:
         if db:
             fs._vals.update(db._vals)
             fs.all_dirty(False)
-#            fs._is_persisted = True
         else:
             return None
         if enabled:

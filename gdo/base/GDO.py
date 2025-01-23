@@ -159,6 +159,9 @@ class GDO(WithBulk, GDT):
     def gdo_value(self, key: str):
         if key not in self._values:
             self._values[key] = self.column(key).get_value()
+           # Cache.MISS += 1
+        #else:
+       #     Cache.HITS += 1
         return self._values[key]
 
     def set_val(self, key, val: str, dirty: bool = True):

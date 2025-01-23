@@ -195,7 +195,12 @@ async def app(scope, receive, send):
                 import yappi
                 if qs.get('__yappi', None):
                     with open(Application.file_path('temp/yappi.log'), 'w') as f:
-                        yappi.get_func_stats().print_all(out=f)
+                        yappi.get_func_stats().print_all(out=f, columns={
+                            0: ("name", 64),
+                            1: ("ncall", 8),
+                            2: ("tsub", 8),
+                            3: ("ttot", 8),
+                            4: ("tavg", 8)})
             #PYPP#END#
 
 
