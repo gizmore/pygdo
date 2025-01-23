@@ -28,7 +28,7 @@ class ModuleLoader:
     def instance(cls) -> Self:
         return Application.LOADER
 
-    def enabled(self):
+    def enabled(self) -> list[GDO_Module]:
         for module in self._cache.values():
             if module.is_enabled():
                 yield module

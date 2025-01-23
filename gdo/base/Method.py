@@ -46,6 +46,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     # CLI_PARSER_CACHE = {}
     # HTM_PARSER_CACHE = {}
+    _parser_http: argparse
+    _parser_clix: argparse
+    _parser_cliu: argparse
 
     def __init__(self):
         super().__init__()
@@ -58,6 +61,10 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         self._env_channel = None
         self._env_server = None
         self._env_reply_to = None
+        self._parser_http = None
+        self._parser_clix = None
+        self._parser_cliu = None
+
 
     def get_name(self):
         return self.__class__.__name__
@@ -331,6 +338,13 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return self._get_arg_parser_http() if self._env_http else self._get_arg_parser_cli(for_usage)
 
     def _get_arg_parser_cli(self, for_usage: bool):
+        if for_usage:
+            if self._parser_cliu:
+                return self._parser_cliu
+        else:
+            if self._parser_clix:
+                return self._parser_clix
+
         from gdo.form.GDT_Submit import GDT_Submit
         from gdo.core.GDT_Field import GDT_Field
         prog = self.gdo_trigger()
@@ -348,9 +362,15 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                     parser.add_argument(name, nargs='?')
             else:
                 parser.add_argument(f'--{name}', default=gdt.get_val())
+        if for_usage:
+            self._parser_cliu = parser
+        else:
+            self._parser_clix = parser
         return parser
 
     def _get_arg_parser_http(self):
+        if self._parser_http:
+            return self._parser_http
         # fqn = self.fqn()
         # if fqn in self.HTM_PARSER_CACHE:
         #     Cache.HITS += 1 #PYPP#DELETE#
@@ -367,6 +387,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             else:
                 parser.add_argument(f'--{name}', default=gdt.get_val())
         # self.HTM_PARSER_CACHE[fqn] = parser
+        self._parser_http = parser
         return parser
 
     ##########

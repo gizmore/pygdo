@@ -105,11 +105,8 @@ def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'
 
 
 def module_enabled(module_name: str) -> bool:
-    try:
-        from gdo.base.ModuleLoader import ModuleLoader
-        return ModuleLoader.instance().get_module(module_name).is_enabled()
-    except Exception:
-        return False
+    from gdo.base.ModuleLoader import ModuleLoader
+    return ModuleLoader.instance().get_module(module_name).is_enabled()
 
 
 class CLI:

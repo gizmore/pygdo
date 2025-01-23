@@ -32,14 +32,12 @@ class GDO(WithBulk, GDT):
     _dirty: list[str]
     _last_id: int|None
     _my_id: str|None
-    # _my_gid: str|None
 
     __slots__ = (
         '_vals',
         '_dirty',
         '_last_id',
         '_my_id',
-        # '_my_gid',
     )
 
     def __init__(self):
@@ -155,7 +153,6 @@ class GDO(WithBulk, GDT):
     def set_val(self, key, val: str, dirty: bool = True):
         if self._vals[key] == val:
             return self
-            # dirty = False
         if not isinstance(val, bytes):
             self._vals[key] = Strings.nullstr(val)
         else:
@@ -361,7 +358,6 @@ class GDO(WithBulk, GDT):
         self.gdo_before_update(self)
 
     def after_update(self):
-        # Cache.obj_for(self).set_vals(self._vals, False)  # After a blanked update this is required.
         self.gdo_after_update(self)
         for gdt in self.columns():
             gdt.gdo_after_update(self)
