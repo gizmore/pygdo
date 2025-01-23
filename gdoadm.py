@@ -278,6 +278,9 @@ class App:
         subprocess.run("./gdo_requirements.sh", check=True)
         print("Running post install scripts.")
         subprocess.run("./gdo_post_install.sh", check=True)
+        if Application.config('core.env') == 'prod':
+            print("Running pypp preprocessor.")
+            subprocess.run(["python3", "-m", "pypp", Application.file_path()], check=True)
 
     def install(self):
         loader = ModuleLoader.instance()

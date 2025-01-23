@@ -4,6 +4,7 @@ import shutil
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Util import Arrays, Files
+from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_Template import GDT_Template
 
 
@@ -24,6 +25,7 @@ class Config:
         from gdo.ui.GDT_Section import GDT_Section
         lst = [
             GDT_Section().title_raw('Core'),
+            GDT_Enum('core.env').choices({'dev': 'dev', 'prod': 'prod'}).not_null().initial('dev'),
             cls.data_str('core.sitename', 'GDO'),
             cls.data_str('core.web_root', '/'),
             cls.data_str('core.domain', 'localhost'),
