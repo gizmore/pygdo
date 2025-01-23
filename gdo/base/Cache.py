@@ -16,7 +16,7 @@ from gdo.base.WithSerialization import WithSerialization
 
 class Cache:
     """
-    The wonderful pygdo cache in 187 lines of code.
+    The wonderful pygdo cache in 303 lines of code.
     There are 4 caches:
     1) TCACHE holds GDO.table() objects to re-use GDTs.
     2) CCACHE holds GDO.gdo_columns() GDTs to re-use them.
@@ -37,7 +37,6 @@ class Cache:
     PCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() mapping
     OCACHE: dict[str, dict[str, GDO]] = {}  # table_name => dict[id, GDO] mapping
     RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
-
     @classmethod
     def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0, uds: str=''):
         if enabled:
@@ -48,10 +47,10 @@ class Cache:
 
     @classmethod
     def clear(cls):
-        cls.TCACHE = {}
-        cls.PCACHE = {}
-        cls.CCACHE = {}
-        cls.OCACHE = {}
+        cls.TCACHE.clear()
+        cls.PCACHE.clear()
+        cls.CCACHE.clear()
+        cls.OCACHE.clear()
         if cls.RCACHE:
             cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
@@ -97,12 +96,9 @@ class Cache:
     @classmethod
     def build_pkcache(cls, gdo_klass: type[GDO]):
         cache = []
-        columns = cls.TCACHE[gdo_klass].gdo_columns()
-        for column in columns:
+        for column in cls.TCACHE[gdo_klass].gdo_columns():
             if column.is_primary():
                 cache.append(column)
-            else:
-                break
         return cache
 
 
@@ -230,14 +226,11 @@ class Cache:
     @classmethod
     def get(cls, key: str, args_key: str = None, default: any = None):
         if cls.RCACHE:
-            try:
-                key = f"{key}:{args_key}" if args_key else key
-                if packed := cls.RCACHE.get(key):
-                    cls.HITS += 1 #PYPP#DELETE#
-                    return WithSerialization.gdounpack(zlib.decompress(packed))
-                cls.MISS += 1 #PYPP#DELETE#
-            except Exception as ex:
-                Logger.exception(ex)
+            key = f"{key}:{args_key}" if args_key else key
+            if packed := cls.RCACHE.get(key):
+                cls.HITS += 1 #PYPP#DELETE#
+                return WithSerialization.gdounpack(zlib.decompress(packed))
+            cls.MISS += 1 #PYPP#DELETE#
         return default
 
     @classmethod

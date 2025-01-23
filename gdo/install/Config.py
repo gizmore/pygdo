@@ -61,6 +61,8 @@ class Config:
             GDT_Section().title_raw('Session'),
             cls.data_str('sess.name', 'PyGDO'),
             cls.data_str('sess.same_site', 'lax'),
+            GDT_Section().title_raw('Log'),
+            cls.data_int('log.request', 1),
             GDT_Section().title_raw('Mail'),
             cls.data_int('mail.debug', 1),
             cls.data_str('mail.host', 'localhost'),

@@ -11,7 +11,7 @@ class GDT_Success(GDT_Panel):
 
     def render(self, mode: Mode = Mode.HTML):
         with Trans('en'):
-            Logger.message(self.render_text())
+            Logger.message(self.render_txt())
         return super().render(mode)
 
     def render_txt(self):

@@ -27,6 +27,9 @@ class GDT_Error(GDT_Panel):
         return super().html_class()
 
     def render(self, mode: Mode = Mode.HTML):
+        if not self._trace:
+            with Trans('en'):
+                Logger.error(self.render_text(Mode.TXT))
         return super().render(mode)
 
     def render_txt(self):
@@ -41,11 +44,9 @@ class GDT_Error(GDT_Panel):
     def render_telegram(self):
         return Render.red(self.render_text(Mode.TELEGRAM), Mode.TELEGRAM)
 
-    # def render_html(self):
-    #     return Render.red(f"{t('error')}: {self.render_title(Mode.HTML)}: {self.render_text(Mode.HTML)}", Mode.HTML)
-
     @classmethod
     def from_exception(cls, ex: Exception, title: str = 'PyGDO'):
+        Logger.exception(ex)
         text = html(str(ex))
         trace = html("".join(better_exceptions.format_exception(*sys.exc_info())))
         return cls().trace().title_raw(title).text_raw(f"<pre>{text}\n{trace}</pre>\n", False)
