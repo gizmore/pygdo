@@ -23,7 +23,9 @@ class MethodTable(WithGDO, MethodForm):
     def __init__(self):
         super().__init__()
 
-    def parameters(self, reset: bool = False) -> dict[str, GDT]:
+    def parameters(self, reset: bool = False) -> list[GDT]:
+        if hasattr(self, '_parameters') and not reset:
+            return self._parameters
         params = super().parameters()
         for gdt in self.table_parameters():
             params.append(gdt)
@@ -34,17 +36,15 @@ class MethodTable(WithGDO, MethodForm):
     ################
 
     @functools.cache
-    def table_parameters(self) -> list[GDT]:
-        params = []
+    def table_parameters(self) -> GDT:
         if self.gdo_paginated():
-            params.append(GDT_PageNum(self.gdo_paginate_name()))
+            yield GDT_PageNum(self.gdo_paginate_name())
         if self.gdo_ordered():
-            params.append(GDT_Order(self.gdo_order_name()))
+            yield GDT_Order(self.gdo_order_name())
         if self.gdo_filtered():
-            params.append(GDT_Filter(self.gdo_filter_name()))
+            yield GDT_Filter(self.gdo_filter_name())
         if self.gdo_searched():
-            params.append(GDT_Search(self.gdo_search_name()).label('search'))
-        return params
+            yield GDT_Search(self.gdo_search_name()).label('search')
 
     def table_order_field(self) -> GDT_Order:
         return self.parameter(self.gdo_order_name())

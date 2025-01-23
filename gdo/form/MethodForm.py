@@ -84,11 +84,13 @@ class MethodForm(Method):
             return self._parameters
         params = super().parameters()
         self._nested_parse()
-        for gdt in self.get_form().actions().all_fields():
-            params.append(gdt)
-        for gdt in self.get_form().all_fields():
+        for gdt in self.form_parameters():
             params.append(gdt)
         return params
+
+    def form_parameters(self) -> list[GDT]:
+        yield from self.get_form().all_fields()
+        yield from self.get_form().actions().all_fields()
 
     def cli_auto_button(self):
         for gdt in self.get_form().actions().all_fields():

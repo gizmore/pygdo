@@ -41,6 +41,5 @@ class UITestCase(GDOTestCase):
         self.assertEqual(GDT_FileSize.to_human(1024), '1.00 KB', "human file size 1kb failed")
 
 
-
 if __name__ == '__main__':
     unittest.main()

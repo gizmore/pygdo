@@ -23,8 +23,7 @@ class calc(MethodForm):
         super().gdo_create_form(form)
 
     def form_submitted(self):
-        gdt = self.parameters()['expression']
-        expr = gdt.get_value().lower().replace('_', self.last_value())
+        expr = self.param_value('expression').lower().replace('_', self.last_value())
         result = str(eval(expr, GDT_MathExpression('x').get_namespace()))
         self.LAST_RESULT[self._env_user] = result
         self.msg('%s', (result,))

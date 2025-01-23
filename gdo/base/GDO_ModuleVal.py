@@ -13,3 +13,6 @@ class GDO_ModuleVal(GDO):
             GDT_Name('mv_key').not_null().primary(),
             GDT_String('mv_val'),
         ]
+
+    def gdo_cached(self) -> bool:
+        return False
