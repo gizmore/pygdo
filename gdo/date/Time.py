@@ -302,7 +302,7 @@ class Time:
 
     @classmethod
     def _human_duration_raw(cls, seconds: float, n_units: int, units: dict, with_millis: bool = True, remove_zero_units: bool = True) -> str:
-        seconds = abs(seconds)
+        seconds = abs(seconds or 0)
         calculated = {}
         ms = int(seconds * 1000) % 1000 if with_millis else 0
         duration = int(seconds)
