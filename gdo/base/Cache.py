@@ -131,13 +131,14 @@ class Cache:
             if ocached := cls.OCACHE[cn].get(gid):
                 if rcached:
                     ocached._vals = rcached
-                return ocached.all_dirty(False)
+                return ocached #.all_dirty(False)
 
             if not after_write and not rcached:
                 rcached = cls.get(cn, gid)
 
             if rcached:
                 gdo._vals = rcached
+                gdo._values.clear()
                 cls.OCACHE[cn][gid] = gdo.all_dirty(False)
             else:
                 cls.OCACHE[cn][gid] = gdo

@@ -240,7 +240,7 @@ class GDT(WithSerialization):
 
     def render_html(self) -> str:
         val = self.get_val()
-        return '' if val is None else val
+        return val or ''
 
     def render_telegram(self):
         return self.render_txt()
@@ -256,7 +256,7 @@ class GDT(WithSerialization):
 
     def render_txt(self) -> str:
         val = self.get_val()
-        return '' if val is None else val
+        return val or ''
 
     def render_markdown(self):
         return self.render_txt()

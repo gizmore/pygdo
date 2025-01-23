@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import traceback
+from functools import lru_cache
 from typing import Self
 
 from gdo.base.Exceptions import GDOException
@@ -29,12 +30,14 @@ class GDO(WithBulk, GDT):
     #PYPP#END#
 
     _vals: dict[str, str|bytes]
+    _values: dict[str, any]
     _dirty: list[str]
     _last_id: int|None
     _my_id: str|None
 
     __slots__ = (
         '_vals',
+        '_values',
         '_dirty',
         '_last_id',
         '_my_id',
@@ -52,6 +55,7 @@ class GDO(WithBulk, GDT):
             Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
         #PYPP#END#
         self._vals = {}
+        self._values = {}
         self._dirty = []
         self._last_id = None
         self._my_id = None
@@ -63,7 +67,7 @@ class GDO(WithBulk, GDT):
     #PYPP#END#
 
     def __repr__(self):
-        return f"{self.get_name()}({self.get_id()}): {self._vals.values()}"
+        return f"{self.get_name()}({self.get_id()}): {str(self._vals.values())}"
 
     def gdo_redis_fields(self) -> list[str]:
         return [
@@ -71,15 +75,17 @@ class GDO(WithBulk, GDT):
             '_vals',
         ]
 
+    def gdo_wake_up(self):
+        self._values = {}
+
     @classmethod
     def table(cls) -> 'GDO':
         return Cache.table_for(cls)
 
     @classmethod
     def blank(cls, vals: dict = None):
-        vals = {} if vals is None else vals
-        gdo = cls.table()
-        for gdt in gdo.columns():
+        vals = vals or {}
+        for gdt in cls.table().columns():
             name = gdt.get_name()
             vals[name] = vals.get(name, gdt.get_initial())
         back = cls()
@@ -104,6 +110,7 @@ class GDO(WithBulk, GDT):
         return len(id_) > 0 and id_ != '0' and not id_.startswith(self.ID_SEPARATOR)
 
     @classmethod
+    @lru_cache(None)
     def gdo_table_name(cls) -> str:
         return cls.__name__.lower()
 
@@ -147,14 +154,18 @@ class GDO(WithBulk, GDT):
         raise GDOException(f"{self.get_name()} has no GDT of type {klass}")
 
     def gdo_val(self, key: str):
-        return self._vals.get(key, None)
+        return self._vals.get(key)
 
     def gdo_value(self, key: str):
-        return self.column(key).get_value()
+        if key not in self._values:
+            self._values[key] = self.column(key).get_value()
+        return self._values[key]
 
     def set_val(self, key, val: str, dirty: bool = True):
         if self._vals.get(key) == val:
             return self
+        if key in self._values:
+            del self._values[key]
         if not isinstance(val, bytes):
             self._vals[key] = Strings.nullstr(val)
         else:
@@ -163,6 +174,7 @@ class GDO(WithBulk, GDT):
 
     def set_value(self, key: str, value: any, dirty: bool=True):
         val = self.column(key).value(value).get_val()
+        self._values[key] = value
         return self.set_val(key, val, dirty)
 
     def set_vals(self, vals: dict, dirty=True):

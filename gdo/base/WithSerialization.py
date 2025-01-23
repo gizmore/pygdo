@@ -61,7 +61,7 @@ class WithSerialization:
         module = importlib.import_module(module_name)
         klass = getattr(module, class_name)
         obj = klass.__new__(klass)
-        # obj.gdo_wake_up()
+        obj.gdo_wake_up()
         for key, value in dic.items():
             setattr(obj, key, cls.gdopinstances(value) if isinstance(value, (dict, list)) else value)
         return obj

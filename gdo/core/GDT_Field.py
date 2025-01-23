@@ -65,7 +65,14 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
 
     def gdo(self, gdo: GDO):
         self._gdo = gdo
-        return self.val(gdo.gdo_val(self._name))
+        val = gdo.gdo_val(self._name)
+        if self._val == val:
+            return self
+        self.val(val)
+        if value := gdo._values.get(self._name):
+            self._value = value
+            self._converted = True
+        return self
 
     def initial(self, val: str):
         self._initial = val
