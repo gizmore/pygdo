@@ -48,7 +48,7 @@ class Events:
 
     def publish(self, event_name, *args, **kwargs):
         from gdo.base.Application import Application
-        Application.EVENT_COUNT += 1
+        Application.EVENT_COUNT += 1 #PYPP#DELETE#
         to_delete = []
         if event_name in self._subscribers:
             for subscriber in self._subscribers[event_name]:
@@ -74,7 +74,6 @@ class Events:
         self._timers = [timer for timer in self._timers if timer['callback'] != callback]
 
     async def update_timers(self, current_time: float):
-        # Logger.debug("Firing timers...")
         expired_timers = []
         for timer in self._timers:
             if current_time >= timer['next_run']:
