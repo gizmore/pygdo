@@ -33,19 +33,17 @@ async def app(scope, receive, send):
             message = await receive()
             if message['type'] == 'lifespan.startup':
                 Application.init(os.path.dirname(__file__))
+                #PYPP#BEGIN#
                 if Application.config('core.profile', '0') == '1':
                     import yappi
                     yappi.start()
+                #PYPP#END#
                 ModuleLoader.instance().load_modules_db()
                 ModuleLoader.instance().init_modules(True, True)
                 from gdo.base.Trans import Trans
                 Trans.init()
                 await send({'type': 'lifespan.startup.complete'})
             elif message['type'] == 'lifespan.shutdown':
-                if Application.config('core.profile', '0') == '1':
-                    import yappi
-                    with open(Application.file_path('temp/yappi.log'), 'w') as f:
-                        yappi.get_func_stats().print_all(stdout=f)
                 await send({'type': 'lifespan.shutdown.complete'})
             return
         assert scope['type'] == 'http', f"Type {scope['type']} not supported."
@@ -192,11 +190,13 @@ async def app(scope, receive, send):
                 'more_body': False,
             })
 
+            #PYPP#BEGIN#
             if Application.config('core.profile', '0') == '1':
                 import yappi
                 if qs.get('__yappi', None):
                     with open(Application.file_path('temp/yappi.log'), 'w') as f:
                         yappi.get_func_stats().print_all(out=f)
+            #PYPP#END#
 
 
     except Exception as ex:
