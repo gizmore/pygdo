@@ -22,7 +22,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.0")
-    CORE_REV = "PyGDOv8.0.0-r1209"
+    CORE_REV = "PyGDOv8.0.0-r1210"
 
     _priority: int
     _inited: bool
