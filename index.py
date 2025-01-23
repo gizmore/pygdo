@@ -115,6 +115,8 @@ def pygdo_application(environ, start_response):
             Application.set_current_user(user)
             Application.set_session(session)
             Application.status("200 OK")
+            if Application.config('log.request', '0') == '1':
+                Logger.request(url, str(qs))
             server = user.get_server()
             channel = None
             if Files.is_dir(path):

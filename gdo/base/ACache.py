@@ -23,11 +23,12 @@ class ACache:
 
     @classmethod
     def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0, uds: str=''):
-        if enabled:
-            if uds:
-                cls.ACACHE = Redis(unix_socket_path=uds, decode_responses=False)
-            else:
-                cls.ACACHE = Redis(host=host, port=port, db=db, decode_responses=False)
+        pass
+        # if False:
+        #     if uds:
+        #         cls.ACACHE = Redis(unix_socket_path=uds, decode_responses=False)
+        #     else:
+        #         cls.ACACHE = Redis(host=host, port=port, db=db, decode_responses=False)
 
     @classmethod
     async def clear(cls):

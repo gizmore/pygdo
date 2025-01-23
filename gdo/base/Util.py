@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import string
 
+import aiofiles
 import magic
 
 import getpass
@@ -261,6 +262,11 @@ class Files:
     @classmethod
     def create_dir(cls, path: str) -> bool:
         os.makedirs(path, mode=0o700, exist_ok=True)
+        return True
+
+    @classmethod
+    async def acreate_dir(cls, dir_name: str):
+        await aiofiles.os.makedirs(dir_name, mode=0o700, exist_ok=True)
         return True
 
     @classmethod

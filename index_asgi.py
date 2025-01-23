@@ -111,6 +111,8 @@ async def app(scope, receive, send):
                 session = GDO_Session.start(True)
                 user = session.get_user()
                 Application.set_current_user(user)
+                if Application.config('log.request', '0') == '1':
+                    asyncio.create_task(Logger.arequest(url, str(qs)))
                 Application.set_session(session)
                 server = user.get_server()
                 channel = None

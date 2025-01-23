@@ -3,6 +3,7 @@ import sys
 
 from typing import TYPE_CHECKING
 
+import aiofiles
 import better_exceptions
 
 if TYPE_CHECKING:
@@ -29,6 +30,18 @@ class Logger:
     @classmethod
     def user(cls, user: 'GDO_User'):
         cls._user = user
+
+    @classmethod
+    def request(cls, url: str, qs: str):
+        from gdo.base.Application import Application
+        content = f"{Application.get_request_method()} - {url}{qs}"
+        cls.write('message.log', content)
+
+    @classmethod
+    async def arequest(cls, url: str, qs: str):
+        from gdo.base.Application import Application
+        content = f"{Application.get_request_method()} - {url}{qs}"
+        await cls.awrite('messages.log', content)
 
     @classmethod
     def debug(cls, content: str):
@@ -58,7 +71,6 @@ class Logger:
         pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
         if cls._user:
             pre += cls._user.get_name() + " - "
-
         with open(f"{cls._base}{path}", 'a') as fo:
             fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
@@ -68,3 +80,18 @@ class Logger:
             with open(f"{dir_name}{path}", 'a') as fo:
                 fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
+
+    @classmethod
+    async def awrite(cls, path: str, content: str, user_log: bool = True):
+        pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
+        if cls._user:
+            pre += cls._user.get_name() + " - "
+        async with aiofiles.open(f"{cls._base}{path}", 'a') as fo:
+            await fo.write(f"{pre}{content}\n")
+            cls.LINES_WRITTEN += 1  #PYPP#DELETE#
+        if cls._user and user_log:
+            dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
+            await Files.acreate_dir(dir_name)
+            async with aiofiles.open(f"{dir_name}{path}", 'a') as fo:
+                await fo.write(f"{pre}{content}\n")
+                cls.LINES_WRITTEN += 1  #PYPP#DELETE#
