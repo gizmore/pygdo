@@ -63,7 +63,6 @@ def pygdo_application(environ, start_response):
             loader.load_modules_db()
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
-            Trans.init()
             Application.is_http(True)
             FRESH = False
         else:
@@ -83,7 +82,6 @@ def pygdo_application(environ, start_response):
 
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
-            # get_params = parse_qs(url)
             del qs['_url']
             if not url:
                 url = 'core.welcome.html'

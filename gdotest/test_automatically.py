@@ -9,7 +9,6 @@ from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
-from gdo.base.Trans import Trans
 from gdo.base.Util import Permutations
 from gdo.core.GDO_Server import GDO_Server
 from gdotest.TestUtil import GDOTestCase, web_gizmore
@@ -25,7 +24,6 @@ class test_automatically(GDOTestCase):
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules(True, True)
         Application.init_cli()
-        Trans.init()
 
     def test_01_test_defaults(self):
         for module in ModuleLoader.instance()._cache.values():

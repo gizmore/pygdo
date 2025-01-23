@@ -31,8 +31,8 @@ class modules(MethodTable):
         return False
 
     def gdo_execute(self) -> GDT:
-        Trans.reload()
-        mods = self.get_modules()
+        # Trans.reload()
+        # mods = self.get_modules()
         self._n = 0
         return super().gdo_execute()
 

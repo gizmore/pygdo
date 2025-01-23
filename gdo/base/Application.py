@@ -60,6 +60,7 @@ class Application:
         from gdo.base.Trans import Trans
         cls.PATH = os.path.normpath(path) + '/'
         Logger.init(cls.PATH + "protected/logs/")
+        Trans.init()
         os.environ['TZ'] = 'UTC'
         time.tzset()
         cls.LOADER = ModuleLoader()
@@ -160,8 +161,6 @@ class Application:
         cls.STORAGE.cookies = {}
         cls.STORAGE.time_start = time.time()
         cls.mode(Mode.CLI)
-        from gdo.base.Trans import Trans
-        Trans.init()
 
     @classmethod
     def init_web(cls, environ):

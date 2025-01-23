@@ -44,7 +44,6 @@ class ModuleLoader:
                 'module_name': name,
                 'module_enabled': '0',
             })
-            module.init_language()
             return module
 
     def __init__(self):
@@ -182,8 +181,6 @@ class ModuleLoader:
         """
         Init all methods
         """
-        from gdo.base.Trans import Trans
-        Trans.init()
         self._methods = {}
         for module in self._cache.values():
             for method in module.get_methods():

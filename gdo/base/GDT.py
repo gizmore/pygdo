@@ -1,4 +1,5 @@
 import binascii
+import functools
 import traceback
 
 from typing_extensions import TYPE_CHECKING
@@ -228,7 +229,11 @@ class GDT(WithSerialization):
         return self.render_gdt(mode)
 
     def render_gdt(self, mode: Mode):
-        return getattr(self, f'render_{mode.name.lower()}')()
+        return self.render_method(mode)()
+
+    @functools.cache
+    def render_method(self, mode: Mode):
+        return getattr(self, f'render_{mode.name.lower()}')
 
     def render_toml(self) -> str:
         return f"{self.get_name()} = \"{self.get_val() or ''}\"\n"

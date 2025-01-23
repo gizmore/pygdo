@@ -21,8 +21,8 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 
 class GDO_Module(WithModuleConfig, GDO):
-    CORE_VERSION = Version("8.0.0")
-    CORE_REV = "PyGDOv8.0.0-r1211"
+    CORE_VERSION = Version("8.0.1")
+    CORE_REV = "PyGDOv8.0.1-r1212"
 
     _priority: int
     _inited: bool
@@ -122,9 +122,6 @@ class GDO_Module(WithModuleConfig, GDO):
             self.gdo_subscribe_events()
             self._inited = True
         pass
-
-    def init_language(self):
-        Trans.add_language(self.file_path(f"lang/{self.get_name()}"))
 
     def file_path(self, append=''):
         return Application.file_path(f"gdo/{self.get_name()}/{append}")
