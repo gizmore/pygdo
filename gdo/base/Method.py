@@ -299,7 +299,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         for gdt in self.parameters().values():
             if not isinstance(gdt, GDT_Field):
                 continue
-            if val := args.__dict__[gdt.get_name()]:
+            if val := args.__dict__.get(gdt.get_name()):
                 if isinstance(val, list):
                     gdt.val(val)
                 else:

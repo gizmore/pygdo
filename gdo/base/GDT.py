@@ -228,7 +228,7 @@ class GDT(WithSerialization):
         return getattr(self, f'render_{mode.name.lower()}')()
 
     def render_toml(self) -> str:
-        return f"{self.get_name()} = \"{self.get_val()}\"\n"
+        return f"{self.get_name()} = \"{self.get_val() or ''}\"\n"
 
     def render_html(self) -> str:
         val = self.get_val()
