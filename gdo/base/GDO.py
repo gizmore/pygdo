@@ -249,6 +249,8 @@ class GDO(WithBulk, GDT):
 
     def soft_replace(self):
         if old := self.get_by_id(*self.get_id().split(self.ID_SEPARATOR)):
+            old._vals = self._vals
+            old._dirty.extend(self._dirty)
             return old.save()
         return self.insert()
 
@@ -310,7 +312,7 @@ class GDO(WithBulk, GDT):
             self.before_delete()
             self.delete_query().where(self.pk_where()).exec()
             vals = {gdt.get_name(): gdt.get_val() for gdt in self.get_pk_columns()}
-            Cache.obj_search(self, vals, True)
+            Cache.obj_search_id(self, vals, True)
             self.after_delete()
             self.all_dirty(True)
         return self

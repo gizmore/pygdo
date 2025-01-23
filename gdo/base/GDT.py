@@ -156,6 +156,9 @@ class GDT(WithSerialization):
     def get_value(self):
         return None
 
+    def get_test_vals(self) -> list[str]:
+        return ['']
+
     def to_val(self, value) -> str:
         if value is None:
             return ''

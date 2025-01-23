@@ -483,7 +483,7 @@ class Random:
 
 
 class Permutations:
-    def __init__(self, values):
+    def __init__(self, values: list[list[int|str|float]]):
         self.values = values
         self.count = self.count_permutations(values)
         self.last_permutation = [0] * len(values)
@@ -494,7 +494,6 @@ class Permutations:
 
     def generate(self):
         yield self.get_current_permutation()
-
         for _ in range(1, self.count):
             self.update_next_permutation()
             yield self.get_current_permutation()

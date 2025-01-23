@@ -1,3 +1,4 @@
+from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.ui.GDT_Error import GDT_Error
@@ -17,4 +18,5 @@ class client_error(Method):
         return self
 
     def gdo_execute(self) -> GDT:
+        Application.status("400 Client Error")
         return GDT_Error.from_exception(self._exception)

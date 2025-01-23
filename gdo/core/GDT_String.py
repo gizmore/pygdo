@@ -84,6 +84,9 @@ class GDT_String(GDT_Field):
     #         return None
     #     return super().val(self.utf8_normalize(val))
 
+    def get_test_vals(self) -> list[str|None]:
+        return ['<script>']
+
     #######
     # DBA #
     #######

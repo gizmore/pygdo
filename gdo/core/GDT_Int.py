@@ -56,6 +56,8 @@ class GDT_Int(GDT_String):
         self._base = base
         return self
 
+    def get_test_vals(self) -> list[str|None]:
+        return ['4']
 
     #######
     # GDO #

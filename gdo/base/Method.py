@@ -4,6 +4,7 @@ import functools
 from typing import TYPE_CHECKING
 
 from mysql.connector import OperationalError
+from tomlkit import value
 
 from gdo.base.Cache import gdo_instance_cached, Cache
 
@@ -33,12 +34,18 @@ class MyArgParser(argparse.ArgumentParser):
 
 
 class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
-    _parameters: dict[str, GDT]
+    _parameters: list[GDT]
     _next_method: 'Method'  # Method chaining
     _result: str
 
-    CLI_PARSER_CACHE = {}
-    HTM_PARSER_CACHE = {}
+    __slots__ = (
+        '_parameters',
+        '_next_method',
+        '_result',
+    )
+
+    # CLI_PARSER_CACHE = {}
+    # HTM_PARSER_CACHE = {}
 
     def __init__(self):
         super().__init__()
@@ -158,6 +165,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             return f"{kw},{t(key)}"
         return kw
 
+    def gdo_is_auto_testable(self) -> bool:
+        return True
+
     ###########
     # Private #
     ###########
@@ -175,40 +185,31 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     # Parameters #
     ##############
 
-    def parameters(self, reset: bool = False) -> dict[str, GDT]:
+    def parameters(self, reset: bool = False) -> list[GDT]:
         if not hasattr(self, '_parameters') and not reset:
-            self._parameters = {}
+            self._parameters = []
             for gdt in self.gdo_parameters():
-                self._parameters[gdt.get_name()] = gdt
+                self._parameters.append(gdt)
         return self._parameters
 
-    def parameter(self, name: str):
-        self.parameters()
-        if name in self._parameters:
-            return self._parameters[name]
-        return None
+    def parameter(self, name: str) -> GDT:
+        for gdt in self.parameters():
+            if gdt.get_name() == name:
+                return gdt
 
-    def param_val(self, key: str, throw: bool = True):
-        for name, gdt in self.parameters().items():
-            if key == name:
-                val = gdt.get_val()
-                value = gdt.to_value(val)
-                if gdt.validate(val, value):
-                    return gdt.get_val()
-                elif throw:
-                    raise GDOParamError('err_param', (name, gdt.render_error()))
-        return None
+    def param_val(self, key: str, throw: bool = True) -> str|None:
+        gdt = self.parameter(key)
+        if gdt.validate(gdt.get_val(), gdt.get_value()):  # TODO: validate only by val, let validators cast lazily.
+            return gdt.get_val()
+        elif throw:
+            raise GDOParamError('err_param', (key, gdt.render_error()))
 
     def param_value(self, key: str, throw: bool = True) -> any:
-        for name, gdt in self.parameters().items():
-            if key == name:
-                val = gdt.get_val()
-                value = gdt.to_value(val)
-                if gdt.validate(val, value):
-                    return value
-                elif throw:
-                    raise GDOParamError('err_param', (name, gdt.render_error()))
-        return None
+        gdt = self.parameter(key)
+        if gdt.validate(gdt.get_val(), gdt.get_value()):  # TODO: validate only by val
+            return gdt.get_value()
+        elif throw:
+            raise GDOParamError('err_param', (key, gdt.render_error()))
 
     ############
     # Redirect #
@@ -296,7 +297,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         from gdo.core.GDT_Field import GDT_Field
         parser = self.get_arg_parser(False)
         args, unknown_args = parser.parse_known_args(self._args)
-        for gdt in self.parameters().values():
+        for gdt in self.parameters():
             if not isinstance(gdt, GDT_Field):
                 continue
             if val := args.__dict__.get(gdt.get_name()):
@@ -334,7 +335,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         from gdo.core.GDT_Field import GDT_Field
         prog = self.gdo_trigger()
         parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
-        for gdt in self.parameters().values():
+        for gdt in self.parameters():
             if not isinstance(gdt, GDT_Field):
                 continue
             name = gdt.get_name()
@@ -350,13 +351,14 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return parser
 
     def _get_arg_parser_http(self):
-        if self.__class__ in self.HTM_PARSER_CACHE:
-            Cache.HITS += 1 #PYPP#DELETE#
-            return self.HTM_PARSER_CACHE[self.__class__]
+        # fqn = self.fqn()
+        # if fqn in self.HTM_PARSER_CACHE:
+        #     Cache.HITS += 1 #PYPP#DELETE#
+        #     return self.HTM_PARSER_CACHE[fqn]
         from gdo.core.GDT_Field import GDT_Field
         prog = self.get_name()
         parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
-        for gdt in self.parameters().values():
+        for gdt in self.parameters():
             if not isinstance(gdt, GDT_Field):
                 continue
             name = gdt.get_name()
@@ -364,7 +366,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 parser.add_argument(f'--{name}', default=gdt.get_val(), nargs='*')
             else:
                 parser.add_argument(f'--{name}', default=gdt.get_val())
-        self.HTM_PARSER_CACHE[self.__class__] = parser
+        # self.HTM_PARSER_CACHE[fqn] = parser
         return parser
 
     ##########
@@ -579,11 +581,3 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
 
     def render_txt(self) -> str:
         return ''
-
-    ########
-    # Temp #
-    ########
-    def temp_path_session(self, append: str = ''):
-        mome = self._mome()
-        sessid = self._env_session.get_id()
-        return Application.temp_path(f"{mome}/{sessid}/{append}")

@@ -79,6 +79,5 @@ class DateTestCase(GDOTestCase):
         self.assertEqual(tz1, tz2, "Single Identity cache for TZ broken")
 
 
-
 if __name__ == '__main__':
     unittest.main()

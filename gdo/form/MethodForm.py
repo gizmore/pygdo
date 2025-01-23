@@ -79,15 +79,15 @@ class MethodForm(Method):
             self.err('%s', ('\n' + self.get_arg_parser(True).format_usage(),))
         return self.get_form()
 
-    def parameters(self, reset: bool = False) -> dict[str, GDT]:
+    def parameters(self, reset: bool = False) -> list[GDT]:
         if hasattr(self, '_parameters') and not reset:
             return self._parameters
         params = super().parameters()
         self._nested_parse()
         for gdt in self.get_form().actions().all_fields():
-            params[gdt.get_name()] = gdt
+            params.append(gdt)
         for gdt in self.get_form().all_fields():
-            params[gdt.get_name()] = gdt
+            params.append(gdt)
         return params
 
     def cli_auto_button(self):

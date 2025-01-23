@@ -10,6 +10,9 @@ class GDT_Object(WithObject, GDT_UInt):
             return html(gdo.render_name())
         return ''
 
+    def get_test_vals(self) -> list[str | None]:
+        return [self._table.select().first().exec().fetch_object().get_id()]
+
     def render_cli(self) -> str:
         return self.render_txt()
 
