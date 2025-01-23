@@ -31,6 +31,7 @@ class Templite(object):
                 return
             else:
                 Cache.MISS += 1  #PYPP#DELETE#
+                pass
         with open(filename) as fh:
             text = fh.read()
         self._code = self._compile(text)
