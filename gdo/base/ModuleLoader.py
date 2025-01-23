@@ -50,7 +50,7 @@ class ModuleLoader:
         self._cache = self.__dict__.get('_cache', {})
 
     def get_module(self, module_name: str) -> 'GDO_Module':
-        return self._cache[module_name]
+        return self._cache.get(module_name, None)
 
     def get_method(self, method_trigger: str) -> Method | None:
         try:
@@ -135,7 +135,7 @@ class ModuleLoader:
         if db:
             fs._vals.update(db._vals)
             fs.all_dirty(False)
-            fs._is_persisted = True
+#            fs._is_persisted = True
         else:
             return None
         if enabled:
@@ -184,6 +184,5 @@ class ModuleLoader:
         self._methods = {}
         for module in self._cache.values():
             for method in module.get_methods():
-                trigger = method.gdo_trigger()
-                if trigger:
+                if trigger := method.gdo_trigger():
                     self._methods[trigger.lower()] = method

@@ -4,6 +4,7 @@ from gdo.base.GDT import GDT
 
 class WithModuleConfig:
     _module_config: dict[str, GDT]
+    _user_config: list[GDT]
 
     ############
     # Abstract #
@@ -60,8 +61,15 @@ class WithModuleConfig:
     ########
     # User #
     ########
+    def all_user_settings(self) -> list[GDT]:
+        if not hasattr(self, '_user_config'):
+            config = []
+            for gdt in self._all_user_settings():
+                config.append(gdt)
+            self._user_config = config
+        return self._user_config
 
-    def all_user_settings(self):
+    def _all_user_settings(self):
         from gdo.core.GDO_User import GDO_User
         from gdo.core.GDO_UserSetting import GDO_UserSetting
         from gdo.core.GDT_Field import GDT_Field

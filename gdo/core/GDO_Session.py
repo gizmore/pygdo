@@ -21,12 +21,9 @@ class GDO_Session(GDO):
         '_data',
     )
 
-    # def __init__(self):
-    #     super().__init__()
-    #     self._data = {}
-
-    # def gdo_wake_up(self):
-    #     self._data = {}
+    def __init__(self):
+        super().__init__()
+        self._data = {}
 
     @classmethod
     def start(cls, create_session: bool):
@@ -85,8 +82,6 @@ class GDO_Session(GDO):
             return cls.blank_error()
         if instance.gdo_val('sess_data'):
             instance._data = instance.gdo_value('sess_data')
-        else:
-            instance._data = {}
         return instance
 
     @classmethod
@@ -150,7 +145,7 @@ class GDO_Session(GDO):
 
     def get_uid(self) -> str:
         uid = self.gdo_val('sess_user')
-        return '0' if not uid else uid
+        return uid or '0'
 
     def get_ip(self) -> str | None:
         return self.gdo_val('sess_ip')

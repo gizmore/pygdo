@@ -11,8 +11,8 @@ from gdo.form.GDT_Submit import GDT_Submit
 class MethodForm(Method):
     _form: GDT_Form
 
-    def __init__(self):
-        super().__init__()
+    # def __init__(self):
+    #     super().__init__()
 
     def gdo_parameters(self) -> [GDT]:
         return []

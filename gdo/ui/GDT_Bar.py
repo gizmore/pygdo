@@ -15,21 +15,3 @@ class GDT_Bar(WithFlow, WithName, GDT_Container):
         if mode.is_html():
             return GDT_Template.python('ui', 'bar.html', {'field': self})
         return super().render_fields(mode)
-    #
-    # # def render(self) -> str:
-    # #
-    #
-    # def render_txt(self) -> str:
-    #     return self.render_textual(Mode.TXT)
-    #
-    # def render_irc(self) -> str:
-    #     return self.render_textual(Mode.IRC)
-    #
-    # def render_telegram(self) -> str:
-    #     return self.render_textual(Mode.TELEGRAM)
-    #
-    # def render_textual(self, mode: Mode) -> str:
-    #     out = []
-    #     for gdt in self.fields():
-    #         out.append(gdt.render_gdt(mode))
-    #     return " ".join(out)

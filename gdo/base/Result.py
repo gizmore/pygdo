@@ -1,10 +1,8 @@
 from enum import Enum
-from marshal import dumps
 
 from mysql.connector.cursor import MySQLCursorDict
 from typing import TYPE_CHECKING
 
-from gdo.base.Util import dump
 
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO
@@ -109,8 +107,8 @@ class Result:
         if row is None:
             return None
         obj = self._table.__class__()
-        obj._vals.update(row)
-        obj = Cache.obj_for(obj)
+        obj._vals = row #.update(row)
+        obj = Cache.obj_for(obj, None)
         return obj.all_dirty(False)
 
     def fetch_column(self, col_num: int = 0) -> list[str]:

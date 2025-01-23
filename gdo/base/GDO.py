@@ -62,10 +62,12 @@ class GDO(WithBulk, GDT):
         GDO.GDO_ALIVE -= 1
     #PYPP#END#
 
+    def __repr__(self):
+        return f"{self.get_name()}({self.get_id()}): {self._vals.values()}"
+
     def gdo_redis_fields(self) -> list[str]:
         return [
             '_my_id',
-            # '_my_gid',
             '_vals',
         ]
 

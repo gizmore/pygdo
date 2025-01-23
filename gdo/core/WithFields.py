@@ -40,6 +40,9 @@ class WithFields:
                 if gdt.has_fields():
                     yield from gdt.all_fields()
 
+    def clear(self):
+        self.get_fields().clear()
+
     ##########
     # Render #
     ##########

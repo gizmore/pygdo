@@ -219,8 +219,8 @@ async def app(scope, receive, send):
                     'type': 'http.response.start',
                     'status': 500,
                 })
-            except:
-                pass
+            except Exception as ex2:
+                Logger.exception(ex2)
             await send({
                 'type': 'http.response.body',
                 'body': f"{str(ex)}\n{trace}".encode(),

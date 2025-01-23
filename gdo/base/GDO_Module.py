@@ -22,7 +22,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.1")
-    CORE_REV = "PyGDOv8.0.1-r1216"
+    CORE_REV = "PyGDOv8.0.1-r1217"
 
     _priority: int
     _inited: bool
@@ -97,6 +97,9 @@ class GDO_Module(WithModuleConfig, GDO):
             GDT_Bool('module_enabled').not_null().initial('1').label('enabled'),
             GDT_UInt('module_priority').not_null().initial('50').writable(False),
         ]
+
+    def gdo_cached(self) -> bool:
+        return False
 
     def gdo_classes(self):
         return []

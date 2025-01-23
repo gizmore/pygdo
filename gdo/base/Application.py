@@ -109,15 +109,14 @@ class Application:
 
     @classmethod
     def fresh_page(cls):
-        from gdo.ui.GDT_Page import GDT_Page
-        cls.STORAGE.page = page = GDT_Page()
+        cls.STORAGE.page.clear()
         cls.status('200 OK')
-        return page
+        return cls.STORAGE.page
 
     @classmethod
     def get_page(cls) -> 'GDT_Page':
-        from gdo.ui.GDT_Page import GDT_Page
         if not hasattr(cls.STORAGE, 'page'):
+            from gdo.ui.GDT_Page import GDT_Page
             cls.STORAGE.page = GDT_Page()
         return cls.STORAGE.page
 
@@ -212,12 +211,14 @@ class Application:
     @classmethod
     def init_thread(cls, thread):
         from gdo.base.Database import Database
+        from gdo.ui.GDT_Page import GDT_Page
         if thread:
             Logger.debug(f'Init thread {thread.name}')
         cls.STORAGE.user = None
         cls.STORAGE.time_start = cls.TIME
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
+        cls.STORAGE.page = GDT_Page()
         if not cls.storage('DB'):
             if 'db' in cls.CONFIG:
                 cfg = cls.CONFIG['db']

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import string
 
 import magic
@@ -67,7 +68,7 @@ def err(key: str, args: tuple = None, title: str = 'PyGDO'):
 
 
 def err_raw(message: str, title: str = 'PyGDO'):
-    err('%s', (message))
+    err('%s', (message,))
 
 
 def msg(key: str, args: tuple = None, title: str = 'PyGDO'):
@@ -103,10 +104,12 @@ def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'
                 new_append += f"&{kv}"
     return f"/{module_name}.{method_name}{splitted}.{fmt}?_lang={Application.STORAGE.lang}{new_append}"
 
-
+@functools.cache
 def module_enabled(module_name: str) -> bool:
     from gdo.base.ModuleLoader import ModuleLoader
-    return ModuleLoader.instance().get_module(module_name).is_enabled()
+    if module := ModuleLoader.instance().get_module(module_name):
+        return module.is_enabled()
+    return False
 
 
 class CLI:

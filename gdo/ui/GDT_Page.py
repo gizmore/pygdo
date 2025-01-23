@@ -42,6 +42,17 @@ class GDT_Page(GDT):
         self._bottom_bar = GDT_Container()
         return self
 
+    def clear(self):
+        self._js.clear()
+        self._css.clear()
+        self._js_inline = ''
+        self._css_inline = ''
+        self._title_bar.clear()
+        self._top_bar.clear()
+        self._left_bar.clear()
+        self._right_bar.clear()
+        self._bottom_bar.clear()
+
     def result(self, result: GDT):
         self._result = result
         return self
