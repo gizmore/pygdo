@@ -26,11 +26,11 @@ class Templite(object):
         cache = self.cache
         if caching:
             if key in cache:
-                Cache.HITS += 1  # PYPP#DELETE#
+                Cache.HITS += 1  #PYPP#DELETE#
                 self._code = cache[key]
                 return
             else:
-                Cache.MISS += 1
+                Cache.MISS += 1  #PYPP#DELETE#
         with open(filename) as fh:
             text = fh.read()
         self._code = self._compile(text)
