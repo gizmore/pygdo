@@ -78,7 +78,8 @@ class Application:
         Cache.init(int(cls.config('redis.enabled', '0')),
                    cls.config('redis.host', 'localhost'),
                    int(cls.config('redis.port', '6379')),
-                   int(cls.config('redis.db', '0')))
+                   int(cls.config('redis.db', '0')),
+                   cls.config('redis.uds', ''))
         Application.init_common()
 
     @classmethod

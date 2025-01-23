@@ -39,9 +39,12 @@ class Cache:
     RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
 
     @classmethod
-    def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0):
+    def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0, uds: str=''):
         if enabled:
-            cls.RCACHE = Redis(host=host, port=port, db=db, decode_responses=False)
+            if uds:
+                cls.RCACHE = Redis(unix_socket_path=uds, decode_responses=False)
+            else:
+                cls.RCACHE = Redis(host=host, port=port, db=db, decode_responses=False)
 
     @classmethod
     def clear(cls):
