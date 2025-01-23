@@ -51,7 +51,7 @@ class WithSerialization:
 
     @classmethod
     def gdopinstances(cls, dic: dict):
-        if isinstance(dic, (int, float, str, bool)) or dic is None:
+        if isinstance(dic, (int, float, str, bool, bytes)) or dic is None:
             return dic
         if isinstance(dic, list):
             return [cls.gdopinstances(item) for item in dic]

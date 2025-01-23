@@ -1,5 +1,4 @@
 import glob
-import json
 import os
 
 import tomlkit
@@ -70,7 +69,7 @@ class Trans:
         iso = iso[-7:-5]
         if iso not in cls.CACHE:
             cls.CACHE[iso] = {}
-        with open(lang_file, 'r') as fd:
+        with open(lang_file, 'r', encoding='UTF-8') as fd:
             more = tomlkit.load(fd)
             cls.CACHE[iso].update(more)
 

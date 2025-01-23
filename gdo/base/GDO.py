@@ -153,7 +153,7 @@ class GDO(WithBulk, GDT):
         return self.column(key).get_value()
 
     def set_val(self, key, val: str, dirty: bool = True):
-        if self._vals[key] == val:
+        if self._vals.get(key) == val:
             return self
         if not isinstance(val, bytes):
             self._vals[key] = Strings.nullstr(val)
@@ -171,8 +171,7 @@ class GDO(WithBulk, GDT):
         return self
 
     def save_vals(self, vals: dict):
-        self.set_vals(vals)
-        return self.save()
+        return self.set_vals(vals).save()
 
     def save_val(self, key: str, val: str):
         self.set_val(key, val)
