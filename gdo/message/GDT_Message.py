@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.core.GDT_Composite import GDT_Composite
@@ -13,6 +15,7 @@ class GDT_Message(GDT_Composite, GDT_Text):
         super().__init__(name)
         self.label(name)
 
+    @lru_cache
     def gdo_components(self) -> list['GDT']:
         components = [
             GDT_Editor(f"{self._name}_editor").not_null(),

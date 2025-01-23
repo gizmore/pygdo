@@ -49,19 +49,22 @@ class WithSerialization:
         dic = msgpack.loads(data)
         return cls.gdopinstances(dic)
 
-    @classmethod
-    def gdopinstances(cls, dic: dict):
-        if isinstance(dic, (int, float, str, bool, bytes)) or dic is None:
+    @staticmethod
+    def gdopinstances(dic):
+        dic_type = type(dic)
+        if dic_type in {int, float, str, bool, bytes} or dic is None:
             return dic
-        if isinstance(dic, list):
-            return [cls.gdopinstances(item) for item in dic]
-        if not (class_path := dic.pop(cls.MAGIC_KEY, None)):
-            return {key: cls.gdopinstances(value) for key, value in dic.items()}
-        module_name, class_name = class_path.rsplit(".", 1)
-        module = importlib.import_module(module_name)
-        klass = getattr(module, class_name)
-        obj = klass.__new__(klass)
-        obj.gdo_wake_up()
-        for key, value in dic.items():
-            setattr(obj, key, cls.gdopinstances(value) if isinstance(value, (dict, list)) else value)
-        return obj
+        if dic_type is list:
+            return [WithSerialization.gdopinstances(item) for item in dic]
+        if dic_type is dict:
+            class_path = dic.get(WithSerialization.MAGIC_KEY)
+            if not class_path:
+                return {key: WithSerialization.gdopinstances(value) for key, value in dic.items()}
+            module_name, class_name = class_path.rsplit(".", 1)
+            module = importlib.import_module(module_name)
+            klass = getattr(module, class_name)
+            obj = klass.__new__(klass)
+            obj.gdo_wake_up()
+            for key, value in dic.items():
+                setattr(obj, key, WithSerialization.gdopinstances(value))
+            return obj

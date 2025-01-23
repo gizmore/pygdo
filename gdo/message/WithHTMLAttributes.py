@@ -21,3 +21,8 @@ class WithHTMLAttributes:
         for key, value in self.get_attrs().items():
             out += f' {key}="{html(value)}"'
         return out #.strip()
+
+    def add_class(self, klass: str):
+        classes = self.get_attrs().get('class', '')
+        classes += f" {klass}"
+        return self.attr('class', classes)
