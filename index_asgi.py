@@ -199,7 +199,6 @@ async def app(scope, receive, send):
 
     except Exception as ex:
         try:
-            Logger.exception(ex)
             out = Application.get_page().result(GDT_Error.from_exception(ex)).method(server_error()).render(Mode.HTML)
             try:
                 await send({

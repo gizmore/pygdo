@@ -6,12 +6,20 @@ from gdo.ui.GDT_Panel import GDT_Panel
 
 class GDT_Success(GDT_Panel):
 
-    # def __init__(self):
-    #     super().__init__()
+    _no_log: bool
+
+    def __init__(self):
+        super().__init__()
+        self._no_log = False
+
+    def no_log(self, no_log: bool = True):
+        self._no_log = no_log
+        return self
 
     def render(self, mode: Mode = Mode.HTML):
-        with Trans('en'):
-            Logger.message(self.render_txt())
+        if not self._no_log:
+            with Trans('en'):
+                Logger.message(self.render_txt())
         return super().render(mode)
 
     def render_txt(self):

@@ -4,6 +4,7 @@ from gdo.base.GDO import GDO
 from gdo.base.ResultArray import ResultArray
 from gdo.table.GDT_Filter import GDT_Filter
 from gdo.table.GDT_Order import GDT_Order
+from gdo.table.GDT_PageNum import GDT_PageNum
 
 
 class GDOSorter:
@@ -24,4 +25,8 @@ class GDOSorter:
 
     @classmethod
     def filter(cls, result: list[GDO], filter: GDT_Filter) ->list[GDO]:
+        return result
+
+    @classmethod
+    def paginate(cls, result: list[GDO], page: GDT_PageNum) ->list[GDO]:
         return result

@@ -55,6 +55,9 @@ class MethodTable(WithGDO, MethodForm):
     def table_search_field(self) -> GDT_Search:
         return self.parameter(self.gdo_search_name())
 
+    def table_paginate_field(self) -> GDT_PageNum:
+        return self.parameter(self.gdo_paginate_name())
+
     ##################
     # Abstract table #
     ##################
@@ -129,6 +132,8 @@ class MethodTable(WithGDO, MethodForm):
             result = GDOSorter.sort(result, self.parameter(self.gdo_order_name()))
         if self.gdo_filtered():
             result = GDOSorter.filter(result, self.parameter(self.gdo_filter_name()))
+        if self.gdo_paginated():
+            result = GDOSorter.paginate(result, self.parameter(self.gdo_paginate_name()))
         return result
 
     ########

@@ -71,10 +71,10 @@ def err_raw(message: str, title: str = 'PyGDO'):
     err('%s', (message,))
 
 
-def msg(key: str, args: tuple = None, title: str = 'PyGDO'):
+def msg(key: str, args: tuple = None, title: str = 'PyGDO', no_log: bool = False):
     from gdo.base.Application import Application
     from gdo.ui.GDT_Success import GDT_Success
-    message = GDT_Success().text(key, args).title_raw(title)
+    message = GDT_Success().text(key, args).title_raw(title).no_log(no_log)
     Application.get_page()._top_bar.add_field(message)
 
 

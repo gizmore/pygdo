@@ -152,7 +152,6 @@ def pygdo_application(environ, start_response):
             try:
                 result = method.execute()
             except Exception as ex:
-                Logger.exception(ex)
                 result = GDT_Error.from_exception(ex)
 
             while asyncio.iscoroutine(result):

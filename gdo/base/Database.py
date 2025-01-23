@@ -95,7 +95,7 @@ class Database:
         level = Application.config('db.debug')
         if level != '0' or debug:
             from gdo.base.Util import msg
-            msg('%s', (query,))
+            msg('%s', (query,), no_log=True)
             Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES) + ": " + query)
             if level == '2':
                 import traceback

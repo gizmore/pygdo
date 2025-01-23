@@ -33,12 +33,12 @@ class Logger:
     @classmethod
     def debug(cls, content: str):
         print(content)
-        cls.write('debug.log', content)
+        cls.write('debug.log', content, False)
 
     @classmethod
     def error(cls, content: str):
         print(content)
-        cls.write('error.log', content)
+        cls.write('message.log', content)
 
     @classmethod
     def message(cls, content: str):
@@ -50,11 +50,11 @@ class Logger:
         stack = "".join(better_exceptions.format_exception(*sys.exc_info()))
         sys.stderr.write(str(ex)+"\n")
         sys.stderr.write(stack + "\n")
-        cls.write('exception.log', str(ex))
-        cls.write('exception.log', stack)
+        cls.write('exception.log', str(ex), False)
+        cls.write('exception.log', stack, False)
 
     @classmethod
-    def write(cls, path: str, content: str):
+    def write(cls, path: str, content: str, user_log: bool = True):
         pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
         if cls._user:
             pre += cls._user.get_name() + " - "
@@ -62,7 +62,7 @@ class Logger:
         with open(f"{cls._base}{path}", 'a') as fo:
             fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
-        if cls._user:
+        if cls._user and user_log:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
             Files.create_dir(dir_name)
             with open(f"{dir_name}{path}", 'a') as fo:
