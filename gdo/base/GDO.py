@@ -209,10 +209,7 @@ class GDO(WithBulk, GDT):
         return self
 
     def all_dirty(self, dirty: bool=True):
-        if dirty:
-            self._dirty = list(map(lambda gdt: gdt.get_name(), self.columns()))
-        else:
-            self._dirty.clear()
+        self._dirty = [gdt.get_name() for gdt in self.columns()] if dirty else []
         return self
 
     def query(self) -> Query:

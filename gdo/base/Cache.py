@@ -248,7 +248,7 @@ class Cache:
     @classmethod
     def set(cls, key: str, args_key: str | None, value: WithSerialization):
         if cls.RCACHE:
-            if isinstance(value, WithSerialization):
+            if hasattr(value, 'gdopack'):
                 value = value.gdopack()
             else:
                 value = msgpack.dumps(value)

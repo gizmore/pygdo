@@ -24,7 +24,6 @@ from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
-
 FRESH = True
 SIDEBARS = False
 
