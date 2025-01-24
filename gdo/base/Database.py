@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
 from gdo.base.Application import Application
-from gdo.base.Util import dump
 
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO

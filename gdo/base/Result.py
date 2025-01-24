@@ -91,13 +91,12 @@ class Result:
             return None
         return row
 
-    def fetch_val(self):
+    def fetch_val(self, col_num: int = 0):
         """
         Fetch the first column of the next row.
         """
         row = self.fetch_row()
-        result = None if row is None else row[0]
-        return result
+        return None if row is None else row[col_num]
 
     def fetch_object(self) -> 'GDO':
         """
@@ -108,7 +107,7 @@ class Result:
             return None
         obj = self._table.__class__()
         obj._vals = row #.update(row)
-        obj = Cache.obj_for(obj, None)
+        obj = Cache.obj_for(obj, None, False)
         return obj.all_dirty(False)
 
     def fetch_column(self, col_num: int = 0) -> list[str]:

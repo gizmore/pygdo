@@ -1,7 +1,6 @@
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.base.Util import dump
 from gdo.core.GDO_File import GDO_File
 from gdo.file.GDT_FileOut import GDT_FileOut
 

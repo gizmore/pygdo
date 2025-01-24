@@ -162,7 +162,7 @@ class GDO_User(GDO):
 
     def reset_setting(self, key: str):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
-        GDO_UserSetting.setting_column(key, self)
+        # GDO_UserSetting.setting_column(key, self)
         GDO_UserSetting.table().delete_by_id(self.get_id(), key)
         return self
 

@@ -11,7 +11,7 @@ from gdo.base.Result import ResultType
 from gdo.base.Cache import Cache, gdo_instance_cached
 from gdo.base.GDT import GDT
 from gdo.base.Query import Type, Query
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, dump
 from gdo.base.WithBulk import WithBulk
 
 
@@ -65,6 +65,9 @@ class GDO(WithBulk, GDT):
     def __del__(self):
         GDO.GDO_ALIVE -= 1
     #PYPP#END#
+
+    def __str__(self):
+        return f"{self.get_name()}({id(self)}): {str(self._vals.values())}"
 
     def __repr__(self):
         return f"{self.get_name()}({self.get_id()}): {str(self._vals.values())}"
@@ -159,9 +162,6 @@ class GDO(WithBulk, GDT):
     def gdo_value(self, key: str):
         if key not in self._values:
             self._values[key] = self.column(key).get_value()
-           # Cache.MISS += 1
-        #else:
-       #     Cache.HITS += 1
         return self._values[key]
 
     def set_val(self, key, val: str, dirty: bool = True):
@@ -193,8 +193,7 @@ class GDO(WithBulk, GDT):
         return self.save()
 
     def increment(self, key: str, by: float|int):
-        old = self.gdo_value(key)
-        return self.set_val(key, str(old + by))
+        return self.save_val(key, str(self.gdo_value(key) + by))
 
     @classmethod
     def get_name(cls):
@@ -266,11 +265,13 @@ class GDO(WithBulk, GDT):
     ####################
 
     def soft_replace(self):
+        vals = self._vals
         if old := self.get_by_id(*self.get_id().split(self.ID_SEPARATOR)):
-            old._vals = self._vals
-            old._dirty.extend(self._dirty)
-            return old.save()
-        return self.insert()
+            self.set_vals(vals).save()
+            old._vals = vals
+            old._values = {}
+            return old.all_dirty(False)
+        return self.all_dirty().insert()
 
     def insert(self):
         return self.insert_or_replace(Type.INSERT)
@@ -287,22 +288,18 @@ class GDO(WithBulk, GDT):
         return Cache.update_for(self)
 
     def dirty_vals(self) -> dict:
-        from gdo.core.GDT_Field import GDT_Field
         vals = {}
         for gdt in self.columns():
-            if isinstance(gdt, GDT_Field):
-                name = gdt.get_name()
-                if name in self._dirty:
-                    vals[name] = self.gdo_val(name)
+            if hasattr(gdt, '_val'):
+                if gdt.get_name() in self._dirty and not gdt.is_primary():
+                    vals.update(gdt.gdo(self).dirty_vals())
         return vals
 
     def insert_vals(self):
-        from gdo.core.GDT_Field import GDT_Field
         vals = {}
         for gdt in self.columns():
-            if isinstance(gdt, GDT_Field):
-                name = gdt.get_name()
-                vals[name] = self.gdo_val(name)
+            if hasattr(gdt, '_val'):
+                vals.update(gdt.gdo(self).dirty_vals())
         return vals
 
     def save(self):

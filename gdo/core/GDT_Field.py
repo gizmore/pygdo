@@ -50,6 +50,9 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
             self._converted = True
         return self._value
 
+    def dirty_vals(self) -> dict[str,str]:
+        return {self._name: self._val}
+
     def val(self, val: str | list):
         self._prev = self._val
         self._val = val[0] if isinstance(val, list) and not self._multiple else val
@@ -65,7 +68,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
 
     def gdo(self, gdo: GDO):
         self._gdo = gdo
-        val = gdo.gdo_val(self._name)
+        val = gdo._vals.get(self._name)
         if self._val == val:
             return self
         self.val(val)
@@ -150,12 +153,17 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     def validate(self, val: str | None, value: any) -> bool:
         if not self.validate_null(val, value):
             return False
-        if self._unique and not self.validate_unique(value):
+        if self._unique and not self.validate_unique(val):
             return False
         return True
 
-    def validate_unique(self, value):
-        self._gdo.table().select()
+    def validate_unique(self, val: str):
+        if self._gdo.table().get_by_vals({self._name: val}):
+            return self.error_unique()
+        return True
+
+    def error_unique(self):
+        return self.error('err_not_unique')
 
     ##########
     # Render #

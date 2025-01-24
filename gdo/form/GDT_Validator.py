@@ -1,5 +1,4 @@
 from gdo.base.GDT import GDT
-from gdo.base.Util import dump
 from gdo.base.WithError import WithError
 from gdo.form.GDT_Form import GDT_Form
 

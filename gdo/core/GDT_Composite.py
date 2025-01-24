@@ -19,8 +19,15 @@ class GDT_Composite(WithName, WithGDO, WithNullable, GDT):
     def gdo_components(self) -> list['GDT']:
         raise GDOException(f'Composite {self.__class__.__name__} has to override gdo_components')
 
+    def dirty_vals(self) -> dict[str,str]:
+        vals = {}
+        vals.update(super().dirty_vals())
+        for gdt in self.gdo_components():
+            vals.update(gdt.dirty_vals())
+        return vals
+
     # def gdo_column_define(self) -> str:
-    #     back = []
+    #     back = [super().gdo_column_define()]
     #     for gdt in self.gdo_components():
     #         back.append(gdt.gdo_column_define())
     #     return ",\n".join(back)
@@ -30,7 +37,7 @@ class GDT_Composite(WithName, WithGDO, WithNullable, GDT):
             if gdt.get_name() == name:
                 return gdt
 
-    def not_null(self, not_null: bool = True):
-        for gdt in self.gdo_components():
-            gdt.not_null(not_null)
-        return super(WithGDO, self).not_null(not_null)
+    # def not_null(self, not_null: bool = True):
+    #     for gdt in self.gdo_components():
+    #         gdt.not_null(not_null)
+    #     return super(WithGDO, self).not_null(not_null)

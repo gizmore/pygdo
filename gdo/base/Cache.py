@@ -6,6 +6,8 @@ import msgpack
 from redis import Redis
 from functools import lru_cache, wraps
 
+from reportlab.pdfbase.acroform import cbmarks
+
 from gdo.base import GDO
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
@@ -129,22 +131,30 @@ class Cache:
             cn = gdo.gdo_table_name()
 
             if ocached := cls.OCACHE[cn].get(gid):
+                if after_write:
+                    ocached._vals = gdo._vals
+                    ocached._values = {}
                 if rcached:
                     ocached._vals = rcached
-                return ocached #.all_dirty(False)
+                    ocached._values = {}
+                return ocached.all_dirty(False)
 
-            if not after_write and not rcached:
-                rcached = cls.get(cn, gid)
+            if after_write:
+                cls.OCACHE[cn][gid] = gdo
+                return gdo
 
             if rcached:
                 gdo._vals = rcached
-                gdo._values.clear()
-                cls.OCACHE[cn][gid] = gdo.all_dirty(False)
+                gdo._values = {}
+            elif rcached := cls.get(cn, gid):
+                gdo._vals = rcached
+                gdo._values = {}
+                cls.OCACHE[cn][gid] = gdo
             else:
                 cls.OCACHE[cn][gid] = gdo
                 if not after_write:
                     cls.set(cn, gid, gdo._vals)
-        return gdo
+        return gdo.all_dirty(False)
 
     @classmethod
     def update_for(cls, gdo: GDO) -> GDO:
@@ -163,7 +173,7 @@ class Cache:
             if delete:
                 del cls.OCACHE[tn][gid]
                 cls.remove(tn, gid)
-            return ocached
+            return cls.obj_for(ocached, None, False)
         if rcached := cls.get(tn, gid):
             if delete:
                 cls.remove(tn, gid)

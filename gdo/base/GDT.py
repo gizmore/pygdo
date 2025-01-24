@@ -58,8 +58,12 @@ class GDT(WithSerialization):
     def __del__(self):
         GDT.GDT_ALIVE -= 1
     #PYPP#END#
+
+    def __str__(self):
+        return f"{self.get_name()}#{id(self)}:{self.__dict__.values()}"
+
     def __repr__(self):
-        return f"{self.get_name()}: {self.__slots__}"
+        return f"{self.get_name()}#{id(self)}:{self.__dict__.values()}"
 
     #############
     ### Hooks ###
@@ -167,6 +171,9 @@ class GDT(WithSerialization):
 
     def to_value(self, val: str):
         return val
+
+    def dirty_vals(self) -> dict[str,str]:
+        return {}
 
     def validate(self, val: str | None, value: any) -> bool:
         return True
