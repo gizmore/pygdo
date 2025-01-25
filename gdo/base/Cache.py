@@ -29,6 +29,9 @@ class Cache:
     MISS = 0
     UPDATES = 0
     REMOVES = 0
+    THITS = 0 # template cache hits
+    VHITS = 0 # gdo_values cache hits
+    OHITS = 0 # OCACHE hits
     #PYPP#END#
 
     TCACHE: dict[str, GDO] = {}             # class_name => GDO.table() mapping
@@ -60,6 +63,7 @@ class Cache:
     @classmethod
     def clear_stats(cls):
         cls.UPDATES = cls.MISS = cls.REMOVES = cls.HITS = 0
+        cls.VHITS = cls.OHITS = cls.THITS = 0
     #PYPP#END#
 
     @classmethod
@@ -171,6 +175,7 @@ class Cache:
     def obj_search_gid(cls, gdo: GDO, gid: str, delete: bool = False) -> GDO:
         tn = gdo.gdo_table_name()
         if ocached := cls.OCACHE[tn].get(gid):
+            cls.OHITS += 1 #PYPP#DELETE#
             if delete:
                 del cls.OCACHE[tn][gid]
                 cls.remove(tn, gid)
@@ -195,7 +200,7 @@ class Cache:
                         found = False
                         break
                 if found:
-                    cls.HITS += 1 #PYPP#DELETE#
+                    cls.OHITS += 1 #PYPP#DELETE#
                     if delete:
                         gid = oc.get_id()
                         cls.remove(gid)

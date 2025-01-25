@@ -160,9 +160,11 @@ class GDO(WithBulk, GDT):
         return self._vals.get(key)
 
     def gdo_value(self, key: str):
-        if key not in self._values:
-            self._values[key] = self.column(key).get_value()
-        return self._values[key]
+        if (v := self._values.get(key)) is not None:
+            Cache.VHITS += 1  #PYPP#DELETE#
+            return v
+        self._values[key] = v = self.column(key).get_value()
+        return v
 
     def set_val(self, key, val: str, dirty: bool = True):
         if self._vals.get(key) == val:

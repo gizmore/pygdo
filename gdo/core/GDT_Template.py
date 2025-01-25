@@ -26,7 +26,7 @@ class Templite(object):
         cache = self.cache
         if caching:
             if key in cache:
-                Cache.HITS += 1  #PYPP#DELETE#
+                Cache.THITS += 1  #PYPP#DELETE#
                 self._code = cache[key]
                 return
             else:
