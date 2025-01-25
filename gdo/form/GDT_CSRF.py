@@ -8,7 +8,7 @@ from gdo.form.GDT_Hidden import GDT_Hidden
 class GDT_CSRF(GDT_Hidden):
     TOKEN_LEN = 12
     MAX_TOKENS = 17
-    MAX_TOKENS_GHOST = 256
+    MAX_TOKENS_GHOST = 0  # Not authenticated means no csrf protection.
 
     @staticmethod
     def get_storage(user: GDO_User):
@@ -29,9 +29,11 @@ class GDT_CSRF(GDT_Hidden):
         self.val(self.generate_token())
         return super().render_form()
 
-    def generate_token(self) -> str:
-        token = GDT_Token.random(self.TOKEN_LEN)
+    def generate_token(self) -> str|None:
         user = GDO_User.current()
+        if not user.is_authenticated():
+            return None
+        token = GDT_Token.random(self.TOKEN_LEN)
         tokens = GDT_CSRF.get_storage(user)
         tokens.append(token)
         max = self.MAX_TOKENS if user.is_persisted() else self.MAX_TOKENS_GHOST
@@ -44,6 +46,8 @@ class GDT_CSRF(GDT_Hidden):
         if Application.is_unit_test():
             return True
         user = GDO_User.current()
+        if not user.is_authenticated():
+            return True
         tokens = GDT_CSRF.get_storage(user)
         if value not in tokens:
             return self.error('err_csrf')
