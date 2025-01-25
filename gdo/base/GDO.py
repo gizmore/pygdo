@@ -59,7 +59,7 @@ class GDO(WithBulk, GDT):
         self._dirty = []
         self._last_id = None
         self._my_id = None
-        self._my_gid = None
+        # self._my_gid = None
 
     #PYPP#BEGIN#
     def __del__(self):
@@ -308,7 +308,7 @@ class GDO(WithBulk, GDT):
             query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
             query.exec()
             self.after_update()
-            obj = Cache.update_for(self)
+            obj = Cache.update_for(obj)
             obj.all_dirty(False)
         return obj
 

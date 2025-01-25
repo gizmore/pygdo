@@ -142,6 +142,7 @@ class Cache:
 
             if after_write:
                 cls.OCACHE[cn][gid] = gdo
+                gdo._values = {}
                 return gdo
 
             if rcached:
@@ -150,11 +151,10 @@ class Cache:
             elif rcached := cls.get(cn, gid):
                 gdo._vals = rcached
                 gdo._values = {}
-                cls.OCACHE[cn][gid] = gdo
             else:
-                cls.OCACHE[cn][gid] = gdo
                 if not after_write:
                     cls.set(cn, gid, gdo._vals)
+            cls.OCACHE[cn][gdo.get_id] = gdo
         return gdo.all_dirty(False)
 
     @classmethod
@@ -247,7 +247,7 @@ class Cache:
         return default
 
     @classmethod
-    def set(cls, key: str, args_key: str | None, value: WithSerialization):
+    def set(cls, key: str, args_key: str | None, value: any):
         if cls.RCACHE:
             if hasattr(value, 'gdopack'):
                 value = value.gdopack()

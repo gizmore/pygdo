@@ -24,7 +24,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.1")
-    CORE_REV = "PyGDOv8.0.1-r1225"
+    CORE_REV = "PyGDOv8.0.1-r1226"
 
     METHOD_CACHE = {}
 
