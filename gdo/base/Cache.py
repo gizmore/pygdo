@@ -67,7 +67,7 @@ class Cache:
         """
         for gdo_klass, gdo in cls.TCACHE.items():
             if not gdo.gdo_persistent():
-                cls.OCACHE[gdo.gdo_table_name()].clear()
+                cls.OCACHE[gdo.gdo_table_name()] = {}
 
     #############
     # T/C/Cache #
