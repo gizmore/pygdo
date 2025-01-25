@@ -32,7 +32,7 @@ class GDO_UserPermission(GDO):
         if user.get_id() == '0':
             return False
         if entry := cls.table().get_by_id(user.get_id(), permission.get_id()):
-            return entry.gdo_value('pu_has')
+            return entry.gdo_val('pu_has') == '1'
         cls.blank({
             'pu_user': user.get_id(),
             'pu_perm': permission.get_id(),
