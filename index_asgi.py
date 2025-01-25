@@ -62,6 +62,7 @@ async def app(scope, receive, send):
         #PYPP#END#
 
         Application.init_asgi(scope)
+        Application.init_common()
         Application.fresh_page()
 
         qs = parse_qs(scope['query_string'].decode())
@@ -166,7 +167,7 @@ async def app(scope, receive, send):
                     })
                 return
 
-            if Application.is_html():
+            if Application.get_mode() == Mode.HTML:
                 Application.header('Content-Type', 'text/html; charset=UTF-8')
                 page = Application.get_page()
                 result = page.result(result).method(method)
@@ -176,7 +177,7 @@ async def app(scope, receive, send):
 
             session.save()
 
-            out = result.render(Mode.HTML).encode()
+            out = result.render(Application.get_mode()).encode()
 
             Application.header('Content-Length', str(len(out)))
             await send({
