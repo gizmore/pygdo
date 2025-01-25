@@ -7,6 +7,7 @@ from urllib.parse import parse_qs, unquote
 import better_exceptions
 
 from gdo.base.Application import Application
+from gdo.base.ChunkedResponse import ChunkedResponse
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException, GDOParamNameException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
@@ -160,21 +161,22 @@ def pygdo_application(environ, start_response):
             while asyncio.iscoroutine(result):
                 result = asyncio.run(result)
 
-            if isinstance(result, GDT_FileOut):
+            if type(result) is GDT_FileOut:
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
                 for chunk in result:
                     yield chunk
                 return
-
+            
+            mode = Application.get_mode()
             if Application.is_html():
                 Application.header('Content-Type', 'text/html; Charset=UTF-8')
-            elif Application.get_mode() == Mode.JSON:
+            elif mode == Mode.JSON:
                 Application.header('Content-Type', 'application/json; Charset=UTF-8')
-            elif Application.get_mode() == Mode.TXT:
+            elif mode == Mode.TXT:
                 Application.header('Content-Type', 'text/plain; Charset=UTF-8')
 
-            if Application.is_html():
+            if mode == Mode.HTML:
                 page = Application.get_page()
                 result = page.result(result).method(method)
                 for module in ModuleLoader.instance().enabled():
@@ -184,12 +186,13 @@ def pygdo_application(environ, start_response):
 
             session.save()
             headers = Application.get_headers()
-            response = result.render(Application.get_mode())
+            response = result.render(mode).encode()
             headers.extend([('Content-Length', str(len(response)))])
             start_response(Application.get_status(), headers)
-            if isinstance(response, str):
-                response = response.encode('utf-8')
-            yield response
+
+            generator = ChunkedResponse(response)
+            yield from generator.wsgi_generator()
+
             #PYPP#BEGIN#
             if Application.config('core.profile') == '1':
                 if qs.get('__yappi', None):

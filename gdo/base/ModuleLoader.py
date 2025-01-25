@@ -23,15 +23,14 @@ from gdo.base.Util import Files
 class ModuleLoader:
     _cache: dict[str, 'GDO_Module']
     _methods: dict[str, any]
+    _enabled: []
 
     @classmethod
     def instance(cls) -> Self:
         return Application.LOADER
 
     def enabled(self) -> list[GDO_Module]:
-        for module in self._cache.values():
-            if module.is_enabled():
-                yield module
+        yield from self._enabled
 
     def reset(self):
         self._cache.clear()
@@ -39,8 +38,8 @@ class ModuleLoader:
     def gdo_import(self, name: str) -> 'GDO_Module':
         mn = importlib.import_module("gdo." + name)
         classname = 'module_' + name
-        if classname in mn.__dict__.keys():
-            self._cache[name] = module = mn.__dict__[classname].blank({
+        if klass := mn.__dict__.get(classname):
+            self._cache[name] = module = klass.blank({
                 'module_name': name,
                 'module_enabled': '0',
             })
@@ -123,9 +122,9 @@ class ModuleLoader:
         result = query.order('module_priority').exec()
         for db in result:
             fs = self.gdo_import(db.gdo_val('module_name'))
-            fs._vals.update(db._vals)
-            fs.all_dirty(False)
-            back.append(fs)
+            fs._vals = db._vals
+            back.append(fs.all_dirty(False))
+        self._enabled = back
         return back
 
     def load_module_db(self, modulename, enabled=False):
