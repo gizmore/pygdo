@@ -80,6 +80,7 @@ class GDO(WithBulk, GDT):
 
     def gdo_wake_up(self):
         self._values = {}
+        self._dirty = []
 
     @classmethod
     def table(cls) -> 'GDO':

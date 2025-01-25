@@ -1,8 +1,10 @@
+import functools
+
 from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 
-from gdo.base.Cache import gdo_cached
+from gdo.base.Cache import gdo_cached, Cache
 from gdo.base.Query import Query
 from gdo.base.Result import Result
 from gdo.base.Util import module_enabled
@@ -28,15 +30,16 @@ class GDO_User(GDO):
     The holy user object. It should be very slim as users will be scattered around hopefully.
     Attributes are stored in GDO_UserSetting.
     """
-    # SYSTEM: GDO = None
     _authenticated: bool
     _network_user: object  # User on a server netowrk. Like discord's - message.author
     _session: 'GDO_Session'
+    _settings: dict[str,str]
 
     __slots__ = (
         '_authenticated',
         '_network_user',
         '_session',
+        '_settings',
     )
 
     def __init__(self):
@@ -44,6 +47,13 @@ class GDO_User(GDO):
         self._authenticated = False
         self._network_user = None
         self._session = None
+        self._settings = {}
+
+    @functools.cache
+    def gdo_redis_fields(self) -> list[str]:
+        f = super().gdo_redis_fields()
+        f.append('_settings')
+        return f
 
     @classmethod
     def system(cls) -> Self:
@@ -66,7 +76,7 @@ class GDO_User(GDO):
 
     @classmethod
     def current(cls) -> Self:
-        return Application.STORAGE.user or cls.system()
+        return Application.STORAGE.user or cls.ghost()
 
     def gdo_columns(self) -> list:
         return [
@@ -139,7 +149,12 @@ class GDO_User(GDO):
 
     def get_setting_val(self, key: str) -> str:
         from gdo.core.GDO_UserSetting import GDO_UserSetting
-        return GDO_UserSetting.setting_column(key, self).get_val()
+        if set := self._settings.get(key):
+            Cache.VHITS += 1 #PYPP#DELETE#
+            return set
+        set = GDO_UserSetting.setting_column(key, self).get_val()
+        self._settings[key] = set
+        return set
 
     def get_setting_value(self, key: str) -> any:
         from gdo.core.GDO_UserSetting import GDO_UserSetting
@@ -148,6 +163,8 @@ class GDO_User(GDO):
     def save_setting(self, key: str, val: str):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
         if val != self.get_setting_val(key):
+            self._settings[key] = val
+            self.save()
             GDO_UserSetting.blank({
                 'uset_user': self.get_id(),
                 'uset_key': key,
@@ -162,7 +179,6 @@ class GDO_User(GDO):
 
     def reset_setting(self, key: str):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
-        # GDO_UserSetting.setting_column(key, self)
         GDO_UserSetting.table().delete_by_id(self.get_id(), key)
         return self
 
@@ -220,6 +236,9 @@ class GDO_User(GDO):
     def permissions(self) -> list[str]:
         from gdo.core.GDO_UserPermission import GDO_UserPermission
         return GDO_UserPermission.table().select('perm_name').where(f'pu_user={self.get_id()}').join_object('pu_perm').exec().fetch_column()
+
+    def persisted(self):
+        return self.save()
 
     ##########
     # Render #

@@ -1,3 +1,4 @@
+from gdo.base.Cache import Cache
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Query import Query
@@ -13,6 +14,9 @@ class GDO_UserSetting(GDO):
         gdt = GDT_UserSetting.KNOWN[key]
         if user.get_id() == "0":
             return gdt.val(gdt.get_initial())
+        if val := user._settings.get(key):
+            Cache.VHITS += 1 #PYPP#DELETE#
+            return gdt.val(val)
         if gdo := cls.get_setting(user, key):
             return gdt.val(gdo.get_val())
         else:
@@ -37,9 +41,6 @@ class GDO_UserSetting(GDO):
     #######
     # GDO #
     #######
-    # def gdo_cached(self) -> bool:  # Not cached
-    #     return False
-
     def gdo_columns(self) -> list[GDT]:
         return [
             GDT_User('uset_user').primary().cascade_delete(),
