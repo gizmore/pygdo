@@ -23,20 +23,20 @@ class GDT_CSRF(GDT_Hidden):
     def generate_token(self) -> str:
         token = GDT_Token.random(self.TOKEN_LEN)
         uid = GDO_User.current().get_id()
-        if not uid in self.STORAGE:
-            self.STORAGE[uid] = []
-        self.STORAGE[uid].append(token)
+        if not (tokens := self.STORAGE.get(uid)):
+            self.STORAGE[uid] = tokens = []
+        tokens.append(token)
         max = self.MAX_TOKENS if uid != "0" else 4096
-        self.STORAGE[uid] = self.STORAGE[uid][-max:]
+        if len(tokens > max):
+            self.STORAGE[uid] = tokens[-max:]
         return token
 
     def validate(self, val: str | None, value: any) -> bool:
         if Application.is_unit_test():
             return True
         uid = GDO_User.current().get_id()
-        if not uid in self.STORAGE:
-            self.STORAGE[uid] = []
-        tokens = self.STORAGE[uid]
+        if not (tokens := self.STORAGE.get(uid)):
+            tokens = self.STORAGE[uid] = []
         if value not in tokens:
             return self.error('err_csrf')
         tokens.remove(value)
