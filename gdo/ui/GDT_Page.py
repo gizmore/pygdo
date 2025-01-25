@@ -64,3 +64,9 @@ class GDT_Page(GDT):
     def render_html(self):
         return GDT_Template.python('ui', 'page.html', {'field': self, 'result': self._result.render(Mode.HTML)})
 
+    def render_json(self):
+        return {
+            'code': Application.get_status_code(),
+            'data': self._result.render_json(),
+        }
+

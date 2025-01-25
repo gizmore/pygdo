@@ -54,7 +54,7 @@ class module_core(GDO_Module):
     def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):
             delattr(GDO_User, 'SYSTEM')
-        Method.HTM_PARSER_CACHE = {}
+        # Method.HTM_PARSER_CACHE = {}
 
     def gdo_dependencies(self) -> list:
         return [

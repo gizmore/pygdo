@@ -37,6 +37,7 @@ class Config:
             cls.data_int('core.gdt_debug', 0),
             cls.data_int('core.gdo_debug', 0),
             cls.data_int('core.profile', 0),
+            cls.data_int('core.allocs', 0),
             GDT_Section().title_raw('File'),
             cls.data_int('file.block_size', 4096),
             cls.data_str('file.directory', 'files/'),

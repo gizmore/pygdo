@@ -60,10 +60,10 @@ class GDT(WithSerialization):
     #PYPP#END#
 
     def __str__(self):
-        return f"{self.get_name()}#{id(self)}:{self.__dict__.values()}"
+        return f"{self.get_name()}#{id(self)}"
 
     def __repr__(self):
-        return f"{self.get_name()}#{id(self)}:{self.__dict__.values()}"
+        return f"{self.get_name()}#{id(self)}"
 
     #############
     ### Hooks ###
@@ -246,8 +246,10 @@ class GDT(WithSerialization):
         return f"{self.get_name()} = \"{self.get_val() or ''}\"\n"
 
     def render_html(self) -> str:
-        val = self.get_val()
-        return val or ''
+        return self.get_val() or ''
+
+    def render_json(self):
+        return self.get_name()
 
     def render_telegram(self):
         return self.render_txt()

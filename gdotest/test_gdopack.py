@@ -9,6 +9,7 @@ from gdo.base.WithSerialization import WithSerialization
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Dict import GDT_Dict
+from gdo.core.method.clear_cache import clear_cache
 from gdo.install.Installer import Installer
 from gdo.message.GDT_HTML import GDT_HTML
 from gdotest.TestUtil import cli_gizmore, GDOTestCase, reinstall_module, install_module
@@ -52,7 +53,7 @@ class GDOPackTestCase(GDOTestCase):
         self.assertEqual('c', d, 'cannot gdo pack str.')
 
     def test_04_system_user_cache(self):
-        Cache.clear()
+        clear_cache().gdo_execute()
         gdo1 = GDO_User.system()
         gdo2 = GDO_User.table().get_by_id('1')
         self.assertEqual(gdo1, gdo2, 'GDO OCache not working #1')

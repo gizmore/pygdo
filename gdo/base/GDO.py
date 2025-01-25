@@ -232,10 +232,7 @@ class GDO(WithBulk, GDT):
         return self.get_by_vals({key: val})
 
     def get_by_id(self, *id_: str):
-        if len(id_) == 1:
-            if (c := Cache.obj_search_gid(self, id_[0])): return c
-        else:
-            if (c := Cache.obj_search_gid(self, self.ID_SEPARATOR.join(id_))): return c
+        if (c := Cache.obj_search_gid(self, self.ID_SEPARATOR.join(id_))): return c
         return self.table().select().where(' AND '.join(
             [f'{gdt._name}={self.quote(gdt.val(id_[i])._val)}'
              for i, gdt in enumerate(self.get_pk_columns())])

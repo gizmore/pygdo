@@ -5,6 +5,7 @@ from datetime import datetime
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.date.GDO_Timezone import GDO_Timezone
+from gdo.date.GDT_Duration import GDT_Duration
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 from gdo.date.Time import Time
 from gdotest.TestUtil import install_module, GDOTestCase
@@ -77,6 +78,20 @@ class DateTestCase(GDOTestCase):
         tz1 = GDO_Timezone.get_by_name('UTC')
         tz2 = GDO_Timezone.get_by_name('UTC')
         self.assertEqual(tz1, tz2, "Single Identity cache for TZ broken")
+
+    def test_microseconds(self):
+        h = Time.human_duration(0.000499)
+        self.assertEqual('0.499ms', h, 'Microseconds do not work.')
+        h = GDT_Duration('d').units(2, True).value(0.000499).render()
+        self.assertEqual('0.499ms', h, 'Microseconds do not work in GDT_Duration.')
+        h = Time.human_duration(0.001499)
+        self.assertEqual('1.499ms', h, 'Microseconds do not work #2.')
+        h = GDT_Duration('d').units(2, True).value(0.001499).render()
+        self.assertEqual('1.499ms', h, 'Microseconds do not work in GDT_Duration #2.')
+        h = Time.human_duration(66.000499)
+        self.assertEqual('1m 6s', h, 'Microseconds do not work #3.')
+        h = GDT_Duration('d').units(2, True).value(66.000499).render()
+        self.assertEqual('1m 6s', h, 'Microseconds do not work in GDT_Duration #3.')
 
 
 if __name__ == '__main__':

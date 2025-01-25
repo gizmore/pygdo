@@ -50,11 +50,11 @@ class Cache:
 
     @classmethod
     def clear(cls):
-        cls.TCACHE.clear()
-        cls.PCACHE.clear()
-        cls.CCACHE.clear()
-        cls.OCACHE.clear()
-        cls.NCACHE.clear()
+        cls.TCACHE = {}
+        cls.PCACHE = {}
+        cls.CCACHE = {}
+        # cls.OCACHE = {}
+        # cls.NCACHE = {}
         if cls.RCACHE:
             cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
@@ -81,15 +81,14 @@ class Cache:
     @classmethod
     def table_for(cls, gdo_klass: type[GDO]):
         cn = gdo_klass
-        if cn not in cls.TCACHE:
+        if not (gdo := cls.TCACHE.get(cn)):
             cls.TCACHE[cn] = gdo = gdo_klass()
             cls.CCACHE[cn] = cls.build_ccache(gdo_klass)
             cls.PCACHE[cn] = cls.build_pkcache(gdo_klass)
             cls.OCACHE[gdo.gdo_table_name()] = {}
             if not gdo.gdo_persistent():
                 cls.NCACHE.append(gdo.gdo_table_name())
-        return cls.TCACHE[cn]
-
+        return gdo
 
     @classmethod
     def build_ccache(cls, gdo_klass: type[GDO]):
@@ -158,7 +157,7 @@ class Cache:
             else:
                 if not after_write:
                     cls.set(cn, gid, gdo._vals)
-            cls.OCACHE[cn][gdo.get_id] = gdo
+            cls.OCACHE[cn][gid] = gdo
         return gdo.all_dirty(False)
 
     @classmethod

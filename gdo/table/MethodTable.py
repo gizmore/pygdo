@@ -150,9 +150,10 @@ class MethodTable(WithGDO, MethodForm):
     def render(self, mode: Mode = Mode.HTML):
         return self.get_table().render(mode)
 
-    def render_gdo(self, gdo: GDO, mode: Mode) -> str:
+    def render_gdo(self, gdo: GDO, mode: Mode) -> any:
+        if mode == Mode.JSON:
+            return { gdt.get_name(): gdt.gdo(gdo).render_json() for gdt in self.gdo_table_headers()}
         return gdo.render_name()
 
     def render_page(self) -> GDT:
         return self.get_table()
-

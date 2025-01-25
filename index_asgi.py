@@ -10,6 +10,7 @@ from multipart import parse_options_header, MultipartParser
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
+from gdo.base.ChunkedResponse import ChunkedResponse
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
@@ -17,7 +18,7 @@ from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Parser import WebParser
 from gdo.base.Render import Mode
-from gdo.base.Util import Files
+from gdo.base.Util import Files, jsn
 from gdo.base.method.dir_server import dir_server
 from gdo.base.method.file_server import file_server
 from gdo.base.method.server_error import server_error
@@ -25,6 +26,33 @@ from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
+
+
+def display_top_malloc(snapshot, f, limit=200, key_type='lineno'):
+    import tracemalloc, linecache
+    # snapshot = snapshot.filter_traces((
+    #     tracemalloc.Filter(False, "<frozen importlib._bootstrap>"),
+    #     tracemalloc.Filter(False, "<unknown>"),
+    # ))
+    top_stats = snapshot.statistics(key_type)
+
+    print("Top %s lines" % limit, file=f)
+    for index, stat in enumerate(top_stats[:limit], 1):
+        frame = stat.traceback[0]
+        filename = os.sep.join(frame.filename.split(os.sep)[-2:])
+        print("#%s: %s:%s: %.1f KiB"
+              % (index, filename, frame.lineno, stat.size / 1024), file=f)
+        line = linecache.getline(frame.filename, frame.lineno).strip()
+        if line:
+            print('    %s' % line, file=f)
+
+    other = top_stats[limit:]
+    if other:
+        size = sum(stat.size for stat in other)
+        print("%s other: %.1f KiB" % (len(other), size / 1024), file=f)
+    total = sum(stat.size for stat in top_stats)
+    print("Total allocated size: %.1f KiB" % (total / 1024), file=f)
+
 
 async def app(scope, receive, send):
     try:
@@ -34,6 +62,9 @@ async def app(scope, receive, send):
             if message['type'] == 'lifespan.startup':
                 Application.init(os.path.dirname(__file__))
                 #PYPP#BEGIN#
+                if Application.config('core.allocs', '0') == '1':
+                    import tracemalloc
+                    tracemalloc.start()
                 if Application.config('core.profile', '0') == '1':
                     import yappi
                     yappi.start()
@@ -151,7 +182,7 @@ async def app(scope, receive, send):
             while asyncio.iscoroutine(result):
                 result = await result
 
-            if isinstance(result, GDT_FileOut):
+            if type(result) is GDT_FileOut:
                 size = int(Application.get_header('Content-Length'))
                 await send({
                     'type': 'http.response.start',
@@ -167,17 +198,26 @@ async def app(scope, receive, send):
                     })
                 return
 
+            mode = Application.get_mode()
+            page = Application.get_page()
             if Application.get_mode() == Mode.HTML:
                 Application.header('Content-Type', 'text/html; charset=UTF-8')
-                page = Application.get_page()
-                result = page.result(result).method(method)
                 for module in ModuleLoader.instance().enabled():
                     module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
+                result = page.result(result).method(method).render_html()
+            elif mode.value < 10:
+                result = page.result(result).method(method).render_html()
+                Application.header('Content-Type', 'text/html; charset=UTF-8')
+            elif mode == Mode.JSON:
+                result = jsn(page.result(result).method(method).render_json())
+                Application.header('Content-Type', 'application/json; Charset=UTF-8')
+            elif mode == Mode.TXT:
+                result = page.result(result).method(method).render_txt()
+                Application.header('Content-Type', 'text/plain; Charset=UTF-8')
 
             session.save()
-
-            out = result.render(Application.get_mode()).encode()
+            out = result.encode()
 
             Application.header('Content-Length', str(len(out)))
             await send({
@@ -185,16 +225,26 @@ async def app(scope, receive, send):
                 'status': Application.get_status_code(),
                 'headers': Application.get_headers_asgi(),
             })
-            await send({
-                'type': 'http.response.body',
-                'body': out,
-                'more_body': False,
-            })
+
+            generator = ChunkedResponse(out)
+            async for chunk, more_body in generator.asgi_generator():
+                await send({
+                    'type': 'http.response.body',
+                    'body': chunk,
+                    'more_body': more_body,
+                })
 
             #PYPP#BEGIN#
-            if Application.config('core.profile', '0') == '1':
-                import yappi
+            if Application.config('core.allocs', '0') == '1':
                 if qs.get('__yappi', None):
+                    import tracemalloc
+                    with open(Application.file_path('temp/yappi_mem.log'), 'a') as f:
+                        snapshot = tracemalloc.take_snapshot()
+                        display_top_malloc(snapshot, f)
+
+            if Application.config('core.profile', '0') == '1':
+                if qs.get('__yappi', None):
+                    import yappi
                     with open(Application.file_path('temp/yappi.log'), 'a') as f:
                         yappi.get_func_stats().print_all(out=f, columns={
                             0: ("name", 64),
@@ -203,7 +253,6 @@ async def app(scope, receive, send):
                             3: ("ttot", 8),
                             4: ("tavg", 8)})
             #PYPP#END#
-
 
     except Exception as ex:
         try:

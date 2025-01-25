@@ -46,9 +46,7 @@ class Application:
 
     @classmethod
     def tick(cls):
-        t = time.time()
-        cls.TIME = round(t, 6)
-        cls.STORAGE.time_start = t
+        cls.TIME = round(time.time(), 6)
 
     @classmethod
     def is_http(cls, is_http: bool):
@@ -59,7 +57,7 @@ class Application:
         from gdo.base.ModuleLoader import ModuleLoader
         from gdo.base.Trans import Trans
         cls.PATH = os.path.normpath(path) + '/'
-#        Logger.init(cls.PATH + "protected/logs/")
+        Logger.init(cls.PATH + "protected/logs/")
         Trans.init()
         os.environ['TZ'] = 'UTC'
         time.tzset()

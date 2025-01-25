@@ -84,7 +84,7 @@ class ModuleLoader:
         return loaded
 
     def load_module_fs(self, modulename, installed=False):
-        if modulename in self._cache.keys():
+        if module := self._cache.get(modulename):
             module = self._cache[modulename]
             if installed and not module.installed():
                 return None

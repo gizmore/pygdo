@@ -175,3 +175,6 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
             return f' placeholder="{self.render_label()}"'
         else:
             return ''
+
+    def render_json(self):
+        return self.get_val()
