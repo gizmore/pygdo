@@ -196,8 +196,6 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         if not hasattr(self, '_parameters') or reset:
             self._parameters = []
             self._parameters.extend(self.gdo_parameters())
-            # for gdt in self.gdo_parameters():
-            #     self._parameters.append(gdt)
         return self._parameters
 
     def parameter(self, name: str) -> GDT:
