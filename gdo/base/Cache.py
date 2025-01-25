@@ -33,9 +33,10 @@ class Cache:
 
     TCACHE: dict[str, GDO] = {}             # class_name => GDO.table() mapping
     CCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() mapping
-    PCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() mapping
+    PCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() PK mapping
     OCACHE: dict[str, dict[str, GDO]] = {}  # table_name => dict[id, GDO] mapping
     RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
+    NCACHE: list[str] = []                  # list of non persistent GDO table names
     @classmethod
     def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0, uds: str=''):
         if enabled:
@@ -50,6 +51,7 @@ class Cache:
         cls.PCACHE.clear()
         cls.CCACHE.clear()
         cls.OCACHE.clear()
+        cls.NCACHE.clear()
         if cls.RCACHE:
             cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
@@ -65,9 +67,8 @@ class Cache:
         """
         Clear request OCACHE for non persistent GDO
         """
-        for gdo_klass, gdo in cls.TCACHE.items():
-            if not gdo.gdo_persistent():
-                cls.OCACHE[gdo.gdo_table_name()] = {}
+        for tn in cls.NCACHE:
+            cls.OCACHE[tn] = {}
 
     #############
     # T/C/Cache #
@@ -77,7 +78,9 @@ class Cache:
     def table_for(cls, gdo_klass: type[GDO]):
         cn = gdo_klass
         if cn not in cls.TCACHE:
-            cls.TCACHE[cn] = gdo_klass()
+            cls.TCACHE[cn] = gdo = gdo_klass()
+            if not gdo.is_persisted():
+                cls.NCACHE.append(gdo.gdo_table_name())
             cls.CCACHE[cn] = cls.build_ccache(gdo_klass)
             cls.PCACHE[cn] = cls.build_pkcache(gdo_klass)
             cls.OCACHE[gdo_klass.gdo_table_name()] = {}

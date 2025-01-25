@@ -109,9 +109,9 @@ class Application:
 
     @classmethod
     def fresh_page(cls):
-        cls.STORAGE.page.clear()
+        cls.STORAGE.page = page = GDT_Page()
         cls.status('200 OK')
-        return cls.STORAGE.page
+        return page
 
     @classmethod
     def get_page(cls) -> 'GDT_Page':
