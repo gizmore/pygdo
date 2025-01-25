@@ -109,6 +109,7 @@ class Application:
 
     @classmethod
     def fresh_page(cls):
+        from gdo.ui.GDT_Page import GDT_Page
         cls.STORAGE.page = page = GDT_Page()
         cls.status('200 OK')
         return page
@@ -202,8 +203,8 @@ class Application:
         cls.STORAGE.mode = Mode.HTML
         cls.STORAGE.request_method = 'HEAD'
         cls.tick()
-        cls.DB_READS = 0
-        cls.DB_WRITES = 0
+        cls.DB_READS = 0 #PP#DELETE#
+        cls.DB_WRITES = 0 #PP#DELETE#
         cls.init_thread(None)
         cls.STORAGE.user = None
         cls.STORAGE.lang = 'en'

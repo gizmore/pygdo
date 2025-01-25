@@ -25,6 +25,9 @@ class GDO_Session(GDO):
         super().__init__()
         self._data = {}
 
+    def __repr__(self):
+        return f"{self.get_name()}()"
+
     @classmethod
     def start(cls, create_session: bool):
         """

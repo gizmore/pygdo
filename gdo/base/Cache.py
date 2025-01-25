@@ -79,12 +79,13 @@ class Cache:
         cn = gdo_klass
         if cn not in cls.TCACHE:
             cls.TCACHE[cn] = gdo = gdo_klass()
-            if not gdo.is_persisted():
-                cls.NCACHE.append(gdo.gdo_table_name())
             cls.CCACHE[cn] = cls.build_ccache(gdo_klass)
             cls.PCACHE[cn] = cls.build_pkcache(gdo_klass)
-            cls.OCACHE[gdo_klass.gdo_table_name()] = {}
+            cls.OCACHE[gdo.gdo_table_name()] = {}
+            if not gdo.gdo_persistent():
+                cls.NCACHE.append(gdo.gdo_table_name())
         return cls.TCACHE[cn]
+
 
     @classmethod
     def build_ccache(cls, gdo_klass: type[GDO]):
