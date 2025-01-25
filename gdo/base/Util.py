@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import string
 
+import asyncio
 import aiofiles
 import magic
 
@@ -266,7 +267,8 @@ class Files:
 
     @classmethod
     async def acreate_dir(cls, dir_name: str):
-        await aiofiles.os.makedirs(dir_name, mode=0o700, exist_ok=True)
+        await asyncio.to_thread(os.makedirs, dir_name, exist_ok=exist_ok, mode=0o700)
+        # await aiofiles.os.makedirs(dir_name, mode=0o700, exist_ok=True)
         return True
 
     @classmethod

@@ -26,7 +26,7 @@ from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
 FRESH = True
 SIDEBARS = False
-
+REQUEST_COUNT = 0
 def application(environ, start_response):
     return pygdo_application(environ, start_response)
 
@@ -41,6 +41,8 @@ def pygdo_application(environ, start_response):
         SIDEBARS = False
         from gdo.base.Cache import Cache
         #PYPP#BEGIN#
+        global REQUEST_COUNT
+        REQUEST_COUNT += 1
         GDT.GDT_MAX = 0
         GDO.GDO_MAX = 0
         GDT.GDT_COUNT = 0
@@ -52,6 +54,7 @@ def pygdo_application(environ, start_response):
         Application.EVENT_COUNT = 0
         Logger.LINES_WRITTEN = 0
         #PYPP#END#
+
         Cache.clear_ocache()
         if FRESH:
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")
@@ -65,6 +68,11 @@ def pygdo_application(environ, start_response):
             Application.is_http(True)
             FRESH = False
         else:
+            #PYPP#START#
+            if Application.config('core.profile') == '1' and REQUEST_COUNT > 1:
+                import yappi
+                yappi.start()
+            #PYPP#END#
             Application.init_common()
             Application.init_web(environ)
             Application.fresh_page()
@@ -72,12 +80,6 @@ def pygdo_application(environ, start_response):
         qs = parse_qs(environ['QUERY_STRING'])
 
         Application.request_method(environ['REQUEST_METHOD'])
-
-        #PYPP#BEGIN#
-        if Application.config('core.profile') == '1':
-            import yappi
-            yappi.start()
-        #PYPP#END#
 
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))

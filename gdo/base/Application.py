@@ -59,7 +59,7 @@ class Application:
         from gdo.base.ModuleLoader import ModuleLoader
         from gdo.base.Trans import Trans
         cls.PATH = os.path.normpath(path) + '/'
-        Logger.init(cls.PATH + "protected/logs/")
+#        Logger.init(cls.PATH + "protected/logs/")
         Trans.init()
         os.environ['TZ'] = 'UTC'
         time.tzset()
@@ -208,6 +208,7 @@ class Application:
         cls.init_thread(None)
         cls.STORAGE.user = None
         cls.STORAGE.lang = 'en'
+        Logger._user = None
 
     @classmethod
     def init_thread(cls, thread):
