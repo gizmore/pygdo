@@ -11,5 +11,5 @@ while inotifywait -r -e modify,move,create,delete --exclude '/(.yarn-integrity|t
     echo "Changes detected, restarting Apache..."
     rm -f temp/yappi.log
     systemctl restart apache2
-    rm-f temp/yappi.log
+    rm -f temp/yappi.log
 done
