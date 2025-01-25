@@ -79,8 +79,8 @@ class Trans:
 
     @classmethod
     def tiso(cls, iso: str, key: str, args: tuple=None):
-        k = cls.CACHE.get(iso, cls.EN).get(key, cls.EN.get(key))
-        return k % args if args else k
+        key = cls.CACHE.get(iso, cls.EN).get(key, key)
+        return key % args if args else key
 
     @classmethod
     def has(cls, key: str) -> bool:

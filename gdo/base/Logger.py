@@ -27,7 +27,7 @@ class Logger:
             from gdo.base.Application import Application
             cls._base = Application.file_path('protected/logs/')
         cls._user = None
-        Files.acreate_dir(cls._base)
+        Files.create_dir(cls._base)
 
     @classmethod
     def user(cls, user: 'GDO_User'):
