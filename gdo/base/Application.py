@@ -214,8 +214,6 @@ class Application:
     def init_thread(cls, thread):
         from gdo.base.Database import Database
         from gdo.ui.GDT_Page import GDT_Page
-        if thread:
-            Logger.debug(f'Init thread {thread.name}')
         cls.STORAGE.user = None
         cls.STORAGE.time_start = cls.TIME
         cls.mode(Mode.HTML)
