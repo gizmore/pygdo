@@ -183,14 +183,13 @@ def pygdo_application(environ, start_response):
                 SIDEBARS = True
 
             session.save()
-            response = result.render(Application.get_mode())
             headers = Application.get_headers()
-            headers.extend([('Content-Length', str(bytelen(response)))])
+            response = result.render(Application.get_mode())
+            headers.extend([('Content-Length', str(len(response)))])
             start_response(Application.get_status(), headers)
             if isinstance(response, str):
-                yield response.encode('utf-8')
-            else:
-                yield response
+                response = response.encode('utf-8')
+            yield response
             #PYPP#BEGIN#
             if Application.config('core.profile') == '1':
                 if qs.get('__yappi', None):
@@ -202,7 +201,6 @@ def pygdo_application(environ, start_response):
                             3: ("ttot", 8),
                             4: ("tavg", 8)})
             #PYPP#END#
-
     except (GDOModuleException, GDOMethodException) as ex:
         yield error_page(ex, start_response, not_found().input('_url', url), '404 Not Found', False)
     except GDOParamNameException as ex:
