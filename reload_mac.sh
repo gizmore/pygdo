@@ -2,4 +2,4 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-pkill unit && pkill unit && sleep 1 && unitd
+while pgrep unitd >/dev/null; do kill -9 $(pgrep unitd); sleep 0.5; done
