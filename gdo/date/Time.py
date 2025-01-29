@@ -290,12 +290,14 @@ class Time:
     @functools.cache
     def _human_duration_factors(cls, iso: str):
         factors = {
+            'tu_us': 1000000,
+            'tu_ms': 1000,
             'tu_s': 60,
             'tu_m': 60,
             'tu_h': 24,
             'tu_d': 7,
             'tu_w': 52.14,
-            'tu_y': 9999
+            'tu_y': 9999,
         }
         back = {}
         for key, val in factors.items():
@@ -303,35 +305,26 @@ class Time:
         return back
 
     @classmethod
-    def _human_duration_raw(cls, seconds: float, n_units: int, units: dict, with_millis: bool = True, remove_zero_units: bool = True) -> str:
-        seconds = abs(seconds or 0)
-        calculated = {}
-        ms = seconds * 1000 if with_millis else 0
-        duration = int(seconds)
-        for text, mod in units.items():
-            duration *= 1000
-            mod *= 1000
-            remainder = (duration % mod) / 1000.0
-            if int(remainder) > 0:
-                calculated[text] = f"{int(remainder)}{text}"
-            duration //= mod
-            if duration == 0:
-                break
+    def _human_duration_raw(cls, seconds: float, n_units: int, factors: dict, with_millis: bool = True, remove_zero_units: bool = True) -> str:
+        values = []
+        factor_keys = list(factors.keys())
 
-        calculated = Arrays.reverse_dict(calculated)
-        i = 0
-        for key in list(calculated.keys()):
-            i += 1
-            if i > n_units:
-                del calculated[key]
-        calculated = list(calculated.values())
-        if len(calculated) < n_units and with_millis:
-            if ms < 10:
-                ms = ms * 1000 % 1000000 / 1000.0
-                calculated.append(f"%.03fms" % ms)
-            else:
-                calculated.append(f"%dms" % int(ms%1000))
-        return ' '.join(calculated)
+        # Convert the fractional part first (milliseconds and microseconds)
+        for unit in factor_keys[:2]:  # 'us' and 'ms'
+            remainder = seconds * factors[unit]
+            remainder, value = divmod(remainder, 1000)
+            values.append((int(value), unit))
+
+        # Convert the main time units
+        remainder = int(seconds)
+        for unit in factor_keys[2:]:  # 's' and above
+            remainder, value = divmod(remainder, factors[unit])
+            values.append((int(value), unit))
+
+        # Format the output while skipping zero values
+        result = " ".join(f"{v}{u}" for v, u in reversed(values) if v)
+
+        return result if result else "0s"
 
     @classmethod
     def display_age_iso(cls, date: str, iso: str) -> str:
@@ -368,6 +361,7 @@ class Time:
         if duration is None:
             return None
         multi = {
+            'us': 0.000001,
             'ms': 0.001,
             's': 1,
             'm': 60,
@@ -378,8 +372,8 @@ class Time:
             'y': 31536000,
         }
         matches = []
-        for match in re.finditer(r'(\d+)\s*([smhdwoy]{0,2})', duration):
-            matches.append((int(match.group(1)), match.group(2)))
+        for match in re.finditer(r'([\.\d]+)\s*([smhdwoy]{0,2})', duration):
+            matches.append((float(match.group(1)), match.group(2)))
         back = 0.0
         for match in matches:
             d, unit = match

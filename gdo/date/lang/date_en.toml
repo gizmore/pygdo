@@ -14,6 +14,9 @@ df_day = "%m/%d/%Y"
 ##############
 # Time Units #
 ##############
+tu_ns = "ns"
+tu_us = "µs"
+tu_ms = "ms"
 tu_s = "s"
 tu_m = "m"
 tu_h = "h"

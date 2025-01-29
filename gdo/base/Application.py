@@ -163,7 +163,7 @@ class Application:
     @classmethod
     def init_web(cls, environ):
         cls.IS_HTTP = True
-        cls.STORAGE.time_start = float(environ.get('mod_wsgi.request_start')) / 1000000.0
+        cls.STORAGE.time_start = time.time() # float(environ.get('mod_wsgi.request_start')) / 1000000.0
         cls.STORAGE.environ = environ
         cls.STORAGE.headers = {}
         cls.init_cookies_wsgi(environ)
@@ -213,7 +213,7 @@ class Application:
         from gdo.base.Database import Database
         from gdo.ui.GDT_Page import GDT_Page
         cls.STORAGE.user = None
-        cls.STORAGE.time_start = cls.TIME
+        #cls.STORAGE.time_start = cls.TIME
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.page = GDT_Page()
