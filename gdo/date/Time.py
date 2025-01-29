@@ -308,22 +308,15 @@ class Time:
     def _human_duration_raw(cls, seconds: float, n_units: int, factors: dict, with_millis: bool = True, remove_zero_units: bool = True) -> str:
         values = []
         factor_keys = list(factors.keys())
-
-        # Convert the fractional part first (milliseconds and microseconds)
         for unit in factor_keys[:2]:  # 'us' and 'ms'
             remainder = seconds * factors[unit]
             remainder, value = divmod(remainder, 1000)
             values.append((int(value), unit))
-
-        # Convert the main time units
         remainder = int(seconds)
         for unit in factor_keys[2:]:  # 's' and above
             remainder, value = divmod(remainder, factors[unit])
             values.append((int(value), unit))
-
-        # Format the output while skipping zero values
         result = " ".join(f"{v}{u}" for v, u in reversed(values) if v)
-
         return result if result else "0s"
 
     @classmethod
@@ -361,7 +354,8 @@ class Time:
         if duration is None:
             return None
         multi = {
-            'us': 0.000001,
+            'ns': 0.000000001,
+            'µs': 0.000001,
             'ms': 0.001,
             's': 1,
             'm': 60,
@@ -372,7 +366,7 @@ class Time:
             'y': 31536000,
         }
         matches = []
-        for match in re.finditer(r'([\.\d]+)\s*([smhdwoy]{0,2})', duration):
+        for match in re.finditer(r'([\.\d]+)\s*([suµnmhdwoy]{0,2})', duration):
             matches.append((float(match.group(1)), match.group(2)))
         back = 0.0
         for match in matches:
