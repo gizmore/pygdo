@@ -203,10 +203,10 @@ async def app(scope, receive, send):
             if Application.get_mode() == Mode.HTML:
                 Application.header('Content-Type', 'text/html; charset=UTF-8')
                 for module in ModuleLoader.instance().enabled():
-                    module.gdo_load_scripts(page)
+                    # module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
                 result = page.result(result).method(method).render_html()
-            elif mode.value < 10:
+            elif mode.is_html():
                 result = page.result(result).method(method).render_html()
                 Application.header('Content-Type', 'text/html; charset=UTF-8')
             elif mode == Mode.JSON:

@@ -1,15 +1,12 @@
 import importlib
 import os
-import sys
 
 from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 
-from gdo.base.Logger import Logger
-
 if TYPE_CHECKING:
-    from gdo.ui import GDT_Page
+    from gdo.ui.GDT_Page import GDT_Page
 
 from packaging.version import Version
 
@@ -17,14 +14,14 @@ from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.base.Trans import Trans, t
+from gdo.base.Trans import t
 from gdo.base.Util import Files, href, err, msg
 from gdo.base.WithModuleConfig import WithModuleConfig
 
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.1")
-    CORE_REV = "PyGDOv8.0.1-r1233"
+    CORE_REV = "PyGDOv8.0.1-r1234"
 
     METHOD_CACHE = {}
 
@@ -187,23 +184,26 @@ class GDO_Module(WithModuleConfig, GDO):
     # Assets #
     ##########
     def add_css(self, filename: str):
+        from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"
-        Application.get_page()._css.append(path)
+        GDT_Page._css.append(path)
         return self
 
     def add_bower_css(self, filename: str):
         return self.add_css(f'node_modules/{filename}')
 
     def add_js(self, filename: str):
+        from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"
-        Application.get_page()._js.append(path)
+        GDT_Page._js.append(path)
         return self
 
     def add_bower_js(self, filename: str):
         return self.add_js(f'node_modules/{filename}')
 
     def add_js_inline(self, code: str):
-        Application.get_page()._js_inline += f"<script>\n{code}\n</script>\n"
+        from gdo.ui.GDT_Page import GDT_Page
+        GDT_Page._js_inline += f"<script>\n{code}\n</script>\n"
         return self
 
     ##########

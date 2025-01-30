@@ -156,10 +156,13 @@ class ModuleLoader:
         if load_vals:
             self.load_module_vars()
             self.init_user_settings()
+        from gdo.ui.GDT_Page import GDT_Page
+        GDT_Page.clear_assets()
         for module in self._cache.values():
             if enabled and not module.is_enabled():
                 continue
             module.init()
+            module.gdo_load_scripts(GDT_Page())
 
     def reload_modules(self):
         self.init_modules(True, True)

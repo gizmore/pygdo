@@ -8,6 +8,11 @@ from gdo.ui.GDT_Bar import GDT_Bar
 
 
 class GDT_Page(GDT):
+    _js: list[str] = []
+    _js_inline: str = ''
+    _css: list[str] = []
+    _css_inline: str = ''
+
     _result: GDT
     _method: Method
 
@@ -16,11 +21,6 @@ class GDT_Page(GDT):
     _left_bar: GDT_Bar
     _right_bar: GDT_Bar
     _bottom_bar: GDT_Container
-
-    _js: list[str]
-    _js_inline: str
-    _css: list[str]
-    _css_inline: str
 
     @classmethod
     def instance(cls):
@@ -31,10 +31,10 @@ class GDT_Page(GDT):
         self.init()
 
     def init(self):
-        self._js = []
-        self._css = []
-        self._js_inline = ''
-        self._css_inline = ''
+        # self._js = []
+        # self._css = []
+        # self._js_inline = ''
+        # self._css_inline = ''
         self._title_bar = GDT_Bar().horizontal()
         self._top_bar = GDT_Container()
         self._left_bar = GDT_Bar('left').vertical()
@@ -42,16 +42,16 @@ class GDT_Page(GDT):
         self._bottom_bar = GDT_Container()
         return self
 
-    def clear(self):
-        self._js.clear()
-        self._css.clear()
-        self._js_inline = ''
-        self._css_inline = ''
-        self._title_bar.clear()
-        self._top_bar.clear()
-        self._left_bar.clear()
-        self._right_bar.clear()
-        self._bottom_bar.clear()
+    # def clear(self):
+        # self._js.clear()
+        # self._css.clear()
+        # self._js_inline = ''
+        # self._css_inline = ''
+        # self._title_bar.clear()
+        # self._top_bar.clear()
+        # self._left_bar.clear()
+        # self._right_bar.clear()
+        # self._bottom_bar.clear()
 
     def result(self, result: GDT):
         self._result = result
@@ -70,3 +70,9 @@ class GDT_Page(GDT):
             'data': self._result.render_json(),
         }
 
+    @classmethod
+    def clear_assets(cls):
+        cls._js = []
+        cls._js_inline = ''
+        cls._css = []
+        cls._css_inline = ''
