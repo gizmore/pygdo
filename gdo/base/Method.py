@@ -80,6 +80,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         self.parameter(key).val(val)
         return self
 
+    def args_copy(self, method: 'Method'):
+        self._raw_args = method._raw_args
+        return self
+
     ############
     # Abstract #
     ############
