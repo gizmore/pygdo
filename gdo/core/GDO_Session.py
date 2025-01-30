@@ -75,7 +75,7 @@ class GDO_Session(GDO):
         if len(parts) != 2:
             return cls.blank_error()
         id_, token = parts
-        instance = cls.table().get_by_id(id_)
+        instance = cls.table().get_by_aid(id_)
         if not instance:
             return cls.blank_error()
         if instance.get_token() != token:

@@ -178,7 +178,7 @@ class Cache:
             if delete:
                 del cls.OCACHE[tn][gid]
                 cls.remove(tn, gid)
-            return cls.obj_for(ocached, None, False)
+            return ocached # cls.obj_for(ocached, None, False)
         if rcached := cls.get(tn, gid):
             if delete:
                 cls.remove(tn, gid)

@@ -31,7 +31,7 @@ class GDO_User(GDO):
     Attributes are stored in GDO_UserSetting.
     """
     _authenticated: bool
-    _network_user: object  # User on a server netowrk. Like discord's - message.author
+    _network_user: object  # User on a server network. Like discord's - message.author
     _session: 'GDO_Session'
     _settings: dict[str,str]
 

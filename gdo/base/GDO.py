@@ -231,6 +231,14 @@ class GDO(WithBulk, GDT):
     def get_by(self, key: str, val: str):
         return self.get_by_vals({key: val})
 
+    def get_by_aid(self, id_: str):
+        """
+        Get a row by auto inc id.
+        """
+        if c := Cache.obj_search_gid(self, id_): return c
+        return (self.table().select().where(f"{self.primary_key_column().get_name()}={self.quote(id_)}").
+                first().exec().fetch_object())
+
     def get_by_id(self, *id_: str):
         if (c := Cache.obj_search_gid(self, self.ID_SEPARATOR.join(id_))): return c
         return self.table().select().where(' AND '.join(

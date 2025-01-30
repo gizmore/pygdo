@@ -51,7 +51,7 @@ class WithObject:
         return self.get_value()
 
     def query_gdos(self, val: str) -> list[GDO]:
-        gdo = self._table.get_by_id(val)
+        gdo = self._table.get_by_aid(val)
         return [gdo] if gdo else []
 
     def get_by_name(self, var: str) -> list[GDO] | GDO | None:
