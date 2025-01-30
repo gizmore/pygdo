@@ -177,6 +177,7 @@ class Application:
     def init_asgi(cls, scope):
         cls.ASGI = True
         cls.IS_HTTP = True
+        cls.tick()
         cls.request_method(scope['method'])
         cls.STORAGE.time_start = time.time()
         cls.STORAGE.environ = scope
@@ -185,7 +186,6 @@ class Application:
         cls.init_cookies_asgi(scope)
         cls.STORAGE.ip = scope.get('client')[0]
         cls.PROTOCOL = scope.get('scheme')
-        cls.tick()
         from gdo.base.Cache import Cache
         Cache.clear_ocache()
 
@@ -199,7 +199,7 @@ class Application:
     @classmethod
     def init_common(cls):
         cls.STORAGE.mode = Mode.HTML
-        cls.STORAGE.request_method = 'HEAD'
+        #cls.STORAGE.request_method = 'HEAD'
         cls.tick()
         cls.DB_READS = 0 #PP#DELETE#
         cls.DB_WRITES = 0 #PP#DELETE#
