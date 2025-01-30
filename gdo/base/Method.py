@@ -1,11 +1,14 @@
-import argparse
+import functools
 
 from typing import TYPE_CHECKING
 
 from mysql.connector import OperationalError
 
+from gdo.base.ParseArgs import ParseArgs
+
 if TYPE_CHECKING:
     from gdo.base.GDO_Module import GDO_Module
+    from gdo.base.ParseArgs import ParseArgs
     from gdo.core.GDO_Channel import GDO_Channel
     from gdo.core.GDO_Server import GDO_Server
     from gdo.core.GDO_User import GDO_User
@@ -20,51 +23,53 @@ from gdo.base.Trans import t, thas
 from gdo.base.Util import Strings, err_raw
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
-from gdo.base.WithInput import WithInput
 from gdo.base.WithPermissionCheck import WithPermissionCheck
 
 
-class MyArgParser(argparse.ArgumentParser):
-    def error(self, message):
-        pass
+# class MyArgParser(argparse.ArgumentParser):
+#     def error(self, message):
+#         pass
 
 
-class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
+class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     _parameters: list[GDT]
     _next_method: 'Method'  # Method chaining
     _result: str
+    _raw_args: 'ParseArgs'
 
     __slots__ = (
         '_parameters',
         '_next_method',
         '_result',
+        '_raw_args'
     )
 
     # CLI_PARSER_CACHE = {}
     # HTM_PARSER_CACHE = {}
-    _parser_http: argparse
-    _parser_clix: argparse
-    _parser_cliu: argparse
+    # _parser_http: argparse
+    # _parser_clix: argparse
+    # _parser_cliu: argparse
 
     def __init__(self):
         super().__init__()
-        self._params = {}
-        self._next = None
-        self._input = {}
-        self._args = []
+        # self._params = {}
+        # self._next = None
+        # self._input = {}
+        # self._args = []
         self._env_mode = Application.get_mode()
         self._env_http = True
         self._env_channel = None
         self._env_server = None
         self._env_reply_to = None
-        self._parser_http = None
-        self._parser_clix = None
-        self._parser_cliu = None
+        # self._parser_http = None
+        # self._parser_clix = None
+        # self._parser_cliu = None
 
 
     def get_name(self):
         return self.__class__.__name__
 
+    @functools.cache
     def fqn(self):
         return self.__module__ + '.' + self.__class__.__qualname__
 
@@ -86,26 +91,26 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         return Application.get_request_method() != 'GET'
 
     def gdo_parameters(self) -> [GDT]:
-        return []
+        return GDO.EMPTY_LIST
 
     def gdo_method_config_bot(self) -> [GDT]:
-        return []
+        return GDO.EMPTY_LIST
 
     def gdo_method_config_server(self) -> [GDT]:
-        return []
+        return GDO.EMPTY_LIST
 
     def gdo_method_config_channel(self) -> [GDT]:
-        return []
+        return GDO.EMPTY_LIST
 
     def gdo_method_config_user(self) -> [GDT]:
-        return []
+        return GDO.EMPTY_LIST
 
     def gdo_user_type(self) -> str | None:
         """
         Comma separated list of applicable user types
         Use this to restrict to members or guests.
         """
-        return 'ghost,member,guest,chappy'
+        return None # 'ghost,member,guest,chappy'
 
     def gdo_connectors(self) -> str:
         """
@@ -248,6 +253,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         self.gdo_module().err(key, args)
         return self
 
+    @functools.cache
     def gdo_module(self) -> 'GDO_Module':
         from gdo.base.ModuleLoader import ModuleLoader
         mn = self.__module__
@@ -282,11 +288,12 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             if tr:
                 db.commit()
 
-    async def _nested_execute(self, method, return_gdt: bool = False):
+    async def _nested_execute(self, method: 'Method', return_gdt: bool = False):
         i = 0
-        for arg in method._args:
+        for key, arg in method._raw_args.all_vals():
             if isinstance(arg, Method):
-                method._args[i] = await self._nested_execute(arg)
+                cont = method._raw_args.pargs if type(key) is int else method._raw_args.args
+                cont[key] = await self._nested_execute(arg)
             i += 1
         gdt = await method._nested_execute_parse()
         if return_gdt:
@@ -295,23 +302,26 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
             return gdt.render(Mode.TXT)
 
     def _nested_parse(self):
-        from gdo.core.GDT_Repeat import GDT_Repeat
-        from gdo.core.GDT_Field import GDT_Field
-        parser = self.get_arg_parser(False)
-        args, unknown_args = parser.parse_known_args(self._args)
         for gdt in self.parameters():
-            if not isinstance(gdt, GDT_Field):
-                continue
-            if val := args.__dict__.get(gdt.get_name()):
-                if isinstance(val, list):
-                    gdt.val(val)
-                else:
-                    if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
-                        vals = [val]
-                        vals.extend(unknown_args)
-                        gdt.val(vals)
-                    else:
-                        gdt.val(val)
+            if val := self._raw_args.get_val(gdt.get_name()):
+                gdt.val(val)
+#        from gdo.core.GDT_Repeat import GDT_Repeat
+#        from gdo.core.GDT_Field import GDT_Field
+        # parser = self.get_arg_parser(False)
+        # args, unknown_args = parser.parse_known_args(self._args)
+        # for gdt in self.parameters():
+        #     if not isinstance(gdt, GDT_Field):
+        #         continue
+        #     if val := args.__dict__.get(gdt.get_name()):
+        #         if isinstance(val, list):
+        #             gdt.val(val)
+        #         else:
+        #             if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
+        #                 vals = [val]
+        #                 vals.extend(unknown_args)
+        #                 gdt.val(vals)
+        #             else:
+        #                 gdt.val(val)
 
     async def _nested_execute_parse(self) -> 'GDT':
         self._nested_parse()
@@ -323,75 +333,77 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
         if not method.has_permission(method._env_user):
             self.error('err_permissions')
             return False
-        for arg in method._args:
+        for key, arg in method._raw_args.all_vals():
             if isinstance(arg, Method):
                 if not self._prepare_nested_permissions(arg):
                     return False
         return True
 
-    def get_arg_parser(self, for_usage: bool):
-        return self._get_arg_parser_http() if self._env_http else self._get_arg_parser_cli(for_usage)
-
-    def _get_arg_parser_cli(self, for_usage: bool):
-        if for_usage:
-            if self._parser_cliu:
-                return self._parser_cliu
-        else:
-            if self._parser_clix:
-                return self._parser_clix
-
-        from gdo.form.GDT_Submit import GDT_Submit
-        from gdo.core.GDT_Field import GDT_Field
-        prog = self.gdo_trigger()
-        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
-        for gdt in self.parameters():
-            if not isinstance(gdt, GDT_Field):
-                continue
-            name = gdt.get_name()
-            if for_usage and isinstance(gdt, GDT_Submit) and gdt._default_button:
-                continue
-            if gdt.is_positional():
-                if gdt.is_not_null():
-                    parser.add_argument(name)
-                else:
-                    parser.add_argument(name, nargs='?')
-            else:
-                parser.add_argument(f'--{name}', default=gdt.get_val())
-        if for_usage:
-            self._parser_cliu = parser
-        else:
-            self._parser_clix = parser
-        return parser
-
-    def _get_arg_parser_http(self):
-        if self._parser_http:
-            return self._parser_http
-        # fqn = self.fqn()
-        # if fqn in self.HTM_PARSER_CACHE:
-        #     Cache.HITS += 1 #PYPP#DELETE#
-        #     return self.HTM_PARSER_CACHE[fqn]
-        from gdo.core.GDT_Field import GDT_Field
-        prog = self.get_name()
-        parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
-        for gdt in self.parameters():
-            if not isinstance(gdt, GDT_Field):
-                continue
-            name = gdt.get_name()
-            if gdt.is_multiple():
-                parser.add_argument(f'--{name}', default=gdt.get_val(), nargs='*')
-            else:
-                parser.add_argument(f'--{name}', default=gdt.get_val())
-        # self.HTM_PARSER_CACHE[fqn] = parser
-        self._parser_http = parser
-        return parser
+    # def get_arg_parser(self, for_usage: bool):
+    #     return self._get_arg_parser_http() if self._env_http else self._get_arg_parser_cli(for_usage)
+    #
+    # def _get_arg_parser_cli(self, for_usage: bool):
+    #     if for_usage:
+    #         if self._parser_cliu:
+    #             return self._parser_cliu
+    #     else:
+    #         if self._parser_clix:
+    #             return self._parser_clix
+    #
+    #     from gdo.form.GDT_Submit import GDT_Submit
+    #     from gdo.core.GDT_Field import GDT_Field
+    #     prog = self.gdo_trigger()
+    #     parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
+    #     for gdt in self.parameters():
+    #         if not isinstance(gdt, GDT_Field):
+    #             continue
+    #         name = gdt.get_name()
+    #         if for_usage and isinstance(gdt, GDT_Submit) and gdt._default_button:
+    #             continue
+    #         if gdt.is_positional():
+    #             if gdt.is_not_null():
+    #                 parser.add_argument(name)
+    #             else:
+    #                 parser.add_argument(name, nargs='?')
+    #         else:
+    #             parser.add_argument(f'--{name}', default=gdt.get_val())
+    #     if for_usage:
+    #         self._parser_cliu = parser
+    #     else:
+    #         self._parser_clix = parser
+    #     return parser
+    #
+    # def _get_arg_parser_http(self):
+    #     if self._parser_http:
+    #         return self._parser_http
+    #     # fqn = self.fqn()
+    #     # if fqn in self.HTM_PARSER_CACHE:
+    #     #     Cache.HITS += 1 #PYPP#DELETE#
+    #     #     return self.HTM_PARSER_CACHE[fqn]
+    #     from gdo.core.GDT_Field import GDT_Field
+    #     prog = self.get_name()
+    #     parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
+    #     for gdt in self.parameters():
+    #         if not isinstance(gdt, GDT_Field):
+    #             continue
+    #         name = gdt.get_name()
+    #         if gdt.is_multiple():
+    #             parser.add_argument(f'--{name}', default=gdt.get_val(), nargs='*')
+    #         else:
+    #             parser.add_argument(f'--{name}', default=gdt.get_val())
+    #     # self.HTM_PARSER_CACHE[fqn] = parser
+    #     self._parser_http = parser
+    #     return parser
 
     ##########
     # Config #
     ##########
 
+    @functools.cache
     def get_sqn(self) -> str:
         return f"{self.gdo_module().get_name()}.{self.get_name()}"
 
+    @functools.cache
     def get_fqn(self) -> str:
         return self.__module__ + "." + self.__class__.__name__
 
@@ -402,6 +414,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     # Config Server #
     #################
 
+    @functools.cache
     def _config_server(self):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
@@ -464,12 +477,13 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     ###############
 
     def _config_user(self):
-        from gdo.core.GDT_Bool import GDT_Bool
-        conf = [
-            GDT_Bool('disabled').initial('0' if self.gdo_default_enabled() else '1'),
-        ]
-        conf.extend(self.gdo_method_config_user())
-        return conf
+        return GDO.EMPTY_LIST
+        # from gdo.core.GDT_Bool import GDT_Bool
+        # conf = [
+        #     GDT_Bool('disabled').initial('0' if self.gdo_default_enabled() else '1'),
+        # ]
+        # conf.extend(self.gdo_method_config_user())
+        # return conf
 
     def save_config_user(self, key: str, val: str):
         Logger.debug(f"{self.get_name()}.save_config_user({key}, {val})")
@@ -515,6 +529,7 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
     # Config Channel #
     ##################
 
+    @functools.cache
     def _config_channel(self):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
@@ -582,8 +597,9 @@ class Method(WithPermissionCheck, WithEnv, WithInput, WithError, GDT):
                 from gdo.ui.GDT_Error import GDT_Error
                 return GDT_Error().text(self._errkey, self._errargs).render_html()
             else:
-                parser = self.get_arg_parser(True)
-                return parser.format_usage()
+                return self.render_cli_usage()
+                # parser = self.get_arg_parser(True)
+                # return parser.format_usage()
         return self.render_page().render(mode)
 
     def render_gdo(self, gdo: GDO, mode: Mode) -> str:

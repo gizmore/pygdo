@@ -23,13 +23,14 @@ from gdo.base.Util import Files
 class ModuleLoader:
     _cache: dict[str, 'GDO_Module']
     _methods: dict[str, any]
+    _methods_sqn: dict[str, type[Method]]
     _enabled: []
 
     @classmethod
     def instance(cls) -> Self:
         return Application.LOADER
 
-    def enabled(self) -> list[GDO_Module]:
+    def enabled(self) -> list['GDO_Module']:
         yield from self._enabled
 
     def reset(self):
@@ -187,3 +188,7 @@ class ModuleLoader:
             for method in module.get_methods():
                 if trigger := method.gdo_trigger():
                     self._methods[trigger.lower()] = method
+
+    def get_module_method(self, module_name: str, method_name: str) -> Method:
+        return self.get_module(module_name).get_method(method_name)
+

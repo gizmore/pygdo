@@ -1,100 +1,70 @@
-import re
-from urllib.parse import parse_qs
+from gdo.base.Util import Strings
 
-# Constants for separators
-ARG_SEPARATOR = "~"  # Key-value separator: `for~gizmore`
-LIST_SEPARATOR = "^"  # Multi-value separator: `tags~python^flask^linux`
-ENTRY_SEPARATOR = ";"  # Separates arguments: `;for~gizmore`
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gdo.base.Method import Method
 
 class ParseArgs:
-    """Handles argument parsing from CLI, URL paths, query strings, POST data, and files."""
+    ARG_SEPARATOR = "~"
+    ENTRY_SEPARATOR = ";"
+    ESCAPED_SEPARATOR = ";;"
+    TEMP_MARKER = "\x01"
 
     def __init__(self):
         self.module = None
         self.method = None
+        self.mode = None
         self.args = {}  # Stores parsed key-value arguments
+        self.pargs = []
+        self.files = []
         self.possible_multiple = set()  # Parameters that might be multiple
-
-    def add_cli_line(self, cli_args: list[str]):
-        """
-        Parses module, method, named arguments, and positional arguments from CLI input.
-        CLI format: `module.method --argname value --argname2 value pos1 pos2`
-        """
-        if not cli_args:
-            return
-
-        # Extract module and method from first argument
-        first_arg = cli_args.pop(0)
-        if "." in first_arg:
-            self.module, self.method = first_arg.split(".", 1)
-        else:
-            self.module = first_arg
-
-        # Parse remaining arguments (flags first, then positionals)
-        it = iter(cli_args)
-        positional_args = []
-        while True:
-            try:
-                token = next(it)
-                if token.startswith("--"):  # Named flag (e.g., `--brief 1`)
-                    param_name = token.lstrip("-")
-                    value = next(it, None)
-
-                    # If already set, convert into a list (for multiple values)
-                    if param_name in self.args:
-                        if not isinstance(self.args[param_name], list):
-                            self.args[param_name] = [self.args[param_name]]
-                        self.args[param_name].append(value)
-                        self.possible_multiple.add(param_name)
-                    else:
-                        self.args[param_name] = value
-                else:
-                    positional_args.append(token)  # Store positional args separately
-            except StopIteration:
-                break
-
-        # Assign positional args as numbered keys
-        for i, value in enumerate(positional_args):
-            self.args[f"positional_{i+1}"] = value
-
-    def finalize_with_gdt(self, gdt_params):
-        """
-        After `yield_params()` runs, adjust parameters based on `GDT.multiple(True)`.
-        Converts values into lists if required.
-        """
-        for param in gdt_params:
-            if param.name in self.possible_multiple and param.is_multiple():
-                if not isinstance(self.args.get(param.name), list):
-                    self.args[param.name] = [self.args[param.name]]
 
     def __repr__(self):
         return f"ParserArgs(module={self.module}, method={self.method}, args={self.args})"
 
-# ✅ **Example Usage**
-parser = ParserArgs()
+    def get_val(self, key: str) -> str | list[str]:
+        return self.args.get(key)
 
-# CLI Example: `$ user.profile --brief 1 gizmore`
-parser.add_cli_line(["user.profile", "--brief", "1", "gizmore"])
-print(parser)
-# Expected: module=user, method=profile, args={'brief': '1', 'positional_1': 'gizmore'}
+    def all_vals(self) -> dict[str, list[str]]:
+        yield from self.args.items()
+        yield from enumerate(self.pargs)
 
-# ✅ **Handling Multiple Values**
-parser.add_cli_line(["user.profile", "--tags", "python", "--tags", "flask", "--tags", "linux", "extra_arg"])
-print(parser)
-# Expected: module=user, method=profile, args={'tags': ['python', 'flask', 'linux'], 'positional_1': 'extra_arg'}
+    def get_method(self) -> 'Method':
+        from gdo.base.ModuleLoader import ModuleLoader
+        method = ModuleLoader.instance().get_module_method(self.module, self.method)
+        method._raw_args = self
+        return method
 
-# ✅ **Finalizing with GDTs**
-class ExampleGDT:
-    def __init__(self, name, multiple=False):
-        self.name = name
-        self._multiple = multiple
+    #############
+    # Add input #
+    #############
 
-    def is_multiple(self):
-        return self._multiple
+    def add_path_vars(self, url: str):
+        if url:
+            url = url.lstrip('/').replace(self.ESCAPED_SEPARATOR, self.TEMP_MARKER)
+            parts = url.split(self.ENTRY_SEPARATOR)
+            self.mode = Strings.rsubstr_from(parts[-1], '.', 'html')
+            parts[-1] = Strings.rsubstr_to(parts[-1], '.', parts[-1])
+            self.module, self.method = parts[0].split('.', 1)
+            for part in parts[1:]:
+                key, val = part.split(self.ARG_SEPARATOR, 1)
+                self.args[key] = val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)
 
-# Assume these are from `yield_params()`
-gdt_params = [ExampleGDT("tags", multiple=True), ExampleGDT("brief")]
+    def add_get_vars(self, qs: dict[str,list[str]]):
+        self.args.update(qs)
 
-parser.finalize_with_gdt(gdt_params)
-print(parser)
-# Expected: {'brief': '1', 'tags': ['python', 'flask', 'linux'], 'positional_1': 'extra_arg'}
+    def add_post_vars(self, qs: dict[str,list[str]]):
+        self.args.update(qs)
+
+    def add_file(self):
+        pass
+
+    def add_cli_line(self, cli_args: list[str]):
+        pass
+
+    def finalize_with_gdt(self, gdt_params):
+        for param in gdt_params:
+            if param.name in self.possible_multiple and param.is_multiple():
+                if not isinstance(self.args.get(param.name), list):
+                    self.args[param.name] = [self.args[param.name]]

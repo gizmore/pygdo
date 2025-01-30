@@ -93,6 +93,7 @@ def url(module_name: str, method_name: str, append: str = '', fmt: str = 'html')
     return Application.PROTOCOL + "://" + Application.domain() + Application.web_root() + href(module_name, method_name, append, fmt)
 
 
+@functools.cache
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
     from gdo.base.Application import Application
     splitted = ''

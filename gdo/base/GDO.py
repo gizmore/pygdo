@@ -20,6 +20,9 @@ class GDO(WithBulk, GDT):
     A GDO (Gizmore Data Object) is just a GDT(Gizmore Data Type) with fields that are GDT.
     There is one GDO acting as the table instance, and other entitites are rows.
     """
+    EMPTY_LIST = []
+    EMPTY_DICT = {}
+    EMPTY_STR = ""
     ID_SEPARATOR = ':'  # Multiple primary keys supported
     HASH_LENGTH = 16
 

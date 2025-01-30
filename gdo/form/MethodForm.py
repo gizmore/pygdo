@@ -1,5 +1,6 @@
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.GDO import GDO
 from gdo.base.Method import Method
 from gdo.base.Render import Render
 from gdo.base.Util import module_enabled
@@ -15,7 +16,7 @@ class MethodForm(Method):
     #     super().__init__()
 
     def gdo_parameters(self) -> [GDT]:
-        return []
+        return GDO.EMPTY_LIST
 
     def gdo_captcha(self) -> bool:
         return False
@@ -37,15 +38,15 @@ class MethodForm(Method):
             self.gdo_create_form(self._form)
         if reset:
             delattr(self, '_parameters')
-            self._nested_parse()
+            # self._nested_parse()
         return self._form
 
     def gdo_execute(self) -> GDT:
         form = self.get_form()
 
         ### Flow upload
-        if 'flowField' in self._args:
-            return form.get_field(self._args['flowField']).flow_upload()
+        if key := self._raw_args.args.get('flowField'):
+            return form.get_field(key).flow_upload()
 
         for gdt in form.all_fields():
             gdt.gdo_file_upload(self)
@@ -83,9 +84,8 @@ class MethodForm(Method):
         if hasattr(self, '_parameters') and not reset:
             return self._parameters
         params = super().parameters()
-        self._nested_parse()
-        for gdt in self.form_parameters():
-            params.append(gdt)
+        self.get_form()
+        params.extend(self.form_parameters())
         return params
 
     def form_parameters(self) -> list[GDT]:

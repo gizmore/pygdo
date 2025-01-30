@@ -78,14 +78,12 @@ class Templite(object):
     def render(self, **namespace):
         """Renders the template according to the given namespace."""
         stack = []
-        namespace['__file__'] = self.file
-
-        def write(*args):
-            for value in args:
-                stack.append(str(value))
+        def write(val: str):
+            stack.append(val)
 
         def writeln(line: str):
-            write(f"{line}\n")
+            write(line)
+            write("\n")
 
         namespace['write'] = write
         namespace['writeln'] = writeln
@@ -102,7 +100,7 @@ class Templite(object):
             stack.append(t.render(**namespace))
 
         namespace['include'] = include
-        namespace['Time'] = Time
+        # namespace['Time'] = Time
         namespace['t'] = t
         namespace['Mode'] = Mode
         namespace['html'] = html
@@ -140,7 +138,7 @@ class GDT_Template(GDT):
     @classmethod
     def render_template(cls, path: str, vals: dict[str, any]):
         data = {
-            "modules": ModuleLoader.instance()._cache,
+            # "modules": ModuleLoader.instance()._cache,
             "Mode": Mode,
             "Application": Application,
         }
