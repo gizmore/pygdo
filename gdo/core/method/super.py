@@ -17,7 +17,8 @@ class super(Method):
             GDT_Secret('pass').not_null(),
         ]
 
-    def gdo_method_config_server(self) -> [GDT]:
+    @classmethod
+    def gdo_method_config_server(cls) -> [GDT]:
         return [
             GDT_Password('superkey').initial('super'),
         ]

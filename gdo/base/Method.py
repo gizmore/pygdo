@@ -56,6 +56,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         # self._next = None
         # self._input = {}
         # self._args = []
+        self._raw_args = None
         self._env_mode = Application.get_mode()
         self._env_http = True
         self._env_channel = None
@@ -101,16 +102,20 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def gdo_parameters(self) -> [GDT]:
         return GDO.EMPTY_LIST
 
-    def gdo_method_config_bot(self) -> [GDT]:
+    @classmethod
+    def gdo_method_config_bot(cls) -> [GDT]:
         return GDO.EMPTY_LIST
 
-    def gdo_method_config_server(self) -> [GDT]:
+    @classmethod
+    def gdo_method_config_server(cls) -> [GDT]:
         return GDO.EMPTY_LIST
 
-    def gdo_method_config_channel(self) -> [GDT]:
+    @classmethod
+    def gdo_method_config_channel(cls) -> [GDT]:
         return GDO.EMPTY_LIST
 
-    def gdo_method_config_user(self) -> [GDT]:
+    @classmethod
+    def gdo_method_config_user(cls) -> [GDT]:
         return GDO.EMPTY_LIST
 
     def gdo_user_type(self) -> str | None:
@@ -298,11 +303,12 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
 
     async def _nested_execute(self, method: 'Method', return_gdt: bool = False):
         i = 0
-        for key, arg in method._raw_args.all_vals():
-            if isinstance(arg, Method):
-                cont = method._raw_args.pargs if type(key) is int else method._raw_args.args
-                cont[key] = await self._nested_execute(arg)
-            i += 1
+        if method._raw_args:
+            for key, arg in method._raw_args.all_vals():
+                if isinstance(arg, Method):
+                    cont = method._raw_args.pargs if type(key) is int else method._raw_args.args
+                    cont[key] = await self._nested_execute(arg)
+                i += 1
         gdt = await method._nested_execute_parse()
         if return_gdt:
             return gdt
@@ -310,9 +316,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             return gdt.render(Mode.TXT)
 
     def _nested_parse(self):
-        for gdt in self.parameters():
-            if val := self._raw_args.get_val(gdt.get_name()):
-                gdt.val(val)
+        if self._raw_args:
+            for gdt in self.parameters():
+                if val := self._raw_args.get_val(gdt.get_name()):
+                    gdt.val(val)
 #        from gdo.core.GDT_Repeat import GDT_Repeat
 #        from gdo.core.GDT_Field import GDT_Field
         # parser = self.get_arg_parser(False)
@@ -341,10 +348,11 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         if not method.has_permission(method._env_user):
             self.error('err_permissions')
             return False
-        for key, arg in method._raw_args.all_vals():
-            if isinstance(arg, Method):
-                if not self._prepare_nested_permissions(arg):
-                    return False
+        if method._raw_args:
+            for key, arg in method._raw_args.all_vals():
+                if isinstance(arg, Method):
+                    if not self._prepare_nested_permissions(arg):
+                        return False
         return True
 
     # def get_arg_parser(self, for_usage: bool):
@@ -415,20 +423,22 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def get_fqn(self) -> str:
         return self.__module__ + "." + self.__class__.__name__
 
-    def gdo_default_enabled(self) -> bool:
+    @classmethod
+    def gdo_default_enabled(cls) -> bool:
         return True
 
     #################
     # Config Server #
     #################
 
-    @functools.cache
-    def _config_server(self):
+    @classmethod
+    @functools.lru_cache(None)
+    def _config_server(cls):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
-            GDT_Bool('disabled').initial('0' if self.gdo_default_enabled() else '1'),
+            GDT_Bool('disabled').initial('0' if cls.gdo_default_enabled() else '1'),
         ]
-        conf.extend(self.gdo_method_config_server())
+        conf.extend(cls.gdo_method_config_server())
         return conf
 
     def save_config_server(self, key: str, val: str):
@@ -537,13 +547,14 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     # Config Channel #
     ##################
 
-    @functools.cache
-    def _config_channel(self):
+    @classmethod
+    @functools.lru_cache(None)
+    def _config_channel(cls):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
-            GDT_Bool('disabled').initial('0' if self.gdo_default_enabled() else '1'),
+            GDT_Bool('disabled').initial('0' if cls.gdo_default_enabled() else '1'),
         ]
-        conf.extend(self.gdo_method_config_channel())
+        conf.extend(cls.gdo_method_config_channel())
         return conf
 
     def save_config_channel(self, key: str, val: str):

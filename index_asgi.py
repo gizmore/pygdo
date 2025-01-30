@@ -3,6 +3,7 @@ import io
 import os
 import sys
 from asyncio import iscoroutine
+from crypt import methods
 from urllib.parse import parse_qs
 
 import better_exceptions
@@ -16,6 +17,7 @@ from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.ParseArgs import ParseArgs
 from gdo.base.Parser import WebParser
 from gdo.base.Render import Mode
 from gdo.base.Util import Files, jsn
@@ -106,6 +108,7 @@ async def app(scope, receive, send):
         if '_lang' in qs:
             lang = qs['_lang'][0]
             del qs['_lang']
+        # del qs['url']
         Application.STORAGE.lang = lang
 
         path = Application.file_path(url.lstrip('/'))
@@ -133,6 +136,7 @@ async def app(scope, receive, send):
                 })
             return
         else:
+            args = ParseArgs()
             if Files.is_dir(path):
                 session = GDO_Session.start(False)
                 user = session.get_user()
@@ -148,9 +152,13 @@ async def app(scope, receive, send):
                 Application.set_session(session)
                 server = user.get_server()
                 channel = None
-                parser = WebParser(user, server, channel, session)
+                args = ParseArgs()
+                args.add_path_vars(url)
+                args.add_get_vars(qs)
+                # parser = WebParser(user, server, channel, session)
                 try:
-                    method = parser.parse(url.lstrip('/'))
+#                    method = parser.parse(url.lstrip('/'))
+                    method = args.get_method()
                 except (GDOModuleException, GDOMethodException):
                     method = not_found().env_server(server).env_user(user).input('_url', url)
 
@@ -168,17 +176,23 @@ async def app(scope, receive, send):
                 if content_type == "multipart/form-data" and 'boundary' in options:
                     stream = io.BytesIO(body)
                     parser = MultipartParser(stream, options["boundary"])
+                    qs = {}
                     for part in parser:
                         if part.filename:
-                            method.add_file(part.name, part.filename, part.raw)
+                            args.add_file(part.name, part.filename, part.raw)
+                            # method.add_file(part.name, part.filename, part.raw)
                         else:
                             qs[part.name] = part.value
                     for part in parser.parts():
                         part.close()
+                    args.add_post_vars(qs)
                 else:
-                    qs.update(parse_qs(body.decode()))
+                    args.add_post_vars(parse_qs(body.decode()))
+#                    qs.update(parse_qs(body.decode()))
 
-            result = await method.inputs(qs).execute()
+            method._raw_args = args
+            method.env_user(user).env_session(session).env_server(user.get_server())
+            result = await method.execute()
             while asyncio.iscoroutine(result):
                 result = await result
 

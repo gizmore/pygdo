@@ -20,8 +20,8 @@ class MethodTable(WithGDO, MethodForm):
     A method that displays a table.
     """
 
-    def __init__(self):
-        super().__init__()
+    # def __init__(self):
+    #     super().__init__()
 
     def parameters(self, reset: bool = False) -> list[GDT]:
         if hasattr(self, '_parameters') and not reset:
