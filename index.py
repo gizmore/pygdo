@@ -69,7 +69,7 @@ def pygdo_application(environ, start_response):
             Application.is_http(True)
             FRESH = False
         else:
-            #PYPP#START#
+            #PYPP#BEGIN#
             if Application.config('core.profile') == '1' and REQUEST_COUNT > 1:
                 import yappi
                 yappi.start()
