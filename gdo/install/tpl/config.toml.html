@@ -2,7 +2,7 @@
 ### PyGDO Config ###
 ####################
 
-gen.version = '<%=modules['base'].CORE_VERSION%>'
+gen.version = '<%=str(modules['base'].CORE_VERSION)%>'
 gen.date = '<%=Time.get_date()%>'
 <%
 for gdt in data.values():
