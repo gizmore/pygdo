@@ -128,7 +128,7 @@ def pygdo_application(environ, start_response):
                 args.add_get_vars(qs)
                 method = args.get_method().env_user(user).env_session(session).env_server(server)
             Application.set_current_user(user)
-            Application.set_session(session)
+            # Application.set_session(session)
             Application.status("200 OK")
             if Application.config('log.request', '0') == '1':
                 Logger.request(url, str(qs))
