@@ -3,6 +3,7 @@ import shutil
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import Arrays, Files
 from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_Template import GDT_Template
@@ -101,7 +102,7 @@ class Config:
     def rewrite(cls, path: str, data: dict[str, GDT]):
         if Files.is_file(path):
             Files.copy(path, path + ".OLD")
-        out = GDT_Template.python('install', 'config.toml.html', {'data': data})
+        out = GDT_Template.python('install', 'config.toml.html', {'data': data, 'modules': ModuleLoader.instance()._cache})
         if out:
             with open(path, 'w') as fo:
                 fo.write(out)
