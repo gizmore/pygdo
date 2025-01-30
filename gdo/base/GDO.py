@@ -26,7 +26,7 @@ class GDO(WithBulk, GDT):
     ID_SEPARATOR = ':'  # Multiple primary keys supported
     HASH_LENGTH = 16
 
-    #PYPP#BEGIN#
+    #PYPP#START#
     GDO_COUNT = 0
     GDO_ALIVE = 0
     GDO_MAX = 0
@@ -48,7 +48,7 @@ class GDO(WithBulk, GDT):
 
     def __init__(self):
         super().__init__()
-        #PYPP#BEGIN#
+        #PYPP#START#
         GDO.GDO_COUNT += 1
         GDO.GDO_ALIVE += 1
         GDO.GDO_MAX = max(GDO.GDO_MAX, GDO.GDO_ALIVE)
@@ -64,7 +64,7 @@ class GDO(WithBulk, GDT):
         self._my_id = None
         # self._my_gid = None
 
-    #PYPP#BEGIN#
+    #PYPP#START#
     def __del__(self):
         GDO.GDO_ALIVE -= 1
     #PYPP#END#

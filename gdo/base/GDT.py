@@ -45,7 +45,7 @@ class GDT(WithSerialization):
             return f"UNHEX('{cls.escape(val)}')"
         return f"'{cls.escape(val)}'"
 
-    #PYPP#BEGIN#
+    #PYPP#START#
     def __init__(self):
         from gdo.base.Application import Application
         if Application.config('core.gdt_debug') == '2':

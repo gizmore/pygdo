@@ -68,7 +68,7 @@ class Database:
         from gdo.base.Application import Application
         try:
             link = self.get_link()
-            #PYPP#BEGIN#
+            #PYPP#START#
             Application.DB_WRITES += 1
             self.debug_query(query, debug)
             #PYPP#END#
@@ -79,7 +79,7 @@ class Database:
     def select(self, query: str, dictionary: bool = True, gdo: 'GDO' = None, debug: bool = False):
         from gdo.base.Application import Application
         try:
-            #PYPP#BEGIN#
+            #PYPP#START#
             Application.DB_READS += 1
             self.debug_query(query, debug)
             #PYPP#END#
@@ -89,7 +89,7 @@ class Database:
         except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
 
-    #PYPP#BEGIN#
+    #PYPP#START#
     def debug_query(self, query: str, debug: bool = False):
         level = Application.config('db.debug')
         if level != '0' or debug:

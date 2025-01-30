@@ -24,7 +24,7 @@ class Cache:
     3) REDIS (FCACHE) is the tad slower process shared memory cache.
     (c) 2025 by gizmore@wechall.net and chappy@chappy-bot.net.
     """
-    #PYPP#BEGIN#
+    #PYPP#START#
     HITS = 0
     MISS = 0
     UPDATES = 0
@@ -59,7 +59,7 @@ class Cache:
             cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
 
-    #PYPP#BEGIN#
+    #PYPP#START#
     @classmethod
     def clear_stats(cls):
         cls.UPDATES = cls.MISS = cls.REMOVES = cls.HITS = 0

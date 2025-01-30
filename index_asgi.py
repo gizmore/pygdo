@@ -61,7 +61,7 @@ async def app(scope, receive, send):
             message = await receive()
             if message['type'] == 'lifespan.startup':
                 Application.init(os.path.dirname(__file__))
-                #PYPP#BEGIN#
+                #PYPP#START#
                 if Application.config('core.allocs', '0') == '1':
                     import tracemalloc
                     tracemalloc.start()
@@ -77,7 +77,7 @@ async def app(scope, receive, send):
             return
         assert scope['type'] == 'http', f"Type {scope['type']} not supported."
 
-        #PYPP#BEGIN#
+        #PYPP#START#
         GDT.GDT_MAX = 0
         GDO.GDO_MAX = 0
         GDT.GDT_COUNT = 0
@@ -234,7 +234,7 @@ async def app(scope, receive, send):
                     'more_body': more_body,
                 })
 
-            #PYPP#BEGIN#
+            #PYPP#START#
             if Application.config('core.allocs', '0') == '1':
                 if qs.get('__yappi', None):
                     import tracemalloc

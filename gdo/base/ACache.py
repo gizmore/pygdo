@@ -12,7 +12,7 @@ class ACache:
     """
     Async Redis cache
     """
-    #PYPP#BEGIN#
+    #PYPP#START#
     HITS = 0
     MISS = 0
     UPDATES = 0

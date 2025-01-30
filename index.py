@@ -41,7 +41,7 @@ def pygdo_application(environ, start_response):
         global SIDEBARS
         SIDEBARS = False
         from gdo.base.Cache import Cache
-        #PYPP#BEGIN#
+        #PYPP#START#
         global REQUEST_COUNT
         REQUEST_COUNT += 1
         GDT.GDT_MAX = 0
@@ -69,7 +69,7 @@ def pygdo_application(environ, start_response):
             Application.is_http(True)
             FRESH = False
         else:
-            #PYPP#BEGIN#
+            #PYPP#START#
             if Application.config('core.profile') == '1' and REQUEST_COUNT > 1:
                 import yappi
                 yappi.start()
@@ -193,7 +193,7 @@ def pygdo_application(environ, start_response):
             generator = ChunkedResponse(response)
             yield from generator.wsgi_generator()
 
-            #PYPP#BEGIN#
+            #PYPP#START#
             if Application.config('core.profile') == '1':
                 if qs.get('__yappi', None):
                     with open(Application.file_path('temp/yappi.log'), 'a') as f:

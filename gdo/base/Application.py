@@ -32,7 +32,7 @@ class Application:
     LANG_ISO = 'en'
     TIME = time.time()
     FIRST_TIME = time.time()
-    #PYPP#BEGIN#
+    #PYPP#START#
     DB_READS: int = 0
     DB_WRITES: int = 0
     DB_TRANSACTIONS: float = 0
