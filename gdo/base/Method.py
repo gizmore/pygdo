@@ -76,6 +76,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def is_processed(self) -> bool:
         return hasattr(self, '_result')
 
+    def input(self, key: str, val: str):
+        self.parameter(key).val(val)
+        return self
+
     ############
     # Abstract #
     ############

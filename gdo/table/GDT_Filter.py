@@ -1,4 +1,5 @@
 from gdo.base.GDT import GDT
+from gdo.base.GDO import GDO
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Template import tpl
 
@@ -13,6 +14,7 @@ class GDT_Filter(GDT_String):
         vals = {'field': self, 'gdt': gdt}
         if isinstance(gdt, GDT_String):
             return tpl('table', 'filter_string.html', vals)
+        return GDO.EMPTY_STR
 
     def filter_value(self, gdt: GDT):
         return ''

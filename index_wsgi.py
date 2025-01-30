@@ -82,6 +82,7 @@ def pygdo_application(environ, start_response):
         qs = parse_qs(environ['QUERY_STRING'])
 
         Application.request_method(environ['REQUEST_METHOD'])
+        args = ParseArgs()
 
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/'))
@@ -100,36 +101,37 @@ def pygdo_application(environ, start_response):
             session = GDO_Session.start(False)
             user = session.get_user()
             method = file_server().env_server(user.get_server()).env_user(user).env_session(session).input('_url', url)
+            method._raw_args = args
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
-            if isinstance(gdt, GDT_FileOut):
+            if type(gdt) is GDT_FileOut:
                 for chunk in gdt:
                     yield chunk
                 return
             yield gdt.render(Mode.HTML).encode()
             return
         else:
-            session = GDO_Session.start(True)
-            user = session.get_user()
+            if Files.is_dir(path):
+                session = GDO_Session.start(False)
+                user = session.get_user()
+                server = user.get_server()
+                method = dir_server().env_user(user, False).env_session(session).env_server(server).input('_url', url)
+                method._raw_args = args
+            else:
+                session = GDO_Session.start(True)
+                user = session.get_user()
+                server = user.get_server()
+                args.add_path_vars(url)
+                args.add_get_vars(qs)
+                method = args.get_method().env_user(user).env_session(session).env_server(server)
             Application.set_current_user(user)
             Application.set_session(session)
             Application.status("200 OK")
-            args = ParseArgs()
-            args.add_path_vars(url)
-            args.add_get_vars(qs)
             if Application.config('log.request', '0') == '1':
                 Logger.request(url, str(qs))
-            server = user.get_server()
-            # channel = None
-            if Files.is_dir(path):
-                # session = GDO_Session.start(False)
-                method = dir_server().env_user(user, False).env_session(session).env_server(server).input('_url', url)
-            else:
-                # parser = WebParser(user, server, channel, session)
-                method = args.get_method().env_user(user).env_session(session).env_server(server)
             if not method:
                 method = not_found().env_server(server).env_user(session.get_user()).input('_url', url)
 
@@ -182,7 +184,7 @@ def pygdo_application(environ, start_response):
                 page = Application.get_page()
                 result = page.result(result).method(method)
                 for module in ModuleLoader.instance().enabled():
-                    module.gdo_load_scripts(page)
+                    # module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
                 SIDEBARS = True
 
@@ -234,7 +236,7 @@ def error_page(ex, start_response, method: Method, status: str, trace: bool = Tr
     page = Application.get_page()
     if not SIDEBARS:
         for module in loader.enabled():
-            module.gdo_load_scripts(page)
+            # module.gdo_load_scripts(page)
             module.gdo_init_sidebar(page)
     response_body = page.method(method).result(result).render(Mode.HTML)
     response_headers = [
