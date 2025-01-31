@@ -55,7 +55,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
 
     def val(self, val: str | list):
         self._prev = self._val
-        self._val = val[0] if isinstance(val, list) and not self._multiple else val
+        self._val = val[0] if type(val) is list and not self._multiple else val
         self._converted = False
         return self
 

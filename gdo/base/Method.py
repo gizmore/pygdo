@@ -319,6 +319,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         if self._raw_args:
             for gdt in self.parameters():
                 if val := self._raw_args.get_val(gdt.get_name()):
+                    if not gdt.is_multiple():
+                        val = val[0]
                     gdt.val(val)
 #        from gdo.core.GDT_Repeat import GDT_Repeat
 #        from gdo.core.GDT_Field import GDT_Field

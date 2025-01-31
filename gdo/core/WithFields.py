@@ -1,3 +1,4 @@
+from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 
@@ -28,7 +29,7 @@ class WithFields:
     def fields(self) -> list[GDT]:
         if hasattr(self, '_fields'):
             return self._fields
-        return []
+        return GDO.EMPTY_LIST
 
     def all_fields(self) -> list[GDT]:
         """

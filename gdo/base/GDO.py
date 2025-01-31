@@ -229,7 +229,7 @@ class GDO(WithBulk, GDT):
         return 0 if col is None else int(col)
 
     def get_pk_columns(self) -> list[GDT]:
-       return [gdt.gdo(self) for gdt in Cache.pk_columns_for(self.__class__)]
+        return [gdt.gdo(self) for gdt in Cache.pk_columns_for(self.__class__)]
 
     def get_by(self, key: str, val: str):
         return self.get_by_vals({key: val})
