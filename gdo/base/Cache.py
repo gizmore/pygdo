@@ -182,7 +182,7 @@ class Cache:
         if rcached := cls.get(tn, gid):
             if delete:
                 cls.remove(tn, gid)
-            return cls.obj_for(gdo, rcached, False)
+            return cls.obj_for(gdo.__class__(), rcached, False)
 
     @classmethod
     def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False):
