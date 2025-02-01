@@ -21,7 +21,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.1")
-    CORE_REV = "PyGDOv8.0.1-r1244"
+    CORE_REV = "PyGDOv8.0.1-r1245"
 
     METHOD_CACHE = {}
 
@@ -214,3 +214,6 @@ class GDO_Module(WithModuleConfig, GDO):
 
     def subscribe(self, event_name: str, callback: callable, times: int = 2_000_000_000):
         Application.EVENTS.subscribe_times(event_name, callback, times)
+
+    def get_description(self) -> str:
+        return ''

@@ -8,8 +8,11 @@ from gdo.base.Render import Render, Mode
 from gdo.base.Result import Result
 from gdo.base.ResultArray import ResultArray
 from gdo.base.Trans import Trans
+from gdo.base.Util import href
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.core.GDT_Name import GDT_Name
 from gdo.table.MethodTable import MethodTable
+from gdo.ui.GDT_Link import GDT_Link
 
 
 class modules(MethodTable):
@@ -59,3 +62,6 @@ class modules(MethodTable):
         if gdt._gdo.is_persisted():
             return 'Y' if gdt._val == '1' else 'N'
         return ''
+
+    def render_module_name(self, gdt: GDT_Name, gdo: GDO_Module) -> str:
+        return GDT_Link().href(href('admin', 'configure', f"&module={gdo.get_name()}")).render()
