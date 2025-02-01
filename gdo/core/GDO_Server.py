@@ -46,6 +46,12 @@ class GDO_Server(GDO):
         self._channels = {}
         self._connector = None
 
+    def gdo_wake_up(self):
+        self._users = {}
+        self._has_loop = False
+        self._channels = {}
+        self._connector = None
+
     @classmethod
     def get_by_connector(cls, name: str):
         return cls.table().get_by_vals({"serv_connector": name})
