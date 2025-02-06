@@ -65,8 +65,8 @@ class Logger:
         stack = "".join(better_exceptions.format_exception(*sys.exc_info()))
         sys.stderr.write(str(ex)+"\n")
         sys.stderr.write(stack + "\n")
-        asyncio.ensure_future(cls.awrite('exception.log', str(ex), False))
-        asyncio.ensure_future(cls.awrite('exception.log', stack, False))
+        cls.write('exception.log', str(ex), False)
+        cls.write('exception.log', stack, False)
 
     @classmethod
     def write(cls, path: str, content: str, user_log: bool = True):

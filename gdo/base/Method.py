@@ -26,13 +26,8 @@ from gdo.base.WithError import WithError
 from gdo.base.WithPermissionCheck import WithPermissionCheck
 
 
-# class MyArgParser(argparse.ArgumentParser):
-#     def error(self, message):
-#         pass
-
-
 class Method(WithPermissionCheck, WithEnv, WithError, GDT):
-    _parameters: list[GDT]
+    _parameters: dict[str,GDT]
     _next_method: 'Method'  # Method chaining
     _result: str
     _raw_args: 'ParseArgs'
@@ -56,6 +51,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         # self._next = None
         # self._input = {}
         # self._args = []
+        # self._raw_args = ParseArgs()
         self._raw_args = None
         self._env_mode = Application.get_mode()
         self._env_http = True
@@ -78,11 +74,15 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return hasattr(self, '_result')
 
     def input(self, key: str, val: str):
-        self.parameter(key).val(val)
+        self._raw_args.add_get_vars({key: val})
         return self
 
     def args_copy(self, method: 'Method'):
         self._raw_args = method._raw_args
+        return self
+
+    def args(self, args: ParseArgs):
+        self._raw_args = args
         return self
 
     ############
@@ -206,16 +206,16 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     # Parameters #
     ##############
 
-    def parameters(self, reset: bool = False) -> list[GDT]:
+    def parameters(self, reset: bool = False) -> dict[str, GDT]:
         if not hasattr(self, '_parameters') or reset:
-            self._parameters = []
-            self._parameters.extend(self.gdo_parameters())
+            self._parameters = {gdt.get_name(): gdt for gdt in self.gdo_parameters()}
         return self._parameters
 
-    def parameter(self, name: str) -> GDT:
-        for gdt in self.parameters():
-            if gdt.get_name() == name:
-                return gdt
+    def parameter(self, key: str) -> GDT:
+        gdt = self.parameters().get(key)
+        val = self._raw_args.get_val(gdt.get_name(), gdt.get_initial())
+        val = val[0] if type(val) is list and not gdt.is_multiple() else val
+        return gdt.val(val)
 
     def param_val(self, key: str, throw: bool = True) -> str|None:
         gdt = self.parameter(key)
@@ -302,13 +302,13 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                 db.commit()
 
     async def _nested_execute(self, method: 'Method', return_gdt: bool = False):
-        i = 0
-        if method._raw_args:
-            for key, arg in method._raw_args.all_vals():
-                if isinstance(arg, Method):
-                    cont = method._raw_args.pargs if type(key) is int else method._raw_args.args
-                    cont[key] = await self._nested_execute(arg)
-                i += 1
+        # i = 0
+        # if method._raw_args:
+        #     for key, arg in method._raw_args.all_vals():
+        #         if isinstance(arg, Method):
+        #             cont = method._raw_args.pargs if type(key) is int else method._raw_args.args
+        #             cont[key] = await self._nested_execute(arg)
+        #         i += 1
         gdt = await method._nested_execute_parse()
         if return_gdt:
             return gdt
@@ -316,12 +316,13 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             return gdt.render(Mode.TXT)
 
     def _nested_parse(self):
-        if self._raw_args:
-            for gdt in self.parameters():
-                if val := self._raw_args.get_val(gdt.get_name()):
-                    if not gdt.is_multiple():
-                        val = val[0]
-                    gdt.val(val)
+        pass
+        # if self._raw_args:
+        #     for gdt in self.parameters().values():
+        #         if val := self._raw_args.get_val(gdt.get_name()):
+        #             if not gdt.is_multiple():
+        #                 val = val[0]
+        #             gdt.val(val)
 #        from gdo.core.GDT_Repeat import GDT_Repeat
 #        from gdo.core.GDT_Field import GDT_Field
         # parser = self.get_arg_parser(False)

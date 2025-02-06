@@ -26,6 +26,8 @@ from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
+from gdo.ui.GDT_Page import GDT_Page
+
 FRESH = True
 SIDEBARS = False
 REQUEST_COUNT = 0
@@ -100,25 +102,29 @@ def pygdo_application(environ, start_response):
         if Files.is_file(path):
             session = GDO_Session.start(False)
             user = session.get_user()
-            method = file_server().env_server(user.get_server()).env_user(user).env_session(session).input('_url', url)
-            method._raw_args = args
+            method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session).input('_url', url)
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
-            headers = Application.get_headers()
-            start_response(Application.get_status(), headers)
-            if type(gdt) is GDT_FileOut:
+            # headers = Application.get_headers()
+            # start_response(Application.get_status(), headers)
+            if isinstance(gdt, GDT_FileOut):
+                headers = Application.get_headers()
+                start_response(Application.get_status(), headers)
                 for chunk in gdt:
                     yield chunk
                 return
-            yield gdt.render(Mode.HTML).encode()
+            Application.header('Content-Type', 'text/html; Charset=UTF-8')
+            headers = Application.get_headers()
+            start_response(Application.get_status(), headers)
+            yield Application.get_page().method(method).result(gdt).render(Mode.HTML).encode()
             return
         else:
             if Files.is_dir(path):
                 session = GDO_Session.start(False)
                 user = session.get_user()
                 server = user.get_server()
-                method = dir_server().env_user(user, False).env_session(session).env_server(server).input('_url', url)
+                method = dir_server().env_user(user, False).env_session(session).env_server(server).copy_args(args).input('_url', url)
                 method._raw_args = args
             else:
                 session = GDO_Session.start(True)

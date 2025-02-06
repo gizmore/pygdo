@@ -23,8 +23,8 @@ class ParseArgs:
     def __repr__(self):
         return f"ParserArgs(module={self.module}, method={self.method}, args={self.args})"
 
-    def get_val(self, key: str) -> str | list[str]:
-        return self.args.get(key)
+    def get_val(self, key: str, default: str = "") -> list[str]:
+        return self.args.get(key, default)
 
     def all_vals(self) -> dict[str, list[str]]:
         yield from self.args.items()

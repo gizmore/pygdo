@@ -49,6 +49,10 @@ class MethodForm(Method):
             return form.get_field(key).flow_upload()
 
         for gdt in form.all_fields():
+            self.parameter(gdt.get_name())
+        for gdt in form.actions().all_fields():
+            self.parameter(gdt.get_name())
+        for gdt in form.all_fields():
             gdt.gdo_file_upload(self)
 
         for button in form.actions().fields():
@@ -80,12 +84,12 @@ class MethodForm(Method):
             self.err('%s', ('\n' + self.get_arg_parser(True).format_usage(),))
         return self.get_form()
 
-    def parameters(self, reset: bool = False) -> list[GDT]:
+    def parameters(self, reset: bool = False) -> dict[str,GDT]:
         if hasattr(self, '_parameters') and not reset:
             return self._parameters
         params = super().parameters()
-        self.get_form()
-        params.extend(self.form_parameters())
+        for gdt in self.form_parameters():
+            params[gdt.get_name()] = gdt
         return params
 
     def form_parameters(self) -> list[GDT]:

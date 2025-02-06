@@ -83,8 +83,8 @@ class GDO_Session(GDO):
         ip = instance.get_ip()
         if ip and ip != GDT_IP.current():
             return cls.blank_error()
-        if instance.gdo_val('sess_data'):
-            instance._data = instance.gdo_value('sess_data')
+        # if instance.gdo_val('sess_data'):
+        instance._data = instance.gdo_value('sess_data') or None
         return instance
 
     @classmethod
