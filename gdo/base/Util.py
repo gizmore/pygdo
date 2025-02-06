@@ -4,7 +4,6 @@ import functools
 import string
 
 import asyncio
-import aiofiles
 import magic
 
 import getpass
@@ -96,13 +95,15 @@ def url(module_name: str, method_name: str, append: str = '', fmt: str = 'html')
 @functools.cache
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'):
     from gdo.base.Application import Application
+    from gdo.base.ParseArgs import ParseArgs
     splitted = ''
     new_append = ''
     if append:
         for kv in append.lstrip('&').split('&'):
             key, val = kv.split('=')
             if not key.startswith('_'):
-                splitted += f";{key}.{val}"
+                val = val.replace(ParseArgs.ARG_SEPARATOR, ParseArgs.ESCAPED_SEPARATOR)
+                splitted += f"{ParseArgs.ENTRY_SEPARATOR}{key}{ParseArgs.ARG_SEPARATOR}{val}"
             else:
                 new_append += f"&{kv}"
     return f"/{module_name}.{method_name}{splitted}.{fmt}?_lang={Application.STORAGE.lang}{new_append}"
