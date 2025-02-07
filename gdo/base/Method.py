@@ -51,8 +51,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         # self._next = None
         # self._input = {}
         # self._args = []
-        # self._raw_args = ParseArgs()
-        self._raw_args = None
+        self._raw_args = ParseArgs()
+        # self._raw_args = None
         self._env_mode = Application.get_mode()
         self._env_http = True
         self._env_channel = None
@@ -213,7 +213,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
 
     def parameter(self, key: str) -> GDT:
         gdt = self.parameters().get(key)
-        val = self._raw_args.get_val(gdt.get_name(), gdt.get_initial())
+        val = self._raw_args.get_val(gdt.get_name(), gdt.get_val())
         val = val[0] if type(val) is list and not gdt.is_multiple() else val
         return gdt.val(val)
 

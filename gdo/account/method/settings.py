@@ -46,7 +46,7 @@ class settings(MethodForm):
         user = self._env_user
         module = self.get_module()
         out = []
-        for gdt in module.all_user_settings():
+        for gdt in module._all_user_settings():
             if gdt.is_writable():
                 key = gdt.get_name()
                 self._nested_parse()
