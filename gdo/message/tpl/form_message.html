@@ -4,9 +4,7 @@
 <textarea id="<%=field._name%>" name="<%=field._name%>"
 aria-label="<%=field.render_label(Mode.HTML)%>"
 <%=field.html_required()%>
-<%=field.html_readonly()%>>
-<%=field.html_value()%>
-</textarea>
-    <% if field.has_error():
-        write(f'<div class="form-field-error">%s</div>' % field.render_error())
-    %>
+<%=field.html_readonly()%>><%=field.html_value()%></textarea>
+<% if field.has_error():
+write(f'<div class="form-field-error">%s</div>' % field.render_error())
+%>

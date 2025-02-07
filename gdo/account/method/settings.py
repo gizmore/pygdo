@@ -1,4 +1,4 @@
-<import functools
+import functools
 
 from gdo.admin.GDT_Module import GDT_Module
 from gdo.base.GDO_Module import GDO_Module
@@ -60,4 +60,3 @@ class settings(MethodForm):
         if len(out):
             self.msg('msg_settings_changed', (" ".join(out),))
         return self.render_page()
-

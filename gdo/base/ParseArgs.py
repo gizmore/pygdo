@@ -46,7 +46,8 @@ class ParseArgs:
             parts = url.split(self.ENTRY_SEPARATOR)
             self.mode = Strings.rsubstr_from(parts[-1], '.', 'html')
             parts[-1] = Strings.rsubstr_to(parts[-1], '.', parts[-1])
-            self.module, self.method = parts[0].split('.', 1)
+            if parts[0].index('.'):
+                self.module, self.method = parts[0].split('.', 1)
             for part in parts[1:]:
                 key, val = part.split(self.ARG_SEPARATOR, 1)
                 self.args[key] = val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)

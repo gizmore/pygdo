@@ -28,7 +28,7 @@ class MethodTable(WithGDO, MethodForm):
             return self._parameters
         params = super().parameters()
         for gdt in self.table_parameters():
-            params.append(gdt)
+            params[gdt.get_name()] = gdt
         return params
 
     ################

@@ -78,12 +78,15 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return self
 
     def args_copy(self, method: 'Method'):
-        self._raw_args = method._raw_args
+        self._raw_args.args.update(method._raw_args.args)
         return self
 
     def args(self, args: ParseArgs):
         self._raw_args = args
         return self
+
+    def get_files(self) -> list[tuple[str]]:
+        return self._raw_args.files
 
     ############
     # Abstract #

@@ -1,5 +1,4 @@
 from gdo.base.Application import Application
-from gdo.base.GDO import GDO
 from gdo.base.Method import Method
 from gdo.base.Util import Files, href, urlencode, dump
 from gdo.core.GDO_File import GDO_File
