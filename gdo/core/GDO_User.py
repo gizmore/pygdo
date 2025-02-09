@@ -180,6 +180,8 @@ class GDO_User(GDO):
     def reset_setting(self, key: str):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
         GDO_UserSetting.table().delete_by_id(self.get_id(), key)
+        if key in self._settings:
+            del self._settings[key]
         return self
 
     ###############
