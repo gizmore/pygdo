@@ -85,8 +85,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         self._raw_args = args
         return self
 
-    def get_files(self) -> list[tuple[str]]:
-        return self._raw_args.files
+    def get_files(self, key: str) -> list[tuple[str, str, bytes]]:
+        return self._raw_args.files[key]
 
     ############
     # Abstract #

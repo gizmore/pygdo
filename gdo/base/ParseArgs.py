@@ -58,8 +58,8 @@ class ParseArgs:
     def add_post_vars(self, qs: dict[str,list[str]]):
         self.args.update(qs)
 
-    def add_file(self):
-        pass
+    def add_file(self, name: str, filename: str, raw_data: bytes):
+        self.files.append((name, filename, raw_data))
 
     def add_cli_line(self, cli_args: list[str]):
         pass

@@ -355,6 +355,11 @@ class Files:
     def dirname(cls, path: str) -> str:
         return os.path.dirname(path)
 
+    @classmethod
+    def move(cls, src: str, dest: str) -> bool:
+        os.rename(src, dest)
+        return True
+
 
 class Arrays:
     """

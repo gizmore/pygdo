@@ -8,10 +8,10 @@ from typing import Self
 from gdo.base.Exceptions import GDOException
 from gdo.base.Result import ResultType
 
-from gdo.base.Cache import Cache, gdo_instance_cached
+from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Query import Type, Query
-from gdo.base.Util import Strings, dump
+from gdo.base.Util import Strings
 from gdo.base.WithBulk import WithBulk
 
 
@@ -62,7 +62,6 @@ class GDO(WithBulk, GDT):
         self._dirty = []
         self._last_id = None
         self._my_id = None
-        # self._my_gid = None
 
     #PYPP#START#
     def __del__(self):
@@ -250,7 +249,7 @@ class GDO(WithBulk, GDT):
         ).first().exec().fetch_object()
 
     def pk_where(self) -> str:
-        return " AND ".join(map(lambda gdt: f"{gdt.get_name()}={GDT.quote(gdt._val)}", self.get_pk_columns()))
+        return " AND ".join(f"{gdt.get_name()}={GDT.quote(gdt._val)}" for gdt in self.get_pk_columns())
 
     def get_by_vals(self, vals: dict[str, str]):
         if cached := Cache.obj_search(self, vals):
@@ -263,7 +262,7 @@ class GDO(WithBulk, GDT):
     def get_id(self) -> str:
         if self._my_id:
             return self._my_id
-        id_ = self.ID_SEPARATOR.join(map(lambda gdt: gdt._val or '', self.get_pk_columns()))
+        id_ = self.ID_SEPARATOR.join(gdt._val or '' for gdt in self.get_pk_columns())
         if id_ and not id_.startswith('0') and not id_.startswith(':'):
             self._my_id = id_
         return id_

@@ -198,4 +198,4 @@ class GDT_File(GDT_Object):
     # Upload #
     ##########
     def flow_upload(self):
-        return GDT_String('result').val('test')
+        return GDT_String('result')
