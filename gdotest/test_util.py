@@ -66,7 +66,7 @@ class UtilityTestCase(unittest.TestCase):
 
     def test_href(self):
         result = href('core', 'profile', '&for=gizmore{2}')
-        self.assertEqual('/core.profile;for.gizmore{2}.html?_lang=en', result, 'href() does not work as expected.')
+        self.assertEqual('/core.profile;for~gizmore{2}.html?_lang=en', result, 'href() does not work as expected.')
 
     def test_with_random_seed(self):
         with Random(42):
