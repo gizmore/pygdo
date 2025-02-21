@@ -162,15 +162,15 @@ class GDO_User(GDO):
 
     def save_setting(self, key: str, val: str):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
-        # if val != self.get_setting_val(key):
-        self._settings[key] = val
-        self.save()
-        GDO_UserSetting.blank({
-            'uset_user': self.get_id(),
-            'uset_key': key,
-            'uset_val': val,
-        }).soft_replace()
-        Application.EVENTS.publish(f'user_setting_{key}_changed', self, val)
+        if val != self.get_setting_val(key):
+            self._settings[key] = val
+            self.save()
+            GDO_UserSetting.blank({
+                'uset_user': self.get_id(),
+                'uset_key': key,
+                'uset_val': val,
+            }).soft_replace()
+            Application.EVENTS.publish(f'user_setting_{key}_changed', self, val)
         return self
 
     def increase_setting(self, key: str, by: float | int):
