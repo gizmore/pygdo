@@ -6,6 +6,8 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 
+from gdo.base.Logger import Logger
+
 if TYPE_CHECKING:
     from gdo.base.GDO_Module import GDO_Module
 
@@ -122,9 +124,12 @@ class ModuleLoader:
             query.where(f"module_enabled=%i" % enabled)
         result = query.order('module_priority').exec()
         for db in result:
-            fs = self.gdo_import(db.gdo_val('module_name'))
-            fs._vals = db._vals
-            back.append(fs.all_dirty(False))
+            try:
+                fs = self.gdo_import(db.gdo_val('module_name'))
+                fs._vals = db._vals
+                back.append(fs.all_dirty(False))
+            except Exception as ex:
+                Logger.exception(ex)
         self._enabled = back
         return back
 
@@ -177,7 +182,8 @@ class ModuleLoader:
         result = GDO_ModuleVal.table().select('module_name, mv_key, mv_val').join_object('mv_module').all().exec(False).iter(ResultType.ROW)
         for config in result:
             module_name, key, val = config
-            self.get_module(module_name).config_column(key).initial(val)
+            if module := self.get_module(module_name):
+                module.config_column(key).initial(val)
 
     def init_cli(self):
         """

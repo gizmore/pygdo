@@ -108,7 +108,6 @@ async def app(scope, receive, send):
         if '_lang' in qs:
             lang = qs['_lang'][0]
             del qs['_lang']
-        # del qs['url']
         Application.STORAGE.lang = lang
 
         path = Application.file_path(url.lstrip('/'))
@@ -155,9 +154,7 @@ async def app(scope, receive, send):
                 args = ParseArgs()
                 args.add_path_vars(url)
                 args.add_get_vars(qs)
-                # parser = WebParser(user, server, channel, session)
                 try:
-#                    method = parser.parse(url.lstrip('/'))
                     method = args.get_method()
                 except (GDOModuleException, GDOMethodException):
                     method = not_found().env_server(server).env_user(user).input('_url', url)
@@ -180,7 +177,6 @@ async def app(scope, receive, send):
                     for part in parser:
                         if part.filename:
                             args.add_file(part.name, part.filename, part.raw)
-                            # method.add_file(part.name, part.filename, part.raw)
                         else:
                             qs[part.name] = part.value
                     for part in parser.parts():
@@ -188,7 +184,6 @@ async def app(scope, receive, send):
                     args.add_post_vars(qs)
                 else:
                     args.add_post_vars(parse_qs(body.decode()))
-#                    qs.update(parse_qs(body.decode()))
 
             method._raw_args = args
             method.env_user(user).env_session(session).env_server(user.get_server())
@@ -217,7 +212,6 @@ async def app(scope, receive, send):
             if Application.get_mode() == Mode.HTML:
                 Application.header('Content-Type', 'text/html; charset=UTF-8')
                 for module in ModuleLoader.instance().enabled():
-                    # module.gdo_load_scripts(page)
                     module.gdo_init_sidebar(page)
                 result = page.result(result).method(method).render_html()
             elif mode.is_html():
