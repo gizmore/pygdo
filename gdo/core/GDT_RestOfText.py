@@ -12,3 +12,6 @@ class GDT_RestOfText(GDT_Repeat):
         if Arrays.empty(vals):
             return None
         return " ".join(vals)
+
+    def render_form(self) -> str:
+        return self._proxy.render_form()
