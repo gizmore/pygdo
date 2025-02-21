@@ -320,6 +320,8 @@ class GDO(WithBulk, GDT):
             self.after_update()
             obj = Cache.update_for(obj)
             obj.all_dirty(False)
+        else:
+            obj = Cache.update_for(obj)
         return obj
 
     ##########
