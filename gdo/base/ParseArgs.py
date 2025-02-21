@@ -1,3 +1,4 @@
+from gdo.base.Logger import Logger
 from gdo.base.Util import Strings
 
 from typing import TYPE_CHECKING
@@ -41,16 +42,19 @@ class ParseArgs:
     #############
 
     def add_path_vars(self, url: str):
-        if url:
-            url = url.lstrip('/').replace(self.ESCAPED_SEPARATOR, self.TEMP_MARKER)
-            parts = url.split(self.ENTRY_SEPARATOR)
-            self.mode = Strings.rsubstr_from(parts[-1], '.', 'html')
-            parts[-1] = Strings.rsubstr_to(parts[-1], '.', parts[-1])
-            if parts[0].index('.'):
-                self.module, self.method = parts[0].split('.', 1)
-            for part in parts[1:]:
-                key, val = part.split(self.ARG_SEPARATOR, 1)
-                self.args[key] = val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)
+        try:
+            if url:
+                url = url.lstrip('/').replace(self.ESCAPED_SEPARATOR, self.TEMP_MARKER)
+                parts = url.split(self.ENTRY_SEPARATOR)
+                self.mode = Strings.rsubstr_from(parts[-1], '.', 'html')
+                parts[-1] = Strings.rsubstr_to(parts[-1], '.', parts[-1])
+                if parts[0].index('.'):
+                    self.module, self.method = parts[0].split('.', 1)
+                for part in parts[1:]:
+                    key, val = part.split(self.ARG_SEPARATOR, 1)
+                    self.args[key] = val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)
+        except Exception as ex:
+            Logger.exception(ex)
 
     def add_get_vars(self, qs: dict[str,list[str]]):
         self.args.update(qs)

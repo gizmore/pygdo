@@ -168,6 +168,9 @@ class Cache:
     @classmethod
     def obj_search_id(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
         gid = ":".join(v for v in vals.values())
+        if delete:
+            cls.obj_search_gid(gdo, gid, delete)
+            return gdo
         return cls.obj_search_gid(gdo, gid, delete)
 
     @classmethod
@@ -178,11 +181,13 @@ class Cache:
             if delete:
                 del cls.OCACHE[tn][gid]
                 cls.remove(tn, gid)
-            return ocached # cls.obj_for(ocached, None, False)
+            else:
+                return ocached
         if rcached := cls.get(tn, gid):
             if delete:
                 cls.remove(tn, gid)
-            return cls.obj_for(gdo.__class__(), rcached, False)
+            else:
+                return cls.obj_for(gdo.__class__(), rcached, False)
 
     @classmethod
     def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False):
