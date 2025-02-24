@@ -5,15 +5,16 @@ from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core import module_core
 from gdo.core.connector.Web import Web
+from gdotest.TestUtil import GDOTestCase
 
 
-class ModuleConfigTestCase(unittest.TestCase):
+class ModuleConfigTestCase(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
-        return self
 
     def test_01_module_config(self):
         mod = module_core.instance()
