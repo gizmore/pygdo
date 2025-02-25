@@ -8,10 +8,10 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.form.GDT_CSRF import GDT_CSRF
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
-from gdotest.TestUtil import web_gizmore
+from gdotest.TestUtil import web_gizmore, GDOTestCase
 
 
-class FormTestCase(unittest.TestCase):
+class FormTestCase(GDOTestCase):
 
     def setUp(self):
         Application.init(os.path.dirname(__file__) + "/../")
