@@ -9,7 +9,7 @@ from gdo.core.Connector import Connector
 from gdo.core.GDT_String import GDT_String
 
 
-class config(Method):
+class conf(Method):
     """
     Get the list of config, the list of config for a module, state of a config var or set a config var
     """

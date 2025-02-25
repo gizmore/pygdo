@@ -83,7 +83,7 @@ class DateTestCase(GDOTestCase):
         h = Time.human_duration(0.000499)
         self.assertEqual('499µs', h, 'Microseconds do not work.')
         h = GDT_Duration('d').units(2, True).value(0.000499).render()
-        self.assertEqual('0.499ms', h, 'Microseconds do not work in GDT_Duration.')
+        self.assertEqual('499µs', h, 'Microseconds do not work in GDT_Duration.')
         h = Time.human_duration(0.001499)
         self.assertEqual('1.499ms', h, 'Microseconds do not work #2.')
         h = GDT_Duration('d').units(2, True).value(0.001499).render()

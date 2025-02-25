@@ -38,7 +38,8 @@ class MethodForm(Method):
             self.gdo_create_form(self._form)
         if reset:
             delattr(self, '_parameters')
-            # self._nested_parse()
+        for gdt in self._form.all_fields():
+            gdt.val(self._raw_args.get_val(gdt.get_name(), gdt.get_initial()))
         return self._form
 
     def gdo_execute(self) -> GDT:
