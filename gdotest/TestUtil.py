@@ -23,7 +23,7 @@ from gdo.core.GDO_Session import GDO_Session
 from gdo.core.connector.Web import Web
 from gdo.core.connector.Bash import Bash
 from gdo.install.Installer import Installer
-from index import application
+from index_wsgi import application
 
 
 class GDOTestCase(unittest.IsolatedAsyncioTestCase):
