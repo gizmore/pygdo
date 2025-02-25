@@ -3,12 +3,13 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
-from gdotest.TestUtil import install_module, cli_plug
+from gdotest.TestUtil import install_module, cli_plug, GDOTestCase
 
 
-class MathTestCase(unittest.TestCase):
+class MathTestCase(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
