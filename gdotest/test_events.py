@@ -5,9 +5,10 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
+from gdotest.TestUtil import GDOTestCase
 
 
-class EventsTestCase(unittest.TestCase):
+class EventsTestCase(GDOTestCase):
 
     def setUp(self):
         Application.init(os.path.dirname(__file__) + "/../")
