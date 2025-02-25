@@ -103,7 +103,7 @@ class WebPlug:
 
     def exec(self):
         parts = self._url.split('?')
-        url = urllib.parse.quote_plus('index.py/' + parts[0])
+        url = urllib.parse.quote_plus('index_wsgi.py/' + parts[0])
         query = '&' + parts[1] if len(parts) > 1 else ''
         self._environ = {
             'REMOTE_ADDR': self._ip,
