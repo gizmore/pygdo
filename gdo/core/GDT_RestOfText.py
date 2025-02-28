@@ -13,5 +13,8 @@ class GDT_RestOfText(GDT_Repeat):
             return None
         return " ".join(vals)
 
+    def is_multiple(self) -> bool:
+        return True
+
     def render_form(self) -> str:
         return self._proxy.render_form()

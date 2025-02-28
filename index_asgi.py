@@ -207,7 +207,7 @@ async def app(scope, receive, send):
                     })
                 return
 
-            mode = Application.get_mode()
+            mode = args.get_mode()
             page = Application.get_page()
             if Application.get_mode() == Mode.HTML:
                 Application.header('Content-Type', 'text/html; charset=UTF-8')

@@ -14,7 +14,7 @@ class echo(Method):
 
     def gdo_parameters(self) -> [GDT]:
         return [
-            GDT_String('sep').initial(' '),
+            # GDT_String('sep').initial(' '),
             GDT_RestOfText('text').not_null(),
         ]
 
@@ -22,6 +22,4 @@ class echo(Method):
         return self.param_val('sep') or ''  # Can be null
 
     def gdo_execute(self) -> GDT:
-        vals_ = self.param_val('text')
-        value = self.get_separator().join(vals_)
-        return GDT_String('text').val(value)
+        return GDT_String('text').val(self.param_value('text'))

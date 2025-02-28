@@ -11,6 +11,9 @@ class GDT_Repeat(WithProxy, GDT_Field):
     def is_positional(self) -> bool:
         return True
 
+    def is_multiple(self) -> bool:
+        return True
+
     def val(self, val: str | list):
         self._val = val
         self._converted = False

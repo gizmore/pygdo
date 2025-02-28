@@ -51,12 +51,12 @@ class WebTestCase(GDOTestCase):
         self.assertIn('margin:', out, "CSS asset pygdo.css cannot be served by web handler.")
 
     def test_07_web_path_echo_cli(self):
-        req = WebPlug("core.echo;text.This.is.a.test.cli")
+        req = WebPlug("core.echo;text~This.is.a.test.cli")
         out = req.exec()
         self.assertEqual('This.is.a.test', out, "CLI echo does not work properly")
 
     def test_08_web_path_echo_txt(self):
-        req = WebPlug("core.echo;text.This.is.a.test.txt")
+        req = WebPlug("core.echo;text~This.is.a.test.txt")
         out = req.exec()
         self.assertEqual('This.is.a.test', out, "TXT echo does not work properly")
 

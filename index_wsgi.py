@@ -178,7 +178,7 @@ def pygdo_application(environ, start_response):
                     yield chunk
                 return
             
-            mode = Application.get_mode()
+            mode = args.get_mode()
             if Application.is_html():
                 Application.header('Content-Type', 'text/html; Charset=UTF-8')
             elif mode == Mode.JSON:

@@ -1,4 +1,5 @@
 from gdo.base.Logger import Logger
+from gdo.base.Render import Mode
 from gdo.base.Util import Strings
 
 from typing import TYPE_CHECKING
@@ -52,7 +53,7 @@ class ParseArgs:
                     self.module, self.method = parts[0].split('.', 1)
                 for part in parts[1:]:
                     key, val = part.split(self.ARG_SEPARATOR, 1)
-                    self.args[key] = val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)
+                    self.args[key] = [val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)]
         except Exception as ex:
             Logger.exception(ex)
 
@@ -73,3 +74,6 @@ class ParseArgs:
             if param.name in self.possible_multiple and param.is_multiple():
                 if not isinstance(self.args.get(param.name), list):
                     self.args[param.name] = [self.args[param.name]]
+
+    def get_mode(self):
+        return Mode[self.mode.upper()]
