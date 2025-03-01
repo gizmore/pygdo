@@ -19,3 +19,8 @@ class WithProxy:
     def is_not_null(self) -> bool:
         return self._proxy.is_not_null()
 
+    # def get_val(self):
+    #     return self._proxy.get_val()
+    #
+    # def get_value(self):
+    #     return self._proxy.get_value()

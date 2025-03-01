@@ -15,7 +15,6 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.base.Parser import WebParser
 from gdo.base.Render import Mode
 from gdo.base.Util import (Strings, Files, dump, bytelen, err)
 from gdo.base.method.client_error import client_error
@@ -26,7 +25,6 @@ from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
-from gdo.ui.GDT_Page import GDT_Page
 
 FRESH = True
 SIDEBARS = False

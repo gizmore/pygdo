@@ -226,7 +226,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         gdt = self.parameters().get(key)
         val = None
         if gdt.is_positional():
-            if (gdt._position + 1) <= len(self._raw_args.pargs):
+            if gdt._position <= len(self._raw_args.pargs):
                 if gdt.is_multiple():
                     val = self._raw_args.pargs[gdt._position - 1:]
                 else:

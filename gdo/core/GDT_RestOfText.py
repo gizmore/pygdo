@@ -8,10 +8,10 @@ class GDT_RestOfText(GDT_Repeat):
     def __init__(self, name):
         super().__init__(GDT_String(name))
 
-    def to_value(self, vals: list[str]):
-        if Arrays.empty(vals):
-            return None
-        return " ".join(vals)
+    # def to_value(self, vals: list[str]):
+    #     if Arrays.empty(vals):
+    #         return None
+    #     return " ".join(vals)
 
     def is_multiple(self) -> bool:
         return True
