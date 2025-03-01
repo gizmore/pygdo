@@ -23,12 +23,12 @@ class WebTestCase(GDOTestCase):
         self.assertIsInstance(method, echo, "Cannot load method echo via web means")
 
     def test_02_web_plug_echo(self):
-        req = WebPlug("core.echo;text.This%20Test.html?_lang=de")
+        req = WebPlug("core.echo;text~This%20Test.html?_lang=de")
         out = req.exec()
         self.assertIn('This Test', out, "Plugged web test failed")
 
     def test_03_json_via_web(self):
-        req = WebPlug("core.echo;text.This%20Test.json?_lang=de")
+        req = WebPlug("core.echo;text~This%20Test.json?_lang=de")
         out = req.exec()
         self.assertIn('{', out, "web json test failed")
         self.assertIn('"text":', out, "web json test failed")

@@ -216,6 +216,9 @@ class GDT(WithSerialization):
     def default_order(self) -> str:
         return 'ASC'
 
+    def position(self, n: int):
+        return self
+
     ###################
     # Render HTML TPL #
     ###################

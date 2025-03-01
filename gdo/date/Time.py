@@ -308,15 +308,17 @@ class Time:
     def _human_duration_raw(cls, seconds: float, n_units: int, factors: dict, with_millis: bool = True, remove_zero_units: bool = True) -> str:
         values = []
         factor_keys = list(factors.keys())
-        for unit in factor_keys[:2]:  # 'us' and 'ms'
-            remainder = seconds * factors[unit]
-            remainder, value = divmod(remainder, 1000)
-            values.append((int(value), unit))
+        if with_millis:
+            for unit in factor_keys[:2]:  # 'us' and 'ms'
+                remainder = seconds * factors[unit]
+                remainder, value = divmod(remainder, 1000)
+                values.append((int(value), unit))
         remainder = int(seconds)
         for unit in factor_keys[2:]:  # 's' and above
             remainder, value = divmod(remainder, factors[unit])
-            values.append((int(value), unit))
-        result = " ".join(f"{v}{u}" for v, u in reversed(values) if v)
+            if int(value):
+                values.append((int(value), unit))
+        result = " ".join(f"{v}{u}" for v, u in reversed(values[-n_units:]) if v)
         return result if result else "0s"
 
     @classmethod

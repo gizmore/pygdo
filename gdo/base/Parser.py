@@ -118,20 +118,18 @@ class Parser:
         """
         Turn the tokens into a method tree and apply args
         """
-        tokens[0] = self.get_method(tokens[0][1:])
+        tokens[0] = method = self.get_method(tokens[0][1:])
 
         # Automatically click submit button in CLI
         from gdo.form.MethodForm import MethodForm
-        if not self._is_http and isinstance(tokens[0], MethodForm):
-            tokens[0].cli_auto_button()
-
+        if isinstance(tokens[0], MethodForm):
+            method.cli_auto_button()
         for t in tokens[1:]:
             if isinstance(t, list):
-                tokens[0].arg(self.methodize(t))
+                method._raw_args.add_cli_part(self.methodize(t))
             else:
-                tokens[0].arg(t)
-
-        return tokens[0]
+                method._raw_args.add_cli_part(t)
+        return method
 
     def get_method(self, cmd: str) -> Method | None:
         method = ModuleLoader.instance().get_method(cmd)

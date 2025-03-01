@@ -61,6 +61,7 @@ class Application:
         Trans.init()
         os.environ['TZ'] = 'UTC'
         time.tzset()
+        cls.STORAGE.request_method = 'POST'
         cls.LOADER = ModuleLoader()
         cls.EVENTS = Events()
         config_path = 'protected/config_test.toml' if cls.is_unit_test() else config_file

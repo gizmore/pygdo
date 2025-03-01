@@ -212,11 +212,27 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def parameters(self, reset: bool = False) -> dict[str, GDT]:
         if not hasattr(self, '_parameters') or reset:
             self._parameters = {gdt.get_name(): gdt for gdt in self.gdo_parameters()}
+            self.set_parameter_positions()
         return self._parameters
+
+    def set_parameter_positions(self):
+        n = 1
+        for gdt in self._parameters.values():
+            if gdt.is_positional():
+                gdt.position(n)
+                n += 1
 
     def parameter(self, key: str) -> GDT:
         gdt = self.parameters().get(key)
-        val = self._raw_args.get_val(gdt.get_name(), gdt.get_val())
+        val = None
+        if gdt.is_positional():
+            if (gdt._position + 1) <= len(self._raw_args.pargs):
+                if gdt.is_multiple():
+                    val = self._raw_args.pargs[gdt._position - 1:]
+                else:
+                    val = [self._raw_args.pargs[gdt._position - 1]]
+        if val is None:
+            val = self._raw_args.get_val(gdt.get_name(), gdt.get_val())
         val = val[0] if type(val) is list and not gdt.is_multiple() else val
         return gdt.val(val)
 
@@ -609,6 +625,19 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def channels_with_setting(self, key: str, val: str):
         from gdo.core.GDO_Channel import GDO_Channel
         return GDO_Channel.with_setting(self._env_server, key, val, self.get_config_channel(key).get_initial())
+
+    ###
+
+    def render_cli_usage(self) -> str:
+        positional = []
+        optional = []
+        for gdt in self.parameters().values():
+            label = gdt.get_name()
+            if not gdt.is_positional():
+                optional.append(f"[--{label}]")
+            else:
+                positional.append(f"<{label}>")
+        return f"{self.gdo_trigger()} {self.gdo_}\nUsage: {self.gdo_trigger()} {' '.join(optional + positional)}"
 
     ##########
     # Render #

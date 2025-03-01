@@ -1,3 +1,4 @@
+from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Util import Strings
@@ -17,6 +18,7 @@ class ParseArgs:
         self.module = None
         self.method = None
         self.mode = None
+        self._last_key = None
         self.args = {}  # Stores parsed key-value arguments
         self.pargs = []
         self.files = []
@@ -66,8 +68,21 @@ class ParseArgs:
     def add_file(self, name: str, filename: str, raw_data: bytes):
         self.files.append((name, filename, raw_data))
 
+    def add_cli_part(self, part: str|GDT):
+        if type(part) is str and part.startswith('--'):
+            self._last_key = part.lstrip('-')
+        elif self._last_key:
+            self.args[self._last_key] = part
+            self._last_key = None
+        else:
+            self.pargs.append(part)
+
     def add_cli_line(self, cli_args: list[str]):
-        pass
+        for part in cli_args:
+            self.add_cli_part(part)
+
+    # def add_positional(self, *pos_arg: str):
+    #     self.pargs.extend(pos_arg)
 
     def finalize_with_gdt(self, gdt_params):
         for param in gdt_params:
@@ -77,3 +92,4 @@ class ParseArgs:
 
     def get_mode(self):
         return Mode[self.mode.upper()]
+

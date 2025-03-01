@@ -19,6 +19,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     _writable: bool
     _hidden: bool
     _positional: bool | None
+    _position: int
     _multiple: bool
 
     def __init__(self, name: str):
@@ -34,6 +35,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         self._writable = True
         self._hidden = False
         self._positional = None
+        self._position = -1
         self._multiple = False
 
     def get_name(self):
@@ -104,6 +106,10 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
 
     def positional(self, positional: bool = True):
         self._positional = positional
+        return self
+
+    def position(self, n: int):
+        self._position = n
         return self
 
     def is_positional(self) -> bool:
