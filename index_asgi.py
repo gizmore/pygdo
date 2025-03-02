@@ -3,7 +3,6 @@ import io
 import os
 import sys
 from asyncio import iscoroutine
-from crypt import methods
 from urllib.parse import parse_qs
 
 import better_exceptions
@@ -18,7 +17,6 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.ParseArgs import ParseArgs
-from gdo.base.Parser import WebParser
 from gdo.base.Render import Mode
 from gdo.base.Util import Files, jsn
 from gdo.base.method.dir_server import dir_server

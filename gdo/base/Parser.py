@@ -1,21 +1,17 @@
-from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOModuleException, GDOParamNameException, GDOError
+from gdo.base.Exceptions import GDOModuleException, GDOError
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.base.Render import Mode
-from gdo.base.Util import Strings, err, err_raw, dump
 
 
 class Parser:
     """
     Parse a CLI line into PyGDO Method.
-    Syntax: echo 1 $(echo $(sum 2 3) will print 15
+    Syntax: echo 1 $(echo $(sum 2 3) will print 1 5
     """
     _user: object
     _server: object
     _channel: object
     _session: object
-    _is_http: bool
 
     def __init__(self, mode, user, server, channel, session):
         super().__init__()
@@ -24,7 +20,6 @@ class Parser:
         self._server = server
         self._channel = channel
         self._session = session
-        self._is_http = False
 
     def parse(self, line: str) -> Method:
         line = line.strip()
@@ -138,54 +133,5 @@ class Parser:
         return self.decorate_method(method)
 
     def decorate_method(self, method: Method):
-        # if method is None:
-        #     return None
         return (method.env_user(self._user).env_server(self._server).env_channel(self._channel).
-                env_session(self._session).env_mode(self._mode).env_http(self._is_http))
-
-#
-# class WebParser(Parser):
-#
-#     def __init__(self, user, server, channel, session):
-#         super().__init__(Mode.HTML, user, server, channel, session)
-#         self._is_http = True
-#
-#     def parse(self, url: str):
-#         return super().parse(self.build_line(url))
-#
-#     def build_line(self, url: str) -> str:
-#         """
-#         Builds a CLI command line from a web url
-#         """
-#         qa = url.split('?', 1)
-#         line = qa[0]
-#         ext = Strings.rsubstr_from(line, '.')
-#         try:
-#             mode = Mode[ext.upper()]
-#             self._mode = mode
-#             Application.mode(mode)
-#         except KeyError as ex:
-#             err('err_render_mode', (ext.upper(),))
-#         line = Strings.rsubstr_to(line, '.')  # remove extension
-#         parts = line.split(';')
-#         cmd = parts[0]  # command part
-#         self.get_method(cmd)  # Check early, else 404 is not shown -.-
-#         for part in parts[1:]:
-#             try:
-#                 parts = part.split('.', 1)
-#                 param_name, param_value = parts
-#                 cmd += f' --{param_name} "{param_value}"'
-#             except ValueError:
-#                 raise GDOParamNameException(cmd, line)
-#         return cmd
-#
-#     def get_method(self, cmd: str) -> Method | None:
-#         try:
-#             loader = ModuleLoader.instance()
-#             mod_method = Strings.substr_to(cmd, ';', cmd)
-#             module_name = Strings.substr_to(mod_method, '.')
-#             method_name = Strings.substr_from(mod_method, '.')
-#             method = loader._cache[module_name].get_method(method_name)
-#             return super().decorate_method(method)
-#         except KeyError:
-#             raise GDOModuleException(Strings.html(cmd))
+                env_session(self._session).env_mode(self._mode).env_http(False))

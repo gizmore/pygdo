@@ -1,3 +1,4 @@
+from gdo.base.Exceptions import GDOModuleException
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
@@ -35,10 +36,13 @@ class ParseArgs:
         yield from enumerate(self.pargs)
 
     def get_method(self) -> 'Method':
-        from gdo.base.ModuleLoader import ModuleLoader
-        method = ModuleLoader.instance().get_module_method(self.module, self.method)
-        method._raw_args = self
-        return method
+        try:
+            from gdo.base.ModuleLoader import ModuleLoader
+            method = ModuleLoader.instance().get_module_method(self.module, self.method)
+            method._raw_args = self
+            return method
+        except:
+            raise GDOModuleException(self.module)
 
     #############
     # Add input #
