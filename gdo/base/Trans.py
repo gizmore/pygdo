@@ -79,13 +79,13 @@ class Trans:
 
     @classmethod
     def tiso(cls, iso: str, key: str, args: tuple=None):
-        # try:
-        key = cls.CACHE.get(iso, cls.EN).get(key, key)
-        return key % args if args else key
-        # except:
-        #     if args:
-        #         return key + "(" + str(args) + ")"
-        #     return key
+        try:
+            key = cls.CACHE.get(iso, cls.EN).get(key, cls.EN.get(key))
+            return key % args if args else key
+        except:
+            if args:
+                return key + "(" + str(args) + ")"
+            return key
 
     @classmethod
     def has(cls, key: str) -> bool:

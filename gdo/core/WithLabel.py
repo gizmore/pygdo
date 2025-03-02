@@ -1,5 +1,5 @@
 from gdo.base.Render import Mode
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, dump
 from gdo.base.Trans import t
 
 

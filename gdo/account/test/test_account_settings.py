@@ -3,19 +3,19 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
-from gdotest.TestUtil import cli_plug, reinstall_module, cli_gizmore, web_plug
+from gdotest.TestUtil import cli_plug, reinstall_module, cli_gizmore, web_plug, GDOTestCase
 
 
-class AccountTest(unittest.TestCase):
+class AccountTest(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__ + "/../../../../"))
         Application.init_cli()
-        ModuleLoader.instance().load_modules_db()
         reinstall_module('account')
+        ModuleLoader.instance().load_modules_db()
         ModuleLoader.instance().init_modules(True, True)
         ModuleLoader.instance().init_cli()
-        return self
 
     def test_01_settings(self):
         result = cli_plug(None, '$settings')
@@ -24,7 +24,7 @@ class AccountTest(unittest.TestCase):
     def test_02_print_setting(self):
         result = cli_plug(None, '$set language')
         self.assertIn('language', result, 'print setting does not work')
-        self.assertIn('Your system language', result, 'print setting does not work #2')
+        self.assertIn('Your setting for language', result, 'print setting does not work #2')
 
     def test_03_set_language(self):
         result = cli_plug(None, '$set language de')
@@ -34,25 +34,25 @@ class AccountTest(unittest.TestCase):
         cli_plug(None, '$set language en')
 
     def test_04_all_settings_web(self):
-        out = web_plug('login.form.html').exec()
-        out = web_plug('login.form.html').post({"submit": "1", "bind_ip": "1", "login": "gizmore", "password": "11111111"}).exec()
-        out = web_plug('account.all_settings.html').exec()
+        out = web_plug('login.form.html').user('gizmore').exec()
+        out = web_plug('login.form.html').user('gizmore').post({"submit": "1", "bind_ip": "1", "login": "gizmore", "password": "11111111"}).exec()
+        out = web_plug('account.all_settings.html').user('gizmore').exec()
         self.assertIn('Language', out, 'Language module not shown in all_settings().')
 
     def test_05_render_single_settings(self):
-        out = web_plug('login.form.html').exec()
-        out = web_plug('login.form.html').post({"submit": "1", "bind_ip": "1", "login": "gizmore", "password": "11111111"}).exec()
-        out = web_plug('account.settings;module.language.html').exec()
+        out = web_plug('login.form.html').user('gizmore').exec()
+        out = web_plug('login.form.html').user('gizmore').post({"submit": "1", "bind_ip": "1", "login": "gizmore", "password": "11111111"}).exec()
+        out = web_plug('account.settings;module~language.html').user('gizmore').exec()
         self.assertIn('Change Language settings', out, 'Module Language does not appear in account.settings(Language).')
 
     def test_06_change_single_setting(self):
         out = web_plug('login.form.html').exec()
         out = web_plug('login.form.html').post({"submit": "1", "bind_ip": "1", "login": "gizmore", "password": "11111111"}).exec()
-        out = web_plug('account.settings;module.language.html').post({'language': 'de', 'submit_language': '1'}).exec()
+        out = web_plug('account.settings;module~language.html').user('gizmore').post({'language': 'de', 'submit_language': '1'}).exec()
         self.assertIn('de', out, 'Cannot change language settings #1.')
-        out = web_plug('account.settings;module.language.html').post({'language': 'en', 'submit_language': '1'}).exec()
+        out = web_plug('account.settings;module~language.html').user('gizmore').post({'language': 'en', 'submit_language': '1'}).exec()
         self.assertIn('en', out, 'Cannot change language settings #2.')
-        out = web_plug('account.settings;module.mail.html').post({'submit_mail': '1'}).exec()
+        out = web_plug('account.settings;module~mail.html').user('gizmore').post({'submit_mail': '1'}).exec()
         self.assertIn('submit_mail', out, 'Cannot save email settings.')
 
 

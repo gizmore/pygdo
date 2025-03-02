@@ -4,6 +4,7 @@ import traceback
 
 from typing_extensions import TYPE_CHECKING
 
+from gdo.base.Trans import Trans, t
 from gdo.base.WithSerialization import WithSerialization
 
 if TYPE_CHECKING:
@@ -203,6 +204,10 @@ class GDT(WithSerialization):
 
     def has_tooltip(self) -> bool:
         return False
+
+    def get_tooltip_text(self) -> str:
+        key = f"tt_{self.get_name()}"
+        return t(key) if Trans.has(key) else ''
 
     def fields(self) -> list:
         return []

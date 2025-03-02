@@ -208,9 +208,8 @@ class GDO(WithBulk, GDT):
         if key in self._dirty:
             if not dirty:
                 self._dirty.remove(key)
-        else:
-            if dirty:
-                self._dirty.append(key)
+        elif dirty:
+            self._dirty.append(key)
         return self
 
     def all_dirty(self, dirty: bool=True):
@@ -319,8 +318,7 @@ class GDO(WithBulk, GDT):
             obj.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where()).exec()
             obj.after_update()
             obj.all_dirty(False)
-        obj = Cache.update_for(obj)
-        return obj
+        return Cache.update_for(obj)
 
     ##########
     # Delete #

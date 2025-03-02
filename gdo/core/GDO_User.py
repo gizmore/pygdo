@@ -152,8 +152,7 @@ class GDO_User(GDO):
         if set := self._settings.get(key):
             Cache.VHITS += 1 #PYPP#DELETE#
             return set
-        set = GDO_UserSetting.setting_column(key, self).get_val()
-        self._settings[key] = set
+        self._settings[key] = set = GDO_UserSetting.setting_column(key, self).get_val()
         return set
 
     def get_setting_value(self, key: str) -> any:
@@ -164,7 +163,7 @@ class GDO_User(GDO):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
         if val != self.get_setting_val(key):
             self._settings[key] = val
-            self.save()
+            # self.save()
             GDO_UserSetting.blank({
                 'uset_user': self.get_id(),
                 'uset_key': key,
