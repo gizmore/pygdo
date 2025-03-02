@@ -170,8 +170,6 @@ class GDO(WithBulk, GDT):
         return v
 
     def set_val(self, key, val: str, dirty: bool = True):
-        if self._vals.get(key) == val:
-            return self
         if key in self._values:
             del self._values[key]
         if not isinstance(val, bytes):

@@ -27,7 +27,7 @@ class GDT_String(GDT_Field):
     _input_type: str
 
     def __init__(self, name):
-        super(GDT_String, self).__init__(name)
+        super().__init__(name)
         self._encoding = Encoding.UTF8
         self._hidden = False
         self._minlen = 0

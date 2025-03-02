@@ -17,9 +17,9 @@ class GDO_UserSetting(GDO):
         gdt = GDT_UserSetting.KNOWN[key]
         if user.get_id() == "0":
             return gdt.val(gdt.get_initial())
-        if val := user._settings.get(key):
-            Cache.VHITS += 1 #PYPP#DELETE#
-            return gdt.val(val)
+        # if val := user._settings.get(key):
+        #     Cache.VHITS += 1 #PYPP#DELETE#
+        #     return gdt.val(val)
         if gdo := cls.get_setting(user, key):
             return gdt.val(gdo.get_val())
         else:

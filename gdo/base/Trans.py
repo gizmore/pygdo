@@ -78,9 +78,9 @@ class Trans:
         return tiso(Application.STORAGE.lang, key, args)
 
     @classmethod
-    def tiso(cls, iso: str, key: str, args: tuple=None):
+    def tiso(cls, iso: str, key: str, args: tuple = None):
         try:
-            key = cls.CACHE.get(iso, cls.EN).get(key, cls.EN.get(key))
+            key = cls.CACHE.get(iso, cls.EN).get(key, cls.EN.get(key, key))
             return key % args if args else key
         except:
             if args:

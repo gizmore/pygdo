@@ -6,7 +6,7 @@ from gdo.date.GDO_Timezone import GDO_Timezone
 class GDT_Timezone(GDT_ObjectSelect):
 
     def __init__(self, name: str):
-        super().__init__(name)
+        super(self).__init__(name)
         self.table(GDO_Timezone.table())
 
     def gdo_choices(self) -> dict:
