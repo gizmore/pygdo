@@ -229,8 +229,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             if gdt._position > 0 and gdt._position <= len(self._raw_args.pargs):
                 if gdt.is_multiple():
                     val = self._raw_args.pargs[gdt._position - 1:]
+                    val = None if not val else val
                 else:
                     val = [self._raw_args.pargs[gdt._position - 1]]
+                    val = None if not val else val
         if val is None:
             val = self._raw_args.get_val(gdt.get_name(), gdt.get_val())
         val = val[0] if type(val) is list and not gdt.is_multiple() else val
@@ -321,13 +323,13 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                 db.commit()
 
     async def _nested_execute(self, method: 'Method', return_gdt: bool = False):
-        # i = 0
-        # if method._raw_args:
-        #     for key, arg in method._raw_args.all_vals():
-        #         if isinstance(arg, Method):
-        #             cont = method._raw_args.pargs if type(key) is int else method._raw_args.args
-        #             cont[key] = await self._nested_execute(arg)
-        #         i += 1
+        i = 0
+        if method._raw_args:
+            for key, arg in method._raw_args.all_vals():
+                if isinstance(arg, Method):
+                    cont = method._raw_args.pargs if type(key) is int else method._raw_args.args
+                    cont[key] = await self._nested_execute(arg)
+                i += 1
         gdt = await method._nested_execute_parse()
         if return_gdt:
             return gdt

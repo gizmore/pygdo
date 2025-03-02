@@ -46,7 +46,7 @@ class GDT_MathExpression(GDT_RestOfText):
             return True
         allowed = self.get_namespace()
         operators = "0123456789abcijxyz .,_+-*/%|()[]{}:"
-        tokens = re.findall(r'[a-zA-Z]+|[\d.]|.', value.lower())
+        tokens = re.findall(r'[a-zA-Z]+|[\d.]|.', value[0].lower())
         for token in tokens:
             if token not in allowed and token not in operators:
                 return self.error('err_expression', (html(token, Application.get_mode()),))

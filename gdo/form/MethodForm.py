@@ -91,6 +91,7 @@ class MethodForm(Method):
         params = super().parameters()
         for gdt in self.form_parameters():
             params[gdt.get_name()] = gdt
+        self.set_parameter_positions()
         return params
 
     def form_parameters(self) -> list[GDT]:

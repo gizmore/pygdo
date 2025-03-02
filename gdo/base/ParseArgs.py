@@ -18,7 +18,7 @@ class ParseArgs:
         self.module = None
         self.method = None
         self.mode = None
-        self._last_key = None
+        # self._last_key = None
         self.args = {}  # Stores parsed key-value arguments
         self.pargs = []
         self.files = []
@@ -70,10 +70,9 @@ class ParseArgs:
 
     def add_cli_part(self, part: str|GDT):
         if type(part) is str and part.startswith('--'):
-            self._last_key = part.lstrip('-')
-        elif self._last_key:
-            self.args[self._last_key] = part
-            self._last_key = None
+            part = part.lstrip('-')
+            kv = part.split('=', 1)
+            self.args[kv[0]] = kv[1]
         else:
             self.pargs.append(part)
 

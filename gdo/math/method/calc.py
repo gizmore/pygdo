@@ -11,7 +11,7 @@ class calc(MethodForm):
         return t('md_math_calc', (self.render_allowed_functions(),))
 
     def render_allowed_functions(self) -> str:
-        values = list(GDT_MathExpression('expression').get_namespace().keys())
+        values = list(GDT_MathExpression('x').get_namespace().keys())
         return ', '.join(values)
 
     def gdo_trigger(self) -> str:
@@ -23,8 +23,8 @@ class calc(MethodForm):
         super().gdo_create_form(form)
 
     def form_submitted(self):
-        expr = self.param_value('expression').lower().replace('_', self.last_value())
-        result = str(eval(expr, GDT_MathExpression('x').get_namespace()))
+        expr = self.param_value('expression')[0].lower().replace('_', self.last_value())
+        result = str(eval(expr, self.parameter('expression').get_namespace()))
         self.LAST_RESULT[self._env_user] = result
         self.msg('%s', (result,))
         return self.render_page()

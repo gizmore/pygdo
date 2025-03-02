@@ -122,7 +122,7 @@ class Parser:
 
         # Automatically click submit button in CLI
         from gdo.form.MethodForm import MethodForm
-        if isinstance(tokens[0], MethodForm):
+        if isinstance(method, MethodForm):
             method.cli_auto_button()
         for t in tokens[1:]:
             if isinstance(t, list):
