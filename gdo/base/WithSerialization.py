@@ -1,6 +1,7 @@
 import importlib
 import msgpack
 
+
 class WithSerialization:
     """
     GDOPack serializer.
@@ -72,4 +73,9 @@ class WithSerialization:
             for key, value in dic.items():
                 setattr(obj, key, WithSerialization.gdopinstances(value))
 
+            from gdo.base.GDO import GDO
+            if isinstance(obj, GDO):
+                from gdo.base.Cache import Cache
+                return Cache.obj_for(obj)
             return obj
+        

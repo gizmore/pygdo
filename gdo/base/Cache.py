@@ -129,7 +129,7 @@ class Cache:
     ##########
 
     @classmethod
-    def obj_for(cls, gdo: GDO, rcached: dict[str,str]|None, after_write: bool = False) -> GDO:
+    def obj_for(cls, gdo: GDO, rcached: dict[str,str]|None = None, after_write: bool = False) -> GDO:
         if gdo.gdo_cached():
             gid = gdo.get_id()
             cn = gdo.gdo_table_name()
