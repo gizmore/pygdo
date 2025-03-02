@@ -80,8 +80,6 @@ class GDT_String(GDT_Field):
     def val(self, val: str | list):
         if self._multiple:
             return super().val(val)
-        if val is None:
-            return None
         if type(val) is str:
             return super().val(self.utf8_normalize(val))
         return super().val(val)

@@ -50,22 +50,22 @@ def reinstall_module(name):
     return install_module(name)
 
 
-def drop_module(name):
+def drop_module(name: str):
     module = ModuleLoader.instance().load_module_fs(name)
     Installer.wipe(module)
 
 
-def install_module(name):
+def install_module(name: str):
     install_modules([name])
     return ModuleLoader.instance().get_module(name)
 
 
-def install_modules(modules):
+def install_modules(modules: list[str]):
     for name in modules:
         install_module_b(name)
 
 
-def install_module_b(name):
+def install_module_b(name: str):
     module = ModuleLoader.instance().load_module_fs(name)
     Installer.install_modules([module])
 
