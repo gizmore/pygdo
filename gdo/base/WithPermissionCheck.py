@@ -44,7 +44,7 @@ class WithPermissionCheck:
         if not connectors:
             return True
         connector = self._env_server.get_connector()
-        return connector.get_name().lower() in connectors
+        return connector.get_name().lower() in connectors.split(',')
 
     def err_method_disabled(self):
         self.err('err_method_disabled')

@@ -41,10 +41,7 @@ class help(Method):
         if method := loader.get_method(trigger):
             mode = Application.get_mode()
             method.env_copy(self)
-            parser = method.get_arg_parser(True)
-            usage = parser.format_usage().rstrip()
-            usage = usage.replace("\n", '')
-            usage = re.sub(r'\s+', ' ', usage)
+            usage = method.render_cli_usage()
             return GDT_String('help').text('msg_help_for', (Render.bold(trigger, mode), method.gdo_render_descr(), usage))
         else:
             return self.err('err_module', (html(trigger)))

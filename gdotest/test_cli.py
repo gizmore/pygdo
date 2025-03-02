@@ -1,22 +1,21 @@
 import os.path
-import subprocess
 import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base import module_base
-from gdotest.TestUtil import cli_plug
+from gdotest.TestUtil import cli_plug, GDOTestCase
 
 
-class CLITestCase(unittest.TestCase):
+class CLITestCase(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
-        Application.init_cli()
         ModuleLoader.instance().load_modules_db()
-        ModuleLoader.instance().init_modules()
+        ModuleLoader.instance().init_modules(True, True)
         ModuleLoader.instance().init_cli()
-        return self
+        Application.init_cli()
 
     def test_01_echo(self):
         result = cli_plug(None, "$echo \\\"Hello world\\\"")

@@ -636,10 +636,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         for gdt in self.parameters().values():
             label = gdt.get_name()
             if not gdt.is_positional():
-                optional.append(f"[--{label}]")
+                optional.append(f"[--{label}=]")
             else:
                 positional.append(f"<{label}>")
-        return f"{self.gdo_trigger()} {self.gdo_}\nUsage: {self.gdo_trigger()} {' '.join(optional + positional)}"
+        return f"Usage: {self.gdo_trigger()} {' '.join(optional + positional)}"
 
     ##########
     # Render #

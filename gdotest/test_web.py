@@ -5,7 +5,7 @@ from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import bytelen
 from gdo.core.method.echo import (echo)
-from gdotest.TestUtil import WebPlug, GDOTestCase
+from gdotest.TestUtil import WebPlug, GDOTestCase, web_gizmore
 
 
 class WebTestCase(GDOTestCase):
@@ -15,7 +15,7 @@ class WebTestCase(GDOTestCase):
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules(True, True)
-        loader.init_cli()
+        Application.init_cli()
 
     def test_01_web_method_loader(self):
         loader = ModuleLoader.instance()
@@ -65,7 +65,7 @@ class WebTestCase(GDOTestCase):
         self.assertEqual(bytelen(test_string), len(test_string.encode('UTF-8')), 'bytelen function does not give correct result')
 
     def test_11_connector_not_allowed(self):
-        result = WebPlug("core.help.html").exec()
+        result = WebPlug("core.help.html").user('gizmore').exec()
         self.assertIn("does not work inside this connector", result, "A non Web Method is executing in HTTP.")
 
 

@@ -57,7 +57,8 @@ class ParseArgs:
                     key, val = part.split(self.ARG_SEPARATOR, 1)
                     self.args[key] = [val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)]
         except Exception as ex:
-            Logger.exception(ex)
+            pass
+            # Logger.exception(ex)
 
     def add_get_vars(self, qs: dict[str,list[str]]):
         self.args.update(qs)
