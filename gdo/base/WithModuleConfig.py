@@ -81,7 +81,6 @@ class WithModuleConfig:
         for gdt in self.gdo_user_config():
             if isinstance(gdt, GDT_Field):
                 gdt = GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current())
-                gdt.writable(False)
-                yield gdt
+                yield gdt.writable(False)
             else:
                 yield gdt

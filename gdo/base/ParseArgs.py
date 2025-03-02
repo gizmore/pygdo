@@ -20,10 +20,7 @@ class ParseArgs:
         self.method = None
         self.mode = None
         # self._last_key = None
-        self.args = {}  # Stores parsed key-value arguments
-        self.pargs = []
-        self.files = []
-        self.possible_multiple = set()  # Parameters that might be multiple
+        self.clear()
 
     def __repr__(self):
         return f"ParserArgs(module={self.module}, method={self.method}, args={self.args})"
@@ -62,7 +59,6 @@ class ParseArgs:
                     self.args[key] = [val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)]
         except Exception as ex:
             pass
-            # Logger.exception(ex)
 
     def add_get_vars(self, qs: dict[str,list[str]]):
         self.args.update(qs)
@@ -85,15 +81,10 @@ class ParseArgs:
         for part in cli_args:
             self.add_cli_part(part)
 
-    # def add_positional(self, *pos_arg: str):
-    #     self.pargs.extend(pos_arg)
-
-    def finalize_with_gdt(self, gdt_params):
-        for param in gdt_params:
-            if param.name in self.possible_multiple and param.is_multiple():
-                if not isinstance(self.args.get(param.name), list):
-                    self.args[param.name] = [self.args[param.name]]
-
     def get_mode(self):
         return Mode[self.mode.upper()]
 
+    def clear(self):
+        self.args = {}
+        self.pargs = []
+        self.files = []

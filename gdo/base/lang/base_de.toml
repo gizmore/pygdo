@@ -61,3 +61,9 @@ md_base_file_server = "Lade eine Datei von dieser Website herunter."
 #############
 mt_base_dir_server = "Verzeichnis"
 md_base_dir_server = "Liste ein Verzeichnis auf diesem Server auf."
+
+#############
+# not_found #
+#############
+mails_error = "%s %d Error"
+mailb_error = "An error occured"

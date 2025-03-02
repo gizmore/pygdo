@@ -12,9 +12,6 @@ from gdo.form.GDT_Submit import GDT_Submit
 class MethodForm(Method):
     _form: GDT_Form
 
-    # def __init__(self):
-    #     super().__init__()
-
     def gdo_parameters(self) -> [GDT]:
         return GDO.EMPTY_LIST
 
@@ -33,13 +30,12 @@ class MethodForm(Method):
         form.actions().add_field(self.gdo_submit_button())
 
     def get_form(self, reset: bool = False) -> GDT_Form:
+        if reset:
+            delattr(self, '_parameters')
         if not hasattr(self, '_form') or reset:
             self._form = GDT_Form().href(self.href()).method(self).title_raw(self.gdo_render_title())
             self.gdo_create_form(self._form)
-        if reset:
-            delattr(self, '_parameters')
-        for gdt in self._form.all_fields():
-            gdt.val(self._raw_args.get_val(gdt.get_name(), gdt.get_initial()))
+            self.init_parameters(True)
         return self._form
 
     def gdo_execute(self) -> GDT:
@@ -49,12 +45,12 @@ class MethodForm(Method):
         if key := self._raw_args.args.get('flowField'):
             return form.get_field(key).flow_upload()
 
-        for gdt in form.all_fields():
-            self.parameter(gdt.get_name())
-        for gdt in form.actions().all_fields():
-            self.parameter(gdt.get_name())
-        for gdt in form.all_fields():
-            gdt.gdo_file_upload(self)
+        # for gdt in self.parameters().values():
+        #     self.parameter(gdt.get_name())
+        # for gdt in form.actions().all_fields():
+        #     self.parameter(gdt.get_name())
+        # for gdt in self.parameters().values():
+        #     gdt.gdo_file_upload(self)
 
         for button in form.actions().fields():
             if isinstance(button, GDT_Submit) and button.get_val():
@@ -82,7 +78,7 @@ class MethodForm(Method):
                 errors.append(f"{name}: {error}")
         self.err('err_form_invalid', (" ".join(errors),))
         if not Application.is_html():
-            self.err('%s', ('\n' + self.get_arg_parser(True).format_usage(),))
+            self.err('%s', ('\n' + self.render_cli_usage(),))
         return self.get_form()
 
     def parameters(self, reset: bool = False) -> dict[str,GDT]:
@@ -104,3 +100,8 @@ class MethodForm(Method):
                 self._raw_args.add_get_vars({f'--{gdt.get_name()}': '1'})
                 break
         return self
+
+    def clear_form(self):
+        self._raw_args.clear()
+        for gdt in self.parameters().values():
+            gdt.val(gdt.get_initial())

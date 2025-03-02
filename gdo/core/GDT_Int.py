@@ -25,29 +25,23 @@ class GDT_Int(GDT_String):
     #######
     # GDT #
     #######
-    def val(self, val: str | list):
-        if self._multiple:
-            return super().val(val)
-        if val is None:
-            return None
-        return super().val(val)
+    # def val(self, val: str | list):
+    #     if self._multiple:
+    #         return super().val(val)
+    #     if val is None:
+    #         return None
+    #     return super().val(val)
 
     ##############
     # Attributes #
     ##############
 
     def min(self, minval: int = None):
-        if minval is None:
-            delattr(self, '_min')
-        else:
-            self._min = minval
+        self._min = minval
         return self
 
     def max(self, maxval: int = None):
-        if maxval is None:
-            delattr(self, '_max')
-        else:
-            self._max = maxval
+        self._max = maxval
         return self
 
     def bytes(self, _bytes: int):

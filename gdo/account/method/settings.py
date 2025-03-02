@@ -5,7 +5,10 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Render import Render
 from gdo.base.Trans import t
-from gdo.base.Util import href, html
+from gdo.base.Util import href, html, dump
+from gdo.core.GDO_User import GDO_User
+from gdo.core.GDO_UserSetting import GDO_UserSetting
+from gdo.core.GDT_Field import GDT_Field
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
 from gdo.form.MethodForm import MethodForm
@@ -20,7 +23,7 @@ class settings(MethodForm):
         return 'member,guest'
 
     def gdo_render_title(self) -> str:
-        return t('mt_account_settings', (self.get_module().render_name()))
+        return t('mt_account_settings', (self.get_module().render_name(),))
 
     def gdo_render_descr(self) -> str:
         return t('md_account_settings', ('OOPS',))
@@ -32,12 +35,14 @@ class settings(MethodForm):
         ]
 
     def get_module(self) -> GDO_Module:
-        return self.param_value('module')
+        return self.init_param_value('module')
 
     def gdo_create_form(self, form: GDT_Form) -> None:
         module = self.get_module()
         form.text('md_account_settings', (module.render_name(),))
         for gdt in module.all_user_settings():
+            if isinstance(gdt, GDT_Field):
+                gdt = GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current())
             form.add_field(gdt)
         form.href(href('account', 'all_settings', f'&module={module.get_name()}'))
         form.actions().add_field(GDT_Submit(f'submit_{module.get_name()}').calling(self.form_submitted))
@@ -56,7 +61,7 @@ class settings(MethodForm):
                     gdt.val(old)
                     user.save_setting(key, new)
                     gdt.val(new)
-                    out.append(t('setting_changed', (key, Render.italic(html(old), self._env_mode), Render.italic(html(new), self._env_mode))))
+                    out.append(t('setting_changed', (key, Render.italic(html(str(old)), self._env_mode), Render.italic(html(str(new)), self._env_mode))))
         if len(out):
             self.msg('msg_settings_changed', (" ".join(out),))
         return self.render_page()

@@ -20,7 +20,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Trans import t, thas
-from gdo.base.Util import Strings, err_raw
+from gdo.base.Util import Strings, err_raw, dump
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
 from gdo.base.WithPermissionCheck import WithPermissionCheck
@@ -39,29 +39,14 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         '_raw_args'
     )
 
-    # CLI_PARSER_CACHE = {}
-    # HTM_PARSER_CACHE = {}
-    # _parser_http: argparse
-    # _parser_clix: argparse
-    # _parser_cliu: argparse
-
     def __init__(self):
         super().__init__()
-        # self._params = {}
-        # self._next = None
-        # self._input = {}
-        # self._args = []
         self._raw_args = ParseArgs()
-        # self._raw_args = None
         self._env_mode = Application.get_mode()
         self._env_http = True
         self._env_channel = None
         self._env_server = None
         self._env_reply_to = None
-        # self._parser_http = None
-        # self._parser_clix = None
-        # self._parser_cliu = None
-
 
     def get_name(self):
         return self.__class__.__name__
@@ -222,8 +207,11 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                 gdt.position(n)
                 n += 1
 
-    def parameter(self, key: str) -> GDT:
-        gdt = self.parameters().get(key)
+    def init_parameter_by_key(self, key: str):
+        gdt = self.parameter(key)
+        return self.init_parameter(gdt)
+
+    def init_parameter(self, gdt: GDT) -> GDT:
         val = None
         if gdt.is_positional():
             if gdt._position > 0 and gdt._position <= len(self._raw_args.pargs):
@@ -238,12 +226,31 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         val = val[0] if type(val) is list and not gdt.is_multiple() else val
         return gdt.val(val)
 
+    def init_parameters(self, reset: bool = False):
+        if reset and hasattr(self, '_parameters'):
+            del self._parameters
+        for gdt in self.parameters().values():
+            self.init_parameter(gdt)
+
+    def parameter(self, key: str, init: bool = False) -> GDT:
+        return self.parameters().get(key)
+
+    def init_param_val(self, key: str, throw: bool = True) -> str|None:
+        gdt = self.parameter(key)
+        self.init_parameter(gdt)
+        return self.param_val(key, throw)
+
     def param_val(self, key: str, throw: bool = True) -> str|None:
         gdt = self.parameter(key)
         if gdt.validate(gdt.get_val(), gdt.get_value()):  # TODO: validate only by val, let validators cast lazily.
             return gdt.get_val()
         elif throw:
             raise GDOParamError('err_param', (key, gdt.render_error()))
+
+    def init_param_value(self, key: str, throw: bool = True) -> any:
+        gdt = self.parameter(key)
+        self.init_parameter(gdt)
+        return self.param_value(key, throw)
 
     def param_value(self, key: str, throw: bool = True) -> any:
         gdt = self.parameter(key)
@@ -337,30 +344,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             return gdt.render(Mode.TXT)
 
     def _nested_parse(self):
-        pass
-        # if self._raw_args:
-        #     for gdt in self.parameters().values():
-        #         if val := self._raw_args.get_val(gdt.get_name()):
-        #             if not gdt.is_multiple():
-        #                 val = val[0]
-        #             gdt.val(val)
-#        from gdo.core.GDT_Repeat import GDT_Repeat
-#        from gdo.core.GDT_Field import GDT_Field
-        # parser = self.get_arg_parser(False)
-        # args, unknown_args = parser.parse_known_args(self._args)
-        # for gdt in self.parameters():
-        #     if not isinstance(gdt, GDT_Field):
-        #         continue
-        #     if val := args.__dict__.get(gdt.get_name()):
-        #         if isinstance(val, list):
-        #             gdt.val(val)
-        #         else:
-        #             if isinstance(gdt, GDT_Repeat):  # There may be one GDT_Repeat per method, which is the last param. append an array
-        #                 vals = [val]
-        #                 vals.extend(unknown_args)
-        #                 gdt.val(vals)
-        #             else:
-        #                 gdt.val(val)
+        self.init_parameters()
 
     async def _nested_execute_parse(self) -> 'GDT':
         self._nested_parse()
@@ -378,62 +362,6 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                     if not self._prepare_nested_permissions(arg):
                         return False
         return True
-
-    # def get_arg_parser(self, for_usage: bool):
-    #     return self._get_arg_parser_http() if self._env_http else self._get_arg_parser_cli(for_usage)
-    #
-    # def _get_arg_parser_cli(self, for_usage: bool):
-    #     if for_usage:
-    #         if self._parser_cliu:
-    #             return self._parser_cliu
-    #     else:
-    #         if self._parser_clix:
-    #             return self._parser_clix
-    #
-    #     from gdo.form.GDT_Submit import GDT_Submit
-    #     from gdo.core.GDT_Field import GDT_Field
-    #     prog = self.gdo_trigger()
-    #     parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
-    #     for gdt in self.parameters():
-    #         if not isinstance(gdt, GDT_Field):
-    #             continue
-    #         name = gdt.get_name()
-    #         if for_usage and isinstance(gdt, GDT_Submit) and gdt._default_button:
-    #             continue
-    #         if gdt.is_positional():
-    #             if gdt.is_not_null():
-    #                 parser.add_argument(name)
-    #             else:
-    #                 parser.add_argument(name, nargs='?')
-    #         else:
-    #             parser.add_argument(f'--{name}', default=gdt.get_val())
-    #     if for_usage:
-    #         self._parser_cliu = parser
-    #     else:
-    #         self._parser_clix = parser
-    #     return parser
-    #
-    # def _get_arg_parser_http(self):
-    #     if self._parser_http:
-    #         return self._parser_http
-    #     # fqn = self.fqn()
-    #     # if fqn in self.HTM_PARSER_CACHE:
-    #     #     Cache.HITS += 1 #PYPP#DELETE#
-    #     #     return self.HTM_PARSER_CACHE[fqn]
-    #     from gdo.core.GDT_Field import GDT_Field
-    #     prog = self.get_name()
-    #     parser = MyArgParser(prog=prog, description=self.gdo_render_descr(), exit_on_error=True, add_help=False, allow_abbrev=False)
-    #     for gdt in self.parameters():
-    #         if not isinstance(gdt, GDT_Field):
-    #             continue
-    #         name = gdt.get_name()
-    #         if gdt.is_multiple():
-    #             parser.add_argument(f'--{name}', default=gdt.get_val(), nargs='*')
-    #         else:
-    #             parser.add_argument(f'--{name}', default=gdt.get_val())
-    #     # self.HTM_PARSER_CACHE[fqn] = parser
-    #     self._parser_http = parser
-    #     return parser
 
     ##########
     # Config #
@@ -520,12 +448,6 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
 
     def _config_user(self):
         return GDO.EMPTY_LIST
-        # from gdo.core.GDT_Bool import GDT_Bool
-        # conf = [
-        #     GDT_Bool('disabled').initial('0' if self.gdo_default_enabled() else '1'),
-        # ]
-        # conf.extend(self.gdo_method_config_user())
-        # return conf
 
     def save_config_user(self, key: str, val: str):
         Logger.debug(f"{self.get_name()}.save_config_user({key}, {val})")
@@ -654,8 +576,6 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                 return GDT_Error().text(self._errkey, self._errargs).render_html()
             else:
                 return self.render_cli_usage()
-                # parser = self.get_arg_parser(True)
-                # return parser.format_usage()
         return self.render_page().render(mode)
 
     def render_gdo(self, gdo: GDO, mode: Mode) -> str:

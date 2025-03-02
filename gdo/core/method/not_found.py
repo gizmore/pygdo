@@ -28,5 +28,6 @@ class not_found(Method):
 
     def send_mail(self):
         mail = Mail.from_bot()
-        mail.subject(t('mails_error', (sitename(),)))
-        pass
+        mail.subject(t('mails_error', (sitename(), 404)))
+        mail.body(t('mailb_error'))
+        mail.send()
