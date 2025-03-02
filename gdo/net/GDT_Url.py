@@ -76,9 +76,10 @@ class GDT_Url(GDT_String):
     #######
 
     def val(self, val: str):
-        if val and val.startswith('/'):
-            val = Application.PROTOCOL + '://' + Application.config('core.domain') + ':' + Application.config('core.port') + val
-        return super().val(val)
+        super().val(val)
+        if self._val and self._val.startswith('/'):
+            self._val = Application.PROTOCOL + '://' + Application.config('core.domain') + ':' + Application.config('core.port') + self._val
+        return self
 
     def to_value(self, val: str):
         """

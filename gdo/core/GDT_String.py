@@ -77,12 +77,14 @@ class GDT_String(GDT_Field):
         self._re_options = options
         return self
 
-    # def val(self, val: str | list):
-    #     if self._multiple:
-    #         return super().val(val)
-    #     if val is None:
-    #         return None
-    #     return super().val(self.utf8_normalize(val))
+    def val(self, val: str | list):
+        if self._multiple:
+            return super().val(val)
+        if val is None:
+            return None
+        if type(val) is str:
+            return super().val(self.utf8_normalize(val))
+        return super().val(val)
 
     def get_test_vals(self) -> list[str|None]:
         return ['<script>']

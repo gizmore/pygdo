@@ -22,6 +22,16 @@ class GDT_Int(GDT_String):
     def is_orderable(self) -> bool:
         return True
 
+    #######
+    # GDT #
+    #######
+    def val(self, val: str | list):
+        if self._multiple:
+            return super().val(val)
+        if val is None:
+            return None
+        return super().val(val)
+
     ##############
     # Attributes #
     ##############

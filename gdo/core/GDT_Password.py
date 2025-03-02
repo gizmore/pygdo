@@ -20,6 +20,7 @@ class GDT_Password(GDT_String):
         return bcrypt.hashpw(plain.encode(), bcrypt.gensalt(cls.SALT_LEN)).decode()
 
     def val(self, val: str | list):
+        val = val[0] if type(val) is list else val
         if not val or val[0] == '$':
             return super().val(val)
         else:
