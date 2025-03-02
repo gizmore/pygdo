@@ -236,8 +236,6 @@ class Query:
             if self.is_select():
                 return db.select(query, use_dict, self._fetch_as, self._debug)
             else:
-                return Application.db().query(query, self._debug)
-        except AttributeError as ex:
-            raise GDODBException(str(ex), query)
-        except (InterfaceError, ProgrammingError, DataError, DatabaseError) as ex:
+                return db.query(query, self._debug)
+        except (AttributeError, InterfaceError, ProgrammingError, DataError, DatabaseError) as ex:
             raise GDODBException(str(ex), query)

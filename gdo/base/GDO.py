@@ -267,12 +267,15 @@ class GDO(WithBulk, GDT):
             self._my_id = id_
         return id_
 
+    def get_ids(self) -> list[str]:
+        return [gdt.get_val() for gdt in self.get_pk_columns()]
+
     ####################
     # Insert / Replace #
     ####################
 
     def soft_replace(self):
-        if old := self.get_by_id(*self.get_id().split(self.ID_SEPARATOR)):
+        if old := self.get_by_id(*self.get_ids()):
             old.set_vals(self._vals).save()
             old._values = {}
             return old.all_dirty(False)
@@ -312,14 +315,11 @@ class GDO(WithBulk, GDT):
             return self.insert()
         obj = self
         if len(self._dirty):
-            self.before_update()
-            query = self.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where())
-            query.exec()
-            self.after_update()
-            obj = Cache.update_for(obj)
+            obj.before_update()
+            obj.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where()).exec()
+            obj.after_update()
             obj.all_dirty(False)
-        else:
-            obj = Cache.update_for(obj)
+        obj = Cache.update_for(obj)
         return obj
 
     ##########
