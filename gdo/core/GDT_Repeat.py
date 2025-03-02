@@ -20,12 +20,11 @@ class GDT_Repeat(WithProxy, GDT_Field):
         return self
 
     def to_val(self, values: list):
-        if values is None:
+        if not values:
             return None
         vals = []
         for value in values:
-            val = self._proxy.to_val(value)
-            if val:
+            if val := self._proxy.to_val(value):
                 vals.append(val)
         return vals if vals else None
 
