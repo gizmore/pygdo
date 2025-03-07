@@ -24,6 +24,7 @@ from gdo.base.method.file_server import file_server
 from gdo.base.method.server_error import server_error
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
+from gdo.file.GDO_SeoFile import GDO_SeoFile
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
 
@@ -115,6 +116,28 @@ async def app(scope, receive, send):
             user = session.get_user()
             Application.set_current_user(user)
             method = file_server().env_server(user.get_server()).env_user(user).input('_url', url)
+            gdt = await method.execute()
+            while iscoroutine(gdt):
+                gdt = await gdt
+            await send({
+                'type': 'http.response.start',
+                'status': Application.get_status_code(),
+                'headers': Application.get_headers_asgi(),
+            })
+            length = int(Application.get_header('Content-Length'))
+            for chunk in gdt:
+                length -= len(chunk)
+                await send({
+                    'type': 'http.response.body',
+                    'body': chunk,
+                    'more_body': length > 0,
+                })
+            return
+        elif file := GDO_SeoFile.get_by_url(url):
+            session = GDO_Session.start(False)
+            user = session.get_user()
+            Application.set_current_user(user)
+            method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_path())
             gdt = await method.execute()
             while iscoroutine(gdt):
                 gdt = await gdt

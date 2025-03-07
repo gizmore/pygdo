@@ -9,6 +9,7 @@ __pycache__/
 /yarn.lock
 *.py-E
 *.pclprof
+test.py
 /assets/
 /cache/
 /cache_test/
