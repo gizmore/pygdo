@@ -73,13 +73,13 @@ class Logger:
         pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
         if cls._user:
             pre += cls._user.get_name() + " - "
-        with open(f"{cls._base}{path}", 'a') as fo:
+        with open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:
             fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
         if cls._user and user_log:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
             Files.create_dir(dir_name)
-            with open(f"{dir_name}{path}", 'a') as fo:
+            with open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
 
@@ -88,12 +88,12 @@ class Logger:
         pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
         if cls._user:
             pre += cls._user.get_name() + " - "
-        async with aiofiles.open(f"{cls._base}{path}", 'a') as fo:
+        async with aiofiles.open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:
             await fo.write(f"{pre}{content}\n")
             cls.LINES_WRITTEN += 1  #PYPP#DELETE#
         if cls._user and user_log:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
             await Files.acreate_dir(dir_name)
-            async with aiofiles.open(f"{dir_name}{path}", 'a') as fo:
+            async with aiofiles.open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 await fo.write(f"{pre}{content}\n")
                 cls.LINES_WRITTEN += 1  #PYPP#DELETE#
