@@ -105,11 +105,6 @@ class Message(WithEnv):
         result = self._method.execute()
         while asyncio.iscoroutine(result):
             result = await result
-
-        # self._gdt_result = GDT_Container()
-        # self._gdt_result.add_field(*list(Application.get_page()._top_bar.all_fields()))
-        # self._gdt_result.add_field(result)
-
         txt2 = result.render(self._env_mode)
         if txt1 := Application.get_page()._top_bar.render(self._env_mode):
             txt += txt1 + " "
@@ -118,8 +113,7 @@ class Message(WithEnv):
         self._result = txt
         await self.deliver()
         if not Application.IS_HTTP:
-            from gdo.core.GDO_Session import GDO_Session
-            GDO_Session.for_user(self._env_user).save()
+            self._env_session.save()
 
     async def deliver(self, with_events: bool=True, with_prefix: bool=True):
         text = self._result

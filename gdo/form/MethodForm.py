@@ -97,7 +97,7 @@ class MethodForm(Method):
     def cli_auto_button(self):
         for gdt in self.get_form().actions().all_fields():
             if isinstance(gdt, GDT_Submit) and gdt._default_button:
-                self._raw_args.add_get_vars({f'--{gdt.get_name()}': '1'})
+                self._raw_args.add_get_vars({f'{gdt.get_name()}': ['1']})
                 break
         return self
 
