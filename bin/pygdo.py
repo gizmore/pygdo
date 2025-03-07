@@ -6,7 +6,7 @@ import readline
 import sys
 
 
-def pygdo():
+def pygdo(line: str = None):
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
     from gdo.base.Util import Files
@@ -29,7 +29,9 @@ def pygdo():
     loader.init_cli()
     Files.create_dir(Application.files_path('repl/'))
 
-    if len(rest):
+    if line:
+        process_line(line)
+    elif len(rest):
         args = []
         for arg in rest:
             if len(args):
@@ -142,7 +144,10 @@ def repl():
             Logger.exception(ex)
 
 
-if __name__ == '__main__':
+def launcher(line: str = None):
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))
     sys.path.append(parent_dir)
-    pygdo()
+    pygdo(line)
+
+if __name__ == '__main__':
+    launcher()

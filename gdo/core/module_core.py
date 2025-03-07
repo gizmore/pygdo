@@ -44,7 +44,7 @@ class module_core(GDO_Module):
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
         try:
-            if Application.IS_HTTP and not Application.ASGI:
+            if (Application.IS_HTTP and not Application.ASGI) or not Application.IS_HTTP:
                 nest_asyncio.apply(asyncio.new_event_loop())
             else:
                 nest_asyncio.apply()
