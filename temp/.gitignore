@@ -1,6 +1,7 @@
 *
 !.gitignore
 !.htaccess
+!to_cli
+!to_gdo
+!to_web
 !web_proc
-!web_to_gdo
-!gdo_to_web
