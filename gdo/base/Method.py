@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from mysql.connector import OperationalError
 
 from gdo.base.ParseArgs import ParseArgs
-from gdo.core.GDT_Field import GDT_Field
 
 if TYPE_CHECKING:
     from gdo.base.GDO_Module import GDO_Module
@@ -557,15 +556,20 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     ###
 
     def render_cli_usage(self) -> str:
-        positional = []
+        from gdo.core.GDT_Field import GDT_Field
+        from gdo.form.GDT_Submit import GDT_Submit
         optional = []
+        positional = []
         for gdt in self.parameters().values():
-            if isinstance(gdt, GDT_Field):
-                label = gdt.get_name()
-                if not gdt.is_positional():
-                    optional.append(f"[--{label}=]")
-                else:
-                    positional.append(f"<{label}>")
+            if not isinstance(gdt, GDT_Field):
+                continue
+            if isinstance(gdt, GDT_Submit) and gdt._default_button:
+                continue
+            label = gdt.get_name()
+            if not gdt.is_positional():
+                optional.append(f"[--{label}=]")
+            else:
+                positional.append(f"<{label}>")
         return f"Usage: {self.gdo_trigger()} {' '.join(optional + positional)}"
 
     ##########

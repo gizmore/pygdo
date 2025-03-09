@@ -41,7 +41,7 @@ class GDO_UserPermission(GDO):
 
     def gdo_columns(self) -> list[GDT]:
         return [
-            GDT_User('pu_user').primary(),
-            GDT_Permission('pu_perm').primary(),
+            GDT_User('pu_user').primary().cascade_delete(),
+            GDT_Permission('pu_perm').primary().cascade_delete(),
             GDT_Bool('pu_has').not_null().initial('0'),
         ]
