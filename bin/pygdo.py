@@ -4,7 +4,29 @@ import functools
 import os
 import readline
 import sys
+import time
+from inspect import iscoroutine
+from threading import Thread
 
+RUNNING = True
+
+class ConsoleThread(Thread):
+    def __init__(self):
+        super().__init__()
+        self.daemon = True
+        self.name = "PyGDO Console Thread"
+        self._loop = asyncio.get_event_loop()
+
+    def run(self):
+        global RUNNING
+        from gdo.base.Application import Application
+        while RUNNING:
+            Application.tick()
+            while not Application.MESSAGES.empty():
+                msg = Application.MESSAGES.get().execute()
+                while iscoroutine(msg):
+                    msg = asyncio.run_coroutine_threadsafe(msg, loop=self._loop)
+            time.sleep(0.75)
 
 def pygdo(line: str = None):
     from gdo.base.Application import Application
@@ -119,11 +141,11 @@ def reload_history():
         print(f"First Run? - Creating repl history at {path}")
         Files.touch(path, True)
 
-
 def repl():
     from gdo.base.Application import Application
     from gdo.base.Exceptions import GDOModuleException, GDOError
     reload_history()
+    ConsoleThread().start()
     while True:
         try:
             input_line = input(">>> ")
@@ -142,12 +164,15 @@ def repl():
         except Exception as ex:
             from gdo.base.Logger import Logger
             Logger.exception(ex)
-
+    global RUNNING
+    RUNNING = False
+    time.sleep(1.1)
 
 def launcher(line: str = None):
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))
     sys.path.append(parent_dir)
     pygdo(line)
+
 
 if __name__ == '__main__':
     launcher()

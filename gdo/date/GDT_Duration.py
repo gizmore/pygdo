@@ -1,3 +1,5 @@
+import sys
+
 from gdo.base.Render import Mode
 from gdo.core.GDT_String import GDT_String
 from gdo.date.Time import Time
@@ -14,7 +16,7 @@ class GDT_Duration(GDT_String):
         self._units = 2
         self._with_millis = False
         self._min = 0.0
-        self._max = None
+        self._max = sys.maxsize
 
     def units(self, units: int, with_millis: bool = True):
         self._units = units
@@ -35,8 +37,8 @@ class GDT_Duration(GDT_String):
         return Time.human_duration(value, self._units, self._with_millis)
 
     def to_value(self, val: str):
-        if val is None:
-            return None
+        if not val:
+            return 0
         return Time.human_to_seconds(val)
 
     def render(self, mode: Mode = Mode.HTML):

@@ -26,7 +26,7 @@ class GDO_SeoFile(GDO):
     def get_by_url(cls, url: str) -> 'GDO_File':
         url = url.lstrip('/')
         url = Strings.substr_to(url, '?', url).rstrip('/')
-        if file := cls.FILES.get(url):
-            return file
+        if url in cls.FILES:
+            return cls.FILES.get(url)
         cls.FILES[url] = file = cls.table().get_by('sf_url', url)
         return file
