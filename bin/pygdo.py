@@ -4,31 +4,33 @@ import functools
 import os
 import readline
 import sys
-import time
-from inspect import iscoroutine
 from threading import Thread
 
 RUNNING = True
 
 class ConsoleThread(Thread):
+
     def __init__(self):
         super().__init__()
+        self.name = "PyGDOConsoleThread"
         self.daemon = True
-        self.name = "PyGDO Console Thread"
-        self._loop = asyncio.get_event_loop()
 
     def run(self):
+        from gdo.base.Application import Application
+        Application.init_common()
+        Application.init_cli()
+        asyncio.run(self.loop())
+
+    async def loop(self):
         global RUNNING
         from gdo.base.Application import Application
         while RUNNING:
             Application.tick()
             while not Application.MESSAGES.empty():
-                msg = Application.MESSAGES.get().execute()
-                while iscoroutine(msg):
-                    msg = asyncio.run_coroutine_threadsafe(msg, loop=self._loop)
-            time.sleep(0.75)
+                await Application.MESSAGES.get().execute()
+            await asyncio.sleep(0.5)
 
-def pygdo(line: str = None):
+async def pygdo(line: str = None):
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
     from gdo.base.Util import Files
@@ -52,7 +54,10 @@ def pygdo(line: str = None):
     Files.create_dir(Application.files_path('repl/'))
 
     if line:
-        process_line(line)
+        if line == 'repl':
+            await repl()
+        else:
+            await process_line(line)
     elif len(rest):
         args = []
         for arg in rest:
@@ -60,9 +65,9 @@ def pygdo(line: str = None):
                 args.append(f'"{arg}"')
             else:
                 args.append(arg)
-        process_line(" ".join(args))
+        await process_line(" ".join(args))
     else:
-        repl()
+        await repl()
 
 
 @functools.lru_cache
@@ -73,12 +78,12 @@ def get_parser():
     from gdo.core.GDO_Session import GDO_Session
     user = CLI.get_current_user()
     server = user.get_server()
-    channel = None
+    channel = server.get_or_create_channel(user.gdo_val('user_name'))
     session = GDO_Session.for_user(user)
     return Parser(Mode.CLI, user, server, channel, session)
 
 
-def process_line(line: str) -> None:
+async def process_line(line: str) -> None:
     from gdo.base.Exceptions import GDOParamError
     from gdo.base.Application import Application
     from gdo.base.Render import Render, Mode
@@ -100,7 +105,7 @@ def process_line(line: str) -> None:
             Application.fresh_page()
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
-                gdt = asyncio.run(gdt)
+                gdt = await gdt
             message._gdt_result = GDT_Container()
             message._gdt_result.add_field(Application.get_page()._top_bar)
             message._gdt_result.add_field(gdt)
@@ -112,7 +117,7 @@ def process_line(line: str) -> None:
                 if txt2:
                     message._result += "\n"
                 message._result += txt1
-            asyncio.run(message.deliver())
+            await message.deliver()
             method._env_session.save()
     except GDOParamError as ex:
         print(Render.red(str(ex), Mode.CLI))
@@ -134,18 +139,19 @@ def reload_history():
     user = CLI.get_current_user()
     path = Application.files_path(f'repl/{user.get_id()}.repl.log')
     try:
-        with open(path, "r") as file:
+        with open(path, "r", encoding='utf8') as file:
             for line in file:
                 readline.add_history(line.strip())
     except FileNotFoundError:
         print(f"First Run? - Creating repl history at {path}")
         Files.touch(path, True)
 
-def repl():
+async def repl():
     from gdo.base.Application import Application
     from gdo.base.Exceptions import GDOModuleException, GDOError
     reload_history()
-    ConsoleThread().start()
+    thread = ConsoleThread()
+    thread.start()
     while True:
         try:
             input_line = input(">>> ")
@@ -155,7 +161,7 @@ def repl():
                 if input_line.lower() == "exit":
                     break
                 Application.tick()
-                process_line(input_line)
+                await process_line(input_line)
         except (GDOModuleException, GDOError) as ex:
             print(str(ex))
         except (KeyboardInterrupt, EOFError):
@@ -166,13 +172,13 @@ def repl():
             Logger.exception(ex)
     global RUNNING
     RUNNING = False
-    time.sleep(1.1)
+    thread.join()
 
-def launcher(line: str = None):
+async def launcher(line: str = None):
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))
     sys.path.append(parent_dir)
-    pygdo(line)
+    await pygdo(line)
 
 
 if __name__ == '__main__':
-    launcher()
+    asyncio.run(launcher())

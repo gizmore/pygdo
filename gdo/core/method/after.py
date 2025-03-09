@@ -15,11 +15,11 @@ class after(Method):
 
     def gdo_parameters(self) -> [GDT]:
         return [
-            GDT_Duration('time'),
-            GDT_RestOfText('command'),
+            GDT_Duration('time').not_null(),
+            GDT_RestOfText('command').not_null(),
         ]
 
     async def gdo_execute(self) -> GDT:
         await asyncio.sleep(self.param_value('time'))
-        Application.MESSAGES.put(Message(self.param_val('command'), self._env_mode).env_copy(self))
+        Application.MESSAGES.put(Message(" ".join(self.param_val('command')), self._env_mode).env_copy(self))
         return self.empty()

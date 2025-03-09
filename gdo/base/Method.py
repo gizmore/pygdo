@@ -1,4 +1,5 @@
 import functools
+from asyncio import iscoroutine
 
 from typing import TYPE_CHECKING
 
@@ -338,6 +339,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                     cont[key] = await self._nested_execute(arg)
                 i += 1
         gdt = await method._nested_execute_parse()
+        while iscoroutine(gdt):
+            gdt = await gdt
         if return_gdt:
             return gdt
         else:

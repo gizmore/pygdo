@@ -17,12 +17,14 @@ class Bash(Connector):
     def gdo_needs_authentication(self) -> bool:
         return False
 
+    async def gdo_send_to_channel(self, msg: Message):
+        print(msg._result)
+
     async def gdo_send_to_user(self, msg: Message, notice: bool=False):
         print(msg._result)
 
     def gdo_handle_message(self, message: Message):
         pass
-
 
     def gdo_connect(self) -> bool:
         # Logger.debug("Bash connect...")

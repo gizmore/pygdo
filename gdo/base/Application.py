@@ -159,6 +159,7 @@ class Application:
         cls.STORAGE.ip = '::1'
         cls.STORAGE.cookies = {}
         cls.STORAGE.time_start = time.time()
+        cls.STORAGE.request_method = "POST"
         cls.mode(Mode.CLI)
 
     @classmethod
@@ -214,7 +215,6 @@ class Application:
         from gdo.base.Database import Database
         from gdo.ui.GDT_Page import GDT_Page
         cls.STORAGE.user = None
-        #cls.STORAGE.time_start = cls.TIME
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.page = GDT_Page()
