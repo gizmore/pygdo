@@ -195,6 +195,8 @@ def cli_plug(user: 'GDO_User', command: str) -> str:
 def cli_top(mode: Mode = Mode.TXT):
     return Application.get_page()._top_bar.render(mode)
 
+def cli_user(username: str) -> 'GDO_User':
+    return Bash.get_server().get_or_create_user(username)
 
 def cli_gizmore():
     user = Bash.get_server().get_or_create_user('gizmore')

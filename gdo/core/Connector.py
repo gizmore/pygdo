@@ -75,7 +75,7 @@ class Connector:
     async def gdo_send_to_channel(self, msg: Message):
         Logger.debug(f"{self.get_name()} has stub send_to_channel()")
 
-    async def gdo_send_to_user(self, msg: Message):
+    async def gdo_send_to_user(self, msg: Message, notice: bool=False):
         Logger.debug(f"{self.get_name()} has stub send_to_user()")
 
     def gdo_get_dog_user(self) -> GDO_User:
@@ -141,7 +141,7 @@ class Connector:
         if with_events:
             Application.EVENTS.publish('msg_sent', msg)
 
-    async def send_to_user(self, msg: Message, with_events: bool=True):
-        await self.gdo_send_to_user(msg)
+    async def send_to_user(self, msg: Message, with_events: bool=True, notice: bool=False):
+        await self.gdo_send_to_user(msg, notice)
         if with_events:
             Application.EVENTS.publish('msg_sent', msg)

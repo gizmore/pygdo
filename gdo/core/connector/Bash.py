@@ -17,7 +17,7 @@ class Bash(Connector):
     def gdo_needs_authentication(self) -> bool:
         return False
 
-    async def gdo_send_to_user(self, msg: Message):
+    async def gdo_send_to_user(self, msg: Message, notice: bool=False):
         print(msg._result)
 
     def gdo_handle_message(self, message: Message):

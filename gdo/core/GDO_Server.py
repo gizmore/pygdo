@@ -182,11 +182,11 @@ class GDO_Server(GDO):
     ###########
     # Message #
     ###########
-    async def send_to_user(self, user: GDO_User, key: str, args: tuple = None):
+    async def send_to_user(self, user: GDO_User, key: str, args: tuple = None, notice: bool=False):
         text = tusr(user, key, args)
         message = Message(text, Application.get_mode())
         message.env_user(user, True).env_server(self).env_channel(None)
-        await self.get_connector().send_to_user(message.result(text))
+        await self.get_connector().send_to_user(message.result(text), True, notice)
 
     ##########
     # Render #
