@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from mysql.connector import OperationalError
 
 from gdo.base.ParseArgs import ParseArgs
+from gdo.core.GDT_Field import GDT_Field
 
 if TYPE_CHECKING:
     from gdo.base.GDO_Module import GDO_Module
@@ -559,11 +560,12 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         positional = []
         optional = []
         for gdt in self.parameters().values():
-            label = gdt.get_name()
-            if not gdt.is_positional():
-                optional.append(f"[--{label}=]")
-            else:
-                positional.append(f"<{label}>")
+            if isinstance(gdt, GDT_Field):
+                label = gdt.get_name()
+                if not gdt.is_positional():
+                    optional.append(f"[--{label}=]")
+                else:
+                    positional.append(f"<{label}>")
         return f"Usage: {self.gdo_trigger()} {' '.join(optional + positional)}"
 
     ##########
