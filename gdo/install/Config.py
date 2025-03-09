@@ -34,6 +34,7 @@ class Config:
             cls.data_int('core.port', 80),
             cls.data_int('core.port_tls', 443),
             cls.data_int('core.force_tls', 0),
+            cls.data_int('core.processes', 8),
             cls.data_int('core.json_debug', 0),
             cls.data_int('core.event_debug', 0),
             cls.data_int('core.gdt_debug', 0),
