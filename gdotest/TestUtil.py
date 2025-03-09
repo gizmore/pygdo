@@ -174,7 +174,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     if user is None:
         user = cli_gizmore()
     server = user.get_server()
-    channel = server.get_or_create_channel(user.gdo_val('user_name'))
+    channel = server.get_or_create_channel('test_channel')
     session = GDO_Session.for_user(user)
     Application.fresh_page()
     Application.mode(mode)

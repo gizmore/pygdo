@@ -45,13 +45,13 @@ class launch(Method):
     def sleep_ms(self) -> float:
         return self.param_value('dog_msleep')
 
-    def gdo_execute(self) -> GDT:
+    async def gdo_execute(self) -> GDT:
         if self.is_forced():
             Files.remove(self.lock_path())
         if self.is_running():
             return self.err('err_dog_already_running')
         Files.touch(self.lock_path(), True)
-        asyncio.run(self.mainloop())
+        await self.mainloop()
         return self.reply('msg_all_done')
 
     def lock_path(self) -> str:
@@ -86,7 +86,7 @@ class launch(Method):
         if not server._has_loop:
             Logger.debug(f"step server {server.render_name()}")
             server._has_loop = True
-            asyncio.create_task(server.loop(), name=f"Server {server.render_name()}")
+            asyncio.create_task(server.loop())
 
     async def mainloop_process_ai(self):
         while not Application.MESSAGES.empty():

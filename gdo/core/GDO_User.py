@@ -267,6 +267,7 @@ class GDO_User(GDO):
     # Messaging #
     #############
     async def send(self, key: str, args: tuple = None, notice: bool=False):
+        notice = self.get_setting_value('notice_enabled') and notice
         await self.get_server().send_to_user(self, key, args, notice)
 
     def is_dog(self) -> bool:

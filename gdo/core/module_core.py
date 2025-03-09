@@ -44,7 +44,7 @@ class module_core(GDO_Module):
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
         try:
-            if (Application.IS_HTTP and not Application.ASGI) or not Application.IS_HTTP:
+            if Application.IS_HTTP and not Application.ASGI:
                 nest_asyncio.apply(asyncio.new_event_loop())
             else:
                 nest_asyncio.apply()
@@ -84,6 +84,11 @@ class module_core(GDO_Module):
             GDT_User("creator"),
             GDT_DateTime("deleted"),
             GDT_User("deletor"),
+        ]
+
+    def gdo_user_settings(self) -> list[GDT]:
+        return [
+            GDT_Bool('notice_enabled').initial('1').not_null(),
         ]
 
     def cfg_guest_system(self) -> bool:

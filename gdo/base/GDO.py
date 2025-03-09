@@ -89,7 +89,7 @@ class GDO(WithBulk, GDT):
         return Cache.table_for(cls)
 
     @classmethod
-    def blank(cls, vals: dict = None):
+    def blank(cls, vals: dict = None) -> Self:
         vals = vals or {}
         for gdt in cls.table().columns():
             name = gdt.get_name()

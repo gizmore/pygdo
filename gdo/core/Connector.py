@@ -50,6 +50,9 @@ class Connector:
         self._tried_connecting = False
         self._connect_failures = 0
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}#{self._server}"
+
     def get_render_mode(self) -> Mode:
         return Mode.TXT
 

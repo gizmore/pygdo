@@ -27,7 +27,7 @@ class Bash(Connector):
         pass
 
     def gdo_connect(self) -> bool:
-        # Logger.debug("Bash connect...")
+        Logger.debug("Bash connect...")
         self._connected = True
         return True
 
