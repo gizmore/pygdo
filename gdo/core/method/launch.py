@@ -74,7 +74,7 @@ class launch(Method):
                 await self.mainloop_process_ai()
                 await asyncio.sleep(sleep_ms)
         except KeyboardInterrupt as ex:
-            die().inputs({'message': 'CTRL-C got pressed!'}).gdo_execute()
+            die().input('message', 'CTRL-C got pressed!').gdo_execute()
             time.sleep(1)
         finally:
             Files.remove(self.lock_path())
