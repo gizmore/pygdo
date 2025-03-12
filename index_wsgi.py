@@ -23,6 +23,7 @@ from gdo.base.method.file_server import file_server
 from gdo.base.method.server_error import server_error
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.method.not_found import not_found
+from gdo.file.GDO_SeoFile import GDO_SeoFile
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
 
@@ -97,6 +98,25 @@ def pygdo_application(environ, start_response):
 
         path = Application.file_path(url)
 
+        if file := GDO_SeoFile.get_by_url(url):
+            session = GDO_Session.start(False)
+            user = session.get_user()
+            Application.set_current_user(user)
+            method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_path())
+            gdt = method.execute()
+            while asyncio.iscoroutine(gdt):
+                gdt = asyncio.run(gdt)
+            if isinstance(gdt, GDT_FileOut):
+                headers = Application.get_headers()
+                start_response(Application.get_status(), headers)
+                for chunk in gdt:
+                    yield chunk
+                return
+            Application.header('Content-Type', 'text/html; Charset=UTF-8')
+            headers = Application.get_headers()
+            start_response(Application.get_status(), headers)
+            yield Application.get_page().method(method).result(gdt).render(Mode.HTML).encode()
+            return
         if Files.is_file(path):
             session = GDO_Session.start(False)
             user = session.get_user()
