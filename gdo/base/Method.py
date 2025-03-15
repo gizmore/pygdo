@@ -85,6 +85,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         module = self.gdo_module()
         return f"{module.get_name()}.{self.get_name()}"
 
+    def gdo_method_hidden(self) -> bool:
+        return False
+
     def gdo_transactional(self) -> bool:
         return Application.get_request_method() != 'GET'
 

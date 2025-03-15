@@ -53,7 +53,7 @@ class help(Method):
         for cmd, method in loader._methods.items():
             module_name = method.gdo_module().render_name()
             method.env_copy(self)
-            if method.allows_connector():
+            if method.allows_connector() and not method.gdo_method_hidden():
                 trigger = method.gdo_trigger()
                 if module_name not in grouped:
                     grouped[module_name] = []
