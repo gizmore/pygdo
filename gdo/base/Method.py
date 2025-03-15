@@ -382,7 +382,11 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return self.__module__ + "." + self.__class__.__name__
 
     @classmethod
-    def gdo_default_enabled(cls) -> bool:
+    def gdo_default_enabled_server(cls) -> bool:
+        return True
+
+    @classmethod
+    def gdo_default_enabled_channel(cls) -> bool:
         return True
 
     #################
@@ -394,7 +398,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def _config_server(cls):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
-            GDT_Bool('disabled').initial('0' if cls.gdo_default_enabled() else '1'),
+            GDT_Bool('disabled').initial('0' if cls.gdo_default_enabled_server() else '1'),
         ]
         conf.extend(cls.gdo_method_config_server())
         return conf
@@ -504,7 +508,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def _config_channel(cls):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
-            GDT_Bool('disabled').initial('0' if cls.gdo_default_enabled() else '1'),
+            GDT_Bool('disabled').initial('0' if cls.gdo_default_enabled_channel() else '1'),
         ]
         conf.extend(cls.gdo_method_config_channel())
         return conf
