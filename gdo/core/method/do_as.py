@@ -22,5 +22,5 @@ class do_as(Method):
 
     async def gdo_execute(self) -> GDT:
         user = self.param_value('user')
-        msg = Message(' '.join(self.param_val('cmd')), self._env_mode).env_copy(self).env_user(user, True)
-        return msg.execute()
+        await Message(' '.join(self.param_val('cmd')), self._env_mode).env_copy(self).env_user(user, True).execute()
+        return self.empty()
