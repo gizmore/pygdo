@@ -27,6 +27,7 @@ from index_wsgi import application
 
 
 class GDOTestCase(unittest.IsolatedAsyncioTestCase):
+    MESSAGES: dict[str, list[str]] = {}
     _profile: cProfile
 
     # def setUp(self):
@@ -179,18 +180,21 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     Application.fresh_page()
     Application.mode(mode)
     method = Parser(mode, user, server, channel, session).parse(line[1:])
+    GDOTestCase.MESSAGES[user.get_id()] = []
     result = method.execute()
     while asyncio.iscoroutine(result):
         result = asyncio.run(result)
     out = cli_top(mode)
     out += "\n"
+    for msgs in GDOTestCase.MESSAGES.values():
+        out += "\n".join(msgs)
+        out += "\n"
+    out += "\n"
     out += result.render(mode)
     return out.strip()
 
-
 def cli_plug(user: 'GDO_User', command: str) -> str:
     return text_plug(Mode.CLI, command, user)
-
 
 def cli_top(mode: Mode = Mode.TXT):
     return Application.get_page()._top_bar.render(mode)

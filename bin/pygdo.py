@@ -6,6 +6,8 @@ import readline
 import sys
 from threading import Thread
 
+import aioconsole
+
 RUNNING = True
 
 class ConsoleThread(Thread):
@@ -154,7 +156,8 @@ async def repl():
     thread.start()
     while True:
         try:
-            input_line = input(">>> ")
+            input_line = await aioconsole.ainput(">>> ")
+            # input_line = input(">>> ")
             if input_line == "":
                 input_line = readline.get_history_item(readline.get_current_history_length())
             if input_line:

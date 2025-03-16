@@ -15,3 +15,4 @@ msgpack
 redis
 better_exceptions
 pypp
+aioconsole

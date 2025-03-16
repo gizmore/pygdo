@@ -3,6 +3,7 @@ from gdo.base.Message import Message
 from gdo.base.Render import Mode
 from gdo.core.Connector import Connector
 from gdo.core.GDO_Server import GDO_Server
+from gdo.base.Application import Application
 
 
 class Bash(Connector):
@@ -21,6 +22,14 @@ class Bash(Connector):
         print(msg._result)
 
     async def gdo_send_to_user(self, msg: Message, notice: bool=False):
+        #PYPP#START#
+        if Application.is_unit_test():
+            from gdotest.TestUtil import GDOTestCase
+            uid = msg._env_user.get_id()
+            if uid not in GDOTestCase.MESSAGES:
+                GDOTestCase.MESSAGES[uid] = []
+            GDOTestCase.MESSAGES[uid].append(msg._result)
+        #PYPP#END#
         print(msg._result)
 
     def gdo_handle_message(self, message: Message):
