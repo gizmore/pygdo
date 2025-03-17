@@ -19,7 +19,7 @@ class Bash(Connector):
         return False
 
     async def gdo_send_to_channel(self, msg: Message):
-        print(msg._result)
+        await self.gdo_send_to_user(msg)
 
     async def gdo_send_to_user(self, msg: Message, notice: bool=False):
         #PYPP#START#
