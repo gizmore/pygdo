@@ -189,6 +189,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     for msgs in GDOTestCase.MESSAGES.values():
         out += "\n".join(msgs)
         out += "\n"
+        msgs.clear()
     out += "\n"
     out += result.render(mode)
     return out.strip()
