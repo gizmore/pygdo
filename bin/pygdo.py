@@ -104,7 +104,7 @@ async def process_line(line: str) -> None:
         Application.EVENTS.publish('new_message', message)
         if line.startswith(trigger):
             method = parser.parse_line(line[1:])
-            Application.fresh_page()
+            Application.fresh_page().method(method)
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = await gdt
