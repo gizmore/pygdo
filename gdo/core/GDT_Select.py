@@ -44,7 +44,7 @@ class GDT_Select(GDT_ComboBox):
         if val is None:
             return None
         self.init_choices()
-        return self._choices[val]
+        return self._choices[val] if val in self._choices else None
 
     ##########
     # Render #
