@@ -38,7 +38,7 @@ class MethodTable(WithGDO, MethodForm):
     @functools.cache
     def table_parameters(self) -> GDT:
         if self.gdo_paginated():
-            yield GDT_PageNum(self.gdo_paginate_name())
+            yield GDT_PageNum(self.gdo_paginate_name()).initial('1')
         if self.gdo_ordered():
             yield GDT_Order(self.gdo_order_name())
         if self.gdo_filtered():
@@ -57,6 +57,9 @@ class MethodTable(WithGDO, MethodForm):
 
     def table_paginate_field(self) -> GDT_PageNum:
         return self.parameter(self.gdo_paginate_name())
+
+    def get_page_num(self) -> int:
+        return self.param_value(self.gdo_paginate_name())
 
     ##################
     # Abstract table #
@@ -91,7 +94,7 @@ class MethodTable(WithGDO, MethodForm):
         return 10
 
     def gdo_paginate_name(self) -> str:
-        return 'p'
+        return 'page'
 
     def gdo_ordered(self) -> bool:
         return True

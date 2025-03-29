@@ -3,6 +3,7 @@ from gdo.base.Result import Result
 from gdo.table.MethodTable import MethodTable
 
 
+
 class MethodQueryTable(MethodTable):
 
     def gdo_table_query(self) -> Query:
