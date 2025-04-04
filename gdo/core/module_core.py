@@ -59,6 +59,7 @@ class module_core(GDO_Module):
         return [
             'base',
             'date',
+            'file',
             'form',
             'language',
             'mail',
