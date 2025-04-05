@@ -14,11 +14,11 @@ class GDT_RestOfText(GDT_Repeat):
     #         return " ".join(val)
     #     return val
     #
-    # def get_value(self):
-    #     val = super().get_value()
-    #     if val is not None:
-    #         return " ".join(val)
-    #     return val
+    def get_value(self):
+        val = super().get_value()
+        if val is not None:
+            return " ".join(val)
+        return val
 
     def is_multiple(self) -> bool:
         return True
