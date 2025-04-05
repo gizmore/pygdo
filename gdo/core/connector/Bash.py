@@ -1,3 +1,5 @@
+import aioconsole
+
 from gdo.base.Logger import Logger
 from gdo.base.Message import Message
 from gdo.base.Render import Mode
@@ -30,7 +32,7 @@ class Bash(Connector):
                 GDOTestCase.MESSAGES[uid] = []
             GDOTestCase.MESSAGES[uid].append(msg._result)
         #PYPP#END#
-        print(msg._result)
+        await aioconsole.aprint(msg._result)
 
     def gdo_handle_message(self, message: Message):
         pass
