@@ -19,7 +19,7 @@ class module_date(GDO_Module):
         DateInstall.now(self)
 
     def gdo_user_settings(self) -> list[GDT]:
-        from gdo.core.GDT_Object import GDT_Object
+        from gdo.date.GDT_Timezone import GDT_Timezone
         return [
-            GDT_Object('timezone').table(GDO_Timezone.table()).not_null().initial('1'),
+            GDT_Timezone('timezone').not_null().initial('1'),
         ]

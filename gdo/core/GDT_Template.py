@@ -7,11 +7,9 @@ from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
-from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.base.Trans import t
-from gdo.base.Util import html, Files, dump
-from gdo.date.Time import Time
+from gdo.base.Util import html, Files
 
 
 class Templite(object):
@@ -79,7 +77,8 @@ class Templite(object):
         """Renders the template according to the given namespace."""
         stack = []
         def write(val: str):
-            stack.append(val)
+            if val:
+                stack.append(val)
 
         def writeln(line: str):
             write(line)
@@ -99,8 +98,10 @@ class Templite(object):
             t = Templite(file, self.encoding, self.caching)
             stack.append(t.render(**namespace))
 
+        from gdo.ui.GDT_Page import GDT_Page
+
         namespace['include'] = include
-        # namespace['Time'] = Time
+        namespace['GDT_Page'] = GDT_Page
         namespace['t'] = t
         namespace['Mode'] = Mode
         namespace['html'] = html

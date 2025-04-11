@@ -108,6 +108,9 @@ class GDO(WithBulk, GDT):
     def render_name(self):
         return self.get_name()
 
+    def render_list(self):
+        return self.render_name()
+
     def primary_key_column(self) -> GDT:
         return self.columns()[0]
 

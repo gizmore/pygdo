@@ -4,3 +4,6 @@ class WithCompletion:
     def completion(self, href: str):
         self._completion_href = href
         return self
+
+    def has_completion(self) -> bool:
+        return hasattr(self, '_completion_href')

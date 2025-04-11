@@ -19,7 +19,6 @@ class ParseArgs:
         self.module = None
         self.method = None
         self.mode = None
-        # self._last_key = None
         self.clear()
 
     def __repr__(self):
@@ -61,10 +60,15 @@ class ParseArgs:
             pass
 
     def add_get_vars(self, qs: dict[str,list[str]]):
-        self.args.update(qs)
+        return self.add_web_args(qs)
 
     def add_post_vars(self, qs: dict[str,list[str]]):
-        self.args.update(qs)
+        return self.add_web_args(qs)
+
+    def add_web_args(self, qs: dict[str,list[str]]):
+        for key, vals in qs.items():
+            self.args[key.rstrip('[]')] = vals
+        return self
 
     def add_file(self, name: str, filename: str, raw_data: bytes):
         self.files.append((name, filename, raw_data))

@@ -81,9 +81,9 @@ class WithObject:
         self.error('err_select_candidates', ('|'.join(middles.keys()),))
         return None
 
-        ##########
-        # Render #
-        ##########
+    ##########
+    # Render #
+    ##########
 
     def render_cli(self) -> str:
         gdo = self.get_gdo()
@@ -97,9 +97,9 @@ class WithObject:
     def render_cell(self) -> str:
         return self.get_gdo().render_name()
 
-        ############
-        # Validate #
-        ############
+    ############
+    # Validate #
+    ############
 
     def validate(self, val: str | None, value: any):
         if self.has_error():

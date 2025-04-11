@@ -41,6 +41,10 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     def get_name(self):
         return self._name
 
+    def name(self, name: str):
+        self._name = name
+        return self
+
     def get_val(self):
         if self._val is None or self._val == '':
             return None

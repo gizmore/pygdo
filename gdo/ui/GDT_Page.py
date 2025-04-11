@@ -31,27 +31,12 @@ class GDT_Page(GDT):
         self.init()
 
     def init(self):
-        # self._js = []
-        # self._css = []
-        # self._js_inline = ''
-        # self._css_inline = ''
         self._title_bar = GDT_Bar().horizontal()
         self._top_bar = GDT_Container()
         self._left_bar = GDT_Bar('left').vertical()
         self._right_bar = GDT_Bar('right').vertical()
         self._bottom_bar = GDT_Container()
         return self
-
-    # def clear(self):
-        # self._js.clear()
-        # self._css.clear()
-        # self._js_inline = ''
-        # self._css_inline = ''
-        # self._title_bar.clear()
-        # self._top_bar.clear()
-        # self._left_bar.clear()
-        # self._right_bar.clear()
-        # self._bottom_bar.clear()
 
     def result(self, result: GDT):
         self._result = result

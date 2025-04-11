@@ -1,3 +1,4 @@
+from gdo.base import GDO
 from gdo.core.GDT_Select import GDT_Select
 from gdo.core.WithObject import WithObject
 
