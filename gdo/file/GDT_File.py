@@ -76,8 +76,7 @@ class GDT_File(GDT_Object):
     def get_value(self):
         files = self.get_initial_files()
         if not files:
-            super_value = super().get_value()
-            return [super_value] if super_value else []
+            return super().get_value()
         return files
 
     def to_value(self, val: str):

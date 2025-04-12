@@ -18,7 +18,7 @@ from gdo.ui.GDT_Width import GDT_Width
 
 
 class GDO_File(GDO):
-    _temp_path: str
+    _temp_path: str|None
     _file_data: bytes
     _no_delete: bool
 
@@ -50,7 +50,7 @@ class GDO_File(GDO):
         return self.gdo_val('file_mime')
 
     def get_path(self) -> str:
-        if self._temp_path:
+        if hasattr(self, '_temp_path'):
             return self._temp_path
         return self.get_target_path()
 

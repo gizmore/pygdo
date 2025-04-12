@@ -141,6 +141,10 @@ class Cache:
                 if rcached:
                     ocached._vals = rcached
                     ocached._values = {}
+                # else:
+                #     ocached._vals = gdo._vals
+                #     ocached._values = {}
+
                 return ocached.all_dirty(False)
 
             if after_write:

@@ -21,11 +21,14 @@ class ResultType(Enum):
 class Result:
     _result: MySQLCursorDict
     _table: 'GDO'
-    _iter = ResultType.OBJECT
+    _iter: ResultType
+    _nocache: bool
 
     def __init__(self, result: MySQLCursorDict, gdo: 'GDO' = None):
         self._result = result
         self._table = gdo
+        self._iter = ResultType.OBJECT
+        self._nocache = False
 
     def __del__(self):
         self.close()
@@ -40,6 +43,10 @@ class Result:
 
     def iter(self, iter_type: ResultType):
         self._iter = iter_type
+        return self
+
+    def nocache(self, nocache: bool=True):
+        self._nocache = nocache
         return self
 
     def __iter__(self):
@@ -107,7 +114,8 @@ class Result:
             return None
         obj = self._table.__class__()
         obj._vals = row #.update(row)
-        obj = Cache.obj_for(obj, None, False)
+        if not self._nocache:
+            obj = Cache.obj_for(obj, None, False)
         return obj.all_dirty(False)
 
     def fetch_column(self, col_num: int = 0) -> list[str]:

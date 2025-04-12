@@ -413,4 +413,4 @@ class GDO(WithBulk, GDT):
     def column_of(self, type: type[GDT]) -> GDT:
         for gdt in self.columns():
             if isinstance(gdt, type):
-                return gdt
+                return gdt.gdo(self)

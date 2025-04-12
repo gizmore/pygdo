@@ -9,9 +9,7 @@ from mysql.connector import ProgrammingError, DataError, DatabaseError, Interfac
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDODBException
 from gdo.base.GDT import GDT
-from gdo.base.Logger import Logger
 from gdo.base.Result import Result
-from gdo.base.Util import msg, dump
 
 class Type(Enum):
     UNKNOWN = 1
@@ -41,6 +39,7 @@ class Query:
     _limit: int
     _join: str
     _joined_objects: list[str]
+    _nocache: bool
 
     def __init__(self):
         super().__init__()
@@ -49,6 +48,7 @@ class Query:
         self._join = ''
         self._joined_objects = []
         self._where = ''
+        self._nocache = False
 
     def is_select(self):
         if self.is_raw() and self._raw.startswith('SELECT'):
@@ -165,6 +165,10 @@ class Query:
         self._vals.update(vals)
         return self
 
+    def nocache(self, nocache: bool=True):
+        self._nocache = nocache
+        return self
+
     def join_object(self, key: str, join: str = 'JOIN'):
         from gdo.core.GDT_Join import GDT_Join
         from gdo.core.WithObject import WithObject
@@ -234,7 +238,7 @@ class Query:
         query = self.build_query()
         try:
             if self.is_select():
-                return db.select(query, use_dict, self._fetch_as, self._debug)
+                return db.select(query, use_dict, self._fetch_as, self._debug).nocache(self._nocache)
             else:
                 return db.query(query, self._debug)
         except (AttributeError, InterfaceError, ProgrammingError, DataError, DatabaseError) as ex:
