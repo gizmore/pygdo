@@ -6,13 +6,13 @@ class GDT_Method(GDT_Select):
 
     def __init__(self, name):
         super().__init__(name)
+        self.ascii()
+        self.case_s()
+        self.maxlen(128)
 
     def gdo_choices(self):
         triggers = ModuleLoader.instance()._methods.keys()
-        as_dict = {key: key for key in triggers}
-        return as_dict
+        return {key: key for key in triggers}
 
     def to_value(self, val: str):
-        if val is None:
-            return None
-        return ModuleLoader.instance().get_method(val)
+        return ModuleLoader.instance().get_method(val) if val else None

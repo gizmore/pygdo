@@ -4,6 +4,7 @@
 /.idea/
 /.venv/
 /bin/dog.lock
+/bin/web.pids
 __pycache__/
 /node_modules/
 /yarn.lock

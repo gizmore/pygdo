@@ -156,6 +156,7 @@ class Application:
 
     @classmethod
     def init_cli(cls):
+        cls.IPC_TS = -1
         cls.STORAGE.ip = '::1'
         cls.STORAGE.cookies = {}
         cls.STORAGE.time_start = time.time()
@@ -165,6 +166,7 @@ class Application:
     @classmethod
     def init_web(cls, environ):
         cls.IS_HTTP = True
+        cls.IPC_TS = -1
         cls.STORAGE.time_start = time.time() # float(environ.get('mod_wsgi.request_start')) / 1000000.0
         cls.STORAGE.environ = environ
         cls.STORAGE.headers = {}
@@ -179,6 +181,7 @@ class Application:
     def init_asgi(cls, scope):
         cls.ASGI = True
         cls.IS_HTTP = True
+        cls.IPC_TS = -1
         cls.tick()
         cls.request_method(scope['method'])
         cls.STORAGE.time_start = time.time()
