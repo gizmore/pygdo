@@ -1,13 +1,20 @@
 #!/bin/bash
 #set -euo pipefail
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
+CORE="$(pwd)"
 
-CORE="$(dirname "$0")"
+echo "Installing core requirements..."
+pip3 install -r requirements.txt || exit 1
 
-echo "Core requirements."
-pip3 install -r requirements.txt
-
-echo "All modules: pip3 install -r requirements.txt"
+echo
+echo "Installing module-specific requirements (if any)..."
 echo "Thanks to greycat @ libera#bash"
-for d in ./gdo/*/; do (cd "$d" || exit; [[ -f requirements.txt ]] || exit; echo $d; pip3 install -r requirements.txt); done
+
+for d in ./gdo/*/; do
+  REQFILE="$d/requirements.txt"
+  if [[ -s "$REQFILE" ]]; then
+    echo "Installing in $d"
+    (cd "$d" && pip3 install -r requirements.txt) || echo "Failed in $d"
+  fi
+done
