@@ -13,7 +13,7 @@ class GDT_Bool(GDT_Select):
     def gdo_choices(self) -> dict:
         choices = {}
         if not self._not_null:
-            choices['2'] = 'please_select'
+            choices[''] = 'please_select'
         choices['1'] = 'yes'
         choices['0'] = 'no'
         return choices
