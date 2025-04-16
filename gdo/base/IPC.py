@@ -22,6 +22,7 @@ class IPC:
             for event in GDO_Event.query_for_sink('to_cli', ts).exec():
                 event.execute_cli()
             Application.IPC_TS = ts
+            GDO_Event.table().delete_query().where("event_type='to_cli'")
 
 
     #######
