@@ -290,6 +290,10 @@ class Cache:
                 redis_key = f"{key}:{args_key}"
                 cls.RCACHE.delete(redis_key)
 
+    @classmethod
+    def reload(cls, table_name: str, gid: str):
+        cls.OCACHE[table_name][gid].reload()
+
 
 #############
 # Decorator #

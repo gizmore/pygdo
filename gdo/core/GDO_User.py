@@ -55,6 +55,9 @@ class GDO_User(GDO):
         f.append('_settings')
         return f
 
+    def on_reload(self):
+        self._settings = {}
+
     @classmethod
     def system(cls) -> Self:
         if not hasattr(cls, 'SYSTEM'):
@@ -163,7 +166,6 @@ class GDO_User(GDO):
         from gdo.core.GDO_UserSetting import GDO_UserSetting
         if val != self.get_setting_val(key):
             self._settings[key] = val
-            # self.save()
             GDO_UserSetting.blank({
                 'uset_user': self.get_id(),
                 'uset_key': key,

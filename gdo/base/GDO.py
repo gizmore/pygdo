@@ -355,8 +355,20 @@ class GDO(WithBulk, GDT):
             return gdo
 
     ##########
+    # Reload #
+    ##########
+    def reload(self):
+        self._vals = self.select().where(self.pk_where()).exec().fetch_assoc()
+        self._values = {}
+        self._dirty = []
+        self.on_reload()
+        return self
+
+    ##########
     # Events #
     ##########
+    def on_reload(self):
+        pass
 
     def before_create(self):
         for gdt in self.columns():
