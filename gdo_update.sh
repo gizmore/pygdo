@@ -2,8 +2,8 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-#echo "Running the gdo_fix.sh because argh. This will take a while"
-#bash gdo_fix.sh
+echo "This will reset all your changes to main branch. Are you sure? Press Enter"
+read
 
 THREADS=15
 if [ $# -gt 0 ]; then
