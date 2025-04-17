@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import os
 import queue
 import time
 
@@ -20,6 +21,12 @@ from gdo.date.GDT_Duration import GDT_Duration
 class launch(Method):
 
     SERVERS: list[GDO_Server] = []
+
+    _signaled: bool
+
+    def __init__(self):
+        super().__init__()
+        self._signaled = False
 
     def gdo_trigger(self) -> str:
         return 'launch'
@@ -50,15 +57,20 @@ class launch(Method):
             Files.remove(self.lock_path())
         if self.is_running():
             return self.err('err_dog_already_running')
-        Files.touch(self.lock_path(), True)
+        Files.put_contents(self.lock_path(), str(os.getpid()))
+        signal.signal(signal.SIGUSR1, self.handle_sigusr1)
         await self.mainloop()
         return self.reply('msg_all_done')
 
-    def lock_path(self) -> str:
-        return Application.file_path('bin/dog.lock')
+    @classmethod
+    def lock_path(cls) -> str:
+        return Application.file_path('bin/dog.pid')
 
     def is_running(self):
         return Files.is_file(self.lock_path())
+
+    def handle_sigusr1(self):
+        self._signaled = True
 
     async def mainloop(self):
         Logger.debug("Launching DOG Bot")
@@ -72,6 +84,10 @@ class launch(Method):
                 for server in self.SERVERS:
                     self.mainloop_step_server(server)
                 await self.mainloop_process_ai()
+                if self._signaled:
+                    from gdo.base.IPC import IPC
+                    self._signaled = False
+                    IPC.dog_execute_events()
                 await asyncio.sleep(sleep_ms)
         except KeyboardInterrupt as ex:
             die().input('message', 'CTRL-C got pressed!').gdo_execute()

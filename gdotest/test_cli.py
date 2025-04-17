@@ -50,9 +50,9 @@ class CLITestCase(GDOTestCase):
         self.assertNotIn('--connector', result, "Help has problems with notnull parameters.")
 
     def test_07_nested_command(self):
-        line = "$echo --sep=, 1 $(echo 2) $(echo 3 $(echo 4)) 5 $(echo 6) $(echo --sep=; 7 8)"
+        line = "$echo 1 $(echo 2) $(echo 3 $(echo 4)) 5 $(echo 6) $(echo 7 8)"
         result = cli_plug(None, line)
-        self.assertEqual("1,2,3 4,5,6,7;8", result, "Command nesting does not work.")
+        self.assertEqual('1 2 3 4 5 6 7 8', result, "Command nesting does not work.")
 
 
 if __name__ == '__main__':

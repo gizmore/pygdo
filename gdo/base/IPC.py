@@ -1,19 +1,22 @@
 import os
+import signal
 
 import aiofiles
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
+from gdo.base.Util import Files
 from gdo.core.GDO_Event import GDO_Event
+from gdo.core.method.launch import launch
+from gdo.date.Time import Time
 
 
 class IPC:
 
-    WEB_TS: float = -1
-
     #######
     # CLI #
     #######
+    @classmethod
     def cli_check_for_ipc(cls):
         from gdo.base.Application import Application
         from gdo.base.Cache import Cache
@@ -22,8 +25,19 @@ class IPC:
             for event in GDO_Event.query_for_sink('to_cli', ts).exec():
                 event.execute_cli()
             Application.IPC_TS = ts
-            GDO_Event.table().delete_query().where("event_type='to_cli'")
+            cut = Time.get_date(ts)
+            GDO_Event.table().delete_query().where(f"event_type='to_cli' AND event_created <={cut}")
 
+    #######
+    # Dog #
+    #######
+    @classmethod
+    def dog_execute_events(cls):
+        ts = Application.TIME
+        for event in GDO_Event.query_for_sink('to_dog', ts).exec():
+            event.execute_dog()
+        cut = Time.get_date(ts)
+        GDO_Event.table().delete_query().where(f"event_type='to_dog' AND event_created <={cut}")
 
     #######
     # Web #
@@ -74,7 +88,8 @@ class IPC:
     @classmethod
     def send_to_dog(cls, event: str, args: any):
         GDO_Event.to_dog(event, args)
-        # TODO: sent SIGUSR1 to bin/dog.pid
+        pid = int(Files.get_contents(launch.lock_path()))
+        os.kill(pid, signal.SIGUSR1)
 
     @classmethod
     def send_to_web(cls, event: str, args: any):
