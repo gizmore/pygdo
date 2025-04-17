@@ -5,6 +5,7 @@ from typing_extensions import Self
 from typing import TYPE_CHECKING
 
 from gdo.base.Cache import gdo_cached, Cache
+from gdo.base.IPC import IPC
 from gdo.base.Query import Query
 from gdo.base.Result import Result
 from gdo.base.Util import module_enabled
@@ -171,6 +172,7 @@ class GDO_User(GDO):
                 'uset_key': key,
                 'uset_val': val,
             }).soft_replace()
+            IPC.send('uset_update', [self.get_id(), key, val])
             Application.EVENTS.publish(f'user_setting_{key}_changed', self, val)
         return self
 

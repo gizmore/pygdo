@@ -5,7 +5,7 @@ from gdo.base.Query import Query
 from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_Index import GDT_Index
 from gdo.core.GDT_Method import GDT_Method
-from gdo.core.GDT_Serialize import GDT_Serialize
+from gdo.core.GDT_Serialize import GDT_Serialize, Mode
 from gdo.date.GDT_Created import GDT_Created
 from gdo.date.Time import Time
 from gdo.ui.GDT_Page import GDT_Page
@@ -22,7 +22,7 @@ class GDO_Event(GDO):
             # No AutoInc!
             GDT_Enum('event_type').choices({'to_web': 'To Web', 'to_cli': 'To CLI', 'to_dog': 'To Dog'}).not_null(),
             GDT_Method('event_name').ascii().case_s().maxlen(96).not_null(),
-            GDT_Serialize('event_args').gdopack(),
+            GDT_Serialize('event_args').mode(Mode.JSON),
             GDT_Created('event_created'),
             GDT_Index('event_index_type_created').index_fields('event_type', 'event_created').using_btree(),
         ]
@@ -56,7 +56,7 @@ class GDO_Event(GDO):
     @classmethod
     def query_for_sink(cls, sink: str, ts_min: int) -> Query:
         cut = Time.get_date(ts_min)
-        return cls.table().select().where(f"event_type='{sink}' AND event_created >= '{cut}'")
+        return cls.table().select().where(f"event_type='{sink}' AND event_created <= '{cut}'")
 
     #######
     # Get #

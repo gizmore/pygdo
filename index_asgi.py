@@ -14,6 +14,7 @@ from gdo.base.ChunkedResponse import ChunkedResponse
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.IPC import IPC
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.ParseArgs import ParseArgs
@@ -72,6 +73,7 @@ async def app(scope, receive, send):
                 #PYPP#END#
                 ModuleLoader.instance().load_modules_db()
                 ModuleLoader.instance().init_modules(True, True)
+                await IPC.web_register_ipc()
                 await send({'type': 'lifespan.startup.complete'})
             elif message['type'] == 'lifespan.shutdown':
                 await send({'type': 'lifespan.shutdown.complete'})
@@ -169,6 +171,7 @@ async def app(scope, receive, send):
                 Application.set_current_user(user)
                 if Application.config('log.request', '0') == '1':
                     asyncio.ensure_future(Logger.arequest(url, str(qs)))
+                IPC.web_check_for_ipc()
                 Application.set_session(session)
                 server = user.get_server()
                 channel = None

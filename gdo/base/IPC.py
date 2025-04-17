@@ -7,11 +7,12 @@ from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.Util import Files
 from gdo.core.GDO_Event import GDO_Event
-from gdo.core.method.launch import launch
 from gdo.date.Time import Time
 
 
 class IPC:
+
+    PID: int = 0
 
     #######
     # CLI #
@@ -86,10 +87,19 @@ class IPC:
     #################
 
     @classmethod
+    def send(cls, event: str, args: any):
+        if Application.IS_HTTP:
+            cls.send_to_dog(event, args)
+        else:
+            cls.send_to_web(event, args)
+
+    @classmethod
     def send_to_dog(cls, event: str, args: any):
         GDO_Event.to_dog(event, args)
-        pid = int(Files.get_contents(launch.lock_path()))
-        os.kill(pid, signal.SIGUSR1)
+        if not cls.PID:
+            from gdo.core.method.launch import launch
+            cls.PID = int(Files.get_contents(launch.lock_path()))
+        os.kill(cls.PID, signal.SIGUSR1)
 
     @classmethod
     def send_to_web(cls, event: str, args: any):

@@ -9,17 +9,14 @@ from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 
 class GDO_UserSetting(GDO):
-    # def gdo_cached(self) -> bool:
-    #     return False
+    def gdo_cached(self) -> bool:
+        return False
 
     @classmethod
     def setting_column(cls, key: str, user: GDO_User) -> GDT:
         gdt = GDT_UserSetting.KNOWN[key]
         if user.get_id() == "0":
             return gdt.val(gdt.get_initial())
-        # if val := user._settings.get(key):
-        #     Cache.VHITS += 1 #PYPP#DELETE#
-        #     return gdt.val(val)
         if gdo := cls.get_setting(user, key):
             return gdt.val(gdo.get_val())
         else:

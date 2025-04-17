@@ -10,6 +10,7 @@ from gdo.core import GDO_MethodValServerBlob
 from gdo.core.Connector import Connector
 from gdo.core.GDO_Channel import GDO_Channel
 from gdo.core.GDO_Cronjob import GDO_Cronjob
+from gdo.core.GDO_Event import GDO_Event
 from gdo.core.GDO_File import GDO_File
 from gdo.core.GDO_Method import GDO_Method
 from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
@@ -122,6 +123,7 @@ class module_core(GDO_Module):
             GDO_MethodValServerBlob,
             GDO_MethodValUser,
             GDO_MethodValUserBlob,
+            GDO_Event,
         ]
 
     def gdo_install(self):
