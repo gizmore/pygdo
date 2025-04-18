@@ -6,6 +6,7 @@ from urllib.parse import parse_qs, unquote
 
 import better_exceptions
 
+from gdo.base.IPC import IPC
 from gdo.base.ParseArgs import ParseArgs
 from gdo.base.Application import Application
 from gdo.base.ChunkedResponse import ChunkedResponse
@@ -69,6 +70,7 @@ def pygdo_application(environ, start_response):
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
+            asyncio.run_coroutine_threadsafe(IPC.web_register_ipc(),  asyncio.new_event_loop())
             FRESH = False
         else:
             #PYPP#START#
