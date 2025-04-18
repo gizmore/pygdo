@@ -296,6 +296,9 @@ class GDT(WithSerialization):
     def display_val(self, val: str) -> str:
         return val
 
+    def copy(self):
+        return self.copy_as(self.get_name())
+
     def copy_as(self, new_name: str) -> Self:
         cloned = deepcopy(self)
         return cloned.name(new_name)
