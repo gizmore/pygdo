@@ -136,8 +136,10 @@ async def process_line(line: str) -> None:
         print(Render.red(str(ex), Mode.CLI))
 
 def handle_sigusr1(self, event: str, args: any = None):
+    global RUNNING
+    from gdo.base.Application import Application
     from gdo.base.IPC import IPC
-    asyncio.ensure_future(IPC.dog_execute_events())
+    asyncio.run_coroutine_threadsafe(IPC.dog_execute_events(), loop=Application.LOOP)
 
 async def repl():
     from gdo.base.Application import Application
