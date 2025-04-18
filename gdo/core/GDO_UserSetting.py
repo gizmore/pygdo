@@ -9,8 +9,8 @@ from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 
 class GDO_UserSetting(GDO):
-    def gdo_cached(self) -> bool:
-        return False
+    # def gdo_cached(self) -> bool:
+    #     return False
 
     @classmethod
     def setting_column(cls, key: str, user: GDO_User) -> GDT:

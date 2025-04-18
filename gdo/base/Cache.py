@@ -53,8 +53,6 @@ class Cache:
         cls.TCACHE = {}
         cls.PCACHE = {}
         cls.CCACHE = {}
-        # cls.OCACHE = {}
-        # cls.NCACHE = {}
         if cls.RCACHE:
             cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
@@ -91,7 +89,7 @@ class Cache:
         return gdo
 
     @classmethod
-    def build_ccache(cls, gdo_klass: type[GDO]):
+    def build_ccache(cls, gdo_klass: type[GDO]) -> list[GDT]:
         cache = []
         columns = cls.TCACHE[gdo_klass].gdo_columns()
         for column in columns:
@@ -100,7 +98,7 @@ class Cache:
         return cache
 
     @classmethod
-    def build_pkcache(cls, gdo_klass: type[GDO]):
+    def build_pkcache(cls, gdo_klass: type[GDO]) -> list[GDT]:
         cache = []
         for column in cls.TCACHE[gdo_klass].gdo_columns():
             if column.is_primary():
@@ -109,18 +107,18 @@ class Cache:
 
 
     @classmethod
-    def columns_for(cls, gdo_klass: type[GDO]):
+    def columns_for(cls, gdo_klass: type[GDO]) -> list[GDT]:
         cls.table_for(gdo_klass)
         return cls.CCACHE[gdo_klass]
 
     @classmethod
-    def column_for(cls, gdo_klass: GDO, key: str) -> GDT:
+    def column_for(cls, gdo_klass: GDO, key: str) -> GDT|None:
         for gdt in cls.columns_for(gdo_klass):
             if gdt.get_name() == key:
                 return gdt
 
     @classmethod
-    def pk_columns_for(cls, gdo_klass: type[GDO]):
+    def pk_columns_for(cls, gdo_klass: type[GDO]) -> list[GDT]:
         cls.table_for(gdo_klass)
         return cls.PCACHE[gdo_klass]
 
@@ -194,7 +192,7 @@ class Cache:
                 return cls.obj_for(gdo.blank(rcached), rcached, False)
 
     @classmethod
-    def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False):
+    def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
         return cls.obj_search_pygdo(gdo, vals, delete)
 
     @classmethod
@@ -216,7 +214,7 @@ class Cache:
                     return oc
 
     @classmethod
-    def obj_search_redis(cls, gdo: GDO, vals: dict, delete: bool = False):
+    def obj_search_redis(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
         if gdo.gdo_cached():
             cn = gdo.gdo_table_name()
             cursor = 0
@@ -250,7 +248,7 @@ class Cache:
     ##########
 
     @classmethod
-    def get(cls, key: str, args_key: str = None, default: any = None):
+    def get(cls, key: str, args_key: str = None, default: any = None) -> any:
         if cls.RCACHE:
             key = f"{key}:{args_key}" if args_key else key
             if packed := cls.RCACHE.get(key):

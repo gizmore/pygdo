@@ -10,8 +10,9 @@ from gdo.base.Trans import Trans, t
 from gdo.base.WithSerialization import WithSerialization
 
 if TYPE_CHECKING:
-    from gdo.form.GDT_Form import GDT_Form
+    from gdo.base.Query import Query
     from gdo.base.Method import Method
+    from gdo.form.GDT_Form import GDT_Form
 
 from gdo.base.Render import Mode
 from gdo.base.Util import Strings
@@ -75,6 +76,12 @@ class GDT(WithSerialization):
         pass
 
     def gdo_added_to_form(self, form: 'GDT_Form'):
+        pass
+
+    def gdo_before_select(self, gdo, query: 'Query'):
+        pass
+
+    def gdo_after_select(self, gdo, query: 'Query'):
         pass
 
     def gdo_before_create(self, gdo):
@@ -144,13 +151,13 @@ class GDT(WithSerialization):
     def is_unique(self) -> bool:
         return False
 
-    def gdo(self, gdo):
+    def gdo(self, gdo) -> Self:
         return self
 
-    def val(self, val: str):
+    def val(self, val: str) -> Self:
         return self
 
-    def value(self, value):
+    def value(self, value) -> Self:
         return self
 
     def initial(self, val: str | None):

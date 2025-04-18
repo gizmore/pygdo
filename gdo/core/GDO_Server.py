@@ -47,6 +47,7 @@ class GDO_Server(GDO):
         self._connector = None
 
     def gdo_wake_up(self):
+        super().gdo_wake_up()
         self._users = {}
         self._has_loop = False
         self._channels = {}
