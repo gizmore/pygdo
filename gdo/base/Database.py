@@ -123,7 +123,9 @@ class Database:
 
     def create_table_fk(self, gdo: 'GDO'):
         from gdo.core.GDT_Unique import GDT_Unique
+        Application.db().foreign_keys(False)
         self.delete_all_fk(gdo)
+        Application.db().foreign_keys(True)
         for gdt in gdo.columns():
             if fk := gdt.column_define_fk():
                 cn = f"GDO__FK__{gdo.gdo_table_name()}__{gdt.get_name()}"
