@@ -1,3 +1,4 @@
+from gdo.base.Application import Application
 from gdo.base.Method import Method
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
@@ -85,11 +86,13 @@ class GDO_Event(GDO):
 
     def execute_dog(self):
         method = self.get_event_method()
-        method._raw_args.add_get_vars(self.get_event_args())
+        method._raw_args.add_cli_line(self.get_event_args())
+        if args:= self.get_event_args():
+            method._raw_args.add_cli_line(args)
 
 
     def execute_web(self):
         method = self.get_event_method()
-
-        method._raw_args.add_get_vars(self.get_event_args())
-        GDT_Page._top_bar.add_field(method)
+        if args:= self.get_event_args():
+            method._raw_args.add_cli_line(args)
+        Application.get_page()._top_bar.add_field(method)

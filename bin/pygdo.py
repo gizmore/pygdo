@@ -11,7 +11,7 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import PromptSession
 
-RUNNING = True
+RUNNING = 1
 
 class ConsoleThread(Thread):
 
@@ -61,8 +61,11 @@ async def pygdo(line: str = None):
     Application.IS_DOG = True
 
     if args.dogmode:
+        global RUNNING
         from gdo.core.method.launch import launch
+        print("Dogmode!")
         Files.put_contents(launch.lock_path(), str(os.getpid()))
+        RUNNING = 2
 
     if line:
         if line == 'repl':
@@ -133,6 +136,7 @@ async def process_line(line: str) -> None:
         print(Render.red(str(ex), Mode.CLI))
 
 def handle_sigusr1(self, event: str, args: any):
+    from gdo.base.IPC import IPC
     IPC.dog_execute_events()
 
 async def repl():
@@ -140,19 +144,20 @@ async def repl():
     from gdo.base.Exceptions import GDOModuleException, GDOError
     from gdo.base.Util import CLI
     from gdo.base.IPC import IPC
+    global RUNNING
     thread = ConsoleThread()
     thread.start()
     if not sys.stdin.isatty():
         print("Terminal is no tty.")
     user = CLI.get_current_user()
     IPC.send('base.dogpid_update')
-    if Application.IS_DOG:
-        signal.signal(signal.SIGUSR1, handle_sigusr1)
+    if RUNNING == 2:
+        signal.signal(signal.SIGUSR1, handler=handle_sigusr1)
     session = PromptSession(
         history=FileHistory(Application.files_path(f'repl/{user.get_name()}.txt')),
     )
     with patch_stdout():  # allows async print + input without clobbering
-        while True:
+        while RUNNING:
             try:
                 input_line = await session.prompt_async(">>> ")
                 if input_line:
@@ -168,8 +173,7 @@ async def repl():
             except Exception as ex:
                 from gdo.base.Logger import Logger
                 Logger.exception(ex)
-        global RUNNING
-        RUNNING = False
+        RUNNING = 0
         thread.join()
 
 async def launcher(line: str = None):

@@ -97,9 +97,9 @@ class IPC:
     def send(cls, event: str, args: any = None):
         cls.COUNT += 1 # PYPP#DELETE#
         if Application.IS_DOG:
-            cls.send_to_dog(event, args)
-        else:
             cls.send_to_web(event, args)
+        else:
+            cls.send_to_dog(event, args)
 
     @classmethod
     def send_to_dog(cls, event: str, args: any):

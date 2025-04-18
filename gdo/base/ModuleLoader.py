@@ -192,8 +192,10 @@ class ModuleLoader:
         self._methods = {}
         for module in self._cache.values():
             for method in module.get_methods():
-                if trigger := method.gdo_trigger():
+                if trigger := method.__class__.gdo_trigger():
                     self._methods[trigger.lower()] = method
+                    if trig := method.__class__.gdo_trig():
+                        self._methods[trig.lower()] = method
 
     def get_module_method(self, module_name: str, method_name: str) -> Method:
         return self.get_module(module_name).get_method(method_name)

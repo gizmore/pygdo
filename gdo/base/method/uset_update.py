@@ -9,6 +9,7 @@ from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 class uset_update(Method):
 
+    @classmethod
     def gdo_trigger(cls) -> str:
         return ''
 
