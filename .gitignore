@@ -1,9 +1,10 @@
+
 /.wwebjs_auth/
 /.env
 /.python-version
 /.idea/
 /.venv/
-/bin/dog.lock
+/bin/dog.pid
 /bin/web.pids
 __pycache__/
 /node_modules/
