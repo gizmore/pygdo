@@ -62,7 +62,7 @@ class GDO_User(GDO):
     @classmethod
     def system(cls) -> Self:
         if not hasattr(cls, 'SYSTEM'):
-            cls.SYSTEM = GDO_User.table().get_by_id('1')
+            cls.SYSTEM = GDO_User.table().get_by_aid('1')
             if cls.SYSTEM is None:
                 delattr(cls, 'SYSTEM')
                 return cls.ghost()
@@ -177,7 +177,7 @@ class GDO_User(GDO):
                 'uset_key': key,
                 'uset_val': val,
             }).soft_replace()
-            IPC.send('base.uset_update', (self.get_id(), key, val))
+            IPC.send('base.ipc_uset', (self.get_id(), key, val))
             Application.EVENTS.publish(f'user_setting_{key}_changed', self, val)
         return self
 

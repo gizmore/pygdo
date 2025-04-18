@@ -1,3 +1,4 @@
+from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOModuleException
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
@@ -86,7 +87,11 @@ class ParseArgs:
             self.add_cli_part(part)
 
     def get_mode(self):
-        return Mode[self.mode.upper()]
+        try:
+            return Mode[self.mode.upper()]
+        except KeyError:
+            pass
+        return Application.get_mode()
 
     def clear(self):
         self.args = {}

@@ -7,7 +7,7 @@ from gdo.core.GDT_User import GDT_User
 from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 
-class uset_update(Method):
+class ipc_uset(Method):
 
     @classmethod
     def gdo_trigger(cls) -> str:

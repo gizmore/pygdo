@@ -5,6 +5,7 @@ import time
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.IPC import IPC
 from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.Util import Files
@@ -58,7 +59,7 @@ class launch(Method):
         Files.put_contents(self.lock_path(), str(os.getpid()))
         Application.IS_DOG = True
         signal.signal(signal.SIGUSR1, self.handle_sigusr1)
-        IPC.send('base.dogpid_update')
+        IPC.send('base.ipc_dogpid')
         await self.mainloop()
         return self.reply('msg_all_done')
 

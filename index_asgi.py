@@ -172,7 +172,6 @@ async def app(scope, receive, send):
                 Application.set_current_user(user)
                 if Application.config('log.request', '0') == '1':
                     asyncio.ensure_future(Logger.arequest(url, str(qs)))
-                IPC.web_check_for_ipc()
                 Application.set_session(session)
                 server = user.get_server()
                 channel = None
@@ -181,6 +180,7 @@ async def app(scope, receive, send):
                 args.add_get_vars(qs)
                 try:
                     method = args.get_method()
+                    await IPC.web_check_for_ipc()
                 except (GDOModuleException, GDOMethodException):
                     method = not_found().env_server(server).env_user(user).input('_url', url)
 
@@ -289,14 +289,15 @@ async def app(scope, receive, send):
 
     except Exception as ex:
         try:
+            Logger.exception(ex)
             out = Application.get_page().result(GDT_Error.from_exception(ex)).method(server_error()).render(Mode.HTML)
             try:
                 await send({
                     'type': 'http.response.start',
                     'status': 500,
                 })
-            except:
-                pass
+            except Exception as ex3:
+                Logger.exception(ex3)
             await send({
                 'type': 'http.response.body',
                 'body': out.encode(),

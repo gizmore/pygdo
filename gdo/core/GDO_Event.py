@@ -12,7 +12,6 @@ from gdo.core.GDT_Method import GDT_Method
 from gdo.core.GDT_Serialize import GDT_Serialize, Mode
 from gdo.date.GDT_Created import GDT_Created
 from gdo.date.Time import Time
-from gdo.ui.GDT_Page import GDT_Page
 from gdo.base.Util import CLI
 
 
@@ -25,7 +24,7 @@ class GDO_Event(GDO):
         return [
             # No AutoInc!
             GDT_Enum('event_type').choices({'to_web': 'To Web', 'to_cli': 'To CLI', 'to_dog': 'To Dog'}).not_null(),
-            GDT_Method('event_name').ascii().case_s().maxlen(96).not_null(),
+            GDT_Method('event_name').ascii().case_s().maxlen(64).not_null(),
             GDT_Serialize('event_args').mode(Mode.JSON),
             GDT_Created('event_created'),
             GDT_Index('event_index_type').index_fields('event_type', 'event_created').using_btree(),
@@ -58,9 +57,9 @@ class GDO_Event(GDO):
     # Read #
     ########
     @classmethod
-    def query_for_sink(cls, sink: str, ts_min: int) -> Query:
+    def query_for_sink(cls, sink: str, ts_min: float) -> Query:
         cut = Time.get_date(ts_min)
-        return cls.table().select().where(f"event_type='{sink}' AND event_created <= '{cut}'")
+        return cls.table().select().where(f"event_type='{sink}' AND event_created >= '{cut}'")
 
     #######
     # Get #
@@ -95,8 +94,13 @@ class GDO_Event(GDO):
             gdt = await gdt
         return gdt
 
-    def execute_web(self):
+    async def execute_web(self):
+        from gdo.core.connector.Web import Web
+        from gdo.core.GDO_User import GDO_User
         method = self.get_event_method()
         if args:= self.get_event_args():
             method._raw_args.add_cli_line(args)
-        Application.get_page()._top_bar.add_field(method)
+        method.env_server(Web.get_server())
+        method.env_user(GDO_User.system(), True)
+        method.env_channel(Web.get_public_channel())
+        Application.get_page()._top_bar.add_field(await method.execute())

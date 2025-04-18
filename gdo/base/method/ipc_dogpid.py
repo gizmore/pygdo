@@ -1,14 +1,9 @@
-from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.IPC import IPC
 from gdo.base.Method import Method
-from gdo.core.GDO_User import GDO_User
-from gdo.core.GDT_String import GDT_String
-from gdo.core.GDT_User import GDT_User
-from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 
-class dogpid_update(Method):
+class ipc_dogpid(Method):
 
     @classmethod
     def gdo_trigger(cls) -> str:

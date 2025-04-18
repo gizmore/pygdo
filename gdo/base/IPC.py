@@ -68,11 +68,11 @@ class IPC:
 
 
     @classmethod
-    def web_check_for_ipc(cls):
+    async def web_check_for_ipc(cls):
         ts = Cache.get('ipc', 'ts_web', 0)
         if Application.IPC_TS < ts:
-            for event in GDO_Event.query_for_sink('to_web', ts).exec():
-                event.execute_web()
+            for event in GDO_Event.query_for_sink('to_web', Application.IPC_TS).exec():
+                await event.execute_web()
             Application.IPC_TS = ts
 
 

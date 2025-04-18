@@ -49,6 +49,8 @@ class WithModuleConfig:
                     'mv_key': key,
                     'mv_val': val,
                 }).replace()
+                from gdo.base.IPC import IPC
+                IPC.send('base.ipc_modconf', (self.get_name(), key, val))
                 gdt.val(val)
         else:
             raise GDOValidationException(self.get_name(), key, val)
