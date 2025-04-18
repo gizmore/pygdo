@@ -2,13 +2,16 @@ import argparse
 import asyncio
 import functools
 import os
-import readline
 import sys
+from asyncio.exceptions import CancelledError
 from threading import Thread
 
-import aioconsole
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.patch_stdout import patch_stdout
+from prompt_toolkit.shortcuts import PromptSession
 
 RUNNING = True
+
 
 class ConsoleThread(Thread):
 
@@ -97,7 +100,6 @@ async def process_line(line: str) -> None:
         server = Bash.get_server()
         user = CLI.get_current_user()
         trigger = server.get_trigger()
-        append_to_history(line)
         parser = get_parser()
         message = Message(line, Mode.CLI)
         message.env_server(server).env_user(user, True)
@@ -125,57 +127,38 @@ async def process_line(line: str) -> None:
         print(Render.red(str(ex), Mode.CLI))
 
 
-def append_to_history(line: str):
-    from gdo.base.Util import CLI
-    from gdo.base.Application import Application
-    from gdo.base.Util import Files
-    user = CLI.get_current_user()
-    path = Application.files_path(f'repl/{user.get_id()}.repl.log')
-    Files.append_content(path, f"{line}\n", create=True)
-
-
-def reload_history():
-    from gdo.base.Util import CLI
-    from gdo.base.Application import Application
-    from gdo.base.Util import Files
-    user = CLI.get_current_user()
-    path = Application.files_path(f'repl/{user.get_id()}.repl.log')
-    try:
-        with open(path, "r", encoding='utf8') as file:
-            for line in file:
-                readline.add_history(line.strip())
-    except FileNotFoundError:
-        print(f"First Run? - Creating repl history at {path}")
-        Files.touch(path, True)
-
 async def repl():
     from gdo.base.Application import Application
     from gdo.base.Exceptions import GDOModuleException, GDOError
-    reload_history()
+    from gdo.base.Util import CLI
     thread = ConsoleThread()
     thread.start()
-    while True:
-        try:
-            input_line = await aioconsole.ainput(">>> ")
-            # input_line = input(">>> ")
-            if input_line == "":
-                input_line = readline.get_history_item(readline.get_current_history_length())
-            if input_line:
-                if input_line.lower() == "exit":
-                    break
-                Application.tick()
-                await process_line(input_line)
-        except (GDOModuleException, GDOError) as ex:
-            print(str(ex))
-        except (KeyboardInterrupt, EOFError):
-            print("\nExiting...")
-            break
-        except Exception as ex:
-            from gdo.base.Logger import Logger
-            Logger.exception(ex)
-    global RUNNING
-    RUNNING = False
-    thread.join()
+    if not sys.stdin.isatty():
+        print("Terminal is no tty.")
+    user = CLI.get_current_user()
+    session = PromptSession(
+        history=FileHistory(Application.files_path(f'{user.get_name()}')),
+    )
+    with patch_stdout():  # allows async print + input without clobbering
+        while True:
+            try:
+                input_line = await session.prompt_async(">>> ")
+                if input_line:
+                    if input_line.lower() == "exit":
+                        break
+                    Application.tick()
+                    await process_line(input_line)
+            except (GDOModuleException, GDOError) as ex:
+                print(str(ex))
+            except (KeyboardInterrupt, EOFError, CancelledError):
+                print("\nExiting...")
+                break
+            except Exception as ex:
+                from gdo.base.Logger import Logger
+                Logger.exception(ex)
+        global RUNNING
+        RUNNING = False
+        thread.join()
 
 async def launcher(line: str = None):
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))

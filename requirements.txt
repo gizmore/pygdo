@@ -16,3 +16,4 @@ redis
 better_exceptions
 pypp
 aioconsole
+prompt_toolkit

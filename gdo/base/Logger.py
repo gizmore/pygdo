@@ -52,12 +52,12 @@ class Logger:
 
     @classmethod
     def error(cls, content: str):
-        print(content)
+        # print(content)
         cls.write('message.log', content)
 
     @classmethod
     def message(cls, content: str):
-        print(content)
+#        print(content)
         cls.write('message.log', content)
 
     @classmethod
