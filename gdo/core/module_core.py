@@ -4,6 +4,7 @@ from datetime import datetime
 import nest_asyncio
 
 from gdo.base.Application import Application
+from gdo.base.Exceptions import GDOException
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
@@ -50,11 +51,14 @@ class module_core(GDO_Module):
         self.subscribe('clear_cache', self.on_cc)
         try:
             if Application.IS_HTTP and not Application.ASGI:
+                if not Application.LOOP:
+                    raise GDOException("OUCH!")
                 nest_asyncio.apply(Application.LOOP)
             else:
                 nest_asyncio.apply()
         except Exception as ex:
             Logger.exception(ex)
+            raise ex
 
     def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):

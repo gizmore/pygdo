@@ -135,9 +135,9 @@ async def process_line(line: str) -> None:
     except GDOParamError as ex:
         print(Render.red(str(ex), Mode.CLI))
 
-def handle_sigusr1(self, event: str, args: any):
+def handle_sigusr1(self, event: str, args: any = None):
     from gdo.base.IPC import IPC
-    IPC.dog_execute_events()
+    asyncio.ensure_future(IPC.dog_execute_events())
 
 async def repl():
     from gdo.base.Application import Application
@@ -179,6 +179,8 @@ async def repl():
 async def launcher(line: str = None):
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))
     sys.path.append(parent_dir)
+    from gdo.base.Application import Application
+    Application.LOOP = asyncio.get_running_loop()
     await pygdo(line)
 
 

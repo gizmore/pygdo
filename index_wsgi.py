@@ -66,12 +66,12 @@ def pygdo_application(environ, start_response):
             Application.init(os.path.dirname(__file__))
             Application.init_common()
             Application.init_web(environ)
+            Application.LOOP = asyncio.new_event_loop()
             loader = ModuleLoader.instance()
             loader.load_modules_db()
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
-            Application.LOOP = asyncio.new_event_loop()
             asyncio.run_coroutine_threadsafe(IPC.web_register_ipc(),  Application.LOOP)
             FRESH = False
         else:
@@ -83,7 +83,7 @@ def pygdo_application(environ, start_response):
             Application.init_common()
             Application.init_web(environ)
             Application.fresh_page()
-            asyncio.new_event_loop()
+            # Application.LOOP = asyncio.new_event_loop()
 
         qs = parse_qs(environ['QUERY_STRING'])
 

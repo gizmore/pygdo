@@ -34,10 +34,10 @@ class IPC:
     # Dog #
     #######
     @classmethod
-    def dog_execute_events(cls):
+    async def dog_execute_events(cls):
         ts = Application.TIME
         for event in GDO_Event.query_for_sink('to_dog', ts).exec():
-            event.execute_dog()
+            await event.execute_dog()
         cut = Time.get_date(ts)
         GDO_Event.table().delete_query().where(f"event_type='to_dog' AND event_created <='{cut}'")
 

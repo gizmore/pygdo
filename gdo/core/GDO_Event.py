@@ -1,3 +1,5 @@
+from asyncio import iscoroutine
+
 from gdo.base.Application import Application
 from gdo.base.Method import Method
 from gdo.base.GDO import GDO
@@ -84,12 +86,14 @@ class GDO_Event(GDO):
         method.env_server(server)
         method.execute()
 
-    def execute_dog(self):
+    async def execute_dog(self):
         method = self.get_event_method()
-        method._raw_args.add_cli_line(self.get_event_args())
         if args:= self.get_event_args():
             method._raw_args.add_cli_line(args)
-
+        gdt = method.gdo_execute()
+        while iscoroutine(gdt):
+            gdt = await gdt
+        return gdt
 
     def execute_web(self):
         method = self.get_event_method()

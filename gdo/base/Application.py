@@ -26,6 +26,7 @@ class Application:
     PROTOCOL = 'http'
     IS_HTTP = False
     IS_DOG = False
+    LOOP = None
     ASGI = False
     LOADER: 'ModuleLoader'
     EVENTS: 'Events'
