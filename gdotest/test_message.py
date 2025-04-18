@@ -8,6 +8,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.install.Installer import Installer
 from gdo.message.GDT_Message import GDT_Message
+from gdotest.TestUtil import GDOTestCase
 
 
 class GDO_Foo(GDO):
@@ -17,7 +18,7 @@ class GDO_Foo(GDO):
             GDT_Message('foo_msg').label_raw('MSG'),
         ]
 
-class MessageTestCase(unittest.TestCase):
+class MessageTestCase(GDOTestCase):
 
     def setUp(self):
         Application.init(os.path.dirname(__file__) + "/../")

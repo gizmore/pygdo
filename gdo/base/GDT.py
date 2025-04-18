@@ -1,6 +1,8 @@
 import binascii
 import functools
 import traceback
+from copy import deepcopy
+from typing import Self
 
 from typing_extensions import TYPE_CHECKING
 
@@ -123,8 +125,12 @@ class GDT(WithSerialization):
     def reset_error(self):
         return self
 
+    # Foo #
     def get_name(self):
         return self.__class__.__name__ + "#" + str(id(self))
+
+    def name(self, name: str):
+        return self
 
     def gdo_column_define(self) -> str:
         return ''
@@ -289,3 +295,7 @@ class GDT(WithSerialization):
 
     def display_val(self, val: str) -> str:
         return val
+
+    def copy_as(self, new_name: str) -> Self:
+        cloned = deepcopy(self)
+        return cloned.name(new_name)

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from gdo.ui.GDT_Page import GDT_Page
+    from gdo.base.Method import Method
 
 from packaging.version import Version
 
