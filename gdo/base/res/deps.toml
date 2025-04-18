@@ -38,6 +38,7 @@ payment_credits = [["https://github.com/gizmore/pygdo-payment-credits"], ["payme
 perf = [["https://github.com/gizmore/pygdo-perf"], [], false]
 pm = [["https://github.com/gizmore/pygdo-pm"], [], false]
 poll = [["https://github.com/gizmore/pygdo-poll"], [], false]
+quote = [["https://github.com/gizmore/pygdo-quote"], ["vote"], false]
 recovery = [["https://github.com/gizmore/pygdo-recovery"], [], false]
 register = [["https://github.com/gizmore/pygdo-register"], ["form", "login"], false]
 scum = [["https://github.com/gizmore/pygdo-scum"], [], false]
