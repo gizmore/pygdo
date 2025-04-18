@@ -1,5 +1,11 @@
 # pygdo changelog
 
+# PyGDO 8.0.2 Changelog
+
+
+
+# PyGDO 8.0.1 Changelog
+
 As this is based on phpgdo7 i introduce pygdo8.
 
 Listed are changes in the gdo behaviour compared to phpgdo7.

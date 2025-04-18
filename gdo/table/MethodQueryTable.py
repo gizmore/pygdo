@@ -11,5 +11,6 @@ class MethodQueryTable(MethodTable):
 
     def get_table_result(self) -> Result:
         query = self.gdo_table_query()
-        self.table_order_field().order_query(query)
+        if self.gdo_ordered():
+            self.table_order_field().order_query(query)
         return query.exec()
