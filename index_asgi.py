@@ -87,6 +87,7 @@ async def app(scope, receive, send):
         GDO.GDO_COUNT = 0
         GDT.GDT_ALIVE = 0
         GDO.GDO_ALIVE = 0
+        IPC.COUNT = 0
         Application.EVENT_COUNT = 0
         Application.DB_TRANSACTIONS = 0
         Application.DB_READS = 0

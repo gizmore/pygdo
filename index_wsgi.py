@@ -53,6 +53,7 @@ def pygdo_application(environ, start_response):
         GDO.GDO_COUNT = 0
         GDT.GDT_ALIVE = 0
         GDO.GDO_ALIVE = 0
+        IPC.COUNT = 0
         Cache.clear_stats()
         Application.DB_TRANSACTIONS = 0
         Application.EVENT_COUNT = 0
@@ -70,7 +71,8 @@ def pygdo_application(environ, start_response):
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
-            asyncio.run_coroutine_threadsafe(IPC.web_register_ipc(),  asyncio.new_event_loop())
+            Application.LOOP = asyncio.new_event_loop()
+            asyncio.run_coroutine_threadsafe(IPC.web_register_ipc(),  Application.LOOP)
             FRESH = False
         else:
             #PYPP#START#
@@ -81,6 +83,7 @@ def pygdo_application(environ, start_response):
             Application.init_common()
             Application.init_web(environ)
             Application.fresh_page()
+            asyncio.new_event_loop()
 
         qs = parse_qs(environ['QUERY_STRING'])
 
@@ -126,8 +129,6 @@ def pygdo_application(environ, start_response):
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
-            # headers = Application.get_headers()
-            # start_response(Application.get_status(), headers)
             if isinstance(gdt, GDT_FileOut):
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
@@ -154,7 +155,6 @@ def pygdo_application(environ, start_response):
                 args.add_get_vars(qs)
                 method = args.get_method().env_user(user).env_session(session).env_server(server)
             Application.set_current_user(user)
-            # Application.set_session(session)
             Application.status("200 OK")
             if Application.config('log.request', '0') == '1':
                 Logger.request(url, str(qs))

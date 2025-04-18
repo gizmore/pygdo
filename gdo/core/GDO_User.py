@@ -160,7 +160,12 @@ class GDO_User(GDO):
         return set
 
     def get_setting_value(self, key: str) -> any:
+        from gdo.core.GDT_UserSetting import GDT_UserSetting
         from gdo.core.GDO_UserSetting import GDO_UserSetting
+        gdt = GDT_UserSetting.KNOWN[key]
+        if set := self._settings.get(key):
+            Cache.VHITS += 1 #PYPP#DELETE#
+            return gdt.to_value(set)
         return GDO_UserSetting.setting_column(key, self).get_value()
 
     def save_setting(self, key: str, val: str):

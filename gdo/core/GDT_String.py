@@ -150,7 +150,7 @@ class GDT_String(GDT_Field):
     # Util #
     ########
 
-    def text(self, key: str, args: tuple[any] = None):
+    def text(self, key: str, args: tuple[any, ...] = None):
         return self.val(t(key, args))
 
     def utf8_normalize(self, val: str) -> str:

@@ -12,6 +12,7 @@ from gdo.date.Time import Time
 
 class IPC:
 
+    COUNT: int = 0 #PYPP#DELETE#
     PID: int = 0
 
     #######
@@ -88,6 +89,7 @@ class IPC:
 
     @classmethod
     def send(cls, event: str, args: any):
+        cls.COUNT += 1 # PYPP#DELETE#
         if Application.IS_HTTP:
             cls.send_to_dog(event, args)
         else:
@@ -99,7 +101,10 @@ class IPC:
         if not cls.PID:
             from gdo.core.method.launch import launch
             cls.PID = int(Files.get_contents(launch.lock_path()))
-        os.kill(cls.PID, signal.SIGUSR1)
+        try:
+            os.kill(cls.PID, signal.SIGUSR1)
+        except ProcessLookupError:
+            pass
 
     @classmethod
     def send_to_web(cls, event: str, args: any):

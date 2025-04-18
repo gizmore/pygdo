@@ -66,7 +66,7 @@ class launch(Method):
     def is_running(self):
         return Files.is_file(self.lock_path())
 
-    def handle_sigusr1(self):
+    def handle_sigusr1(self, event: str, args: any):
         self._signaled = True
 
     async def mainloop(self):
