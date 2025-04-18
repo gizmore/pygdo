@@ -1,4 +1,6 @@
 import asyncio
+from datetime import datetime
+
 import nest_asyncio
 
 from gdo.base.Application import Application
@@ -31,7 +33,9 @@ from gdo.core.GDT_User import GDT_User
 from gdo.core.InstallCore import InstallCore
 from gdo.core.connector.Bash import Bash
 from gdo.core.connector.Web import Web
+from gdo.date.Time import Time
 from gdo.date.GDT_DateTime import GDT_DateTime
+from gdo.date.GDT_Timestamp import GDT_Timestamp
 
 
 class module_core(GDO_Module):
@@ -78,6 +82,7 @@ class module_core(GDO_Module):
             GDT_Bool('send_404_mails').initial('1'),
             GDT_Bool('allow_gdo_assets').initial('0'),
             GDT_UInt('asset_version').initial('1'),
+            GDT_Timestamp('last_cron').initial(Time.get_date()),
         ]
 
     def gdo_user_config(self) -> list[GDT]:
@@ -104,6 +109,9 @@ class module_core(GDO_Module):
 
     def cfg_allow_gdo_assets(self) -> bool:
         return self.get_config_value('allow_gdo_assets')
+
+    def cfg_last_cron(self) -> datetime:
+        return self.get_config_value('last_cron')
 
     def gdo_classes(self):
         return [

@@ -22,7 +22,8 @@ class IPC:
     def cli_check_for_ipc(cls):
         from gdo.base.Application import Application
         from gdo.base.Cache import Cache
-        ts = Cache.get('ipc', 'ts', Application.TIME) # Trigger IPC events for web via redis timestamp.
+        ts_web = Cache.get('ipc', 'ts_web', 0) # Trigger IPC events for web via redis timestamp.
+        ts_cli = Cache.get('ipc', 'ts_cli', 0) # Trigger IPC events for web via redis timestamp.
         if Application.IPC_TS < ts:
             for event in GDO_Event.query_for_sink('to_cli', ts).exec():
                 event.execute_cli()
@@ -52,7 +53,6 @@ class IPC:
     async def web_register_ipc_with(cls, pid: int):
         from gdo.base.Application import Application
         pid = str(pid)
-        now = Application.TIME
         path = Application.file_path('bin/web.pids')
         content = ''
         if os.path.isfile(path):
@@ -60,6 +60,7 @@ class IPC:
                 content = await f.read()
             if pid in content:
                 return
+        now = Time.get_date(Application.TIME)
         lines = content.strip().split('\n') if content else []
         lines.append(f'{pid}:{now}')
         async with aiofiles.open(path, 'w') as f:
@@ -69,18 +70,24 @@ class IPC:
 
     @classmethod
     def web_check_for_ipc(cls):
-        ts = Cache.get('ipc', 'ts', Application.TIME) # Trigger IPC events for web via redis timestamp.
+        ts = Cache.get('ipc', 'ts_web', 0)
         if Application.IPC_TS < ts:
             for event in GDO_Event.query_for_sink('to_web', ts).exec():
                 event.execute_web()
             Application.IPC_TS = ts
-        pass
 
 
     @classmethod
-    def web_cleanup_time(cls):
+    def web_cleanup_time(cls) -> int:
         path = Application.file_path('bin/web.pids')
         n_proc = int(Application.config('core.processes', '1'))
+        with open(path) as f:
+            lines = f.readlines()
+            if len(lines) > 8:
+                lines = lines[-8:]
+            date = lines[0].split(':')[1]
+            return Time.parse_time(date)
+
         # TODO: if more than 8/n lines, keep latest 8, ... always return min ts from <= 8/n lines
 
     #################
@@ -90,10 +97,10 @@ class IPC:
     @classmethod
     def send(cls, event: str, args: any):
         cls.COUNT += 1 # PYPP#DELETE#
-        if Application.IS_HTTP:
-            cls.send_to_dog(event, args)
-        else:
+        if Application.IS_DOG:
             cls.send_to_web(event, args)
+        else:
+            cls.send_to_dog(event, args)
 
     @classmethod
     def send_to_dog(cls, event: str, args: any):
@@ -110,4 +117,4 @@ class IPC:
     def send_to_web(cls, event: str, args: any):
         GDO_Event.to_cli(event, args) # bash is like a web server 1
         GDO_Event.to_web(event, args) # send to web server
-        Cache.set('ipc', 'ts', Application.TIME) # Trigger IPC events for web via redis timestamp.
+        Cache.set('ipc', 'ts_web', Application.TIME) # Trigger IPC events for web via redis timestamp.

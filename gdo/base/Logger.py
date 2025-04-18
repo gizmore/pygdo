@@ -61,6 +61,11 @@ class Logger:
         cls.write('message.log', content)
 
     @classmethod
+    def cron(cls, content: str):
+        print(content)
+        cls.write('cron.log', content)
+
+    @classmethod
     def exception(cls, ex: Exception):
         stack = "".join(better_exceptions.format_exception(*sys.exc_info()))
         sys.stderr.write(str(ex)+"\n")

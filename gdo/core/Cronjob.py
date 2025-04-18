@@ -2,51 +2,57 @@ from gdo.base.Application import Application
 from gdo.base.Database import Database
 from gdo.base.Logger import Logger
 from gdo.base.Util import Strings
+from gdo.core import module_core
 from gdo.core.GDO_Cronjob import GDO_Cronjob
 from gdo.core.MethodCronjob import MethodCronjob
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.date.Time import Time
-
+from gdo.core.module_core import module_core
 
 class Cronjob:
-    FORCE = False
+    FORCE: bool = False
 
     @classmethod
     def run(cls, force: bool = False) -> None:
-        Cronjob.FORCE = force
+        cls.FORCE = force
         loader = ModuleLoader.instance()
-        modules = loader.load_modules_db()
+        loader.load_modules_db()
         loader.init_modules(True, True)
-        # GDO_Cronjob.cleanup()
+        GDO_Cronjob.cleanup()
         for name, module in loader._cache.items():
             for method in module.get_methods():
                 if isinstance(method, MethodCronjob):
                     if cls.should_run(method):
-                        Logger.debug("CRON!")
-                        method.gdo_execute()
-            # Module_Cronjob.instance().setLastRun()
+                        Logger.cron(f"Starting {method.get_sqn()}")
+                        entry = GDO_Cronjob.blank({
+                            'cron_method': method.get_sqn(),
+                        }).insert()
+                        db = Application.db()
+                        try:
+                            db.begin()
+                            method.gdo_execute()
+                            db.commit()
+                            entry.save_val('cron_success', '1')
+                        except Exception as ex:
+                            Logger.exception(ex)
+                            db.rollback()
+                            entry.save_val('cron_success', '0')
+                        finally:
+                            Logger.cron(f"Finished {method.get_sqn()}")
 
-    #
-    # @staticmethod
-    # def runCronjob(entry: str, path: str, module: GDO_Module) -> None:
-    #     method = Installer.loopMethod(module, path)
-    #     if isinstance(method, MethodCronjob):
-    #         if Cronjob.shouldRun(method):
-    #             Cronjob.executeCronjob(method)
 
     @classmethod
     def should_run(cls, method: MethodCronjob) -> bool:
-        if GDO_Cronjob.table().get_by_vals({'cron_method': method.fqn(), 'cron_success': '2'}):
+        if GDO_Cronjob.table().get_by_vals({'cron_method': method.get_sqn(), 'cron_success': '2'}):
             return False
 
         if Cronjob.FORCE:
             return True
 
-        # module = Module_Cronjob.instance()
-        # lastRun = module.cfgLastRun()
-        dt = Time.parse_datetime_db()DateTimeDB(lastRun)
-        minute = dt.format('Y-m-d H:i')
-        dt = Time.parseDateDB(minute)
+        mod = module_core.instance()
+        dt = mod.cfg_last_cron().timestamp()
+        dt = int(dt)
+        dt = dt - dt % 60
         now = Application.TIME
         while dt <= now:
             if Cronjob.should_run_at(method, dt):
@@ -56,10 +62,9 @@ class Cronjob:
 
     @classmethod
     def should_run_at(cls, method: MethodCronjob, timestamp: int) -> bool:
-
         at = method.gdo_run_at()
         at = Strings.replace_all(
-            at, {
+            at.upper(), {
                 'MON': '1',
                 'TUE': '2',
                 'WED': '3',
@@ -69,9 +74,9 @@ class Cronjob:
                 'SUN': '7',
             }
         )
-        att = Time.format(Time.ONE_MINUTE * timestamp, 'i H j m N').split()
+        att = Time.get_date(timestamp,'i H j m N').split()
         matches = 0
-        for i, a in enumerate(at):
+        for i, a in enumerate(at.split()):
             aa = a.split(',')
             for aaa in aa:
                 if aaa == '*':
@@ -92,19 +97,3 @@ class Cronjob:
                     matches += 1
                     break
         return matches == 5
-
-    @staticmethod
-    def executeCronjob(method: MethodCronjob) -> None:
-        try:
-            db = Application.db()
-            job = GDO_Cronjob.blank({'cron_method': method.__class__.__name__}).insert()
-            db.transactionBegin()
-            method.execute()
-            job.saveVars({'cron_success': '1'})
-            db.transactionEnd()
-        except Exception as ex:
-            if 'db' in locals():
-                db.transactionRollback()
-                if 'job' in locals():
-                    job.saveVars({'cron_success': '0'})
-            raise ex

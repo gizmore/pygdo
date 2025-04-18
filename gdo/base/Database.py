@@ -72,7 +72,9 @@ class Database:
             Application.DB_WRITES += 1
             self.debug_query(query, debug)
             #PYPP#END#
-            return link.cmd_query(query)
+            cursor = self.cursor(False)
+            cursor.execute(query)
+            return cursor
         except (ProgrammingError, DatabaseError, IntegrityError) as ex:
             raise GDODBException(ex.msg, query)
 
@@ -170,9 +172,6 @@ class Database:
 
     def unlock(self, name: str):
         return self.select(f"SELECT RELEASE_LOCK('{name}')", False).fetch_val() == '1'
-
-    def affected_rows(self) -> int:
-        return self.get_link().num_rows
 
     ###############
     # Transaction #

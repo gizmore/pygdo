@@ -1,6 +1,7 @@
 from gdo.base.Method import Method
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Query import Query
 from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_Index import GDT_Index
@@ -24,7 +25,7 @@ class GDO_Event(GDO):
             GDT_Method('event_name').ascii().case_s().maxlen(96).not_null(),
             GDT_Serialize('event_args').mode(Mode.JSON),
             GDT_Created('event_created'),
-            GDT_Index('event_index_type_created').index_fields('event_type', 'event_created').using_btree(),
+            GDT_Index('event_index_type').index_fields('event_type', 'event_created').using_btree(),
         ]
 
     #########
@@ -62,7 +63,8 @@ class GDO_Event(GDO):
     # Get #
     #######
     def get_event_method(self) -> Method:
-        return self.gdo_value('event_name')
+        module, method = self.gdo_val('event_name').split('.')
+        return ModuleLoader.instance().get_module_method(module, method)
 
     def get_event_args(self) -> any:
         return self.gdo_value('event_args')
@@ -88,5 +90,6 @@ class GDO_Event(GDO):
 
     def execute_web(self):
         method = self.get_event_method()
+
         method._raw_args.add_get_vars(self.get_event_args())
         GDT_Page._top_bar.add_field(method)

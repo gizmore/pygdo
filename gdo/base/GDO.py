@@ -5,6 +5,7 @@ import traceback
 from functools import lru_cache
 from typing import Self
 
+from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException
 from gdo.base.Result import ResultType
 
@@ -287,7 +288,7 @@ class GDO(WithBulk, GDT):
     def insert_or_replace(self, type_: Type):
         self.before_create()
         query = self.query().type(type_).set_vals(self.insert_vals())
-        self._last_id = query.exec()['insert_id']
+        self._last_id = query.exec().lastrowid
         self.after_create()
         self.all_dirty(False)
         return Cache.update_for(self)
@@ -335,11 +336,11 @@ class GDO(WithBulk, GDT):
             self.all_dirty(True)
         return self
 
-    def delete_where(self, where: str, with_hooks: bool = False):
+    def delete_where(self, where: str, with_hooks: bool = False) -> int:
         """
         Runs a delete query and executes it and returns nothing.... this is quite a todo.
         """
-        self.delete_query().where(where).exec()
+        return self.delete_query().where(where).exec().rowcount
 
     def delete_by_vals(self, vals: dict, with_hooks: bool = False):
         query = self.delete_query()

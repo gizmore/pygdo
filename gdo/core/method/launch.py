@@ -55,6 +55,7 @@ class launch(Method):
         if self.is_running():
             return self.err('err_dog_already_running')
         Files.put_contents(self.lock_path(), str(os.getpid()))
+        Application.IS_DOG = True
         signal.signal(signal.SIGUSR1, self.handle_sigusr1)
         await self.mainloop()
         return self.reply('msg_all_done')

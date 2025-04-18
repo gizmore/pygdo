@@ -7,7 +7,7 @@ class MethodCronjob(Method):
     def gdo_run_at(self) -> str:
         return "* * * * *"
 
-    def run_daily_at(self, hour: str|int, minute: str = "0") -> str:
+    def run_daily_at(self, hour: str|int, minute: str|int = 0) -> str:
         return f"* * * {hour} {minute}"
 
     def gdo_user_permission(self) -> str | None:

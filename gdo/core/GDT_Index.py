@@ -10,29 +10,36 @@ class GDT_Index(WithName, GDT):
     def __init__(self, name: str):
         super().__init__()
         self.name(name)
-        self._index_fields = ()
-        self._index_using = ''
         self._index_type = 'INDEX'
+        self._index_using = ''
+        self._index_fields = ()
 
-    def index_fields(self, *field_names: str):
-        self._index_fields = field_names
+    ########
+    # Attr #
+    ########
+
+    def index_type(self, index_type: str):
+        self._index_type = index_type
         return self
 
     def index_using(self, using: str):
         self._index_using = using
         return self
 
-    def index_type(self, index_type: str):
-        self._index_type = index_type
+    def index_fields(self, *field_names: str):
+        self._index_fields = field_names
         return self
 
-    def unique(self):
+    def type_index(self):
+        return self.index_type('INDEX')
+
+    def type_unique(self):
         return self.index_type('UNIQUE')
 
-    def fulltext(self):
+    def type_fulltext(self):
         return self.index_type('FULLTEXT')
 
-    def spatial(self):
+    def type_spatial(self):
         return self.index_type('SPATIAL')
 
     def using_btree(self):
@@ -41,9 +48,11 @@ class GDT_Index(WithName, GDT):
     def using_hash(self):
         return self.index_using('HASH')
 
+    #######
+    # GDO #
+    #######
+
     def gdo_column_define(self) -> str:
-        if not self._index_fields:
-            raise RuntimeError(f"GDT_Index {self._name} has no index_fields() set.")
-        fields = ', '.join(f'`{f}`' for f in self._index_fields)
+        fields = ', '.join(self._index_fields)
         using = f" USING {self._index_using}" if self._index_using else ''
-        return f"{self._index_type} `{self.get_name()}` ({fields}){using}"
+        return f"{self._index_type} {self.get_name()} ({fields}){using}"

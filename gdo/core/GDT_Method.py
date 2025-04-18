@@ -8,7 +8,7 @@ class GDT_Method(GDT_Select):
         super().__init__(name)
         self.ascii()
         self.case_s()
-        self.maxlen(128)
+        self.maxlen(64)
 
     def gdo_choices(self):
         triggers = ModuleLoader.instance()._methods.keys()
