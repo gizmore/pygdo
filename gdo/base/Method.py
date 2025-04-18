@@ -556,9 +556,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def get_config_channel_value(self, key: str):
         return self.get_config_channel(key).get_value()
 
-    def channels_with_setting(self, key: str, val: str):
+    def channels_with_setting(self, key: str, val: str, server: 'GDO_Server' = None):
         from gdo.core.GDO_Channel import GDO_Channel
-        return GDO_Channel.with_setting(self._env_server, key, val, self.get_config_channel(key).get_initial())
+        return GDO_Channel.with_setting(key, val, self.get_config_channel(key).get_initial(), server)
 
     ###
 
