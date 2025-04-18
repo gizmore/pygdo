@@ -6,7 +6,8 @@ from gdo.base.Method import Method
 
 class usage(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return ''
 
     def gdo_execute(self) -> GDT:

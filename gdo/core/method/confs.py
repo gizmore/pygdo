@@ -5,7 +5,8 @@ from gdo.core.MethodConf import MethodConf
 
 class confs(MethodConf):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'confs'
 
     def gdo_user_permission(self) -> str | None:

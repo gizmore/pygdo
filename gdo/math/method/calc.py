@@ -14,7 +14,8 @@ class calc(MethodForm):
         values = list(GDT_MathExpression('x').get_namespace().keys())
         return ', '.join(values)
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'calc'
 
     def gdo_create_form(self, form: GDT_Form) -> None:

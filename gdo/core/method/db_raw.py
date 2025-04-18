@@ -9,7 +9,8 @@ from gdo.core.GDT_UInt import GDT_UInt
 
 class db_raw(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return "db.raw"
 
     def gdo_user_permission(self) -> str | None:

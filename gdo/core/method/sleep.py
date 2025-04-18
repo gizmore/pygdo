@@ -8,7 +8,8 @@ from gdo.date.GDT_Duration import GDT_Duration
 
 class sleep(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'sleep'
 
     def gdo_parameters(self) -> [GDT]:

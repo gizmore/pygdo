@@ -11,7 +11,8 @@ from gdo.core.GDT_RestOfText import GDT_RestOfText
 
 class die(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'die'
 
     def gdo_permission(self):

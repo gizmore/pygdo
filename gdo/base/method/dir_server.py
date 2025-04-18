@@ -17,7 +17,8 @@ from gdo.ui.GDT_Link import GDT_Link
 
 class dir_server(MethodTable):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return ''
 
     def gdo_table(self) -> GDO:

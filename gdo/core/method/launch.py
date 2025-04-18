@@ -25,7 +25,8 @@ class launch(Method):
         super().__init__()
         self._signaled = False
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'launch'
 
     def gdo_user_permission(self) -> str | None:

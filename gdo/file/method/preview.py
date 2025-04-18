@@ -10,7 +10,8 @@ from gdo.file.MethodFile import MethodFile
 
 class preview(MethodFile):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return ""
 
     def gdo_parameters(self) -> [GDT]:

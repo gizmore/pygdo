@@ -5,7 +5,9 @@ from gdo.core.GDT_Object import GDT_Object
 
 
 class server(Method):
-    def gdo_trigger(self) -> str:
+
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'server'
 
     def gdo_parameters(self) -> [GDT]:

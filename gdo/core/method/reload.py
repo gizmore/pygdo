@@ -12,7 +12,8 @@ class reload(Method):
     Reload all gdo modules.
     """
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'reload'
 
     def gdo_user_permission(self) -> str | None:

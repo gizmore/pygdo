@@ -7,7 +7,8 @@ from gdo.ui.GDT_Success import GDT_Success
 
 class welcome(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return ''
 
     @functools.cache

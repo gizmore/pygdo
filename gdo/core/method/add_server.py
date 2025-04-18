@@ -9,7 +9,8 @@ from gdo.net.GDT_Url import GDT_Url
 
 class add_server(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return "add_server"
 
     def gdo_user_permission(self) -> str | None:

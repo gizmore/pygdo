@@ -4,7 +4,8 @@ from gdo.form.MethodForm import MethodForm
 
 class eval_code(MethodForm):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'eval'
 
     def gdo_user_permission(self) -> str | None:

@@ -9,7 +9,8 @@ from gdo.core.GDT_Secret import GDT_Secret
 
 class super(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return "super"
 
     def gdo_parameters(self) -> [GDT]:

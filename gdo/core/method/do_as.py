@@ -8,7 +8,7 @@ from gdo.core.GDT_User import GDT_User
 
 class do_as(Method):
 
-    def gdo_trigger(self) -> str:
+    def gdo_trigger(cls) -> str:
         return 'as'
 
     def gdo_parameters(self) -> [GDT]:

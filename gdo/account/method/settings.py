@@ -16,7 +16,8 @@ from gdo.form.MethodForm import MethodForm
 
 class settings(MethodForm):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return ''
 
     def gdo_user_type(self) -> str | None:

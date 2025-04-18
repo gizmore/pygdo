@@ -9,7 +9,8 @@ from gdo.ui.GDT_Card import GDT_Card
 
 class profile(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'profile'
 
     def gdo_parameters(self) -> [GDT]:

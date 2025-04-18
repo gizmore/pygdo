@@ -11,7 +11,8 @@ from gdo.message.GDT_HTML import GDT_HTML
 
 class wget(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'wget'
 
     def gdo_parameters(self):

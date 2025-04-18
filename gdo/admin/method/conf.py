@@ -13,8 +13,8 @@ class conf(Method):
     """
     Get the list of config, the list of config for a module, state of a config var or set a config var
     """
-
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return "conf"
 
     def gdo_connectors(self) -> str:

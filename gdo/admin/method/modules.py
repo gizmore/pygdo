@@ -21,7 +21,8 @@ class modules(MethodTable):
     Overview over modules
     """
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'modules'
 
     def gdo_table(self) -> GDO:

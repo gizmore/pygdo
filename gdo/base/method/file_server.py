@@ -20,7 +20,8 @@ class file_server(Method):
             GDT_Path('_url').existing_file(),
         ]
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return ""
 
     def get_path(self):

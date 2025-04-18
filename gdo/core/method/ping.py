@@ -4,7 +4,8 @@ from gdo.base.Method import Method
 
 class ping(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'ping'
 
     def gdo_needs_authentication(self) -> bool:

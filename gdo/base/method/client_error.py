@@ -10,7 +10,8 @@ class client_error(Method):
     """
     _exception: Exception
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return ""
 
     def exception(self, exception: Exception):

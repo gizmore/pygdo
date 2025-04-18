@@ -10,7 +10,8 @@ from gdo.date.GDT_Duration import GDT_Duration
 
 class after(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'in'
 
     def gdo_parameters(self) -> [GDT]:

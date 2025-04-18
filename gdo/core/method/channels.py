@@ -7,7 +7,8 @@ from gdo.core.GDT_Server import GDT_Server
 
 class channels(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'channels'
 
     def gdo_parameters(self) -> [GDT]:

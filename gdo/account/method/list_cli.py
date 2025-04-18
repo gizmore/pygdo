@@ -9,7 +9,8 @@ from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 class list_cli(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'settings'
 
     def gdo_parameters(self) -> [GDT]:

@@ -78,12 +78,17 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     # Abstract #
     ############
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         """
         The CLI/Text trigger for non Web connectors. Return an empty string to disable all CLI connectors.
         """
-        module = self.gdo_module()
-        return f"{module.get_name()}.{self.get_name()}"
+        module = cls.gdo_module()
+        return f"{module.get_name()}.{cls.__class__.__name__}"
+
+    @classmethod
+    def gdo_trig(cls) -> str:
+        return cls.gdo_trigger()
 
     def gdo_method_hidden(self) -> bool:
         return False
@@ -298,10 +303,11 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         self.gdo_module().err(key, args)
         return self
 
+    @classmethod
     @functools.cache
-    def gdo_module(self) -> 'GDO_Module':
+    def gdo_module(cls) -> 'GDO_Module':
         from gdo.base.ModuleLoader import ModuleLoader
-        mn = self.__module__
+        mn = cls.__module__
         mn = Strings.substr_from(mn, 'gdo.')
         mn = Strings.substr_to(mn, '.')
         return ModuleLoader.instance()._cache[mn]

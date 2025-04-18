@@ -6,5 +6,6 @@ class MethodCompletion(Method):
     Abstract combobox completion ajax interface
     """
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return ''

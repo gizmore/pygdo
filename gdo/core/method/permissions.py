@@ -5,7 +5,8 @@ from gdo.table.MethodQueryTable import MethodQueryTable
 
 class permissions(MethodQueryTable):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'perms'
 
     def gdo_table(self) -> GDO:

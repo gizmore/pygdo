@@ -4,7 +4,8 @@ from gdo.core.MethodConf import MethodConf
 
 class confu(MethodConf):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'confu'
 
     def get_configs(self, method: Method) -> list:
