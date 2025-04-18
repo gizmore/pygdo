@@ -22,14 +22,13 @@ class IPC:
     def cli_check_for_ipc(cls):
         from gdo.base.Application import Application
         from gdo.base.Cache import Cache
-        ts_web = Cache.get('ipc', 'ts_web', 0) # Trigger IPC events for web via redis timestamp.
-        ts_cli = Cache.get('ipc', 'ts_cli', 0) # Trigger IPC events for web via redis timestamp.
+        ts = Cache.get('ipc', 'ts_web', 0) # Trigger IPC events for web via redis timestamp.
         if Application.IPC_TS < ts:
             for event in GDO_Event.query_for_sink('to_cli', ts).exec():
                 event.execute_cli()
             Application.IPC_TS = ts
             cut = Time.get_date(ts)
-            GDO_Event.table().delete_query().where(f"event_type='to_cli' AND event_created <={cut}")
+            GDO_Event.table().delete_query().where(f"event_type='to_cli' AND event_created <='{cut}'")
 
     #######
     # Dog #
@@ -40,7 +39,7 @@ class IPC:
         for event in GDO_Event.query_for_sink('to_dog', ts).exec():
             event.execute_dog()
         cut = Time.get_date(ts)
-        GDO_Event.table().delete_query().where(f"event_type='to_dog' AND event_created <={cut}")
+        GDO_Event.table().delete_query().where(f"event_type='to_dog' AND event_created <='{cut}'")
 
     #######
     # Web #
@@ -95,12 +94,12 @@ class IPC:
     #################
 
     @classmethod
-    def send(cls, event: str, args: any):
+    def send(cls, event: str, args: any = None):
         cls.COUNT += 1 # PYPP#DELETE#
         if Application.IS_DOG:
-            cls.send_to_web(event, args)
-        else:
             cls.send_to_dog(event, args)
+        else:
+            cls.send_to_web(event, args)
 
     @classmethod
     def send_to_dog(cls, event: str, args: any):

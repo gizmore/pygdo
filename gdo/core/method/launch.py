@@ -58,6 +58,7 @@ class launch(Method):
         Files.put_contents(self.lock_path(), str(os.getpid()))
         Application.IS_DOG = True
         signal.signal(signal.SIGUSR1, self.handle_sigusr1)
+        IPC.send('base.dogpid_update')
         await self.mainloop()
         return self.reply('msg_all_done')
 
@@ -67,9 +68,6 @@ class launch(Method):
 
     def is_running(self):
         return Files.is_file(self.lock_path())
-
-    def handle_sigusr1(self, event: str, args: any):
-        self._signaled = True
 
     async def mainloop(self):
         Logger.debug("Launching DOG Bot")
@@ -93,6 +91,9 @@ class launch(Method):
             time.sleep(1)
         finally:
             Files.remove(self.lock_path())
+
+    def handle_sigusr1(self, event: str, args: any):
+        self._signaled = True
 
     def tried_connecting(self):
         return Application.runtime() > 30

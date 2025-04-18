@@ -3,6 +3,7 @@ import asyncio
 import functools
 import os
 import sys
+import signal
 from asyncio.exceptions import CancelledError
 from threading import Thread
 
@@ -11,7 +12,6 @@ from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import PromptSession
 
 RUNNING = True
-
 
 class ConsoleThread(Thread):
 
@@ -43,6 +43,7 @@ async def pygdo(line: str = None):
 
     parser = argparse.ArgumentParser(description='Run a pygdo command or the pygdo repl interpreter.')
     parser.add_argument('--test', action='store_true')
+    parser.add_argument('--dogmode', action='store_true')
     parser.add_argument('--config', nargs='?', default='protected/config.toml')
     args, rest = parser.parse_known_args(sys.argv[1:])
 
@@ -57,6 +58,11 @@ async def pygdo(line: str = None):
     Application.init_cli()
     loader.init_cli()
     Files.create_dir(Application.files_path('repl/'))
+    Application.IS_DOG = True
+
+    if args.dogmode:
+        from gdo.core.method.launch import launch
+        Files.put_contents(launch.lock_path(), str(os.getpid()))
 
     if line:
         if line == 'repl':
@@ -126,18 +132,24 @@ async def process_line(line: str) -> None:
     except GDOParamError as ex:
         print(Render.red(str(ex), Mode.CLI))
 
+def handle_sigusr1(self, event: str, args: any):
+    IPC.dog_execute_events()
 
 async def repl():
     from gdo.base.Application import Application
     from gdo.base.Exceptions import GDOModuleException, GDOError
     from gdo.base.Util import CLI
+    from gdo.base.IPC import IPC
     thread = ConsoleThread()
     thread.start()
     if not sys.stdin.isatty():
         print("Terminal is no tty.")
     user = CLI.get_current_user()
+    IPC.send('base.dogpid_update')
+    if Application.IS_DOG:
+        signal.signal(signal.SIGUSR1, handle_sigusr1)
     session = PromptSession(
-        history=FileHistory(Application.files_path(f'{user.get_name()}')),
+        history=FileHistory(Application.files_path(f'repl/{user.get_name()}.txt')),
     )
     with patch_stdout():  # allows async print + input without clobbering
         while True:

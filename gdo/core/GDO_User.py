@@ -177,7 +177,7 @@ class GDO_User(GDO):
                 'uset_key': key,
                 'uset_val': val,
             }).soft_replace()
-            IPC.send('core.uset_update', [self.get_id(), key, val])
+            IPC.send('base.uset_update', (self.get_id(), key, val))
             Application.EVENTS.publish(f'user_setting_{key}_changed', self, val)
         return self
 
