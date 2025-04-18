@@ -21,11 +21,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.1")
-<<<<<<< HEAD
-    CORE_REV = "PyGDOv8.0.1-r1344"
-=======
-    CORE_REV = "PyGDOv8.0.1-r1343"
->>>>>>> cc33bb9 ('fixes')
+    CORE_REV = "PyGDOv8.0.1-r1345"
 
     METHOD_CACHE = {}
 
