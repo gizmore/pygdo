@@ -4,14 +4,10 @@ from gdo.base.Method import Method
 
 
 class ipc_dogpid(Method):
-
-    @classmethod
-    def gdo_trigger(cls) -> str:
-        return ''
-
-    def gdo_parameters(self) -> [GDT]:
-        return [
-        ]
+    """
+    Clear the IPC dog pid.
+    Triggered when dog or repl boots.
+    """
 
     def gdo_execute(self) -> GDT:
         IPC.PID = 0

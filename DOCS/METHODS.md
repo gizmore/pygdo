@@ -11,7 +11,7 @@ and decorate it.
 
 GDO uses RewriteRules (i don't know nginx yet) to route **every** request through the pygdo application,
 including assets and every single file (except .well-known).
-Every request starts in index.py, selecting the appropiate method,
+Every request starts in index.py, selecting the appropriate method,
 gathering input into a unified args array, that is almost identical to the `sys.argv` in CLI mode.
 Then the method is executed and the result is rendered according to the render mode. 
 
