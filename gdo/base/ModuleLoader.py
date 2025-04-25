@@ -196,7 +196,8 @@ class ModuleLoader:
                     if trigger := method.__class__.gdo_trigger():
                         self._methods[trigger.lower()] = method
                         if trig := method.__class__.gdo_trig():
-                            self._methods[trig.lower()] = method
+                            if trig.lower() not in self._methods:
+                                self._methods[trig.lower()] = method
                 except Exception as ex:
                     Logger.exception(ex, f"Error in {method.__module__}.{method.__class__.__name__}")
 

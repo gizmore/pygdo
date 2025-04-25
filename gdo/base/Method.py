@@ -84,7 +84,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         The CLI/Text trigger for non Web connectors. Return an empty string to disable all CLI connectors.
         """
         module = cls.gdo_module()
-        return f"{module.get_name()}.{cls.__class__.__name__}"
+        return f"{module.get_name()}.{cls.__name__}"
 
     @classmethod
     def gdo_trig(cls) -> str:
