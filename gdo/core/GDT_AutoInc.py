@@ -8,6 +8,7 @@ class GDT_AutoInc(GDT_UInt):
         super().__init__(name)
         self.primary()
         self.label('id')
+        self.not_null(False)
 
     def gdo_column_define(self) -> str:
         return f"{self._name} {self.gdo_column_define_size()}INT UNSIGNED NOT NULL AUTO_INCREMENT"

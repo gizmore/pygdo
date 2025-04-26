@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO
@@ -6,6 +6,6 @@ if TYPE_CHECKING:
 class WithGDO:
     _gdo: 'GDO'
 
-    def gdo(self, gdo: 'GDO'):
+    def gdo(self, gdo: 'GDO') -> Self:
         self._gdo = gdo
         return self

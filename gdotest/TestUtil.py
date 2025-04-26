@@ -186,13 +186,18 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
         result = asyncio.run(result)
     out = cli_top(mode)
     out += "\n"
+    out += all_private_messages()
+    out += "\n"
+    out += result.render(mode)
+    return out.strip()
+
+def all_private_messages():
+    out = ""
     for msgs in GDOTestCase.MESSAGES.values():
         out += "\n".join(msgs)
         out += "\n"
         msgs.clear()
-    out += "\n"
-    out += result.render(mode)
-    return out.strip()
+    return out
 
 def cli_plug(user: 'GDO_User', command: str) -> str:
     return text_plug(Mode.CLI, command, user)

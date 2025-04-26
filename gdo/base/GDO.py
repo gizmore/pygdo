@@ -7,11 +7,13 @@ from typing import Self, Generator
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException
+from gdo.base.Logger import Logger
 from gdo.base.Result import ResultType
 
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Query import Type, Query
+from gdo.base.Trans import t
 from gdo.base.Util import Strings
 from gdo.base.WithBulk import WithBulk
 
@@ -147,8 +149,11 @@ class GDO(WithBulk, GDT):
         """
         raise GDOException(f"{self.__class__.__name__} does not provide any columns.")
 
-    def column(self, key: str) -> GDT:
-        return Cache.column_for(self.__class__, key).gdo(self)
+    def column(self, key: str) -> GDT|None:
+        try:
+            return Cache.column_for(self.__class__, key).gdo(self)
+        except Exception as ex:
+            Logger.exception(ex, f"Unknown column {key} in {self.__class__.__name__}")
 
     def columns(self) -> list[GDT]:
         return Cache.columns_for(self.__class__)
@@ -281,6 +286,15 @@ class GDO(WithBulk, GDT):
 
     def get_ids(self) -> list[str]:
         return [gdt.get_val() for gdt in self.get_pk_columns()]
+
+    ############
+    # Validate #
+    ############
+    def validated(self):
+        for gdt in self.columns():
+            if not gdt.gdo(self).validated():
+                raise GDOException(t('err_gdo_validate', (gdt.get_name(), gdt.render_error())))
+        return self
 
     ####################
     # Insert / Replace #

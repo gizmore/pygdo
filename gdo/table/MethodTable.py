@@ -1,4 +1,5 @@
 import functools
+from typing import Iterator
 
 from gdo.base.GDO import GDO
 from gdo.base.GDOSorter import GDOSorter
@@ -36,9 +37,9 @@ class MethodTable(WithGDO, MethodForm):
     ################
 
     @functools.cache
-    def table_parameters(self) -> GDT:
+    def table_parameters(self) -> Iterator[GDT]:
         if self.gdo_paginated():
-            yield GDT_PageNum(self.gdo_paginate_name()).initial('1')
+            yield GDT_PageNum(self.gdo_paginate_name()).initial('1').positional()
         if self.gdo_ordered():
             yield GDT_Order(self.gdo_order_name())
         if self.gdo_filtered():
