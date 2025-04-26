@@ -1,4 +1,5 @@
 from gdo.base.Exceptions import GDOValidationException
+from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 
 
@@ -11,13 +12,13 @@ class WithModuleConfig:
     ############
 
     def gdo_module_config(self) -> list[GDT]:
-        return []
+        return GDO.EMPTY_LIST
 
     def gdo_user_config(self) -> list[GDT]:
-        return []
+        return GDO.EMPTY_LIST
 
     def gdo_user_settings(self) -> list[GDT]:
-        return []
+        return GDO.EMPTY_LIST
 
     ##########
     # Module #

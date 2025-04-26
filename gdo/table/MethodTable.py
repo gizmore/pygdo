@@ -160,7 +160,10 @@ class MethodTable(WithGDO, MethodForm):
         self.init_parameters(False)
         table = self.get_table()
         table.mode(self.gdo_table_mode())
-        self._curr_table_row_id = self.gdo_paginate_size() * (self.table_paginate_field().get_value() - 1)
+        if self.gdo_paginated():
+            self._curr_table_row_id = self.gdo_paginate_size() * (self.table_paginate_field().get_value() - 1)
+        else:
+            self._curr_table_row_id = 0
         return table
 
     ##########
