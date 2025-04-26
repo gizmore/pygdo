@@ -1,14 +1,16 @@
 import functools
 from typing import Iterator
 
+from gdo.base.Exceptions import GDOException
 from gdo.base.GDO import GDO
 from gdo.base.GDOSorter import GDOSorter
 from gdo.base.GDT import GDT
-from gdo.base.Render import Mode
+from gdo.base.Render import Mode, Render
 from gdo.base.Result import Result
 from gdo.base.ResultArray import ResultArray
 from gdo.core.WithGDO import WithGDO
 from gdo.form.MethodForm import MethodForm
+from gdo.table.module_table import module_table
 from gdo.table.GDT_Filter import GDT_Filter
 from gdo.table.GDT_Order import GDT_Order
 from gdo.table.GDT_PageNum import GDT_PageNum
@@ -21,15 +23,19 @@ class MethodTable(WithGDO, MethodForm):
     A method that displays a table.
     """
 
-    # def __init__(self):
-    #     super().__init__()
+    _curr_table_row_id: int
+
+    def __init__(self):
+        super().__init__()
+        self._curr_table_row_id = 0
 
     def parameters(self, reset: bool = False) -> list[GDT]:
         if hasattr(self, '_parameters') and not reset:
             return self._parameters
-        params = super().parameters()
+        params = super().parameters(reset)
         for gdt in self.table_parameters():
             params[gdt.get_name()] = gdt
+        self.set_parameter_positions()
         return params
 
     ################
@@ -59,15 +65,12 @@ class MethodTable(WithGDO, MethodForm):
     def table_paginate_field(self) -> GDT_PageNum:
         return self.parameter(self.gdo_paginate_name())
 
-    def get_page_num(self) -> int:
-        return self.param_value(self.gdo_paginate_name())
-
     ##################
     # Abstract table #
     ##################
 
     def gdo_table(self) -> GDO:
-        pass
+        raise GDOException(f"{self.__class__.__name__} does not implement gdo_table()")
 
     def gdo_table_mode(self) -> TableMode:
         return TableMode.TABLE
@@ -76,7 +79,10 @@ class MethodTable(WithGDO, MethodForm):
         return list(filter(lambda gdt: not gdt.is_hidden(), self.gdo_table().columns()))
 
     def gdo_table_result(self) -> Result:
-        return ResultArray([], self.gdo_table())
+        raise GDOException(f"{self.__class__.__name__} does not implement gdo_table_result()")
+
+    def get_num_results(self) -> int:
+        return self.gdo_table_result().get_num_rows()
 
     ##################
     # Abstract hooks #
@@ -91,8 +97,14 @@ class MethodTable(WithGDO, MethodForm):
     def gdo_paginated(self) -> bool:
         return True
 
+    def get_page_num(self) -> int:
+        return self.param_value(self.gdo_paginate_name())
+
+    def get_num_pages(self) -> int:
+        return ((self.get_num_results()-1) // self.gdo_paginate_size()) + 1
+
     def gdo_paginate_size(self) -> int:
-        return 10
+        return module_table.instance().cfg_ipp()
 
     def gdo_paginate_name(self) -> str:
         return 'page'
@@ -125,6 +137,7 @@ class MethodTable(WithGDO, MethodForm):
     #########
     @functools.cache
     def get_table(self) -> GDT_Table:
+        self.init_parameters(False)
         table = GDT_Table()
         table.method(self)
         self.gdo_create_table(table)
@@ -137,15 +150,17 @@ class MethodTable(WithGDO, MethodForm):
         if self.gdo_filtered():
             result = GDOSorter.filter(result, self.parameter(self.gdo_filter_name()))
         if self.gdo_paginated():
-            result = GDOSorter.paginate(result, self.parameter(self.gdo_paginate_name()))
+            result = GDOSorter.paginate(result, self.parameter(self.gdo_paginate_name()), self.gdo_paginate_size())
         return result
 
     ########
     # Exec #
     ########
     def gdo_execute(self) -> GDT:
+        self.init_parameters(False)
         table = self.get_table()
         table.mode(self.gdo_table_mode())
+        self._curr_table_row_id = self.gdo_paginate_size() * (self.table_paginate_field().get_value() - 1)
         return table
 
     ##########
@@ -157,7 +172,8 @@ class MethodTable(WithGDO, MethodForm):
     def render_gdo(self, gdo: GDO, mode: Mode) -> any:
         if mode == Mode.JSON:
             return { gdt.get_name(): gdt.gdo(gdo).render_json() for gdt in self.gdo_table_headers()}
-        return gdo.render_name()
+        self._curr_table_row_id += 1
+        return f"{Render.bold(str(self._curr_table_row_id), mode)}-{gdo.render_name()}"
 
     def render_page(self) -> GDT:
         return self.get_table()

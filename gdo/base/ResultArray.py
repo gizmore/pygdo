@@ -6,11 +6,13 @@ class ResultArray(Result):
     _pos: int
     _data: list
 
-
     def __init__(self, data: list, gdo: GDO):
         self._table = gdo
         self._data = data
         self._pos = 0
+
+    def get_num_rows(self) -> int:
+        return len(self._data)
 
     def fetch_row(self):
         if self._pos == len(self._data):

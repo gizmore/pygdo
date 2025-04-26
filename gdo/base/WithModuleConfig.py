@@ -48,7 +48,7 @@ class WithModuleConfig:
                     'mv_module': self.get_id(),
                     'mv_key': key,
                     'mv_val': val,
-                }).replace()
+                }).soft_replace()
                 from gdo.base.IPC import IPC
                 IPC.send('base.ipc_modconf', (self.get_name(), key, val))
                 gdt.val(val)

@@ -28,5 +28,6 @@ class GDOSorter:
         return result
 
     @classmethod
-    def paginate(cls, result: list[GDO], page: GDT_PageNum) ->list[GDO]:
-        return result
+    def paginate(cls, result: list[GDO], page: GDT_PageNum, ipp: int = 10) ->list[GDO]:
+        begin = (page.get_value() - 1) * ipp
+        return result[begin:begin+ipp]

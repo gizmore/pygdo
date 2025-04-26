@@ -3,6 +3,7 @@ from enum import Enum
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.base.Result import Result, ResultType
+from gdo.base.Trans import t
 from gdo.base.WithName import WithName
 from gdo.core.GDT_Template import GDT_Template
 from typing import TYPE_CHECKING
@@ -74,4 +75,5 @@ class GDT_Table(WithName, GDT):
         out = []
         for gdo in result:
             out.append(method.render_gdo(gdo, mode))
-        return method.gdo_render_title() + ': ' + ", ".join(out)
+        page_of = t('page_no_of', (method.get_page_num(), method.get_num_pages()))
+        return method.gdo_render_title() + " " + page_of + ': ' + ", ".join(out)
