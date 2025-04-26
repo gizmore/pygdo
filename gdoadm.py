@@ -11,7 +11,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render, Mode
-from gdo.base.Util import Files, module_enabled, Arrays
+from gdo.base.Util import Files, module_enabled, Arrays, err
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_UserPermission import GDO_UserPermission
@@ -324,6 +324,10 @@ class App:
             server = GDO_Server.table().get_by_id(args.server)
         else:
             server = GDO_Server.get_by_connector(args.connector)
+
+        if not server:
+            err(f'Unknown server')
+            return
 
         user = server.get_or_create_user(args.username)
         GDO_UserPermission.grant(user, GDO_Permission.OWNER)
