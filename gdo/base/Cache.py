@@ -100,9 +100,13 @@ class Cache:
     @classmethod
     def build_pkcache(cls, gdo_klass: type[GDO]) -> list[GDT]:
         cache = []
-        for column in cls.TCACHE[gdo_klass].gdo_columns():
+        have_designated_pk = False
+        for column in cls.CCACHE[gdo_klass]:
             if column.is_primary():
                 cache.append(column)
+                have_designated_pk = True
+        if not have_designated_pk:
+            cache = cls.CCACHE[gdo_klass]
         return cache
 
 
