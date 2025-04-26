@@ -2,6 +2,7 @@ from gdo.base.GDO import GDO
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Message import Message
+from gdo.base.Method import Method
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_AutoInc import GDT_AutoInc
@@ -50,10 +51,13 @@ class GDO_Channel(GDO):
         return self.gdo_val('chan_displayname')
 
     @classmethod
-    def with_setting(cls, key: str, val: str, default: str = '', server: GDO_Server = None) -> list['GDO_Channel']:
+    def with_setting(cls, method: Method, key: str, val: str, default: str = '', server: GDO_Server = None) -> list['GDO_Channel']:
         from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
         null = ' OR mv_val IS NULL' if default == val else ''
-        query = (GDO_MethodValChannel.table().select('mv_channel_t.*').join_object('mv_channel')
+        query = (GDO_MethodValChannel.table().select('mv_channel_t.*')
+                 .join_object('mv_channel')
+                 .join_object('mv_method')
+                 .where(f"m_name='{method.get_sqn()}'")
                  .where(f"mv_key={cls.quote(key)}")
                  .where(f"mv_val={cls.quote(val)}{null}"))
         if server:

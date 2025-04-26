@@ -564,7 +564,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
 
     def channels_with_setting(self, key: str, val: str, server: 'GDO_Server' = None):
         from gdo.core.GDO_Channel import GDO_Channel
-        return GDO_Channel.with_setting(key, val, self.get_config_channel(key).get_initial(), server)
+        return GDO_Channel.with_setting(self, key, val, self.get_config_channel(key).get_initial(), server)
 
     ###
 
