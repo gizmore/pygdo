@@ -451,6 +451,8 @@ async def run_pygdo_admin():
             Logger.exception(ex)
         Cache.clear()
         App().argparser()
+        if out := Application.get_page()._top_bar.render(Mode.CLI):
+            print(out)
     except Exception as ex:
         Logger.exception(ex)
         raise ex
