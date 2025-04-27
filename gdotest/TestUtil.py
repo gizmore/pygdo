@@ -36,6 +36,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
 #            Application.LOOP = asyncio.new_event_loop()
 
     # def tearDown(self):
+    #     super().tearDown()
     #     if Application.LOOP:
     #         asyncio.wait_for(asyncio.all_tasks())
 

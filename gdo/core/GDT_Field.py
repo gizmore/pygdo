@@ -23,7 +23,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     _multiple: bool
 
     def __init__(self, name: str):
-        super(GDT_Field, self).__init__()
+        super().__init__()
         self._name = name
         self._not_null = False
         self._val = ''

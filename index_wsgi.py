@@ -73,7 +73,7 @@ def pygdo_application(environ, start_response):
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
-            asyncio.ensure_future(IPC.web_register_ipc(), loop=Application.LOOP)
+            asyncio.run(IPC.web_register_ipc())
             FRESH = False
         else:
             #PYPP#START#

@@ -11,6 +11,7 @@ class ConfigureTestCase(GDOTestCase):
     def setUp(self):
         super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
+        Application.init_cli()
 
     def test_01_configure(self):
         ModuleLoader.instance().load_modules_db(True)

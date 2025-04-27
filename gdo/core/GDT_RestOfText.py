@@ -5,20 +5,20 @@ from gdo.core.GDT_String import GDT_String
 
 class GDT_RestOfText(GDT_Repeat):
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__(GDT_String(name))
 
-    # def get_val(self):
-    #     val = super().get_val()
-    #     if val is not None:
-    #         return " ".join(val)
-    #     return val
-    #
-    def get_value(self):
-        val = super().get_value()
+    def get_val(self):
+        val = super().get_val()
         if val is not None:
             return " ".join(val)
         return val
+
+    def get_value(self):
+        if not self._converted:
+            self._value = self.get_val()
+            self._converted = True
+        return self._value
 
     def is_multiple(self) -> bool:
         return True

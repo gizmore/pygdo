@@ -192,6 +192,7 @@ class Installer:
             db.foreign_keys(False)
             for klass in reversed(module.gdo_classes()):
                 db.drop_table(klass.table().gdo_table_name())
+            db.foreign_keys(True)
             module.delete()
         except Exception as ex:
             Logger.exception(ex)

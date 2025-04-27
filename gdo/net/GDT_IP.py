@@ -22,6 +22,11 @@ class GDT_IP(GDT_String):
             return self.current()
         return val
 
+    def get_initial(self):
+        if self._use_current_ip and not self._initial:
+            return self.current()
+        return self._initial
+
     @classmethod
     def current(cls) -> str:
         return Application.storage('ip', '::1')
