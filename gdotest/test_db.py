@@ -11,6 +11,7 @@ from gdotest.TestUtil import GDOTestCase
 class DBTestCase(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules(True, True)

@@ -14,10 +14,10 @@ from gdotest.TestUtil import web_gizmore, GDOTestCase
 class FormTestCase(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
-        return self
 
     def test_forms(self):
         gizmore = web_gizmore()

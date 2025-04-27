@@ -82,6 +82,7 @@ class IconUTF8(IconProvider):
             'list': '▤',
             'location': '🚩',
             'lock': '🔒',
+            'magic': '🪄',
             'male': '♂',
             'medal': '🥇',
             'menu': '≡',

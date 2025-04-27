@@ -1,4 +1,6 @@
 import asyncio
+import gc
+import types
 from datetime import datetime
 
 import nest_asyncio
@@ -52,7 +54,7 @@ class module_core(GDO_Module):
         try:
             if Application.IS_HTTP and not Application.ASGI:
                 if not Application.LOOP:
-                    raise GDOException("OUCH!")
+                    raise GDOException("OUCH! No Application.LOOP")
                 nest_asyncio.apply(Application.LOOP)
             else:
                 nest_asyncio.apply()
@@ -63,6 +65,16 @@ class module_core(GDO_Module):
     def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):
             delattr(GDO_User, 'SYSTEM')
+        self.clear_all_lru_caches()
+
+    def clear_all_lru_caches(self):
+        for obj in gc.get_objects():
+            try:
+                if isinstance(obj, types.FunctionType):
+                    if hasattr(obj, 'cache_clear') and callable(obj.cache_clear):
+                        obj.cache_clear()
+            except Exception as ex:
+                Logger.exception(ex, f"cache_clear failed for {obj}")
 
     def gdo_dependencies(self) -> list:
         return [

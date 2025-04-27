@@ -40,8 +40,8 @@ class GDO_Permission(GDO):
                     return True
         return False
 
-    def __init__(self):
-        super().__init__()
+    # def __init__(self):
+    #     super().__init__()
 
     def gdo_columns(self) -> list[GDT]:
         return [

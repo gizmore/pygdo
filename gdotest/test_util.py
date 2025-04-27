@@ -5,13 +5,14 @@ from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import t
 from gdo.base.Util import Strings, Arrays, href, Random
+from gdotest.TestUtil import GDOTestCase
 
 
-class UtilityTestCase(unittest.TestCase):
+class UtilityTestCase(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
-        return self
 
     def test_strings(self):
         s = "foo.bar.html"

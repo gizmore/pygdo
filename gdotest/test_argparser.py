@@ -10,6 +10,7 @@ from gdotest.TestUtil import GDOTestCase
 
 class test_argparser(GDOTestCase):
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db()

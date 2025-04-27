@@ -20,8 +20,8 @@ class GDOPackTestCase(GDOTestCase):
     def setUp(self):
         super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
-        Cache.clear()
-        install_module('core')
+        # Cache.clear()
+        # install_module('core')
         loader = ModuleLoader.instance()
         Cache.clear()
         loader.reset()

@@ -17,7 +17,7 @@ from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
-from gdo.base.Util import (Strings, Files, dump, bytelen, err)
+from gdo.base.Util import (Strings, Files, bytelen)
 from gdo.base.method.client_error import client_error
 from gdo.base.method.dir_server import dir_server
 from gdo.base.method.file_server import file_server
@@ -66,13 +66,14 @@ def pygdo_application(environ, start_response):
             Application.init(os.path.dirname(__file__))
             Application.init_common()
             Application.init_web(environ)
-            Application.LOOP = asyncio.new_event_loop()
+            if not Application.LOOP:
+                Application.LOOP = asyncio.new_event_loop()
             loader = ModuleLoader.instance()
             loader.load_modules_db()
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
-            asyncio.run_coroutine_threadsafe(IPC.web_register_ipc(),  Application.LOOP)
+            asyncio.ensure_future(IPC.web_register_ipc(), loop=Application.LOOP)
             FRESH = False
         else:
             #PYPP#START#
@@ -83,7 +84,6 @@ def pygdo_application(environ, start_response):
             Application.init_common()
             Application.init_web(environ)
             Application.fresh_page()
-            # Application.LOOP = asyncio.new_event_loop()
 
         qs = parse_qs(environ['QUERY_STRING'])
 
@@ -262,7 +262,6 @@ def error_page(ex, start_response, method: Method, status: str, trace: bool = Tr
     page = Application.get_page()
     if not SIDEBARS:
         for module in loader.enabled():
-            # module.gdo_load_scripts(page)
             module.gdo_init_sidebar(page)
     response_body = page.method(method).result(result).render(Mode.HTML)
     response_headers = [

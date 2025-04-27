@@ -30,9 +30,14 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     MESSAGES: dict[str, list[str]] = {}
     _profile: cProfile
 
-    # def setUp(self):
-    #     if not asyncio.get_running_loop():
-    #         asyncio.new_event_loop()
+    def setUp(self):
+        super().setUp()
+        Application.LOOP = asyncio.new_event_loop()
+#            Application.LOOP = asyncio.new_event_loop()
+
+    # def tearDown(self):
+    #     if Application.LOOP:
+    #         asyncio.wait_for(asyncio.all_tasks())
 
     # def setUp(self):
     #     self._profile = cProfile.Profile()

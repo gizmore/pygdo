@@ -75,5 +75,8 @@ class GDT_Table(WithName, GDT):
         out = []
         for gdo in result:
             out.append(method.render_gdo(gdo, mode))
-        page_of = t('page_no_of', (method.get_page_num(), method.get_num_pages()))
-        return method.gdo_render_title() + " " + page_of + ': ' + ", ".join(out)
+        page_of = ''
+        if method.gdo_paginated():
+            page_of = t('page_no_of', (method.get_page_num(), method.get_num_pages()))
+            page_of = " " + page_of
+        return method.gdo_render_title() + page_of + ': ' + ", ".join(out)

@@ -224,6 +224,9 @@ class GDO_User(GDO):
     def is_authenticated(self) -> bool:
         return self._authenticated
 
+    async def is_online(self) -> bool:
+        return await self.get_server().is_user_online(self)
+
     def is_ghost(self) -> bool:
         return self.is_type('ghost')
 

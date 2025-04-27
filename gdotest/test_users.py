@@ -5,11 +5,13 @@ from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_User import GDO_User
 from gdo.core.connector.Web import Web
+from gdotest.TestUtil import GDOTestCase
 
 
-class UsersTestCase(unittest.TestCase):
+class UsersTestCase(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + '/../')
         ModuleLoader.instance().load_modules_db()
         ModuleLoader.instance().init_modules()

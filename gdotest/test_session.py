@@ -2,21 +2,20 @@ import os.path
 import unittest
 
 from gdo.base.Application import Application
-from gdo.base.Parser import Parser
 from gdo.base.Util import CLI
 from gdo.base.ModuleLoader import ModuleLoader
-from gdotest.TestUtil import cli_plug
+from gdotest.TestUtil import cli_plug, GDOTestCase
 
 
-class SessionTestCase(unittest.TestCase):
+class SessionTestCase(GDOTestCase):
 
     def setUp(self):
+        super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules()
         loader.init_cli()
-        return self
 
     def test_cli_session(self):
         from gdo.core.GDO_Session import GDO_Session
