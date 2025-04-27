@@ -54,7 +54,7 @@ class Cache:
         cls.TCACHE = {}
         cls.CCACHE = {}
         cls.PCACHE = {}
-        cls.OCACHE = {}
+        cls.clear_ocache()
         if cls.RCACHE:
             cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
