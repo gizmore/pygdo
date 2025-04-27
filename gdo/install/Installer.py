@@ -3,6 +3,7 @@ import tomlkit
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.GDO import GDO
+from gdo.base.GDO_GDOTable import GDO_GDOTable
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
@@ -82,6 +83,8 @@ class Installer:
             cls.install_gdo_fk(classname)
         module = cls.install_module_entry(module)
         ModuleLoader.instance().on_module_installed(module)
+        for classname in classes:
+            cls.install_gdo_table(classname)
         return True
 
     @classmethod
@@ -106,6 +109,10 @@ class Installer:
     def install_gdo(cls, class_name):
         table = Cache.table_for(class_name)
         return Application.db().create_table(table)
+
+    @classmethod
+    def install_gdo_table(cls, class_name: str):
+        GDO_GDOTable.register_table(class_name)
 
     @classmethod
     def install_gdo_fk(cls, class_name: str):

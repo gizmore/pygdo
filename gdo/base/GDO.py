@@ -5,7 +5,6 @@ import traceback
 from functools import lru_cache
 from typing import Self, Generator
 
-from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException
 from gdo.base.Logger import Logger
 from gdo.base.Result import ResultType
@@ -14,11 +13,12 @@ from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Query import Type, Query
 from gdo.base.Trans import t
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, Arrays
 from gdo.base.WithBulk import WithBulk
+from gdo.base.WithName import WithName
 
 
-class GDO(WithBulk, GDT):
+class GDO(WithName, WithBulk, GDT):
     """
     A GDO (Gizmore Data Object) is just a GDT(Gizmore Data Type) with fields that are GDT.
     There is one GDO acting as the table instance, and other entitites are rows.
@@ -341,10 +341,15 @@ class GDO(WithBulk, GDT):
             return self.insert()
         obj = self
         if len(self._dirty):
+            dirty = self.dirty_vals()
             obj.before_update()
-            obj.query().type(Type.UPDATE).set_vals(self.dirty_vals()).where(self.pk_where()).exec()
+            obj.query().type(Type.UPDATE).set_vals(dirty).where(self.pk_where()).exec()
             obj.after_update()
+            from gdo.base.IPC import IPC
+            if Arrays.mem_size(dirty) > IPC.MAX_EVENT_ARG_SIZE:
+                dirty = None
             obj.all_dirty(False)
+            IPC.send('base.ipc_gdo', (self.gdo_table_name(), self.get_id(), dirty))
         return Cache.update_for(obj)
 
     ##########

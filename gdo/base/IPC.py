@@ -12,6 +12,7 @@ from gdo.date.Time import Time
 
 class IPC:
 
+    MAX_EVENT_ARG_SIZE = 1024
     COUNT: int = 0 #PYPP#DELETE#
     PID: int = 0
 

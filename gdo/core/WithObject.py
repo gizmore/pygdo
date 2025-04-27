@@ -5,10 +5,12 @@ from gdo.base.Render import Render, Mode
 class WithObject:
     _table: GDO
     _on_delete: str
+    _default_random: bool
 
     def table(self, gdo: GDO):
         self._table = gdo
         self._on_delete = 'RESTRICT'
+        self._default_random = False
         return self
 
     def cascade_delete(self):
@@ -27,7 +29,6 @@ class WithObject:
             define = define.replace(' NOT NULL', '')
         define = define.replace(' PRIMARY KEY', '')
         define = define.replace(' AUTO_INCREMENT', '')
-        #$define = preg_replace('#,FOREIGN KEY .* ON UPDATE (?:CASCADE|RESTRICT|SET NULL)#', '', $define);
         return define
 
     def column_define_fk(self) -> str:
@@ -36,6 +37,18 @@ class WithObject:
         tn = t.gdo_table_name()
         return f"FOREIGN KEY({self._name}) REFERENCES {tn}({pk.get_name()}) ON UPDATE CASCADE ON DELETE {self._on_delete}"
 
+    ### rand
+
+    def default_random(self, default_random: bool = True):
+        self._default_random = default_random
+        return self
+
+    def query_default_random(self, multiple: int = None) -> list[GDO] | GDO:
+        query = self._table.select().order('RAND()')
+        if multiple:
+            return query.limit(multiple).exec().fetch_all()
+        return query.first().exec().fetch_object()
+
     ### GDT_Object
 
     def to_val(self, value) -> str:
@@ -43,16 +56,19 @@ class WithObject:
 
     def to_value(self, val: str):
         if val is None:
-            return None
+            return self.query_default_random() if self._default_random else None
         return self.get_by_name(val)
-        #        return self._table.get_by_id(val) if val is not None else None
 
     def get_gdo(self) -> GDO:
         return self.get_value()
 
     def query_gdos(self, val: str) -> list[GDO]:
-        gdo = self._table.get_by_aid(val)
-        return [gdo] if gdo else []
+        if val[0].isdigit():
+            if gdo := self._table.get_by_aid(val):
+                return [gdo]
+        if gdt := self._table.name_column():
+            return self._table.select().where(f"{gdt.get_name()} LIKE '%{GDO.escape(val)}%'").exec().fetch_all()
+        return GDO.EMPTY_LIST
 
     def get_by_name(self, var: str) -> list[GDO] | GDO | None:
         gdos = self.query_gdos(var)

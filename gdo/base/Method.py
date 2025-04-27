@@ -303,15 +303,6 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         self.gdo_module().err(key, args)
         return self
 
-    @classmethod
-    @functools.cache
-    def gdo_module(cls) -> 'GDO_Module':
-        from gdo.base.ModuleLoader import ModuleLoader
-        mn = cls.__module__
-        mn = Strings.substr_from(mn, 'gdo.')
-        mn = Strings.substr_to(mn, '.')
-        return ModuleLoader.instance()._cache[mn]
-
     ########
     # Exec #
     ########

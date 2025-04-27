@@ -6,6 +6,7 @@ from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Query import Query
+from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_Index import GDT_Index
 from gdo.core.GDT_Method import GDT_Method
@@ -21,11 +22,13 @@ class GDO_Event(GDO):
         return False
 
     def gdo_columns(self) -> list[GDT]:
+        from gdo.base.IPC import IPC
         return [
+            GDT_AutoInc('event_id'),
             # No AutoInc!
             GDT_Enum('event_type').choices({'to_web': 'To Web', 'to_cli': 'To CLI', 'to_dog': 'To Dog'}).not_null(),
             GDT_Method('event_name').ascii().case_s().maxlen(64).not_null(),
-            GDT_Serialize('event_args').mode(Mode.JSON),
+            GDT_Serialize('event_args').ascii().case_s().maxlen(IPC.MAX_EVENT_ARG_SIZE).mode(Mode.JSON),
             GDT_Created('event_created'),
             GDT_Index('event_index_type').index_fields('event_type', 'event_created').using_btree(),
         ]

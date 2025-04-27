@@ -447,6 +447,22 @@ class Arrays:
     def empty(cls, vals: list[str]) -> bool:
         return not vals or len(vals) == 0 or (len(vals) == 1 and not vals[0])
 
+    @classmethod
+    def mem_size(cls, obj: any, seen: set[any] = None) -> int:
+        """Recursively find size of objects in bytes."""
+        size = sys.getsizeof(obj)
+        if seen is None:
+            seen = set()
+        obj_id = id(obj)
+        if obj_id in seen:
+            return 0
+        seen.add(obj_id)
+        if isinstance(obj, dict):
+            size += sum(cls.mem_size(k, seen) + cls.mem_size(v, seen) for k, v in obj.items())
+        elif isinstance(obj, (list, tuple, set, frozenset)):
+            size += sum(cls.mem_size(i, seen) for i in obj)
+        return size
+
 
 class Random:
     _seed: int

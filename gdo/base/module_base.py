@@ -1,4 +1,5 @@
 from gdo.base.Application import Application
+from gdo.base.GDO_GDOTable import GDO_GDOTable
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDO_ModuleVal import GDO_ModuleVal
 from gdo.base.GDT import GDT
@@ -14,6 +15,7 @@ class module_base(GDO_Module):
 
     def gdo_classes(self):
         return [
+            GDO_GDOTable,
             GDO_Module,
             GDO_ModuleVal,
         ]

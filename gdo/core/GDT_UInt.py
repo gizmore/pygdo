@@ -7,3 +7,4 @@ class GDT_UInt(GDT_Int):
         super().__init__(name)
         self._signed = False
         self._min = 0
+        self.icon('number')

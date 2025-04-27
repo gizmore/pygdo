@@ -12,6 +12,7 @@ from gdo.base.WithSerialization import WithSerialization
 if TYPE_CHECKING:
     from gdo.base.Query import Query
     from gdo.base.Method import Method
+    from gdo.base.GDO_Module import GDO_Module
     from gdo.form.GDT_Form import GDT_Form
 
 from gdo.base.Render import Mode
@@ -68,6 +69,15 @@ class GDT(WithSerialization):
 
     def __repr__(self):
         return f"{self.get_name()}#{id(self)}"
+
+    @classmethod
+    @functools.cache
+    def gdo_module(cls) -> 'GDO_Module':
+        from gdo.base.ModuleLoader import ModuleLoader
+        mn = cls.__module__
+        mn = Strings.substr_from(mn, 'gdo.')
+        mn = Strings.substr_to(mn, '.')
+        return ModuleLoader.instance()._cache[mn]
 
     #############
     ### Hooks ###
