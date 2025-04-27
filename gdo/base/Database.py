@@ -109,11 +109,11 @@ class Database:
     def create_table(self, gdo: 'GDO'):
         cols = []
         prim = []
-        for gdt in gdo.columns():
+        for name, gdt in gdo.columns().items():
             if define := gdt.gdo_column_define():
                 cols.append(define)
                 if gdt.is_primary():
-                    prim.append(gdt.get_name())
+                    prim.append(name)
         if prim:
             primary = ",".join(prim)
             cols.append(f"PRIMARY KEY ({primary})")
@@ -126,15 +126,15 @@ class Database:
         Application.db().foreign_keys(False)
         self.delete_all_fk(gdo)
         Application.db().foreign_keys(True)
-        for gdt in gdo.columns():
+        for name, gdt in gdo.columns().items():
             if fk := gdt.column_define_fk():
-                cn = f"GDO__FK__{gdo.gdo_table_name()}__{gdt.get_name()}"
+                cn = f"GDO__FK__{gdo.gdo_table_name()}__{name}"
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} {fk}")
             if gdt.is_unique():
-                cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{gdt.get_name()}"
-                self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({gdt.get_name()})")
+                cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{name}"
+                self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({name})")
             if isinstance(gdt, GDT_Unique):
-                cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{gdt.get_name()}"
+                cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{name}"
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({', '.join(gdt._column_names)})")
 
     def delete_all_fk(self, gdo: 'GDO'):

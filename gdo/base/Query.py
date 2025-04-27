@@ -161,8 +161,9 @@ class Query:
 
     def set_vals(self, vals: dict):
         if not hasattr(self, '_vals'):
-            self._vals = {}
-        self._vals.update(vals)
+            self._vals = vals
+        else:
+            self._vals.update(vals)
         return self
 
     def nocache(self, nocache: bool=True):

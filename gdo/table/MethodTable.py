@@ -76,7 +76,7 @@ class MethodTable(WithGDO, MethodForm):
         return TableMode.TABLE
 
     def gdo_table_headers(self) -> list[GDT]:
-        return list(filter(lambda gdt: not gdt.is_hidden(), self.gdo_table().columns()))
+        return list(filter(lambda gdt: not gdt.is_hidden(), self.gdo_table().columns().values()))
 
     def gdo_table_result(self) -> Result:
         raise GDOException(f"{self.__class__.__name__} does not implement gdo_table_result()")

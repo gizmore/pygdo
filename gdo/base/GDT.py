@@ -22,33 +22,38 @@ from gdo.base.Util import Strings
 class GDT(WithSerialization):
     """
     Base class of every other class.
-    @version 8.0.0
+    @version 8.0.2
     """
 
+    EMPTY_STR = ""
+    EMPTY_LIST = []
+    EMPTY_DICT = {}
+
     NULL_STRING = 'NULL'
-    GDT_MAX = 0
-    GDT_COUNT = 0
-    GDT_ALIVE = 0
+
+    GDT_MAX = 0    #PYPP#DELETE#
+    GDT_COUNT = 0  #PYPP#DELETE#
+    GDT_ALIVE = 0  #PYPP#DELETE#
 
     __slots__ = ()
 
-    @classmethod
-    def escape(cls, val: str | bytes) -> str:
+    @staticmethod
+    def escape(val: str | bytes) -> str:
         if val is None:
-            return ''
-        if isinstance(val, bytes):
+            return GDT.EMPTY_STR
+        if type(val) is bytes:
             return binascii.hexlify(val).decode('ascii')
         return (val.replace('\\', '\\\\').
                 replace('"', '\\"').
                 replace("'", "\\'"))
 
-    @classmethod
-    def quote(cls, val: str | bytes) -> str:
+    @staticmethod
+    def quote(val: str | bytes) -> str:
         if val is None or val == '':
-            return cls.NULL_STRING
-        if isinstance(val, bytes):
-            return f"UNHEX('{cls.escape(val)}')"
-        return f"'{cls.escape(val)}'"
+            return GDT.NULL_STRING
+        if type(val) is bytes:
+            return f"UNHEX('{GDT.escape(val)}')"
+        return f"'{GDT.escape(val)}'"
 
     #PYPP#START#
     def __init__(self):
@@ -74,8 +79,7 @@ class GDT(WithSerialization):
     @functools.cache
     def gdo_module(cls) -> 'GDO_Module':
         from gdo.base.ModuleLoader import ModuleLoader
-        mn = cls.__module__
-        mn = Strings.substr_from(mn, 'gdo.')
+        mn = Strings.substr_from(cls.__module__, 'gdo.')
         mn = Strings.substr_to(mn, '.')
         return ModuleLoader.instance()._cache[mn]
 
@@ -116,7 +120,7 @@ class GDT(WithSerialization):
         pass
 
     def gdo_components(self) -> list['GDT']:
-        return []
+        return GDT.EMPTY_LIST
 
     def gdo_compare(self, gdt: 'GDT') -> int:
         return 0
@@ -134,7 +138,7 @@ class GDT(WithSerialization):
         return False
 
     def render_error(self) -> str:
-        return ''
+        return self.EMPTY_STR
 
     def error(self, key: str, args: list[str] = None) -> bool:
         return False
@@ -150,10 +154,10 @@ class GDT(WithSerialization):
         return self
 
     def gdo_column_define(self) -> str:
-        return ''
+        return self.EMPTY_STR
 
     def column_define_fk(self) -> str:
-        return ''
+        return self.EMPTY_STR
 
     def is_primary(self) -> bool:
         return False
@@ -186,18 +190,18 @@ class GDT(WithSerialization):
         return None
 
     def get_test_vals(self) -> list[str]:
-        return ['']
+        return [self.EMPTY_STR]
 
     def to_val(self, value) -> str:
         if value is None:
-            return ''
+            return self.EMPTY_STR
         return str(value)
 
     def to_value(self, val: str):
         return val
 
     def dirty_vals(self) -> dict[str,str]:
-        return {}
+        return self.EMPTY_DICT
 
     def validate(self, val: str | None, value: any) -> bool:
         return True
@@ -232,11 +236,11 @@ class GDT(WithSerialization):
         key = f"tt_{self.get_name()}"
         return t(key) if Trans.has(key) else ''
 
-    def fields(self) -> list:
-        return []
+    def fields(self) -> list['GDT']:
+        return self.EMPTY_LIST
 
     def all_fields(self):
-        return []
+        return self.EMPTY_LIST
 
     def is_orderable(self) -> bool:
         return False
@@ -261,7 +265,7 @@ class GDT(WithSerialization):
         return 'text'
 
     ##############
-    # Render GDO #
+    # Render GDT #
     ##############
     def render(self, mode: Mode = Mode.HTML):
         return self.render_gdt(mode)
@@ -277,7 +281,7 @@ class GDT(WithSerialization):
         return f"{self.get_name()} = \"{self.get_val() or ''}\"\n"
 
     def render_html(self) -> str:
-        return self.get_val() or ''
+        return self.render_txt()
 
     def render_json(self):
         return self.get_name()
@@ -286,7 +290,7 @@ class GDT(WithSerialization):
         return self.render_txt()
 
     def render_form(self) -> str:
-        return ''
+        return self.EMPTY_STR
 
     def render_cell(self) -> str:
         return self.render_html()
@@ -295,8 +299,9 @@ class GDT(WithSerialization):
         return self.render_txt()
 
     def render_txt(self) -> str:
-        val = self.get_val()
-        return val or ''
+        if (val := self.get_val()) is None:
+            return self.EMPTY_STR
+        return val
 
     def render_markdown(self):
         return self.render_txt()

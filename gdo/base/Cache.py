@@ -35,7 +35,7 @@ class Cache:
     #PYPP#END#
 
     TCACHE: dict[str, GDO] = {}             # class_name => GDO.table() mapping
-    CCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() mapping
+    CCACHE: dict[str, dict[str, GDT]] = {}  # class_name => GDO.gdo_columns() mapping
     PCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() PK mapping
     OCACHE: dict[str, dict[str, GDO]] = {}  # table_name => dict[id, GDO] mapping
     RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
@@ -93,37 +93,35 @@ class Cache:
         return gdo
 
     @classmethod
-    def build_ccache(cls, gdo_klass: type[GDO]) -> list[GDT]:
-        cache = []
-        columns = cls.TCACHE[gdo_klass].gdo_columns()
-        for column in columns:
-            cache.append(column)
-            cache.extend(column.gdo_components())
+    def build_ccache(cls, gdo_klass: type[GDO]) -> dict[str,GDT]:
+        cache = {}
+        for column in cls.TCACHE[gdo_klass].gdo_columns():
+            cache[column.get_name()] = column
+            for gdt in column.gdo_components():
+                cache[gdt.get_name()] = gdt
         return cache
 
     @classmethod
     def build_pkcache(cls, gdo_klass: type[GDO]) -> list[GDT]:
         cache = []
         have_designated_pk = False
-        for column in cls.CCACHE[gdo_klass]:
+        for column in cls.CCACHE[gdo_klass].values():
             if column.is_primary():
                 cache.append(column)
                 have_designated_pk = True
         if not have_designated_pk:
-            cache = cls.CCACHE[gdo_klass]
+            cache = list(cls.CCACHE[gdo_klass].values())
         return cache
 
 
     @classmethod
-    def columns_for(cls, gdo_klass: type[GDO]) -> list[GDT]:
+    def columns_for(cls, gdo_klass: type[GDO]) -> dict[str,GDT]:
         cls.table_for(gdo_klass)
         return cls.CCACHE[gdo_klass]
 
     @classmethod
-    def column_for(cls, gdo_klass: GDO, key: str) -> GDT|None:
-        for gdt in cls.columns_for(gdo_klass):
-            if gdt.get_name() == key:
-                return gdt
+    def column_for(cls, gdo_klass: type[GDO], key: str) -> GDT|None:
+        return cls.columns_for(gdo_klass).get(key)
 
     @classmethod
     def pk_columns_for(cls, gdo_klass: type[GDO]) -> list[GDT]:
@@ -306,7 +304,6 @@ class Cache:
 #############
 
 def _hash_args(args, kwargs):
-    # todo sort kwargs by key
     return hashlib.md5(str((args, frozenset(kwargs.items()))).encode()).hexdigest()
 
 def gdo_cached(cache_key: str):

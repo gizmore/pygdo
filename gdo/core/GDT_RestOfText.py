@@ -10,9 +10,7 @@ class GDT_RestOfText(GDT_Repeat):
 
     def get_val(self):
         val = super().get_val()
-        if val is not None:
-            return " ".join(val)
-        return val
+        return val if val is None else " ".join(val)
 
     def get_value(self):
         if not self._converted:

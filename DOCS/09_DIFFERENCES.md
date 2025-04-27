@@ -28,7 +28,7 @@ This page describes differences from other frameworks you may be used to.
 ## DBA
 
 - The DBA layer does not feature annotations for relations.
-  Instead, you plug GDT_Object and GDT_Join in your GDO.columns() definition
+  Instead, you plug GDT_Object and GDT_Join in your GDO.gdo_columns() definition
   and can use them easily with Query.join_object().
 
 - There are no handwritten migration files.

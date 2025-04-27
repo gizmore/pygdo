@@ -125,44 +125,34 @@ class CLI:
         return Bash.get_server().get_or_create_user(name)
 
 class Strings:
-    @classmethod
-    def substr_from(cls, s: str, frm: str, default='') -> str:
+    @staticmethod
+    def substr_from(s: str, frm: str, default='') -> str:
         """Return substring from the first occurrence of `frm` in `s`, or `default` if `frm` is not found."""
         index = s.find(frm)
-        if index != -1:
-            return s[index + len(frm):]
-        return default
+        return s[index + len(frm):] if index >= 0 else default
 
-    @classmethod
-    def substr_to(cls, s: str, to: str, default='') -> str:
+    @staticmethod
+    def substr_to(s: str, to: str, default='') -> str:
         """Return substring up to (excluding) the first occurrence of `to` in `s`, or `default` if `to` is not found."""
         index = s.find(to)
-        if index != -1:
-            return s[:index]
-        return default
+        return s[:index] if index >= 0 else default
 
-    @classmethod
-    def rsubstr_from(cls, s: str, frm: str, default='') -> str:
+    @staticmethod
+    def rsubstr_from(s: str, frm: str, default='') -> str:
         """Return substring from the last occurrence of `frm` in `s`, or `default` if `frm` is not found."""
         index = s.rfind(frm)
-        if index != -1:
-            return s[index + len(frm):]
-        return default
+        return s[index + len(frm):] if index >= 0 else default
 
-    @classmethod
-    def rsubstr_to(cls, s: str, to: str, default='') -> str:
+    @staticmethod
+    def rsubstr_to(s: str, to: str, default='') -> str:
         """Return substring up to (excluding) the last occurrence of `to` in `s`, or `default` if `to` is not found."""
         index = s.rfind(to)
-        if index != -1:
-            return s[:index]
-        return default
+        return s[:index] if index >= 0 else default
 
-    @classmethod
-    def nullstr(cls, s: str):
+    @staticmethod
+    def nullstr(s: str):
         """Return None on empty strings"""
-        if s is None or s == '':
-            return None
-        return str(s)
+        return str(s) if s else None
 
     @classmethod
     def html(cls, s: str, mode: Mode = Mode.HTML):

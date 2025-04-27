@@ -6,7 +6,7 @@ class GDT_Text(GDT_String):
     A longer chunk of text, using a different mysql column define
     """
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__(name)
         self.maxlen(4096)
 

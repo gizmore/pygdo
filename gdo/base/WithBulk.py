@@ -14,7 +14,7 @@ class WithBulk:
 
     def bulk_insert_or_replace_gdo(self, _type: Type, gdos: list, chunk_size=100):
         data = list(map(lambda gdo: gdo._vals.values(), gdos))
-        return self.bulk_insert_or_replace(_type, self.table().columns(), data, chunk_size)
+        return self.bulk_insert_or_replace(_type, self.table().columns().values(), data, chunk_size)
 
     def bulk_insert(self, columns: list[GDT], data: list[list], chunk_size=100):
         return self.bulk_insert_or_replace(Type.INSERT, columns, data, chunk_size)

@@ -251,8 +251,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
 
     def param_val(self, key: str, throw: bool = True) -> str|None:
         gdt = self.parameter(key)
-        if gdt.validate(gdt.get_val(), gdt.get_value()):  # TODO: validate only by val, let validators cast lazily.
-            return gdt.get_val()
+        val = gdt.get_val()
+        if gdt.validate(val, gdt.get_value()):  # TODO: validate only by val, let validators cast lazily.
+            return val
         elif throw:
             raise GDOParamError('err_param', (key, gdt.render_error()))
 

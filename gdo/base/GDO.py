@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import functools
 import hashlib
 import traceback
 from functools import lru_cache
 from typing import Self, Generator
 
 from gdo.base.Exceptions import GDOException
-from gdo.base.Logger import Logger
 from gdo.base.Result import ResultType
 
 from gdo.base.Cache import Cache
@@ -23,9 +23,6 @@ class GDO(WithName, WithBulk, GDT):
     A GDO (Gizmore Data Object) is just a GDT(Gizmore Data Type) with fields that are GDT.
     There is one GDO acting as the table instance, and other entitites are rows.
     """
-    EMPTY_LIST = []
-    EMPTY_DICT = {}
-    EMPTY_STR = ""
     ID_SEPARATOR = ':'  # Multiple primary keys supported
     HASH_LENGTH = 16
 
@@ -95,8 +92,7 @@ class GDO(WithName, WithBulk, GDT):
     @classmethod
     def blank(cls, vals: dict = None) -> Self:
         vals = vals or {}
-        for gdt in cls.table().columns():
-            name = gdt.get_name()
+        for name, gdt in cls.table().columns().items():
             vals[name] = vals.get(name, gdt.get_initial())
         back = cls()
         back._vals = vals
@@ -104,7 +100,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def gdo_hash(self) -> str:
         hash_me = hashlib.sha256()
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             val = gdt.get_val()
             hash_me.update(val.encode() if val is not None else b'')
         return hash_me.hexdigest()[0:self.HASH_LENGTH]
@@ -115,15 +111,17 @@ class GDO(WithName, WithBulk, GDT):
     def render_list(self):
         return self.render_name()
 
+    @functools.cache
     def primary_key_column(self) -> GDT:
-        return self.columns()[0]
+        for gdt in self.columns().values():
+            return gdt
 
     def is_persisted(self) -> bool:
         id_ = self.get_id()
         return len(id_) > 0 and id_ != '0' and not id_.startswith(self.ID_SEPARATOR)
 
     @classmethod
-    @lru_cache(None)
+    @functools.cache
     def gdo_table_name(cls) -> str:
         return cls.__name__.lower()
 
@@ -147,15 +145,15 @@ class GDO(WithName, WithBulk, GDT):
         """
         Return the columns for your GDO right with this method
         """
-        raise GDOException(f"{self.__class__.__name__} does not provide any columns.")
+        raise GDOException(f"{self.__class__.__name__} does not provide any columns in gdo_columns().")
 
     def column(self, key: str) -> GDT|None:
-        try:
-            return Cache.column_for(self.__class__, key).gdo(self)
-        except Exception as ex:
-            Logger.exception(ex, f"Unknown column {key} in {self.__class__.__name__}")
+        # try:
+        return Cache.column_for(self.__class__, key).gdo(self)
+        # except Exception as ex:
+        #     Logger.exception(ex, f"Unknown column {key} in {self.__class__.__name__}")
 
-    def columns(self) -> list[GDT]:
+    def columns(self) -> dict[str,GDT]:
         return Cache.columns_for(self.__class__)
 
     def columns_only(self, *names: str) -> list[GDT]:
@@ -164,9 +162,10 @@ class GDO(WithName, WithBulk, GDT):
             cols.append(self.column(key))
         return cols
 
+    @functools.cache
     def column_by_type(self, klass: type[GDT]) -> 'GDT':
-        for gdt in self.columns():
-            if isinstance(gdt, klass):
+        for gdt in self.columns().values():
+            if type(gdt) is klass:
                 return gdt
         raise GDOException(f"{self.get_name()} has no GDT of type {klass}")
 
@@ -183,18 +182,16 @@ class GDO(WithName, WithBulk, GDT):
     def set_val(self, key, val: str, dirty: bool = True) -> Self:
         if key in self._values:
             del self._values[key]
-        if not isinstance(val, bytes):
-            self._vals[key] = Strings.nullstr(val)
-        else:
-            self._vals[key] = val
+        self._vals[key] = val if type(val) is bytes else Strings.nullstr(val)
         return self.dirty(key, dirty)
 
     def set_value(self, key: str, value: any, dirty: bool=True) -> Self:
-        val = self.column(key).value(value).get_val()
+        val = self.column(key).to_val(value)
         self._values[key] = value
-        return self.set_val(key, val, dirty)
+        self._vals[key] = val if type(val) is bytes else Strings.nullstr(val)
+        return self.dirty(key, dirty)
 
-    def set_vals(self, vals: dict, dirty=True) -> Self:
+    def set_vals(self, vals: dict[str,str], dirty: bool=True) -> Self:
         for key, val in vals.items():
             self.set_val(key, val, dirty)
         return self
@@ -214,15 +211,17 @@ class GDO(WithName, WithBulk, GDT):
         return cls.__name__
 
     def dirty(self, key: str, dirty: bool = True) -> Self:
-        if key in self._dirty:
-            if not dirty:
-                self._dirty.remove(key)
-        elif dirty:
+        if dirty:
             self._dirty.append(key)
+        # if key in self._dirty:
+        #     if not dirty:
+        #         self._dirty.remove(key)
+        # elif dirty:
+        #     self._dirty.append(key)
         return self
 
     def all_dirty(self, dirty: bool=True) -> Self:
-        self._dirty = [gdt.get_name() for gdt in self.columns()] if dirty else []
+        self._dirty = list(self.columns().keys()) if dirty else []
         return self
 
     def query(self) -> Query:
@@ -260,7 +259,7 @@ class GDO(WithName, WithBulk, GDT):
         ).first().exec().fetch_object()
 
     def pk_where(self) -> str:
-        cols = list(self.get_pk_columns()) or self.columns()
+        cols = list(self.get_pk_columns()) # or self.columns()
         return " AND ".join(f"{gdt.get_name()}={GDT.quote(gdt.get_val())}" for gdt in cols)
 
     def get_by_vals(self, vals: dict[str, str]) -> Self:
@@ -276,7 +275,7 @@ class GDO(WithName, WithBulk, GDT):
             return self._my_id
         pks = list(self.get_pk_columns())
         if len(pks) == 0:
-            pks = self.columns()
+            pks = self.columns().values()
         elif len(pks) == 1:
             return pks[0].get_val() or ''
         v = pks[0].get_val()
@@ -292,9 +291,9 @@ class GDO(WithName, WithBulk, GDT):
     # Validate #
     ############
     def validated(self):
-        for gdt in self.columns():
+        for name, gdt in self.columns().items():
             if not gdt.gdo(self).validated():
-                raise GDOException(t('err_gdo_validate', (gdt.get_name(), gdt.render_error())))
+                raise GDOException(t('err_gdo_validate', (name, gdt.render_error())))
         return self
 
     ####################
@@ -324,15 +323,15 @@ class GDO(WithName, WithBulk, GDT):
 
     def dirty_vals(self) -> dict[str, str]:
         vals = {}
-        for gdt in self.columns():
+        for name, gdt in self.columns().items():
             if hasattr(gdt, '_val'):
-                if gdt.get_name() in self._dirty and not gdt.is_primary():
+                if name in self._dirty and not gdt.is_primary():
                     vals.update(gdt.gdo(self).dirty_vals())
         return vals
 
     def insert_vals(self) -> dict[str, str]:
         vals = {}
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             if hasattr(gdt, '_val'):
                 vals.update(gdt.gdo(self).dirty_vals())
         return vals
@@ -406,41 +405,42 @@ class GDO(WithName, WithBulk, GDT):
     # Events #
     ##########
     def on_reload(self):
-        pass
+        Cache.reload(self.gdo_table_name(), self.get_id())
+        return self
 
     def before_select(self, query: Query):
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             gdt.gdo_before_select(self, query)
         self.gdo_before_select(self, query)
 
     def before_create(self):
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             gdt.gdo_before_create(self)
         self.gdo_before_create(self)
 
     def after_create(self):
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             gdt.gdo_after_create(self)
         self.gdo_after_create(self)
 
     def before_update(self):
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             gdt.gdo_before_update(self)
         self.gdo_before_update(self)
 
     def after_update(self):
         self.gdo_after_update(self)
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             gdt.gdo_after_update(self)
 
     def before_delete(self):
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             gdt.gdo_before_delete(self)
         self.gdo_before_delete(self)
 
     def after_delete(self):
         self.gdo_after_delete(self)
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             gdt.gdo_after_delete(self)
 
     #######
@@ -466,6 +466,6 @@ class GDO(WithName, WithBulk, GDT):
         return self.column_of(GDT_Name)
 
     def column_of(self, type: type[GDT]) -> GDT|None:
-        for gdt in self.columns():
+        for gdt in self.columns().values():
             if isinstance(gdt, type):
                 return gdt.gdo(self)
