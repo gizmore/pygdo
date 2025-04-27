@@ -106,7 +106,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         self._multiple = True
         return self
 
-    def positional(self, positional: bool = True):
+    def positional(self, positional: bool|None = True):
         self._positional = positional
         return self
 

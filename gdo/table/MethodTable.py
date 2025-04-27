@@ -45,13 +45,13 @@ class MethodTable(WithGDO, MethodForm):
     @functools.cache
     def table_parameters(self) -> Iterator[GDT]:
         if self.gdo_paginated():
-            yield GDT_PageNum(self.gdo_paginate_name()).initial('1').positional()
+            yield GDT_PageNum(self.gdo_paginate_name()).initial('1').positional(self.gdo_page_positional())
         if self.gdo_ordered():
             yield GDT_Order(self.gdo_order_name())
         if self.gdo_filtered():
             yield GDT_Filter(self.gdo_filter_name())
         if self.gdo_searched():
-            yield GDT_Search(self.gdo_search_name()).label('search')
+            yield GDT_Search(self.gdo_search_name()).label('search').positional(self.gdo_search_positional())
 
     def table_order_field(self) -> GDT_Order:
         return self.parameter(self.gdo_order_name())
@@ -94,6 +94,12 @@ class MethodTable(WithGDO, MethodForm):
     # Abstract Features #
     #####################
 
+    def gdo_max_results(self) -> int:
+        return 200
+
+    def gdo_page_positional(self) -> bool:
+        return True
+
     def gdo_paginated(self) -> bool:
         return True
 
@@ -129,6 +135,9 @@ class MethodTable(WithGDO, MethodForm):
     def gdo_searched(self) -> bool:
         return True
 
+    def gdo_search_positional(self) -> bool:
+        return False
+
     def gdo_search_name(self) -> str:
         return 's'
 
@@ -151,6 +160,8 @@ class MethodTable(WithGDO, MethodForm):
             result = GDOSorter.filter(result, self.parameter(self.gdo_filter_name()))
         if self.gdo_paginated():
             result = GDOSorter.paginate(result, self.parameter(self.gdo_paginate_name()), self.gdo_paginate_size())
+        elif max := self.gdo_max_results():
+            result = GDOSorter.limit(result, max)
         return result
 
     ########

@@ -310,12 +310,10 @@ class GDT(WithSerialization):
     def render_suggestion(self) -> str:
         return ''
 
-    def display_val(self, val: str) -> str:
+    @classmethod
+    def display_val(cls, val: str) -> str:
         return val
 
-    def copy(self):
-        return self.copy_as(self.get_name())
-
-    def copy_as(self, new_name: str) -> Self:
+    def copy_as(self, new_name: str = None) -> Self:
         cloned = deepcopy(self)
-        return cloned.name(new_name)
+        return cloned.name(new_name or self.get_name())

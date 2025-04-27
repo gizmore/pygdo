@@ -252,7 +252,8 @@ class GDO(WithName, WithBulk, GDT):
                 first().exec().fetch_object())
 
     def get_by_id(self, *id_: str):
-        if c := Cache.obj_search_gid(self, self.ID_SEPARATOR.join(id_)): return c
+        if self.gdo_cached():
+            if c := Cache.obj_search_gid(self, self.ID_SEPARATOR.join(id_)): return c
         return self.table().select().where(' AND '.join(
             [f'{gdt.get_name()}={self.quote(gdt.val(id_[i]).get_val())}'
              for i, gdt in enumerate(self.get_pk_columns())])
@@ -349,8 +350,10 @@ class GDO(WithName, WithBulk, GDT):
             if Arrays.mem_size(dirty) > IPC.MAX_EVENT_ARG_SIZE:
                 dirty = None
             obj.all_dirty(False)
-            IPC.send('base.ipc_gdo', (self.gdo_table_name(), self.get_id(), dirty))
-        return Cache.update_for(obj)
+            if obj.gdo_cached():
+                IPC.send('base.ipc_gdo', (self.gdo_table_name(), self.get_id(), dirty))
+                return Cache.update_for(obj)
+        return obj
 
     ##########
     # Delete #
@@ -364,7 +367,8 @@ class GDO(WithName, WithBulk, GDT):
             self.before_delete()
             self.delete_query().where(self.pk_where()).exec()
             vals = {gdt.get_name(): gdt.get_val() for gdt in self.get_pk_columns()}
-            Cache.obj_search_id(self, vals, True)
+            if self.gdo_cached():
+                Cache.obj_search_id(self, vals, True)
             self.after_delete()
             self.all_dirty(True)
         return self

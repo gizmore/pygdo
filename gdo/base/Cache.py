@@ -40,6 +40,7 @@ class Cache:
     OCACHE: dict[str, dict[str, GDO]] = {}  # table_name => dict[id, GDO] mapping
     RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
     NCACHE: list[str] = []                  # list of non persistent GDO table names
+
     @classmethod
     def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0, uds: str=''):
         if enabled:
@@ -51,8 +52,9 @@ class Cache:
     @classmethod
     def clear(cls):
         cls.TCACHE = {}
-        cls.PCACHE = {}
         cls.CCACHE = {}
+        cls.PCACHE = {}
+        cls.OCACHE = {}
         if cls.RCACHE:
             cls.RCACHE.flushdb()
         Files.empty_dir(Application.file_path('cache/'))
@@ -60,8 +62,8 @@ class Cache:
     #PYPP#START#
     @classmethod
     def clear_stats(cls):
-        cls.UPDATES = cls.MISS = cls.REMOVES = cls.HITS = 0
-        cls.VHITS = cls.OHITS = cls.THITS = 0
+        cls.UPDATES = cls.MISS  = cls.REMOVES = cls.HITS = 0
+        cls.VHITS   = cls.OHITS = cls.THITS = 0
     #PYPP#END#
 
     @classmethod
@@ -70,7 +72,7 @@ class Cache:
         Clear request OCACHE for non persistent GDO
         """
         for tn in cls.NCACHE:
-            cls.OCACHE[tn] = {}
+            cls.OCACHE[tn].clear()
 
     #############
     # T/C/Cache #
@@ -83,9 +85,11 @@ class Cache:
             cls.TCACHE[cn] = gdo = gdo_klass()
             cls.CCACHE[cn] = cls.build_ccache(gdo_klass)
             cls.PCACHE[cn] = cls.build_pkcache(gdo_klass)
-            cls.OCACHE[gdo.gdo_table_name()] = {}
-            if not gdo.gdo_persistent():
-                cls.NCACHE.append(gdo.gdo_table_name())
+            if gdo.gdo_cached():
+                tn = gdo.gdo_table_name()
+                cls.OCACHE[tn] = {}
+                if not gdo.gdo_persistent():
+                    cls.NCACHE.append(tn)
         return gdo
 
     @classmethod

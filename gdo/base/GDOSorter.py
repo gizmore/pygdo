@@ -24,10 +24,14 @@ class GDOSorter:
         return sorted(result, key=cmp_to_key(compare))
 
     @classmethod
-    def filter(cls, result: list[GDO], filter: GDT_Filter) ->list[GDO]:
+    def filter(cls, result: list[GDO], filter: GDT_Filter) -> list[GDO]:
         return result
 
     @classmethod
-    def paginate(cls, result: list[GDO], page: GDT_PageNum, ipp: int = 10) ->list[GDO]:
+    def paginate(cls, result: list[GDO], page: GDT_PageNum, ipp: int = 10) -> list[GDO]:
         begin = (page.get_value() - 1) * ipp
         return result[begin:begin+ipp]
+
+    @classmethod
+    def limit(cls, result: list[GDO], max_rows: int) -> list[GDO]:
+        return result[0:max_rows]
