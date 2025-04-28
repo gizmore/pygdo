@@ -12,7 +12,7 @@ class sum(Method):
     def gdo_trigger(cls) -> str:
         return 'sum'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Repeat(GDT_Float('x').not_null()),
         ]

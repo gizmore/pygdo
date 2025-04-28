@@ -42,15 +42,15 @@ class GDT_CSRF(GDT_Hidden):
         GDT_CSRF.set_storage(tokens, user)
         return token
 
-    def validate(self, val: str | None, value: any) -> bool:
+    def validate(self, val: str|None) -> bool:
         if Application.is_unit_test():
             return True
         user = GDO_User.current()
         if not user.is_authenticated():
             return True
         tokens = GDT_CSRF.get_storage(user)
-        if value not in tokens:
+        if val not in tokens:
             return self.error('err_csrf')
-        tokens.remove(value)
+        tokens.remove(val)
         GDT_CSRF.set_storage(tokens, user)
         return True

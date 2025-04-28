@@ -54,7 +54,7 @@ class MethodForm(Method):
 
         for button in form.actions().fields():
             if isinstance(button, GDT_Submit) and button.get_val():
-                if form.validate(None, None):
+                if form.validate(None):
                     return button.call()
                 else:
                     return self.form_invalid()

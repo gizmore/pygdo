@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import functools
+import mimetypes
 import string
 
 import asyncio
@@ -306,15 +307,18 @@ class Files:
             from gdo.base.Logger import Logger
             Logger.exception(ex)
 
-    @classmethod
-    def mime(cls, path: str):
+    @staticmethod
+    @functools.lru_cache()
+    def mime(path: str):
         return magic.Magic(mime=True, keep_going=True).from_file(path)
-        # mime_type = mimetypes.guess_type(path)
-        # dump(mime_type)
-        # return mime_type[0] if mime_type[0] else 'application/octet-stream'
 
-    @classmethod
-    def size(cls, path: str) -> int:
+    @staticmethod
+    @functools.lru_cache()
+    def mime2(path: str):
+        return mimetypes.guess_type(path)
+
+    @staticmethod
+    def size(path: str) -> int:
         return os.path.getsize(path)
 
     @classmethod

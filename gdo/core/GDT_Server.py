@@ -18,6 +18,6 @@ class GDT_Server(GDT_Object):
         return self
 
     def to_value(self, val: str):
-        if val is None and self._default_current:
+        if not val and self._default_current:
             return Message.CURRENT._env_server
         return super().to_value(val)

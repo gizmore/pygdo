@@ -65,12 +65,15 @@ class GDT_Float(GDT_String):
     # Validate #
     ############
 
-    def validate(self, val: str | None, value: any) -> bool:
-        if not super().validate(val, value):
+    def validate(self, val: str|None) -> bool:
+        if not super().validate(val):
             return False
-        return self.validate_min_max(value)
+        elif val is None:
+            return True
+        else:
+            return self.validate_min_max(self.get_value())
 
-    def validate_min_max(self, value):
+    def validate_min_max(self, value: float):
         if self._min is not None and value < self._min:
             return self.error('err_int_min', (self._min,))
         if self._max is not None and value > self._max:

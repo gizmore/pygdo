@@ -46,9 +46,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         return self
 
     def get_val(self):
-        if self._val is None or self._val == '':
-            return None
-        return self._val
+        return None if not self._val else self._val
 
     def get_value(self):
         if not self._converted:
@@ -94,11 +92,11 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     def is_unique(self) -> bool:
         return self._unique
 
-    def primary(self, primary=True):
+    def primary(self, primary: bool=True):
         self._primary = primary
         return self.not_null()
 
-    def unique(self, unique=True):
+    def unique(self, unique: bool=True):
         self._unique = unique
         return self
 
@@ -146,7 +144,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
             return " DEFAULT " + self.quote(self._initial)
         return ''
 
-    def error(self, errkey: str, errargs: tuple = None) -> bool:
+    def error(self, errkey: str, errargs: tuple[str|int|float,...] = None) -> bool:
         self._errkey = errkey
         self._errargs = errargs
         return False
@@ -158,8 +156,8 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     # Validate #
     ############
 
-    def validate(self, val: str | None, value: any) -> bool:
-        if not self.validate_null(val, value):
+    def validate(self, val: str|None) -> bool:
+        if not self.validate_null(val):
             return False
         if self._unique and not self.validate_unique(val):
             return False

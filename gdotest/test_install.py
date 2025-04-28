@@ -10,7 +10,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_User import GDO_User
 from gdo.core.method.clear_cache import clear_cache
 from gdo.install.Installer import Installer
-from gdotest.TestUtil import reinstall_module, GDOTestCase
+from gdotest.TestUtil import reinstall_module, GDOTestCase, web_plug
 
 
 class InstallTestCase(GDOTestCase):
@@ -87,14 +87,17 @@ class InstallTestCase(GDOTestCase):
         self.assertIsNotNone(result, "Install all")
 
     def test_08_install_admin_user(self):
-        subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'admin', "gizmore", "11111111", "gizmore@gizmore.org"], capture_output=True)
-        admins = GDO_User.admins()
-        self.assertEqual(1, len(admins), "Cannot install admin user")
-        clear_cache().gdo_execute()
-        subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'admin', "gizmore", "11111111", "gizmore@gizmore.org"], capture_output=True)
-        self.assertEqual(1, len(admins), "Cannot install admin user #2")
+        subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'admin', "gizmore5", "11111111", "gizmore@gizmore.org"], capture_output=True)
+        self.assertTrue(GDO_User.table().get_by_vals({'user_name': 'gizmore5', 'user_server': '1'}).is_admin(), 'Cannot create admin user')
 
     def test_09_reinstall_module(self):
+        loader = ModuleLoader.instance()
+        loader.load_modules_db(True)
+        loader.init_modules(True, True)
+        loader.init_cli()
+        web_plug('/core.welcome.html?_lang=en').user('gizmore').exec()
+        out = web_plug('/core.welcome.html?_lang=en').user('gizmore').exec()
+        self.assertIn('Welcome', out, 'web request no work.')
         reinstall_module('login')
         self.assertIn('login', ModuleLoader.instance()._cache, 'Cannot reinstall modules.')
 

@@ -6,9 +6,6 @@ from gdo.core.GDT_Template import tpl
 
 class GDT_Select(GDT_ComboBox):
 
-    def __init__(self, name):
-        super().__init__(name)
-
     def gdo_choices(self) -> dict:
         return {}
 
@@ -22,11 +19,10 @@ class GDT_Select(GDT_ComboBox):
         self._choices.update(self.gdo_choices())
         return self._choices
 
-    def validate(self, val: str | None, value: any) -> bool:
-        if value is None:
-            return super().validate(val, value)
-        choices = self.init_choices()
-        if val not in choices.keys():
+    def validate(self, val: str|None) -> bool:
+        if val is None:
+            return super().validate(val)
+        if val not in self.init_choices().keys():
             return self.error_invalid_choice()
         return True
 
@@ -41,10 +37,8 @@ class GDT_Select(GDT_ComboBox):
         return Arrays.dict_index(self.init_choices(), value)
 
     def to_value(self, val: str):
-        if val is None:
-            return None
         self.init_choices()
-        return self._choices[val] if val in self._choices else None
+        return self._choices.get(val, None)
 
     ##########
     # Render #
@@ -53,7 +47,7 @@ class GDT_Select(GDT_ComboBox):
     def html_selected(self, key: str):
         if key == self.get_val():
             return ' selected="selected"'
-        return ''
+        return self.EMPTY_STR
 
     def render_suggestion(self) -> str:
         self.init_choices()

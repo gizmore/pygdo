@@ -14,7 +14,7 @@ class GDT_MathExpression(GDT_RestOfText):
     def get_namespace(self) -> dict:
         return {
             'for': 'for',
-            'in': 'for',
+            'in': 'in',
             'pi': math.pi,
             'e': math.e,
             'phi': 1.604,
@@ -39,14 +39,14 @@ class GDT_MathExpression(GDT_RestOfText):
             'log': math.log,
         }
 
-    def validate(self, val: str | None, value: any) -> bool:
-        if not super().validate(val, value):
+    def validate(self, val: str | None) -> bool:
+        if not super().validate(val):
             return False
-        if value is None:
+        if val is None:
             return True
         allowed = self.get_namespace()
         operators = "0123456789abcijxyz .,_+-*/%|()[]{}:"
-        tokens = re.findall(r'[a-zA-Z]+|[\d.]|.', value[0].lower())
+        tokens = re.findall(r'[a-z]+|[\d.]|.', val.lower())
         for token in tokens:
             if token not in allowed and token not in operators:
                 return self.error('err_expression', (html(token, Application.get_mode()),))

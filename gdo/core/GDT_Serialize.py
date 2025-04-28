@@ -50,7 +50,7 @@ class GDT_Serialize(GDT_Text):
             return json.loads(val)
         return pickle.loads(val)
 
-    def validate(self, val: str | None, value: any) -> bool:
-        if value is None:
-            return super().validate(val, value)
+    def validate(self, val: str|None) -> bool:
+        if val is None:
+            return super().validate(val)
         return True

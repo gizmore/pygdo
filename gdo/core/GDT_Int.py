@@ -99,14 +99,14 @@ class GDT_Int(GDT_String):
     # Validate #
     ############
 
-    def validate(self, val: str | None, value: any) -> bool:
-        if not super().validate(val, value):
+    def validate(self, val: str|None) -> bool:
+        if not super().validate(val):
             return False
-        if value is None:
-            return True
-        return self.validate_min_max(value)
+        if (value := self.get_value()) is not None:
+            return self.validate_min_max(value)
+        return True
 
-    def validate_min_max(self, value):
+    def validate_min_max(self, value: int):
         if value < self._min:
             return self.error('err_int_min', (self._min,))
         if value > self._max:

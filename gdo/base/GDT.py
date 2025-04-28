@@ -203,13 +203,12 @@ class GDT(WithSerialization):
     def dirty_vals(self) -> dict[str,str]:
         return self.EMPTY_DICT
 
-    def validate(self, val: str | None, value: any) -> bool:
+    def validate(self, val: str|None) -> bool:
         return True
 
-    def validated(self):
+    def validated(self) -> Self|None:
         self.reset_error()
-        if self.validate(self.get_val(), self.get_value()):
-            return self
+        return self if self.validate(self.get_val()) else None
 
     def is_positional(self) -> bool:
         return False

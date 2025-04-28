@@ -69,6 +69,7 @@ class GDO_User(GDO):
         return cls.SYSTEM
 
     @classmethod
+    @functools.lru_cache
     def ghost(cls):
         return cls.blank({
             'user_id': '0',

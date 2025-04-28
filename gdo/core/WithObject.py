@@ -1,4 +1,7 @@
+import functools
+
 from gdo.base.GDO import GDO
+from gdo.base.GDT import GDT
 from gdo.base.Render import Render, Mode
 
 
@@ -104,7 +107,7 @@ class WithObject:
     def render_cli(self) -> str:
         gdo = self.get_gdo()
         if gdo is None:
-            return ''
+            return GDT.EMPTY_STR
         if gdo.is_persisted():
             return f"{Render.bold(gdo.get_id(), Mode.CLI)}-{gdo.render_name()}"
         else:
@@ -117,11 +120,11 @@ class WithObject:
     # Validate #
     ############
 
-    def validate(self, val: str | None, value: any):
+    def validate(self, val: str|None) -> bool:
+        if self.get_value():
+            return True
         if self.has_error():
             return False
-        if value:
-            return True
-        if not super().validate(val, value):
+        if not super().validate(val):
             return False
         return True

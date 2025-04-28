@@ -126,20 +126,18 @@ class GDT_File(GDT_Object):
     def get_temp_dir(self):
         sessid = Application.get_session().get_id() or '1'
         files_dir = Application.config('file.directory')
-        dir = Application.temp_path(f"{files_dir}{self._upload_path}/{sessid}/")
-        return dir
+        return Application.temp_path(f"{files_dir}{self._upload_path}/{sessid}/")
 
     ############
     # Validate #
     ############
-    def validate(self, val: str | None, value: any) -> bool:
+    def validate(self, val: str|None) -> bool:
+        value = self.get_value()
         if not value:
-            return super().validate(val, None)
-        if self.validate_files(val, value):
-            return True
-        return False
+            return super().validate(val)
+        return self.validate_files(value)
 
-    def validate_files(self, val: str | None, value: any) -> bool:
+    def validate_files(self, value: any) -> bool:
         for file in value:
             if not self.validate_file(file):
                 return False

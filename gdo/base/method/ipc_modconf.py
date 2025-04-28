@@ -29,6 +29,6 @@ class ipc_modconf(Method):
         key = self.param_val('key')
         val = self.param_val('value')
         gdt = module._module_config.get(key)
-        if gdt.validate(val, gdt.to_value(val)):
+        if gdt.validate(val):
             gdt.val(val)
         return self.empty()

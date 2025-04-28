@@ -10,7 +10,7 @@ class GDT_Repeat(WithProxy, GDT_UInt):
     def __init__(self, proxy: GDT_Field):
         super().__init__(proxy.get_name())
         self.proxy(proxy)
-        self._min = 1 if proxy._not_null else 0
+        self._min = 1 if proxy.is_not_null() else 0
         self._max = sys.maxsize
 
     def is_positional(self) -> bool:
@@ -44,15 +44,15 @@ class GDT_Repeat(WithProxy, GDT_UInt):
                 values.append(value)
         return values
 
-    def validate(self, val: str | None, values: any) -> bool:
-        if values is None:
-            if not self._proxy.validate(val, values):
+    def validate(self, vals: str | None) -> bool:
+        if vals is None:
+            if not self._proxy.validate(vals):
                 return self.error(self._proxy._errkey, self._proxy._errargs)
-            return super().validate(val, None)
-        if not self.validate_min_max(len(values)):
+            return super().validate(vals)
+        if not self.validate_min_max(len(vals)):
             return False
-        for value in values:
-            if not self._proxy.validate(val, value):
+        for val in vals:
+            if not self._proxy.val(val).validated():
                 return self.error(self._proxy._errkey, self._proxy._errargs)
         return True
 

@@ -47,7 +47,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def actions(self) -> GDT_Menu:
         return self._actions
 
-    def validate(self, val: str | None, value: any) -> bool:
+    def validate(self, val: str|None) -> bool:
         for gdt in self.all_fields():
             self.validate_gdt(gdt)
         if not self.has_error():

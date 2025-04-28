@@ -112,12 +112,13 @@ class GDT_Url(GDT_String):
     # Validate #
     ############
 
-    def validate(self, val: str | None, value: any) -> bool:
-        if not super().validate(val, value):
+    def validate(self, val: str|None) -> bool:
+        if not super().validate(val):
             return False
-        elif value is None:
+        elif val is None:
             return True
-        elif isinstance(value, str):
+        value = self.to_value(val)
+        if isinstance(value, str):
             return self.error('err_url_pattern')
         elif not self.validate_scheme(value):
             return False

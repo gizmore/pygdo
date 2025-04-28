@@ -9,11 +9,8 @@ class WithNullable:
         self._not_null = not_null
         return self
 
-    def validate_null(self, val: str | None, value: any) -> bool:
-        if value is None:
-            if self._not_null:
-                return self.error_not_null()
-        return True
+    def validate_null(self, val: str|None) -> bool:
+        return self.error_not_null() if not val and self.is_not_null() else True
 
     def error_not_null(self):
         suggestions = self.render_suggestion()

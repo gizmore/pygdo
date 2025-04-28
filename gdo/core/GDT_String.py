@@ -1,9 +1,11 @@
+import re
 import unicodedata
 from enum import Enum
 
+from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t
-from gdo.base.Util import jsn, dump
+from gdo.base.Util import jsn, dump, html
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template
 from gdo.form.GDT_Hidden import GDT_Hidden
@@ -18,21 +20,19 @@ class Encoding(Enum):
 class GDT_String(GDT_Field):
     _encoding: Encoding
     _case_s: bool
-
-    _minlen: int
-    _maxlen: int
+    _min_len: int
+    _max_len: int
     _pattern: str
     _re_options: int
-
     _input_type: str
 
     def __init__(self, name):
         super().__init__(name)
         self._encoding = Encoding.UTF8
         self._hidden = False
-        self._minlen = 0
-        self._maxlen = 192
-        self._pattern = ''
+        self._min_len = 0
+        self._max_len = 192
+        self._pattern = self.EMPTY_STR
         self._re_options = 0
         self._case_s = False
         self._input_type = 'text'
@@ -45,11 +45,11 @@ class GDT_String(GDT_Field):
     # Attributes #
     ##############
     def minlen(self, minlen: int):
-        self._minlen = minlen
+        self._min_len = minlen
         return self
 
     def maxlen(self, maxlen: int):
-        self._maxlen = maxlen
+        self._max_len = maxlen
         return self
 
     def case_s(self, case_s=True):
@@ -92,23 +92,23 @@ class GDT_String(GDT_Field):
     #######
 
     def gdo_column_define(self) -> str:
-        return (f"{self._name} VARCHAR({self._maxlen}) "
+        return (f"{self._name} VARCHAR({self._max_len}) "
                 f"CHARSET {self.gdo_column_define_charset()} {self.gdo_column_define_collate()} "
                 f"{self.gdo_column_define_default()} "
                 f"{self.gdo_column_define_null()} ")
 
     def gdo_column_define_charset(self) -> str:
         match self._encoding:
-            case Encoding.ASCII:
-                return 'ascii'
             case Encoding.UTF8:
                 return 'utf8mb4'
-            case Encoding.BINARY:
+            case Encoding.ASCII:
+                return 'ascii'
+            case _:
                 return 'binary'
 
     def gdo_column_define_collate(self) -> str:
         if self._encoding == Encoding.BINARY:
-            return ''
+            return self.EMPTY_STR
         append = '_general_ci'
         if self._case_s:
             append = '_bin'
@@ -131,19 +131,29 @@ class GDT_String(GDT_Field):
     # Validate #
     ############
 
-    def validate(self, val: str | None, value: any) -> bool:
-        if not super().validate(val, value):
+    def validate(self, val: str|None) -> bool:
+        if not super().validate(val):
             return False
-        if not self.validate_pattern(value):
+        elif not val:
+            return True
+        if not self.validate_pattern(val):
             return False
-        if not self.validate_length(value):
+        if not self.validate_length(val):
             return False
         return True
 
-    def validate_pattern(self, value):
+    def validate_pattern(self, val: str):
+        if self._pattern:
+            if not re.match(self._pattern, val, self._re_options):
+                return self.error('err_str_pattern', (html(self._pattern, Application.get_mode()),))
         return True
 
-    def validate_length(self, value):
+    def validate_length(self, val: str):
+        l = len(val)
+        if self._min_len and l < self._min_len:
+            return self.error('err_str_min_len', (self._min_len,))
+        if self._max_len and l > self._max_len:
+            return self.error('err_str_max_len', (self._max_len,))
         return True
 
     ########
