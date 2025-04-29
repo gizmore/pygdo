@@ -254,7 +254,7 @@ class GDO(WithName, WithBulk, GDT):
         if self.gdo_cached():
             if c := Cache.obj_search_gid(self, self.ID_SEPARATOR.join(id_)): return c
         return self.table().select().where(' AND '.join(
-            [f'{gdt.get_name()}={self.quote(gdt.val(id_[i]).get_val())}'
+            [f'{gdt.get_name()}={self.quote(id_[i])}'
              for i, gdt in enumerate(self.get_pk_columns())])
         ).first().exec().fetch_object()
 

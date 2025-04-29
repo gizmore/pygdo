@@ -2,6 +2,7 @@ from typing_extensions import Self
 
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Query import Query
 from gdo.base.Util import Strings, href
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Object import GDT_Object
@@ -39,22 +40,24 @@ class GDT_User(WithCompletion, GDT_Object):
     def online(self, online: bool = True) -> Self:
         return self.authenticated(online)
 
-    def query_gdos(self, val: str) -> list[GDO]:
+    def query_gdos_query(self, val: str, query: Query) -> Query:
         val_serv = Strings.regex_first(r'{(\d+)}$', val)
         val = Strings.substr_to(val, '{', val)
-        query = self._table.select()
-        if val.isnumeric():
-            if user := self._table.get_by_id(val):
-                return [user]
-            return []
-        else:
-            query.where(f"user_displayname LIKE '%{GDT.escape(val)}%'")
+        query.where(f"user_displayname LIKE '%{GDT.escape(val)}%'")
         if val_serv:
             query.where(f"user_server={val_serv}")
         if self._same_server:
             user = GDO_User.current()
             query.where(f'user_server={user.get_server_id()}')
-        return query.limit(10).exec().fetch_all()
+        return query
+
+    def query_gdos(self, val: str) -> list[GDO]:
+        if val.isnumeric():
+            if user := self._table.get_by_aid(val):
+                return [user]
+            return []
+        query = self._table.select()
+        return self.query_gdos_query(val, query).limit(10).exec().fetch_all()
 
     ##########
     # Render #
