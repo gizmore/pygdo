@@ -4,8 +4,8 @@
 
 ### Variable names, Getters and Setters
 
-All class member variable names start with an underscore(_) Example: _minlen
-Setters are named like the getter, def minlen(len:int) -> Self, they can be chained.
+All class member variable names start with an underscore(_) Example: _min_len
+Setters are named like the getter, def min_len(len:int) -> Self, they can be chained.
 There are no getters unless they compute a value, : def getMinMaxTuple()
 
 

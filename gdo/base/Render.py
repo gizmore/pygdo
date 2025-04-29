@@ -42,6 +42,9 @@ class Mode(Enum):
     def is_html(self) -> bool:
         return self.value < 10
 
+    def is_textual(self):
+        return not self.is_html()
+
 
 class Render:
     """

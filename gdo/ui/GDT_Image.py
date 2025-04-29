@@ -28,7 +28,7 @@ class GDT_Image(WithSize, WithHREF, WithHTMLAttributes, GDT_File):
     # Render #
     ##########
     def render_txt(self) -> str:
-        return self.render_alt_text()
+        return '' # self.render_alt_text()
 
     def html_alternate(self) -> str:
         return f' alt="{self.render_alt_text()}"'

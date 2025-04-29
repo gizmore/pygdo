@@ -54,5 +54,6 @@ class WithFields:
         output = ""
         if hasattr(self, '_fields'):
             for gdt in self._fields:
+                output += " "
                 output += gdt.render(mode)
-        return output
+        return output.strip()

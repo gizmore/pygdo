@@ -7,8 +7,8 @@ class GDT_Token(GDT_Char):
 
     def __init__(self, name):
         super().__init__(name)
-        self._minlen = self.TOKEN_LEN
-        self._maxlen = self.TOKEN_LEN
+        self._min_len = self.TOKEN_LEN
+        self._max_len = self.TOKEN_LEN
 
     @classmethod
     def random(cls, length: int = TOKEN_LEN):

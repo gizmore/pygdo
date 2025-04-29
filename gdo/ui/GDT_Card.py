@@ -1,5 +1,6 @@
 from gdo.avatar.GDT_Avatar import GDT_Avatar
 from gdo.base.GDT import GDT
+from gdo.base.Render import Mode
 from gdo.base.Util import module_enabled
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Creator import GDT_Creator
@@ -17,6 +18,12 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
     _content: GDT_Container
     _footer: GDT_Container
 
+    def __init__(self):
+        super().__init__()
+        self._header = GDT_Container()
+        self._content = GDT_Container()
+        self._footer = GDT_Container()
+
     def image(self, image: GDT_Image):
         self._image = image
         return self
@@ -25,18 +32,18 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
         return hasattr(self, '_image')
 
     def get_header(self) -> GDT_Container:
-        if not hasattr(self, '_header'):
-            self._header = GDT_Container()
+        # if not hasattr(self, '_header'):
+        #     self._header = GDT_Container()
         return self._header
 
     def get_content(self) -> GDT_Container:
-        if not hasattr(self, '_content'):
-            self._content = GDT_Container()
+        # if not hasattr(self, '_content'):
+        #     self._content = GDT_Container()
         return self._content
 
     def get_footer(self) -> GDT_Container:
-        if not hasattr(self, '_footer'):
-            self._footer = GDT_Container()
+        # if not hasattr(self, '_footer'):
+        #     self._footer = GDT_Container()
         return self._footer
 
     def creator_header(self):
@@ -47,7 +54,23 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
             self.get_header().add_field(GDT_Avatar('avatar').for_user(creator.get_value()))
         return self
 
+    def render(self, mode: Mode = Mode.HTML):
+        if mode.is_html():
+            return self.render_html()
+        if mode.is_textual():
+            return self.render_text(mode)
+        return super().render(mode)
+
     def render_html(self) -> str:
         return GDT_Template.python('ui', 'card.html', {
             'field': self,
         })
+
+    def render_text(self, mode: Mode = Mode.HTML):
+        text = 'a'
+        text += self._header.render(mode)
+        text += ' '
+        text += self._content.render(mode)
+        text += ' '
+        text += self._footer.render(mode)
+        return text.strip()
