@@ -10,8 +10,8 @@ class ipc_gdo(Method):
 
     def gdo_parameters(self) -> [GDT]:
         return [
-            GDT_TableName('table'),
-            GDT_String('id'),
+            GDT_TableName('table').not_null(),
+            GDT_String('id').not_null(),
             GDT_Serialize('dirty').mode(Mode.JSON),
         ]
 
