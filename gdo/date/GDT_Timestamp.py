@@ -9,8 +9,12 @@ class GDT_Timestamp(GDT_String):
 
     def __init__(self, name):
         super().__init__(name)
-        self._date_format = 'long'
+        self._date_format = Time.FMT_LONG
         self._millis = 3
+
+    def date_format(self, date_format: str):
+        self._date_format = date_format
+        return self
 
     def gdo_column_define(self) -> str:
         return f"{self._name} DATETIME({self._millis}){self.gdo_column_define_null()}{self.gdo_column_define_default()}"
@@ -30,4 +34,7 @@ class GDT_Timestamp(GDT_String):
     # Render #
     ##########
     def render_html(self):
+        return Time.display_date(self.get_val(), self._date_format)
+
+    def render_txt(self):
         return Time.display_date(self.get_val(), self._date_format)

@@ -6,7 +6,7 @@ from gdo.core.WithObject import WithObject
 class GDT_Object(WithObject, GDT_UInt):
 
     def html_value(self):
-        if gdo := self.get_gdo():
+        if gdo := self.get_value():
             return html(gdo.render_name())
         return ''
 
@@ -20,4 +20,4 @@ class GDT_Object(WithObject, GDT_UInt):
         return self.render_txt()
 
     def render_txt(self) -> str:
-        return f"{self._gdo.get_name()}"
+        return f"{self.get_value().render_name()}"

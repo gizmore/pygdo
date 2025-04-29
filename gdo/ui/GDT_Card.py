@@ -2,6 +2,7 @@ from gdo.avatar.GDT_Avatar import GDT_Avatar
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.base.Util import module_enabled
+from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_Template import GDT_Template
@@ -67,10 +68,9 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
         })
 
     def render_text(self, mode: Mode = Mode.HTML):
-        text = 'a'
-        text += self._header.render(mode)
-        text += ' '
+        text = self._header.render(mode)
+        text += ' - '
         text += self._content.render(mode)
-        text += ' '
+        text += ' - '
         text += self._footer.render(mode)
-        return text.strip()
+        return text.strip(' -')

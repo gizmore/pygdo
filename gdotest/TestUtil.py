@@ -180,6 +180,7 @@ def web_plug(url):
 def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     if user is None:
         user = cli_gizmore()
+    Application.set_current_user(user)
     server = user.get_server()
     channel = server.get_or_create_channel('test_channel')
     session = GDO_Session.for_user(user)
