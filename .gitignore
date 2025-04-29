@@ -8,6 +8,7 @@
 /bin/web.pids
 __pycache__/
 /node_modules/
+/**/node_modules/
 /yarn.lock
 *.py-E
 *.pclprof
