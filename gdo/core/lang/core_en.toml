@@ -31,6 +31,7 @@ msg_back_to = "You can now get back to %s."
 ##############
 id = "ID"
 name = "Name"
+title = "Title"
 enabled = "Enabled"
 login = "Login"
 tt_login = "Use your username or your email."

@@ -169,6 +169,5 @@ class GDT_Template(GDT):
                 return p
         return os.path.join(Application.PATH, f"gdo/{modulename}/tpl/{path}")
 
-
 def tpl(modulename: str, filename: str, vals: dict = None):
     return GDT_Template.python(modulename, filename, vals)

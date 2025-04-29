@@ -5,3 +5,6 @@ class GDT_Date(GDT_Timestamp):
 
     def __init__(self, name):
         super().__init__(name)
+
+    def gdo_column_define(self) -> str:
+        return f"{self._name} DATE {self.gdo_column_define_null()}{self.gdo_column_define_default()}"

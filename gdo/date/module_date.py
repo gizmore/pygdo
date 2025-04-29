@@ -1,6 +1,7 @@
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.date.GDO_Timezone import GDO_Timezone
+from gdo.ui.GDT_Page import GDT_Page
 
 
 class module_date(GDO_Module):
@@ -23,3 +24,9 @@ class module_date(GDO_Module):
         return [
             GDT_Timezone('timezone').not_null().initial('1'),
         ]
+
+    def gdo_load_scripts(self, page: 'GDT_Page'):
+        self.add_bower_js('moment/src/moment.js')
+        self.add_bower_js('moment/src/locale/de.js')
+        self.add_bower_js('moment/src/locale/en-gb.js')
+        self.add_js('js/gdo8-date.js')

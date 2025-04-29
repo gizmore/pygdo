@@ -17,7 +17,7 @@ class GDT_Timestamp(GDT_String):
         return self
 
     def gdo_column_define(self) -> str:
-        return f"{self._name} DATETIME({self._millis}){self.gdo_column_define_null()}{self.gdo_column_define_default()}"
+        return f"{self._name} TIMESTAMP({self._millis}){self.gdo_column_define_null()}{self.gdo_column_define_default()}"
 
     def get_date(self) -> str:
         return self.get_val()
@@ -34,7 +34,10 @@ class GDT_Timestamp(GDT_String):
     # Render #
     ##########
     def render_html(self):
-        return Time.display_date(self.get_val(), self._date_format)
+        date = self.get_val()
+        disp = Time.display_date(date, self._date_format)
+        ts = Time.get_time(date)
+        return f"<span class=\"gdt-timestamp\" data-ts=\"{ts}\">{disp}</span>"
 
     def render_txt(self):
         return Time.display_date(self.get_val(), self._date_format)
