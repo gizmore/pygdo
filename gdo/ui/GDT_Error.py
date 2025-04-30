@@ -23,8 +23,8 @@ class GDT_Error(GDT_Panel):
 
     def html_class(self):
         if self._trace:
-            return 'gdt-exception'
-        return super().html_class()
+            return 'gdt-exception alert alert-danger'
+        return 'gdt-error alert alert-warning'
 
     def render(self, mode: Mode = Mode.HTML):
         if not self._trace:

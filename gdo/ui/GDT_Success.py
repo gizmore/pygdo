@@ -16,6 +16,9 @@ class GDT_Success(GDT_Panel):
         self._no_log = no_log
         return self
 
+    def html_class(self):
+        return 'gdt-success alert alert-success'
+
     def render(self, mode: Mode = Mode.HTML):
         if not self._no_log:
             with Trans('en'):
