@@ -60,6 +60,10 @@ class ParseArgs:
         except Exception as ex:
             pass
 
+    def add_arg(self, key: str, vals: list[str]|str):
+        self.args[key] = vals
+        return self
+
     def add_get_vars(self, qs: dict[str,list[str]]):
         return self.add_web_args(qs)
 

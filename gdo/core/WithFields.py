@@ -1,9 +1,12 @@
+from typing import Iterator
+
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 
 
 class WithFields:
+
     _fields: list[GDT]
 
     def get_fields(self) -> list[GDT]:
@@ -19,19 +22,18 @@ class WithFields:
         for gdt in self.fields():
             if gdt.get_name() == name:
                 return gdt
-            if gdt.has_fields():
+            if hasattr(gdt, 'get_field'):
                 if gdt2 := gdt.get_field(name):
                     return gdt2
+        return None
 
     def has_fields(self) -> bool:
         return True
 
     def fields(self) -> list[GDT]:
-        if hasattr(self, '_fields'):
-            return self._fields
-        return GDO.EMPTY_LIST
+        return self._fields if hasattr(self, '_fields') else GDO.EMPTY_LIST
 
-    def all_fields(self) -> list[GDT]:
+    def all_fields(self) -> Iterator[GDT]:
         """
         Returns an iterator that iterates over all nested fields.
         """

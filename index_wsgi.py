@@ -220,8 +220,9 @@ def pygdo_application(environ, start_response):
             headers.extend([('Content-Length', str(len(response)))])
             start_response(Application.get_status(), headers)
 
-            generator = ChunkedResponse(response)
-            yield from generator.wsgi_generator()
+            yield response
+            # generator = ChunkedResponse(response)
+            # yield from generator.wsgi_generator()
 
             #PYPP#START#
             if Application.config('core.profile') == '1':

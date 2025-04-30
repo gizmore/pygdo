@@ -121,10 +121,10 @@ class Parser:
             else:
                 method._raw_args.add_cli_part(t)
 
-        # Automatically click submit button in CLI
-        from gdo.form.MethodForm import MethodForm
-        if isinstance(method, MethodForm):
-            method.cli_auto_button()
+        # # Automatically click submit button in CLI
+        # from gdo.form.MethodForm import MethodForm
+        # if isinstance(method, MethodForm):
+        #     method.cli_auto_button()
 
         return method
 

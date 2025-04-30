@@ -29,13 +29,16 @@ class MethodTable(WithGDO, MethodForm):
         super().__init__()
         self._curr_table_row_id = 0
 
-    def parameters(self, reset: bool = False) -> list[GDT]:
+    def parameters(self, reset: bool = False) -> dict[str,GDT]:
         if hasattr(self, '_parameters') and not reset:
             return self._parameters
         params = super().parameters(reset)
-        for gdt in self.table_parameters():
+        tp = self.table_parameters()
+        for gdt in tp:
             params[gdt.get_name()] = gdt
         self.set_parameter_positions()
+        for gdt in tp:
+            self.init_parameter(gdt)
         return params
 
     ################
@@ -146,7 +149,7 @@ class MethodTable(WithGDO, MethodForm):
     #########
     @functools.cache
     def get_table(self) -> GDT_Table:
-        # self.init_parameters(False)
+        self.init_parameters()
         table = GDT_Table()
         table.method(self)
         self.gdo_create_table(table)

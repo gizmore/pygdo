@@ -35,7 +35,7 @@ class MethodForm(Method):
         if not hasattr(self, '_form') or reset:
             self._form = GDT_Form().href(self.href()).method(self).title_raw(self.gdo_render_title())
             self.gdo_create_form(self._form)
-            # self.init_parameters(True)
+            self.parameters()
         return self._form
 
     def gdo_execute(self) -> GDT:
@@ -46,18 +46,20 @@ class MethodForm(Method):
             return form.get_field(key).flow_upload()
 
         # for gdt in self.parameters().values():
-        #     self.parameter(gdt.get_name())
-        # for gdt in form.actions().all_fields():
-        #     self.parameter(gdt.get_name())
-        # for gdt in self.parameters().values():
         #     gdt.gdo_file_upload(self)
 
+        clicked = None
         for button in form.actions().fields():
+            if button._default_button and not Application.IS_HTTP:
+                clicked = button
             if isinstance(button, GDT_Submit) and button.get_val():
-                if form.validate(None):
-                    return button.call()
-                else:
-                    return self.form_invalid()
+                clicked = button
+                break
+        if clicked:
+            if form.validate(None):
+                return clicked.call()
+            else:
+                return self.form_invalid()
         return self.render_page()
 
     def render_page(self) -> GDT:
@@ -84,10 +86,7 @@ class MethodForm(Method):
     def parameters(self, reset: bool = False) -> dict[str,GDT]:
         if hasattr(self, '_parameters') and not reset:
             return self._parameters
-        params = super().parameters()
-        self.set_parameter_positions()
-        for gdt in params.values():
-            self.init_parameter(gdt)
+        params = super().parameters(reset)
         for gdt in self.form_parameters():
             params[gdt.get_name()] = gdt
         self.set_parameter_positions()
@@ -102,7 +101,7 @@ class MethodForm(Method):
     def cli_auto_button(self):
         for gdt in self.get_form().actions().all_fields():
             if isinstance(gdt, GDT_Submit) and gdt._default_button:
-                self._raw_args.add_get_vars({f'{gdt.get_name()}': ['1']})
+                self._raw_args.add_arg(gdt.get_name(), '1')
                 break
         return self
 

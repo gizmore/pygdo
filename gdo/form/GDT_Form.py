@@ -75,7 +75,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def render(self, mode: Mode = Mode.HTML):
         if mode in (Mode.HTML, Mode.FORM):
             return self.render_html()
-        return '' #super().render(mode)
+        return '' #self._method.render(mode)
 
     def render_html(self):
         return GDT_Template.python('form', 'form.html', {'field': self})
