@@ -12,7 +12,7 @@ from gdo.form.GDT_Submit import GDT_Submit
 class MethodForm(Method):
     _form: GDT_Form
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return GDO.EMPTY_LIST
 
     def gdo_captcha(self) -> bool:
@@ -35,7 +35,7 @@ class MethodForm(Method):
         if not hasattr(self, '_form') or reset:
             self._form = GDT_Form().href(self.href()).method(self).title_raw(self.gdo_render_title())
             self.gdo_create_form(self._form)
-            self.init_parameters(True)
+            # self.init_parameters(True)
         return self._form
 
     def gdo_execute(self) -> GDT:
@@ -85,9 +85,14 @@ class MethodForm(Method):
         if hasattr(self, '_parameters') and not reset:
             return self._parameters
         params = super().parameters()
+        self.set_parameter_positions()
+        for gdt in params.values():
+            self.init_parameter(gdt)
         for gdt in self.form_parameters():
             params[gdt.get_name()] = gdt
         self.set_parameter_positions()
+        for gdt in self.form_parameters():
+            self.init_parameter(gdt)
         return params
 
     def form_parameters(self) -> list[GDT]:

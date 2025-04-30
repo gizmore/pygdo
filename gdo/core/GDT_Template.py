@@ -2,6 +2,7 @@ import functools
 import os
 import re
 import sys
+from io import StringIO
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
@@ -16,7 +17,7 @@ class Templite(object):
     cache = {}
     delimiters = ('<%', '%>')
 
-    def __init__(self, filename: str=None, encoding: str='utf-8', caching: bool=True):
+    def __init__(self, filename: str, encoding: str='utf-8', caching: bool=True):
         filename = os.path.abspath(filename)
         self.file = key = filename
         self.encoding = encoding
@@ -74,40 +75,45 @@ class Templite(object):
         return compile('\n'.join(tokens), self.file, 'exec')
 
     def render(self, **namespace):
-        """Renders the template according to the given namespace."""
-        stack = []
+
+        stack = StringIO()
+
         def write(val: str):
-            if val:
-                stack.append(val)
+            stack.write(val)
 
         def writeln(line: str):
-            write(line)
-            write("\n")
+            stack.write(line)
+            stack.write("\n")
 
         namespace['write'] = write
         namespace['writeln'] = writeln
 
-        # add include method
-        def include(file):
-            if not os.path.isabs(file):
-                if self.file:
-                    base = os.path.dirname(self.file)
-                else:
-                    base = os.path.dirname(sys.argv[0])
-                file = os.path.join(base, file)
-            t = Templite(file, self.encoding, self.caching)
-            stack.append(t.render(**namespace))
+        # # add include method
+        # def include(file):
+        #     if not os.path.isabs(file):
+        #         if self.file:
+        #             base = os.path.dirname(self.file)
+        #         else:
+        #             base = os.path.dirname(sys.argv[0])
+        #         file = os.path.join(base, file)
+        #     t = Templite(file, self.encoding, self.caching)
+        #     stack.append(t.render(**namespace))
+
+        # def include(file):
+        #     file = os.path.abspath(os.path.join(os.path.dirname(self.file), file))
+        #     t = Templite.cache.get(file) or Templite(file, self.encoding, self.caching)
+        #     stack.append(t.render(**namespace))
 
         from gdo.ui.GDT_Page import GDT_Page
 
-        namespace['include'] = include
+        # namespace['include'] = include
         namespace['GDT_Page'] = GDT_Page
         namespace['t'] = t
         namespace['Mode'] = Mode
         namespace['html'] = html
 
         exec(self._code, namespace)
-        return ''.join(stack)
+        return stack.getvalue()
 
 
 class GDT_Template(GDT):

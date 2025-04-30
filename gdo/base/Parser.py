@@ -115,15 +115,17 @@ class Parser:
         """
         tokens[0] = method = self.get_method(tokens[0][1:])
 
-        # Automatically click submit button in CLI
-        from gdo.form.MethodForm import MethodForm
-        if isinstance(method, MethodForm):
-            method.cli_auto_button()
         for t in tokens[1:]:
             if isinstance(t, list):
                 method._raw_args.add_cli_part(self.methodize(t))
             else:
                 method._raw_args.add_cli_part(t)
+
+        # Automatically click submit button in CLI
+        from gdo.form.MethodForm import MethodForm
+        if isinstance(method, MethodForm):
+            method.cli_auto_button()
+
         return method
 
     def get_method(self, cmd: str) -> Method | None:

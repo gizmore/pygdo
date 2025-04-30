@@ -7,7 +7,7 @@ from gdo.core.GDT_String import GDT_String
 
 class MethodConf(Method):
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Method('method').not_null().positional(),
             GDT_String('key').positional(),

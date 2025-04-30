@@ -15,7 +15,7 @@ from gdo.message.GDT_HTML import GDT_HTML
 
 class file_server(Method):
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Path('_url').existing_file(),
         ]

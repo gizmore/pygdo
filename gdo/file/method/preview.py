@@ -14,7 +14,7 @@ class preview(MethodFile):
     def gdo_trigger(cls) -> str:
         return ""
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_File('file').not_null(),
             GDT_Token('token').not_null(),

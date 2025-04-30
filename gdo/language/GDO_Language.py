@@ -11,7 +11,7 @@ class GDO_Language(GDO):
         return [
             GDT_AutoInc('lang_id'),
             GDT_Char('lang_iso').not_null().ascii().maxlen(2),
-            GDT_String('lang_english').maxlen(64).ascii().not_null(),
-            GDT_String('lang_native').maxlen(64).not_null(),
+            GDT_String('lang_english').maxlen(48).ascii().not_null(),
+            GDT_String('lang_native').maxlen(48).not_null(),
             GDT_Bool('lang_supported').not_null().initial('0'),
         ]

@@ -13,7 +13,7 @@ class set_cli(Method):
     def gdo_trigger(cls) -> str:
         return 'set'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_UserSetting('name').not_null(),
             GDT_String('value').positional(),

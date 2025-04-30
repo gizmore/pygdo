@@ -8,7 +8,7 @@ from gdo.core.GDT_TableName import GDT_TableName
 
 class ipc_gdo(Method):
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_TableName('table').not_null(),
             GDT_String('id').not_null(),

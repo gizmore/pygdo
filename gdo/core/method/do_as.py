@@ -12,7 +12,7 @@ class do_as(Method):
     def gdo_trigger(cls) -> str:
         return 'as'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_User('user').not_null(),
             GDT_RestOfText('cmd').not_null(),

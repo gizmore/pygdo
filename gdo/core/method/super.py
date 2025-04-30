@@ -13,7 +13,7 @@ class super(Method):
     def gdo_trigger(cls) -> str:
         return "super"
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Secret('pass').not_null(),
         ]

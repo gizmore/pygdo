@@ -24,7 +24,7 @@ class dir_server(MethodTable):
     def gdo_table(self) -> GDO:
         return GDO_File.table()
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Path('_url').existing_dir(),
         ]

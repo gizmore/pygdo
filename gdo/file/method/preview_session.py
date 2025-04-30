@@ -9,7 +9,7 @@ from gdo.file.method.preview import preview
 
 class preview_session(preview):
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_String('path').not_null(),
             GDT_Token('token').not_null(),

@@ -30,7 +30,7 @@ class settings(MethodForm):
         return t('md_account_settings', ('OOPS',))
 
     @functools.cache
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Module('module').not_null().enabled(),
         ]
@@ -55,7 +55,7 @@ class settings(MethodForm):
         for gdt in module._all_user_settings():
             if gdt.is_writable():
                 key = gdt.get_name()
-                self._nested_parse()
+                self.init_parameter(gdt)
                 if gdt.get_val() != gdt._prev:
                     old = gdt._prev
                     new = gdt.get_val()

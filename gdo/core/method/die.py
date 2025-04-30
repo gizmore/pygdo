@@ -18,7 +18,7 @@ class die(Method):
     def gdo_permission(self):
         return 'admin'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Bool('restart').initial('0'),
             GDT_RestOfText('message').not_null(),

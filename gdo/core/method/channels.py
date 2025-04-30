@@ -11,7 +11,7 @@ class channels(Method):
     def gdo_trigger(cls) -> str:
         return 'channels'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Server('server').not_null().default_current(),
         ]

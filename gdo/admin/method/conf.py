@@ -23,7 +23,7 @@ class conf(Method):
     def gdo_user_permission(self) -> str | None:
         return 'admin'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Module('module').enabled().positional(),
             GDT_String('config_name').positional(),

@@ -146,7 +146,7 @@ class MethodTable(WithGDO, MethodForm):
     #########
     @functools.cache
     def get_table(self) -> GDT_Table:
-        self.init_parameters(False)
+        # self.init_parameters(False)
         table = GDT_Table()
         table.method(self)
         self.gdo_create_table(table)
@@ -168,7 +168,7 @@ class MethodTable(WithGDO, MethodForm):
     # Exec #
     ########
     def gdo_execute(self) -> GDT:
-        self.init_parameters(False)
+        # self.init_parameters(False)
         table = self.get_table()
         table.mode(self.gdo_table_mode())
         if self.gdo_paginated():

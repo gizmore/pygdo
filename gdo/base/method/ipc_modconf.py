@@ -11,7 +11,7 @@ class ipc_modconf(Method):
     Update a module config.
     """
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Module('module').not_null(),
             GDT_Name('key').not_null(),

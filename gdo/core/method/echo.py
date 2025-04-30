@@ -13,16 +13,11 @@ class echo(Method):
     def gdo_needs_authentication(self) -> bool:
         return False
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
-            # GDT_String('sep').initial(' '),
             GDT_RestOfText('text').not_null(),
         ]
 
-    def get_separator(self) -> str:
-        return self.param_val('sep') or ''  # Can be null
-
     def gdo_execute(self) -> GDT:
-        # sep = self.get_separator()
         text = self.param_value('text')
         return GDT_String('text').val(text)

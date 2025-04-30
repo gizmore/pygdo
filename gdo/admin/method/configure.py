@@ -7,7 +7,7 @@ from gdo.form.MethodForm import MethodForm
 
 class configure(MethodForm):
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Module('module').not_null(),
         ]

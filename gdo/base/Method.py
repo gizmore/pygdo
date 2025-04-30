@@ -8,7 +8,6 @@ from mysql.connector import OperationalError
 from gdo.base.ParseArgs import ParseArgs
 
 if TYPE_CHECKING:
-    from gdo.base.GDO_Module import GDO_Module
     from gdo.base.ParseArgs import ParseArgs
     from gdo.core.GDO_Channel import GDO_Channel
     from gdo.core.GDO_Server import GDO_Server
@@ -96,7 +95,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def gdo_transactional(self) -> bool:
         return Application.get_request_method() != 'GET'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return GDO.EMPTY_LIST
 
     @classmethod
@@ -207,6 +206,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         if not hasattr(self, '_parameters') or reset:
             self._parameters = {gdt.get_name(): gdt for gdt in self.gdo_parameters()}
             self.set_parameter_positions()
+            self.init_parameters()
         return self._parameters
 
     def set_parameter_positions(self):
@@ -236,9 +236,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return gdt.val(val)
 
     def init_parameters(self, reset: bool = False):
-        if reset and hasattr(self, '_parameters'):
-            del self._parameters
-        for gdt in self.parameters().values():
+        # if reset and hasattr(self, '_parameters'):
+        #     del self._parameters
+        #     self.parameters()
+        for gdt in self._parameters.values():
             self.init_parameter(gdt)
 
     def parameter(self, key: str, init: bool = False) -> GDT:
@@ -252,10 +253,11 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def param_val(self, key: str, throw: bool = True) -> str|None:
         gdt = self.parameter(key)
         val = gdt.get_val()
-        if gdt.validate(val):  # TODO: validate only by val, let validators cast lazily.
+        if gdt.validate(val):
             return val
         elif throw:
             raise GDOParamError('err_param', (key, gdt.render_error()))
+        return None
 
     def init_param_value(self, key: str, throw: bool = True) -> any:
         gdt = self.parameter(key)
@@ -268,6 +270,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             return gdt.get_value()
         elif throw:
             raise GDOParamError('err_param', (key, gdt.render_error()))
+        return None
 
     ############
     # Redirect #
@@ -347,11 +350,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         else:
             return gdt.render(Mode.TXT)
 
-    def _nested_parse(self):
-        self.init_parameters()
+    # def _nested_parse(self):
+    #     self.init_parameters()
 
     async def _nested_execute_parse(self) -> 'GDT':
-        self._nested_parse()
         result = self.gdo_execute()
         self.gdo_after_execute()
         return result

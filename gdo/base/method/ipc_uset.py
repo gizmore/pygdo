@@ -9,7 +9,7 @@ from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 class ipc_uset(Method):
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_User('user').not_null(),
             GDT_UserSetting('key').not_null(),

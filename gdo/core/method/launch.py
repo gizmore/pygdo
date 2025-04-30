@@ -39,7 +39,7 @@ class launch(Method):
     def gdo_transactional(self) -> bool:
         return False
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Bool('force').not_null().initial('0'),
             GDT_Duration('dog_msleep').not_null().initial('25ms'),

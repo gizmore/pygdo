@@ -12,7 +12,7 @@ class sleep(Method):
     def gdo_trigger(cls) -> str:
         return 'sleep'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Duration('time').not_null(),
         ]

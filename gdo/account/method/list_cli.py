@@ -13,7 +13,7 @@ class list_cli(Method):
     def gdo_trigger(cls) -> str:
         return 'settings'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
         ]
 
