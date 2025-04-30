@@ -36,7 +36,7 @@ class WithEnv:
 
     def env_server(self, server: 'GDO_Server'):
         self._env_server = server
-        return self
+        return self.env_mode(server.get_connector().get_render_mode())
 
     def env_channel(self, channel: 'GDO_Channel'):
         self._env_channel = channel
