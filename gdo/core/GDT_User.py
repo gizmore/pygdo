@@ -49,7 +49,7 @@ class GDT_User(WithCompletion, GDT_Object):
         if self._same_server:
             user = GDO_User.current()
             query.where(f'user_server={user.get_server_id()}')
-        return query
+        return query.limit(10)
 
     def query_gdos(self, val: str) -> list[GDO]:
         if val.isnumeric():

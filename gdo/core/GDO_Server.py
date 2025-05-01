@@ -140,8 +140,8 @@ class GDO_Server(GDO):
     def get_user_with_settings(self, vals: list[tuple]) -> GDO_User | None:
         return GDO_UserSetting.get_user_with_settings(self.get_id(), vals)
 
-    async def is_user_online(self, user: GDO_User) -> bool:
-        return await self.get_connector().is_user_online(user)
+    def is_user_online(self, user: GDO_User) -> bool:
+        return self.get_connector().is_user_online(user)
 
     ###########
     # Channel #

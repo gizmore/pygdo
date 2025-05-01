@@ -33,11 +33,7 @@ class MethodTable(WithGDO, MethodForm):
         if hasattr(self, '_parameters') and not reset:
             return self._parameters
         params = super().parameters(reset)
-        tp = self.table_parameters()
-        for gdt in tp:
-            params[gdt.get_name()] = gdt
-        self.set_parameter_positions()
-        for gdt in tp:
+        for gdt in self.table_parameters():
             self.init_parameter(gdt)
         return params
 
@@ -149,7 +145,7 @@ class MethodTable(WithGDO, MethodForm):
     #########
     @functools.cache
     def get_table(self) -> GDT_Table:
-        self.init_parameters()
+        self.parameters()
         table = GDT_Table()
         table.method(self)
         self.gdo_create_table(table)
@@ -171,7 +167,6 @@ class MethodTable(WithGDO, MethodForm):
     # Exec #
     ########
     def gdo_execute(self) -> GDT:
-        # self.init_parameters(False)
         table = self.get_table()
         table.mode(self.gdo_table_mode())
         if self.gdo_paginated():

@@ -12,6 +12,10 @@ from gdo.form.GDT_Submit import GDT_Submit
 class MethodForm(Method):
     _form: GDT_Form
 
+    __slots__ = (
+        '_form',
+    )
+
     def gdo_parameters(self) -> list[GDT]:
         return GDO.EMPTY_LIST
 
@@ -30,23 +34,21 @@ class MethodForm(Method):
         form.actions().add_field(self.gdo_submit_button())
 
     def get_form(self, reset: bool = False) -> GDT_Form:
-        if reset:
-            delattr(self, '_parameters')
-        if not hasattr(self, '_form') or reset:
+        # if reset:
+        #     delattr(self, '_parameters')
+        if not hasattr(self, '_form'): # or reset:
             self._form = GDT_Form().href(self.href()).method(self).title_raw(self.gdo_render_title())
             self.gdo_create_form(self._form)
-            self.parameters()
+            # self.parameters()
         return self._form
 
     def gdo_execute(self) -> GDT:
+        self.parameters()
         form = self.get_form()
 
         ### Flow upload
         if key := self._raw_args.args.get('flowField'):
             return form.get_field(key).flow_upload()
-
-        # for gdt in self.parameters().values():
-        #     gdt.gdo_file_upload(self)
 
         clicked = None
         for button in form.actions().fields():
@@ -87,9 +89,6 @@ class MethodForm(Method):
         if hasattr(self, '_parameters') and not reset:
             return self._parameters
         params = super().parameters(reset)
-        for gdt in self.form_parameters():
-            params[gdt.get_name()] = gdt
-        self.set_parameter_positions()
         for gdt in self.form_parameters():
             self.init_parameter(gdt)
         return params

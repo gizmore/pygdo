@@ -50,7 +50,6 @@ class GDO_User(GDO):
         self._session = None
         self._settings = {}
 
-    @functools.cache
     def gdo_redis_fields(self) -> list[str]:
         f = super().gdo_redis_fields()
         f.append('_settings')
@@ -225,8 +224,8 @@ class GDO_User(GDO):
     def is_authenticated(self) -> bool:
         return self._authenticated
 
-    async def is_online(self) -> bool:
-        return await self.get_server().is_user_online(self)
+    def is_online(self) -> bool:
+        return self.get_server().is_user_online(self)
 
     def is_ghost(self) -> bool:
         return self.is_type('ghost')

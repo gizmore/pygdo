@@ -31,12 +31,14 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     _next_method: 'Method'  # Method chaining
     _result: str
     _raw_args: 'ParseArgs'
+    _ppos: int
 
     __slots__ = (
         '_parameters',
         '_next_method',
         '_result',
-        '_raw_args'
+        '_raw_args',
+        '_ppos',
     )
 
     def __init__(self):
@@ -47,6 +49,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         self._env_channel = None
         self._env_server = None
         self._env_reply_to = None
+        self._ppos = 0
 
     def get_name(self):
         return self.__class__.__name__
@@ -202,28 +205,31 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     # Parameters #
     ##############
 
-    def parameters(self, reset: bool = False) -> dict[str, GDT]:
+    def parameters(self, reset: bool = False) -> dict[str,GDT]:
         if not hasattr(self, '_parameters') or reset:
-            self._parameters = {gdt.get_name(): gdt for gdt in self.gdo_parameters()}
-            self.set_parameter_positions()
-            self.init_parameters()
+            self._ppos = 0
+            self._parameters = {}
+            for gdt in self.gdo_parameters():
+                self.init_parameter(gdt)
         return self._parameters
 
-    def set_parameter_positions(self):
-        n = 1
-        for gdt in self._parameters.values():
-            if gdt.is_positional():
-                gdt.position(n)
-                n += 1
+    # def set_parameter_positions(self):
+    #     for gdt in self._parameters.values():
+    #         if gdt.is_positional():
+    #             self._ppos += 1
+    #             gdt.position(self._ppos)
 
-    def init_parameter_by_key(self, key: str):
-        gdt = self.parameter(key)
-        return self.init_parameter(gdt)
+    # def init_parameter_by_key(self, key: str):
+    #     gdt = self.parameter(key)
+    #     return self.init_parameter(gdt)
 
     def init_parameter(self, gdt: GDT) -> GDT:
         val = None
+        self._parameters[gdt.get_name()] = gdt
         if gdt.is_positional():
-            if gdt._position > 0 and gdt._position <= len(self._raw_args.pargs):
+            self._ppos += 1
+            gdt.position(self._ppos)
+            if gdt._position <= len(self._raw_args.pargs):
                 if gdt.is_multiple():
                     val = self._raw_args.pargs[gdt._position - 1:]
                     val = None if not val else val
@@ -235,20 +241,20 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         val = val[0] if type(val) is list and not gdt.is_multiple() else val
         return gdt.val(val)
 
-    def init_parameters(self, reset: bool = False):
-        # if reset and hasattr(self, '_parameters'):
-        #     del self._parameters
-        #     self.parameters()
-        for gdt in self._parameters.values():
-            self.init_parameter(gdt)
+    # def init_parameters(self, reset: bool = False):
+    #     # if reset and hasattr(self, '_parameters'):
+    #     #     del self._parameters
+    #     #     self.parameters()
+    #     for gdt in self._parameters.values():
+    #         self.init_parameter(gdt)
 
     def parameter(self, key: str, init: bool = False) -> GDT:
         return self.parameters().get(key)
 
-    def init_param_val(self, key: str, throw: bool = True) -> str|None:
-        gdt = self.parameter(key)
-        self.init_parameter(gdt)
-        return self.param_val(key, throw)
+    # def init_param_val(self, key: str, throw: bool = True) -> str|None:
+    #     gdt = self.parameter(key)
+    #     self.init_parameter(gdt)
+    #     return self.param_val(key, throw)
 
     def param_val(self, key: str, throw: bool = True) -> str|None:
         gdt = self.parameter(key)
@@ -259,10 +265,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             raise GDOParamError('err_param', (key, gdt.render_error()))
         return None
 
-    def init_param_value(self, key: str, throw: bool = True) -> any:
-        gdt = self.parameter(key)
-        self.init_parameter(gdt)
-        return self.param_value(key, throw)
+    # def init_param_value(self, key: str, throw: bool = True) -> any:
+    #     gdt = self.parameter(key)
+    #     self.init_parameter(gdt)
+    #     return self.param_value(key, throw)
 
     def param_value(self, key: str, throw: bool = True) -> any:
         gdt = self.parameter(key)

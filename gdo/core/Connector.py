@@ -149,5 +149,5 @@ class Connector:
         if with_events:
             Application.EVENTS.publish('msg_sent', msg)
 
-    async def is_user_online(self, user: GDO_User) -> bool:
-        return user in self._server._users
+    def is_user_online(self, user: GDO_User) -> bool:
+        return user.get_name() in self._server._users
