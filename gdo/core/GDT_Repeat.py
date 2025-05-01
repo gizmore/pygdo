@@ -45,10 +45,6 @@ class GDT_Repeat(WithProxy, GDT_UInt):
         return values
 
     def validate(self, vals: str | None) -> bool:
-        if vals is None:
-            if not self._proxy.validate(vals):
-                return self.error(self._proxy._errkey, self._proxy._errargs)
-            return super().validate(vals)
         if not self.validate_min_max(len(vals)):
             return False
         for val in vals:

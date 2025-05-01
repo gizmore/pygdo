@@ -20,7 +20,7 @@ class Editor:
     @classmethod
     def filter_html(cls, html: str) -> str:
         purifier = cls.get_purifier()
-        return purifier.feed(html)
+        return purifier.feed(html) if html else ''
 
     @classmethod
     @functools.cache

@@ -7,7 +7,7 @@ from enum import Enum
 from mysql.connector import ProgrammingError, DataError, DatabaseError, InterfaceError
 
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDODBException
+from gdo.base.Exceptions import GDODBException, GDOException
 from gdo.base.GDT import GDT
 from gdo.base.Result import Result
 
@@ -203,7 +203,7 @@ class Query:
         if self.is_select():
             return f"SELECT {self._columns} FROM {self._table} {self._join}{self._build_where()}{self._build_order()}{self.build_limit()}"
         if self.is_delete():
-            return f"DELETE FROM {self._table} WHERE {self._where}"
+            return f"DELETE FROM {self._table} {self._join} WHERE {self._where}"
         if self.is_insert():
             keys = ",".join(map(lambda v: GDT.escape(v), self._vals.keys()))
             values = ",".join(map(lambda v: GDT.quote(v), self._vals.values()))
@@ -215,6 +215,7 @@ class Query:
         if self.is_update():
             set_string = ",".join(map(lambda kv: f"{kv[0]}={GDT.quote(kv[1])}", self._vals.items()))
             return f"UPDATE {self._table} SET {set_string} WHERE {self._where}"
+        raise GDOException("err_query_type_unknown")
 
     def _build_where(self) -> str:
         if self._where:

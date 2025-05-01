@@ -26,6 +26,9 @@ class MethodForm(Method):
         return GDT_Submit().calling(self.form_submitted).default_button()
 
     def gdo_create_form(self, form: GDT_Form) -> None:
+        self.create_default_form_elements(form)
+
+    def create_default_form_elements(self, form: GDT_Form) -> None:
         if Application.IS_HTTP:
             form.add_field(GDT_CSRF())
         if self.gdo_captcha() and module_enabled('captcha'):
