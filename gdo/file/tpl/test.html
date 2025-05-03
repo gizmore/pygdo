@@ -1,7 +1,7 @@
 <div class="gdo-file-controls">
 <div id="gdo-file-preview-<%=field.get_name()%>"></div>
 <%
-for gdo_file in field.get_value():
+for gdo_file in field.get_value() or []:
 	if gdo_file.is_persisted():
 		delete_button = '' if field._no_delete else '<input type="submit" name="%s.file.delete" value="Remove File" onclick="return confirm(\'%s\')"/>' % (field.get_name(), t('confirm_delete'))
 	else:

@@ -95,7 +95,7 @@ class Installer:
         if db is not None:
             mid = db.get_id()
             module = db
-        module._vals.update({
+        module.vals({
             'module_id': mid,
             'module_name': module.get_name(),
             'module_enabled': '1',
@@ -103,6 +103,7 @@ class Installer:
         })
         module.all_dirty(db is None)
         module.soft_replace()
+
         return module
 
     @classmethod

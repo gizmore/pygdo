@@ -46,6 +46,7 @@ class ModuleLoader:
                 'module_name': name,
                 'module_enabled': '0',
             })
+            module._blank = False
             return module
 
     def __init__(self):
@@ -138,8 +139,7 @@ class ModuleLoader:
         db = GDO_Module.table().get_by_name(modulename)
         fs = self.gdo_import(modulename)
         if db:
-            fs._vals.update(db._vals)
-            fs.all_dirty(False)
+            fs.vals(db._vals)
         else:
             return None
         if enabled:

@@ -2,13 +2,11 @@
 <html lang="{{lang}}">
 <head>
     <meta charset="UTF-8">
-    <title><%=field._method.gdo_render_title()%></title>
-    <meta name="description" content="<%=field._method.gdo_render_descr()%>">
-    <meta name="keywords" content="<%=field._method.gdo_render_keywords()%>">
-    <%
-    for url in field._css:
-        writeln(f'    <link rel="stylesheet" href="{url}" />')
-    %>
+    <title>{{title}}</title>
+    <meta name="description" content="{{descr}}">
+    <meta name="keywords" content="{{keywords}}">
+    {{css}}
+    {{css_inline}}
 </head>
 <body class="no-js">
 
@@ -17,33 +15,31 @@
 
 <nav id="gdo-left-bar" class="gdo-nav-bar">
     <div id="left">
-        <%=field._left_bar.render()%>
+        {{left_bar}}
     </div>
 </nav>
 <label for="gdo-left-nav"></label>
 
-<nav id="gdo-right-bar" class="gdo-nav-bar"><%=field._right_bar.render()%></nav>
+<nav id="gdo-right-bar" class="gdo-nav-bar">{{right_bar}}</nav>
 <label for="gdo-right-nav"></label>
 
 <div id="gdo-pagewrap">
 
-	<header id="gdo-header"><%=field._title_bar.render()%></header>
+	<header id="gdo-header">{{title_bar}}</header>
 
 	<div class="gdo-body">
 		<label for="gdo-left-nav" id="gdo-left-nav2"></label>
 		<label for="gdo-right-nav" id="gdo-right-nav2"></label>
 		<div class="gdo-main">
             <div id="gdo-top-bar">
-                <%=field._top_bar.render()%>
+                {{top_bar}}
             </div>
-            <%=result%>
+            {{result}}
 		</div>
 	</div>
-	<footer id="gdo-footer"><%=field._bottom_bar.render()%></footer>
+	<footer id="gdo-footer">{{bottom_bar}}</footer>
 </div>
-<%
-for url in field._js:
-    writeln(f'<script src="{url}"></script>')
-%>
+{{js}}
+{{js_inline}}
 </body>
 </html>

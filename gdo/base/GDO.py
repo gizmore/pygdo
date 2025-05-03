@@ -3,7 +3,6 @@ from __future__ import annotations
 import functools
 import hashlib
 import traceback
-from functools import lru_cache
 from typing import Self, Generator
 
 from gdo.base.Exceptions import GDOException
@@ -37,6 +36,7 @@ class GDO(WithName, WithBulk, GDT):
     _dirty: list[str]
     _last_id: int|None
     _my_id: str|None
+    _blank: bool
 
     __slots__ = (
         '_vals',
@@ -44,6 +44,7 @@ class GDO(WithName, WithBulk, GDT):
         '_dirty',
         '_last_id',
         '_my_id',
+        '_blank',
     )
 
     def __init__(self):
@@ -62,6 +63,7 @@ class GDO(WithName, WithBulk, GDT):
         self._dirty = []
         self._last_id = None
         self._my_id = None
+        self._blank = False
 
     #PYPP#START#
     def __del__(self):
@@ -76,13 +78,14 @@ class GDO(WithName, WithBulk, GDT):
 
     def gdo_redis_fields(self) -> list[str]:
         return [
-            '_my_id',
             '_vals',
+            '_my_id',
         ]
 
     def gdo_wake_up(self) -> Self:
         self._values = {}
         self._dirty = []
+        self._blank = False
         return self
 
     @classmethod
@@ -90,12 +93,13 @@ class GDO(WithName, WithBulk, GDT):
         return Cache.table_for(cls)
 
     @classmethod
-    def blank(cls, vals: dict = None) -> Self:
+    def blank(cls, vals: dict = None, mark_blank: bool = True) -> Self:
         vals = vals or {}
         for name, gdt in cls.table().columns().items():
             vals[name] = vals.get(name, gdt.get_initial())
         back = cls()
         back._vals = vals
+        back._blank = mark_blank
         return back.all_dirty()
 
     def gdo_hash(self) -> str:
@@ -117,8 +121,7 @@ class GDO(WithName, WithBulk, GDT):
             return gdt
 
     def is_persisted(self) -> bool:
-        id_ = self.get_id()
-        return len(id_) > 0 and id_ != '0' and not id_.startswith(self.ID_SEPARATOR)
+        return not self._blank
 
     @classmethod
     @functools.cache
@@ -148,19 +151,13 @@ class GDO(WithName, WithBulk, GDT):
         raise GDOException(f"{self.__class__.__name__} does not provide any columns in gdo_columns().")
 
     def column(self, key: str) -> GDT|None:
-        # try:
         return Cache.column_for(self.__class__, key).gdo(self)
-        # except Exception as ex:
-        #     Logger.exception(ex, f"Unknown column {key} in {self.__class__.__name__}")
 
     def columns(self) -> dict[str,GDT]:
         return Cache.columns_for(self.__class__)
 
     def columns_only(self, *names: str) -> list[GDT]:
-        cols = []
-        for key in names:
-            cols.append(self.column(key))
-        return cols
+        return [self.column(key) for key in names]
 
     @functools.cache
     def column_by_type(self, klass: type[GDT]) -> 'GDT':
@@ -181,23 +178,24 @@ class GDO(WithName, WithBulk, GDT):
 
     def vals(self, vals: dict[str,str]) -> Self:
         self._vals = vals
-        self._values = {}
-        self._dirty = []
+        self._values.clear()
+        self._dirty.clear()
         self._my_id = None
+        self._blank = False
         return self
 
     def set_val(self, key, val: str, dirty: bool = True) -> Self:
+        # if self._vals.get(key) == val:
+        #     return self
         if key in self._values:
             del self._values[key]
-        self._vals[key] = val if type(val) is bytes else Strings.nullstr(val)
+        self._vals[key] = val # if type(val) is bytes else Strings.nullstr(val)
         return self.dirty(key, dirty)
 
     def set_value(self, key: str, value: any, dirty: bool=True) -> Self:
-        if self._vals.get(key) == value:
-            return self
         val = self.column(key).to_val(value)
         self._values[key] = value
-        self._vals[key] = val if type(val) is bytes else Strings.nullstr(val)
+        self._vals[key] = val # if type(val) is bytes else Strings.nullstr(val)
         return self.dirty(key, dirty)
 
     def set_vals(self, vals: dict[str,str], dirty: bool=True) -> Self:
@@ -222,11 +220,6 @@ class GDO(WithName, WithBulk, GDT):
     def dirty(self, key: str, dirty: bool = True) -> Self:
         if dirty:
             self._dirty.append(key)
-        # if key in self._dirty:
-        #     if not dirty:
-        #         self._dirty.remove(key)
-        # elif dirty:
-        #     self._dirty.append(key)
         return self
 
     def all_dirty(self, dirty: bool=True) -> Self:
@@ -246,7 +239,8 @@ class GDO(WithName, WithBulk, GDT):
         return 0 if col is None else int(col)
 
     def get_pk_columns(self) -> Generator[GDT]:
-        yield from [gdt.gdo(self) for gdt in Cache.pk_columns_for(self.__class__)]
+        for gdt in Cache.pk_columns_for(self.__class__):
+            yield gdt.gdo(self)
 
     def get_by(self, key: str, val: str) -> Self:
         return self.get_by_vals({key: val})
@@ -268,8 +262,7 @@ class GDO(WithName, WithBulk, GDT):
         ).first().exec().fetch_object()
 
     def pk_where(self) -> str:
-        cols = list(self.get_pk_columns()) # or self.columns()
-        return " AND ".join(f"{gdt.get_name()}={GDT.quote(gdt.get_val())}" for gdt in cols)
+        return " AND ".join(f"{gdt.get_name()}={GDT.quote(gdt.get_val())}" for gdt in self.get_pk_columns())
 
     def get_by_vals(self, vals: dict[str, str]) -> Self:
         if cached := Cache.obj_search(self, vals):
@@ -279,18 +272,23 @@ class GDO(WithName, WithBulk, GDT):
             where.append(f'{k}={self.quote(v)}')
         return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
 
+    def my_id(self, gid: str) -> Self:
+        self._my_id = gid
+        return self
+
     def get_id(self) -> str:
-        if self._my_id:
-            return self._my_id
-        pks = list(self.get_pk_columns())
-        if len(pks) == 0:
-            pks = self.columns().values()
-        elif len(pks) == 1:
-            return pks[0].get_val() or ''
-        v = pks[0].get_val()
-        if v.startswith('0') or v.startswith(':'):
-            return ''
-        self._my_id = self.ID_SEPARATOR.join(gdt.get_val() or '' for gdt in pks)
+        if self._blank: return ''
+        if self._my_id: return self._my_id
+        from gdo.core.GDT_AutoInc import GDT_AutoInc
+        out = []
+        for pk in self.get_pk_columns():
+            val = pk._val
+            if type(pk) == GDT_AutoInc:
+                if val != '0':
+                    self._my_id = val
+                return val
+            out.append(val)
+        self._my_id = self.ID_SEPARATOR.join(out)
         return self._my_id
 
     def get_ids(self) -> list[str]:
@@ -311,9 +309,8 @@ class GDO(WithName, WithBulk, GDT):
 
     def soft_replace(self) -> Self:
         if old := self.get_by_id(*self.get_ids()):
-            old.set_vals(self._vals).save()
-            old._values = {}
-            return old.all_dirty(False)
+            return old.vals(self._vals).all_dirty().save()
+            # return old.all_dirty(False)
         return self.all_dirty().insert()
 
     def insert(self) -> Self:
@@ -326,8 +323,9 @@ class GDO(WithName, WithBulk, GDT):
         self.before_create()
         query = self.query().type(type_).set_vals(self.insert_vals())
         self._last_id = query.exec().lastrowid
-        self.after_create()
+        self._blank = False
         self.all_dirty(False)
+        self.after_create()
         return Cache.update_for(self)
 
     def dirty_vals(self) -> dict[str, str]:
@@ -353,6 +351,7 @@ class GDO(WithName, WithBulk, GDT):
             dirty = self.dirty_vals()
             obj.before_update()
             obj.query().type(Type.UPDATE).set_vals(dirty).where(self.pk_where()).exec()
+            self._blank = False
             obj.after_update()
             from gdo.base.IPC import IPC
             if Arrays.mem_size(dirty) > IPC.MAX_EVENT_ARG_SIZE:

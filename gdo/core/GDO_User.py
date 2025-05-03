@@ -71,7 +71,7 @@ class GDO_User(GDO):
     @functools.lru_cache
     def ghost(cls):
         return cls.blank({
-            'user_id': '0',
+            # 'user_id': '0',
             'user_server': '2',
             'user_type': GDT_UserType.GHOST,
             'user_displayname': 'Guest',
@@ -150,7 +150,7 @@ class GDO_User(GDO):
         return self.with_settings_query(settings).exec()
 
     def with_settings(self, settings: list[tuple[str, str, str]]) -> list['GDO_User']:
-        return self.with_settings_result(settings).fetch_all()
+        return self.with_settings_result(settings).fetch_all()._items
 
     def get_setting_val(self, key: str) -> str:
         from gdo.core.GDO_UserSetting import GDO_UserSetting
@@ -248,8 +248,10 @@ class GDO_User(GDO):
         return GDO_Permission.has_permission(self, permission)
 
     def permissions(self) -> list[str]:
-        from gdo.core.GDO_UserPermission import GDO_UserPermission
-        return GDO_UserPermission.table().select('perm_name').where(f'pu_user={self.get_id()}').join_object('pu_perm').exec().fetch_column()
+        if self.is_persisted():
+            from gdo.core.GDO_UserPermission import GDO_UserPermission
+            return GDO_UserPermission.table().select('perm_name').where(f'pu_user={self.get_id()}').join_object('pu_perm').exec().fetch_column()
+        return self.EMPTY_LIST
 
     def persisted(self):
         return self.save()
@@ -258,8 +260,9 @@ class GDO_User(GDO):
     # Render #
     ##########
 
+    @functools.cache
     def render_name(self) -> str:
-        return self.gdo_val('user_displayname') + "{" + self.get_server().get_id() + "}"
+        return f'{self.gdo_val('user_displayname')}{{{self.get_server().get_id()}}}'
 
     #########
     # Hooks #

@@ -15,7 +15,7 @@ class GDO_UserSetting(GDO):
     @classmethod
     def setting_column(cls, key: str, user: GDO_User) -> GDT:
         gdt = GDT_UserSetting.KNOWN[key]
-        if user.get_id() == "0":
+        if not user.is_persisted():
             return gdt.val(gdt.get_initial())
         if gdo := cls.get_setting(user, key):
             return gdt.val(gdo.get_val())

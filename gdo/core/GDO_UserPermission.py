@@ -29,7 +29,7 @@ class GDO_UserPermission(GDO):
 
     @classmethod
     def has_permission(cls, user: GDO_User, permission: GDO_Permission) -> bool:
-        if user.get_id() == '0':
+        if not user.is_persisted():
             return False
         if entry := cls.table().get_by_id(user.get_id(), permission.get_id()):
             return entry.gdo_val('pu_has') == '1'

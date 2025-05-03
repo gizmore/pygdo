@@ -4,8 +4,10 @@ import traceback
 from copy import deepcopy
 from typing import Self
 
+from annotated_types.test_cases import cases
 from typing_extensions import TYPE_CHECKING
 
+from gdo.base.Exceptions import GDOException
 from gdo.base.Trans import Trans, t
 from gdo.base.WithSerialization import WithSerialization
 
@@ -269,8 +271,27 @@ class GDT(WithSerialization):
     def render(self, mode: Mode = Mode.HTML):
         return self.render_gdt(mode)
 
-    def render_gdt(self, mode: Mode):
-        return self.render_method(mode)()
+    def render_gdt(self, mode: Mode) -> str|dict|list|None:
+        match mode:
+            case Mode.NIL: return ''
+            case Mode.HTML: return self.render_html()
+            case Mode.CELL: return self.render_cell()
+            case Mode.FORM: return self.render_form()
+            case Mode.LIST: return self.render_list()
+            case Mode.CARD: return self.render_card()
+            case Mode.CLI: return self.render_cli()
+            case Mode.IRC: return self.render_irc()
+            case Mode.TELEGRAM: return self.render_telegram()
+            case Mode.XML: return self.render_xml()
+            case Mode.JSON: return self.render_json()
+            case Mode.MAIL: return self.render_mail()
+            case Mode.TXT: return self.render_txt()
+            case Mode.MARKDOWN: return self.render_markdown()
+            case Mode.GTK: return self.render_gtk()
+            case Mode.RSS: return self.render_rss()
+            case Mode.DOC: return self.render_doc()
+            case Mode.TOML: return self.render_toml()
+        raise GDOException(t('err_render_mode', (str(mode),)))
 
     def render_method(self, mode: Mode):
         return getattr(self, f'render_{mode.name.lower()}')
@@ -281,14 +302,23 @@ class GDT(WithSerialization):
     def render_html(self) -> str:
         return self.render_txt()
 
-    def render_json(self):
-        return self.get_name()
+    def render_list(self) -> str:
+        return self.render_html()
 
-    def render_telegram(self):
-        return self.render_txt()
+    def render_card(self) -> str:
+        return self.render_html()
 
     def render_form(self) -> str:
         return self.EMPTY_STR
+
+    def render_json(self):
+        return self.get_name()
+
+    def render_xml(self):
+        return self.EMPTY_STR
+
+    def render_telegram(self):
+        return self.render_txt()
 
     def render_cell(self) -> str:
         return self.render_html()
@@ -307,11 +337,23 @@ class GDT(WithSerialization):
     def render_irc(self) -> str:
         return self.render_txt()
 
+    def render_mail(self) -> str:
+        return self.EMPTY_STR
+
+    def render_gtk(self):
+        return
+
+    def render_doc(self):
+        return self.render_txt()
+
+    def render_rss(self) -> str:
+        return self.render_xml()
+
     def render_val(self) -> str:
         return self.display_val(self.get_val())
 
     def render_suggestion(self) -> str:
-        return ''
+        return self.EMPTY_STR
 
     @classmethod
     def display_val(cls, val: str) -> str:

@@ -18,7 +18,7 @@ class InstallCore:
 
     @classmethod
     def install_system(cls):
-        if GDO_User.system().get_id() == '0':
+        if not GDO_User.system().is_persisted():
             GDO_User.blank({
                 'user_type': GDT_UserType.SYSTEM,
                 'user_name': 'System',
@@ -32,7 +32,7 @@ class InstallCore:
             Application.SERVER = GDO_Server.blank({
                 'serv_name': 'Bash',
                 'serv_connector': 'bash',
-                # 'serv_trigger': '.',
+                'serv_trigger': '.',
             }).insert()
 
     @classmethod
@@ -41,6 +41,7 @@ class InstallCore:
             GDO_Server.blank({
                 'serv_name': 'Web',
                 'serv_connector': 'web',
+                'serv_trigger': '!',
             }).insert()
 
     @classmethod

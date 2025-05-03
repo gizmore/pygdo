@@ -19,12 +19,9 @@ class GDT_Link(WithHREF, WithTitle, WithText, WithName, GDT):
         return self.render_html()
 
     def render_html(self) -> str:
-        return tplhtml('ui', 'link.html', {
-            'href': self.render_href(),
-            'text': self.render_text(),
-        })
+        return f'<a class=gdt-link href="{self.render_href()}"><span>{self.render_text()}</span></a>'
 
     def render_text(self, mode: Mode = Mode.HTML) -> str:
         if self.has_text():
             return super().render_text(mode)
-        return Strings.html(self.render_href(), Mode.HTML)
+        return self.render_href()

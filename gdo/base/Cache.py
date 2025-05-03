@@ -72,7 +72,7 @@ class Cache:
         Clear request OCACHE for non persistent GDO
         """
         for tn in cls.NCACHE:
-            cls.OCACHE[tn].clear()
+            cls.OCACHE[tn] = {}
 
     #############
     # T/C/Cache #
@@ -136,7 +136,7 @@ class Cache:
     def obj_for(cls, gdo: GDO, rcached: dict[str,str]|None = None, after_write: bool = False) -> GDO:
         if gdo.gdo_cached():
             gid = gdo.get_id()
-            cn = gdo.table().gdo_table_name()
+            cn = gdo.gdo_table_name()
 
             if ocached := cls.OCACHE[cn].get(gid):
                 if after_write:
@@ -147,7 +147,7 @@ class Cache:
 
             if after_write:
                 cls.OCACHE[cn][gid] = gdo
-                # gdo._values = {}
+                gdo._values = {}
                 return gdo
 
             if rcached:
@@ -164,7 +164,7 @@ class Cache:
 
     @classmethod
     def update_for(cls, gdo: GDO) -> GDO:
-        cls.set(gdo.table().gdo_table_name(), gdo.get_id(), gdo._vals)
+        cls.set(gdo.gdo_table_name(), gdo.get_id(), gdo._vals)
         return cls.obj_for(gdo, None, True)
 
     @classmethod
@@ -177,7 +177,7 @@ class Cache:
 
     @classmethod
     def obj_search_gid(cls, gdo: GDO, gid: str, delete: bool = False) -> GDO:
-        tn = gdo.table().gdo_table_name()
+        tn = gdo.gdo_table_name()
         if ocached := cls.OCACHE[tn].get(gid):
             cls.OHITS += 1 #PYPP#DELETE#
             if delete:
@@ -189,7 +189,7 @@ class Cache:
             if delete:
                 cls.remove(tn, gid)
             else:
-                return cls.obj_for(gdo.blank(rcached), rcached, False)
+                return cls.obj_for(gdo.blank(rcached, False), rcached, False).my_id(gid)
         return None
 
     @classmethod
@@ -199,7 +199,7 @@ class Cache:
     @classmethod
     def obj_search_pygdo(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
         if gdo.gdo_cached():
-            cn = gdo.table().gdo_table_name()
+            cn = gdo.gdo_table_name()
             for oc in cls.OCACHE[cn].values():
                 found = True
                 for k, v in vals.items():

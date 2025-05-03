@@ -1,8 +1,3 @@
-<ul id="<%=field._name%>" class="gdt-bar <%=field.render_class()%>">
-    <%
-    for gdt in field.get_fields():
-        write("<li>")
-        write(gdt.render(Mode.HTML))
-        writeln("</li>")
-    %>
+<ul id="{{name}}" class="gdt-bar {{html_class}}">
+    {{fields}}
 </ul>
