@@ -12,7 +12,6 @@ from gdo.base.Render import Mode
 from gdo.base.WithError import WithError
 from gdo.base.WithName import WithName
 from gdo.core.GDT_Container import GDT_Container
-from gdo.core.GDT_Template import GDT_Template
 from gdo.ui.GDT_Menu import GDT_Menu
 from gdo.ui.WithHREF import WithHREF
 from gdo.ui.WithText import WithText

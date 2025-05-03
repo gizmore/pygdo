@@ -120,9 +120,9 @@ class Application:
 
     @classmethod
     def get_page(cls) -> 'GDT_Page':
-        if not hasattr(cls.STORAGE, 'page'):
-            from gdo.ui.GDT_Page import GDT_Page
-            cls.STORAGE.page = GDT_Page()
+        # if not hasattr(cls.STORAGE, 'page'):
+        #     from gdo.ui.GDT_Page import GDT_Page
+        #     cls.STORAGE.page = GDT_Page()
         return cls.STORAGE.page
 
     @classmethod
@@ -165,6 +165,7 @@ class Application:
         cls.STORAGE.cookies = {}
         cls.STORAGE.time_start = time.time()
         cls.STORAGE.request_method = "POST"
+        cls.fresh_page()
         cls.mode(Mode.CLI)
 
     @classmethod

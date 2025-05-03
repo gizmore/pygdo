@@ -1,7 +1,7 @@
 import functools
 from asyncio import iscoroutine
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from mysql.connector import OperationalError
 
@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from gdo.core.GDO_Channel import GDO_Channel
     from gdo.core.GDO_Server import GDO_Server
     from gdo.core.GDO_User import GDO_User
+    from gdo.base.GDO_Module import GDO_Module
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOError, GDOParamError
@@ -32,6 +33,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     _result: str
     _raw_args: 'ParseArgs'
     _ppos: int
+    _module: 'GDO_Module'
 
     __slots__ = (
         '_parameters',
@@ -39,6 +41,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         '_result',
         '_raw_args',
         '_ppos',
+        '_module',
     )
 
     def __init__(self):
@@ -51,18 +54,21 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         self._env_reply_to = None
         self._ppos = 0
 
+    def module(self, module: 'GDO_Module') -> Self:
+        self._module = module
+        return self
+
     def get_name(self):
         return self.__class__.__name__
 
-    @functools.cache
     def fqn(self):
-        return self.__module__ + '.' + self.__class__.__qualname__
+        return f"{self.__module__}.{self.__class__.__qualname__}"
 
     def is_processed(self) -> bool:
         return hasattr(self, '_result')
 
     def input(self, key: str, val: str):
-        self._raw_args.add_get_vars({key: val})
+        self._raw_args.add_get_vars({key: [val]})
         return self
 
     def args_copy(self, method: 'Method'):
@@ -196,8 +202,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return t('keywords') if thas('keywords') else 'PyGDO,Website,HTTP Handler,WSGI'
 
     def _mome(self):
-        return self.gdo_module().get_name() + "." + self.get_name()
+        return f"{self.gdo_module().get_name()}.{self.get_name()}"
 
+    @functools.cache
     def _mome_tkey(self, key: str) -> str:
         return f'{key}_{self.gdo_module().get_name()}_{self.get_name()}'
 

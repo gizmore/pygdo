@@ -1,10 +1,23 @@
+from typing import Type
+
 from gdo.base.Application import Application
+from gdo.base.GDT import GDT
 from gdo.base.Util import module_enabled, href, Arrays, dump, urlencode
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gdo.core.GDO_User import GDO_User
 
 
 class WithPermissionCheck:
 
-    def has_permission(self, user, display_error: bool = True) -> bool:
+    CACHE: dict[Type['WithPermissionCheck'],dict['GDO_User',bool]] = {}
+
+    def has_permission(self, user: 'GDO_User', display_error: bool = True) -> bool:
+        if not (cached := self.CACHE.get(self.__class__)):
+            self.CACHE[self.__class__] = cached = {}
+        if cached.get(user):
+            return True
         from gdo.core.GDO_Permission import GDO_Permission
         from gdo.core.GDT_UserType import GDT_UserType
         typestr = self.gdo_user_type()
@@ -31,6 +44,7 @@ class WithPermissionCheck:
             return False if not display_error else self.err_method_disabled()
         if self._disabled_in_server(self._env_server):
             return False if not display_error else self.err_method_disabled()
+        cached[user] = True
         return True
 
     def _disabled_in_channel(self, channel: 'GDO_Channel') -> bool:

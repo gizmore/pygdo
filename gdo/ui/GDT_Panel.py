@@ -5,11 +5,7 @@ from gdo.ui.WithText import WithText
 from gdo.ui.WithTitle import WithTitle
 
 
-
 class GDT_Panel(WithTitle, WithText, GDT):
-
-    def __init__(self):
-        super().__init__()
 
     def render(self, mode: Mode = Mode.HTML):
         return self.render_html() if mode.is_html() else f"{self.render_title(mode)} - {self.render_text(mode)}".strip()

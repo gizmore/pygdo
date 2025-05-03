@@ -3,7 +3,7 @@ import os
 
 from typing_extensions import Self
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type
 
 if TYPE_CHECKING:
     from gdo.ui.GDT_Page import GDT_Page
@@ -21,10 +21,10 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 
 class GDO_Module(WithModuleConfig, GDO):
-    CORE_VERSION = Version("8.0.1")
-    CORE_REV = "PyGDOv8.0.1-r1393"
+    CORE_VERSION = Version("8.0.2")
+    CORE_REV = "PyGDOv8.0.2-r2"
 
-    METHOD_CACHE = {}
+    METHOD_CACHE: dict[str,Type['Method']] = {}
 
     _priority: int
     _inited: bool
@@ -156,14 +156,14 @@ class GDO_Module(WithModuleConfig, GDO):
     def instantiate_method(self, name: str) -> 'Method':
         module_path = f"gdo.{self.get_name()}.method.{name}"
         if method_class := self.METHOD_CACHE.get(module_path):
-            return method_class()
+            return method_class().module(self)
         try:
             mn = importlib.import_module(module_path)
             method_class = getattr(mn, name, None)
             if not method_class:
                 raise GDOMethodException(self.get_name(), name)
             self.METHOD_CACHE[module_path] = method_class
-            return method_class()
+            return method_class().module(self)
         except ModuleNotFoundError:
             raise GDOMethodException(self.get_name(), name)
 

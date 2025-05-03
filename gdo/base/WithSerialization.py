@@ -67,6 +67,7 @@ class WithSerialization:
             module = importlib.import_module(module_name)
             klass = getattr(module, class_name)
             obj = klass.__new__(klass)
+            obj._blank = False
 
             # Initialize and set attributes
             obj.gdo_wake_up()
@@ -78,4 +79,5 @@ class WithSerialization:
             #     from gdo.base.Cache import Cache
             #     return Cache.obj_for(obj)
             return obj
+        return dic
         
