@@ -80,7 +80,8 @@ class Trans:
     @classmethod
     def tiso(cls, iso: str, key: str, args: tuple = None):
         try:
-            key = cls.CACHE.get(iso, cls.EN).get(key, cls.EN.get(key, key))
+            if format := cls.CACHE.get(iso, cls.EN).get(key): #, cls.EN.get(key, key))
+                return format % args if args else format
             return key % args if args else key
         except:
             if args:

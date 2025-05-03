@@ -185,7 +185,7 @@ class Application:
     def init_asgi(cls, scope):
         cls.ASGI = True
         cls.IS_HTTP = True
-        cls.tick()
+        # cls.tick()
         cls.STORAGE.request_method = scope['method']
         cls.STORAGE.time_start = time.time()
         cls.STORAGE.environ = scope
@@ -199,10 +199,7 @@ class Application:
 
     @classmethod
     def asgi_headers(cls, scope):
-        back = {}
-        for tup in scope['headers']:
-            back[tup[0].decode()] = tup[1].decode()
-        return back
+        return {tup[0].decode(): tup[1].decode() for tup in scope['headers']}
 
     @classmethod
     def init_common(cls):
@@ -242,12 +239,7 @@ class Application:
 
     @classmethod
     def init_cookies(cls, cookies_str: str):
-        cookies = {}
-        if cookies_str:
-            for cookie in cookies_str.split(';'):
-                name, value = cookie.split('=', 1)
-                cookies[name] = value
-        cls.STORAGE.cookies = cookies
+        cls.STORAGE.cookies = dict(c.split('=', 1) for c in cookies_str.split(';')) if cookies_str else {}
 
     @classmethod
     def status(cls, status: str):

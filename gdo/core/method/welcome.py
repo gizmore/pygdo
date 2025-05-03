@@ -13,4 +13,4 @@ class welcome(Method):
 
     @functools.cache
     def gdo_execute(self) -> GDT:
-        return GDT_Success().text('msg_gdo_working')
+        return GDT_Success().text('msg_gdo_working').no_log()
