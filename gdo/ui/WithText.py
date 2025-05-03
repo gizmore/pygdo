@@ -23,9 +23,7 @@ class WithText:
         return hasattr(self, '_text_key')
 
     def render_text(self, mode: Mode = Mode.HTML) -> str:
-        out = ''
-        if self.has_text():
-            out = t(self._text_key, self._text_args)
-            if self._text_escaped:
-                out = Strings.html(out, mode)
-        return out
+        if not self.has_text():
+            return ''
+        out = t(self._text_key, self._text_args)
+        return Strings.html(out, mode) if self._text_escaped else out

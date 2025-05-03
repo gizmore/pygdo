@@ -163,7 +163,6 @@ class Application:
     def init_cli(cls):
         cls.STORAGE.ip = '::1'
         cls.STORAGE.cookies = {}
-        cls.STORAGE.time_start = time.time()
         cls.STORAGE.request_method = "POST"
         cls.fresh_page()
         cls.mode(Mode.CLI)
@@ -171,7 +170,6 @@ class Application:
     @classmethod
     def init_web(cls, environ):
         cls.IS_HTTP = True
-        cls.STORAGE.time_start = time.time() # float(environ.get('mod_wsgi.request_start')) / 1000000.0
         cls.STORAGE.environ = environ
         cls.STORAGE.headers = {}
         cls.init_cookies_wsgi(environ)
@@ -187,9 +185,7 @@ class Application:
     def init_asgi(cls, scope):
         cls.ASGI = True
         cls.IS_HTTP = True
-        # cls.tick()
         cls.STORAGE.request_method = scope['method']
-        cls.STORAGE.time_start = time.time()
         cls.STORAGE.environ = scope
         cls.STORAGE.environ['headers'] = cls.asgi_headers(scope)
         cls.STORAGE.headers = {}
@@ -253,25 +249,25 @@ class Application:
         return cls.storage('status', "200 GDO OK")
 
     @classmethod
-    def header(cls, name: str, value: str):
-        headers = cls.storage('headers', {})
-        headers[name] = value
-        cls.STORAGE.headers = headers
+    def header(cls, name: str, val: str):
+        if (headers := cls.storage('headers')) is None:
+            headers = cls.STORAGE.headers = {}
+        headers[name] = val
 
     @classmethod
     def get_header(cls, name: str, default: str = None) -> str:
         h = cls.storage('headers', {})
-        return h[name] if name in h else default
+        return h.get(name, default)
 
     @classmethod
     def get_headers(cls):
         headers_dict = cls.storage('headers', {})
-        return [(key, value) for key, value in headers_dict.items()]
+        return [(key.lower(), value) for key, value in headers_dict.items()]
 
     @classmethod
     def get_headers_asgi(cls):
         headers_dict = cls.storage('headers', {})
-        return [(key.encode(), value.encode()) for key, value in headers_dict.items()]
+        return [(key.lower().encode(), value.encode()) for key, value in headers_dict.items()]
 
     @classmethod
     def get_client_header(cls, name: str, default: str = None) -> str | None:
@@ -293,7 +289,7 @@ class Application:
 
     @classmethod
     def request_time(cls) -> float:
-        return time.time() - cls.STORAGE.time_start
+        return time.time() - cls.TIME
 
     @classmethod
     def environ(cls, key: str) -> str:
