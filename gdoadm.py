@@ -41,6 +41,7 @@ class App:
             cc          Clear redis cache.
             update      Triggers after update hooks.
             skel        Create a module skeleton inside an existing module folder.
+            pypp        Filter the sourcecode through pypp - the python pre-processor.
         ''')
         parser.add_argument('command', help='subcommand to run')
         args = parser.parse_args(sys.argv[1:2])
@@ -49,6 +50,12 @@ class App:
             parser.print_help()
             exit(1)
         getattr(self, args.command)()
+
+    def pypp(self):
+        import pypp.pypp
+        pp = pypp.pypp.PyPP()
+        pp.preprocess_path(Application.file_path(), True)
+        print('All done!')
 
     def configure(self):
         Files.create_dir(Application.file_path('files/'))
