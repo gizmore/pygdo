@@ -1,3 +1,4 @@
+import functools
 from enum import Enum
 
 from mysql.connector.cursor import MySQLCursorDict
@@ -109,14 +110,18 @@ class Result:
         """
         Fetch the next row as an object piped through the cache
         """
-        row = self.fetch_assoc()
-        if row is None:
+        if (row := self.fetch_assoc()) is None:
             return None
-        obj = self._table.__class__()
-        obj._vals = row #.update(row)
-        if not self._nocache:
-            obj = Cache.obj_for(obj, None, False)
-        return obj.all_dirty(False)
+        if self._nocache:
+            return self.get_reused_object().vals(row)
+        else:
+            obj = self._table.__class__()
+            obj._vals = row #.update(row)
+            return Cache.obj_for(obj, None, False)
+
+    @functools.cache
+    def get_reused_object(self) -> 'GDO':
+        return self._table.__class__()
 
     def fetch_column(self, col_num: int = 0) -> list[str]:
         result = []

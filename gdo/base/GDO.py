@@ -179,6 +179,13 @@ class GDO(WithName, WithBulk, GDT):
         self._values[key] = v = self.column(key).get_value()
         return v
 
+    def vals(self, vals: dict[str,str]) -> Self:
+        self._vals = vals
+        self._values = {}
+        self._dirty = []
+        self._my_id = None
+        return self
+
     def set_val(self, key, val: str, dirty: bool = True) -> Self:
         if key in self._values:
             del self._values[key]
@@ -186,6 +193,8 @@ class GDO(WithName, WithBulk, GDT):
         return self.dirty(key, dirty)
 
     def set_value(self, key: str, value: any, dirty: bool=True) -> Self:
+        if self._vals.get(key) == value:
+            return self
         val = self.column(key).to_val(value)
         self._values[key] = value
         self._vals[key] = val if type(val) is bytes else Strings.nullstr(val)

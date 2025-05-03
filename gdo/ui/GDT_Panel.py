@@ -1,7 +1,6 @@
-from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.core.GDT_Container import GDT_Container
-from gdo.core.GDT_Template import tpl, GDT_Template
+from gdo.core.GDT_Template import GDT_Template
 from gdo.ui.WithText import WithText
 from gdo.ui.WithTitle import WithTitle
 

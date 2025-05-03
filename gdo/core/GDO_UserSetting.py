@@ -64,7 +64,7 @@ class GDO_UserSetting(GDO):
         return query.first().exec().fetch_object()
 
     @classmethod
-    def get_users_with_settings_query(cls, server_id: str | None, settings: list[tuple]) -> Query:
+    def get_users_with_settings_query(cls, server_id: str | None, settings: list[tuple[str,str,str]]) -> Query:
         """
         Get multiple users with multiple conditions
         The settings conditions are a list of tuples: key, operator, value.

@@ -1,7 +1,7 @@
 from gdo.base.Render import Mode
 from gdo.base.WithName import WithName
 from gdo.core.GDT_Container import GDT_Container
-from gdo.core.GDT_Template import tpl, GDT_Template
+from gdo.core.GDT_TemplateHTML import tplhtml
 from gdo.ui.WithFlow import WithFlow
 
 
@@ -11,7 +11,12 @@ class GDT_Bar(WithFlow, WithName, GDT_Container):
         super().__init__()
         self.name(name or self.generate_name())
 
-    def render(self, mode: Mode = Mode.HTML):
-        if mode.is_html():
-            return GDT_Template.python('ui', 'bar.html', {'field': self})
-        return super().render_fields(mode)
+    def render_html(self, mode: Mode = Mode.HTML):
+        return tplhtml('ui', 'bar.html', {
+            'name': self.get_name(),
+            'class': self.render_class(),
+            'fields': self.render_bar_fields(),
+        })
+
+    def render_bar_fields(self):
+        return "\n".join([f"<li>{gdt.render_html()}</li>" for gdt in self.fields()])

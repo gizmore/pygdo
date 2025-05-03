@@ -136,41 +136,35 @@ class Cache:
     def obj_for(cls, gdo: GDO, rcached: dict[str,str]|None = None, after_write: bool = False) -> GDO:
         if gdo.gdo_cached():
             gid = gdo.get_id()
-            cn = gdo.gdo_table_name()
+            cn = gdo.table().gdo_table_name()
 
             if ocached := cls.OCACHE[cn].get(gid):
                 if after_write:
-                    ocached._vals = gdo._vals
-                    ocached._values = {}
+                    ocached.set_vals(gdo._vals)
                 if rcached:
-                    ocached._vals = rcached
-                    ocached._values = {}
-                # else:
-                #     ocached._vals = gdo._vals
-                #     ocached._values = {}
-
+                    ocached.set_vals(rcached)
                 return ocached.all_dirty(False)
 
             if after_write:
                 cls.OCACHE[cn][gid] = gdo
-                gdo._values = {}
+                # gdo._values = {}
                 return gdo
 
             if rcached:
-                gdo._vals = rcached
-                gdo._values = {}
+                gdo.set_vals(rcached)
             elif rcached := cls.get(cn, gid):
-                gdo._vals = rcached
-                gdo._values = {}
+                gdo.set_vals(rcached)
             else:
                 if not after_write:
                     cls.set(cn, gid, gdo._vals)
+
             cls.OCACHE[cn][gid] = gdo
+
         return gdo.all_dirty(False)
 
     @classmethod
     def update_for(cls, gdo: GDO) -> GDO:
-        cls.set(gdo.gdo_table_name(), gdo.get_id(), gdo._vals)
+        cls.set(gdo.table().gdo_table_name(), gdo.get_id(), gdo._vals)
         return cls.obj_for(gdo, None, True)
 
     @classmethod
@@ -183,7 +177,7 @@ class Cache:
 
     @classmethod
     def obj_search_gid(cls, gdo: GDO, gid: str, delete: bool = False) -> GDO:
-        tn = gdo.gdo_table_name()
+        tn = gdo.table().gdo_table_name()
         if ocached := cls.OCACHE[tn].get(gid):
             cls.OHITS += 1 #PYPP#DELETE#
             if delete:
@@ -196,15 +190,16 @@ class Cache:
                 cls.remove(tn, gid)
             else:
                 return cls.obj_for(gdo.blank(rcached), rcached, False)
+        return None
 
     @classmethod
     def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
         return cls.obj_search_pygdo(gdo, vals, delete)
 
     @classmethod
-    def obj_search_pygdo(cls, gdo: GDO, vals: dict, delete: bool = False):
+    def obj_search_pygdo(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
         if gdo.gdo_cached():
-            cn = gdo.gdo_table_name()
+            cn = gdo.table().gdo_table_name()
             for oc in cls.OCACHE[cn].values():
                 found = True
                 for k, v in vals.items():
@@ -218,6 +213,7 @@ class Cache:
                         cls.remove(gid)
                         del cls.OCACHE[cn][gid]
                     return oc
+        return None
 
     @classmethod
     def obj_search_redis(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
@@ -236,7 +232,7 @@ class Cache:
                                 break
                         if found:
                             cls.HITS += 1 #PYPP#DELETE#
-                            gdo._vals = rc
+                            # gdo.set_vals(rc)
                             gdo.all_dirty(False)
                             if delete:
                                 cls.remove(key)
@@ -248,6 +244,7 @@ class Cache:
                 if cursor == 0:
                     break
             cls.MISS += 1 #PYPP#DELETE#
+        return None
 
     ##########
     # FCACHE #

@@ -141,15 +141,16 @@ class GDO_User(GDO):
     ############
     # Settings #
     ############
-    def with_setting_query(self, settings: list[tuple[str, str, str]]) -> Query:
+
+    def with_settings_query(self, settings: list[tuple[str, str, str]]) -> Query:
         from gdo.core.GDO_UserSetting import GDO_UserSetting
         return GDO_UserSetting.get_users_with_settings_query(None, settings)
 
-    def with_setting_result(self, settings: list[tuple[str, str, str]]) -> Result:
-        return self.with_setting_query(settings).exec()
+    def with_settings_result(self, settings: list[tuple[str, str, str]]) -> Result:
+        return self.with_settings_query(settings).exec()
 
-    def with_setting(self, settings: list[tuple[str, str, str]]) -> list['GDO_User']:
-        return self.with_setting_result(settings).fetch_all()
+    def with_settings(self, settings: list[tuple[str, str, str]]) -> list['GDO_User']:
+        return self.with_settings_result(settings).fetch_all()
 
     def get_setting_val(self, key: str) -> str:
         from gdo.core.GDO_UserSetting import GDO_UserSetting

@@ -272,7 +272,6 @@ class GDT(WithSerialization):
     def render_gdt(self, mode: Mode):
         return self.render_method(mode)()
 
-    @functools.cache
     def render_method(self, mode: Mode):
         return getattr(self, f'render_{mode.name.lower()}')
 

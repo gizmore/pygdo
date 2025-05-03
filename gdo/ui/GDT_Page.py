@@ -4,6 +4,7 @@ from gdo.base.Method import Method
 from gdo.base.Render import Mode
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Template import GDT_Template
+from gdo.core.GDT_TemplateHTML import tplhtml
 from gdo.ui.GDT_Bar import GDT_Bar
 
 
@@ -47,7 +48,22 @@ class GDT_Page(GDT):
         return self
 
     def render_html(self):
-        return GDT_Template.python('ui', 'page.html', {'field': self, 'result': self._result.render(Mode.HTML)})
+        return tplhtml('ui', 'page.html', {
+            'lang': Application.LANG_ISO,
+            'title': self._method.gdo_render_title(),
+            'descr': self._method.gdo_render_descr(),
+            'keywords': self._method.gdo_render_keywords(),
+            'css': "\n".join([f'<link rel="stylesheet" href="{url}" />' for url in self._css]),
+            'css_inline': self._css_inline,
+            'js': "\n".join([f'<script src="{url}"></script>' for url in self._js]),
+            'js_inline': self._js_inline,
+            'title_bar': self._title_bar.render_html(),
+            'top_bar': self._top_bar.render_html(),
+            'left_bar': self._left_bar.render_html(),
+            'right_bar': self._right_bar.render_html(),
+            'bottom_bar': self._bottom_bar.render_html(),
+            'result': self._result.render(Mode.HTML),
+        })
 
     def render_json(self):
         return {

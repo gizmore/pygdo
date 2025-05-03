@@ -3,6 +3,7 @@ from gdo.base.Render import Mode
 from gdo.base.Util import Strings
 from gdo.base.WithName import WithName
 from gdo.core.GDT_Template import GDT_Template
+from gdo.core.GDT_TemplateHTML import GDT_TemplateHTML, tplhtml
 from gdo.ui.WithHREF import WithHREF
 from gdo.ui.WithText import WithText
 from gdo.ui.WithTitle import WithTitle
@@ -18,7 +19,10 @@ class GDT_Link(WithHREF, WithTitle, WithText, WithName, GDT):
         return self.render_html()
 
     def render_html(self) -> str:
-        return GDT_Template.python('ui', 'link.html', {'field': self})
+        return tplhtml('ui', 'link.html', {
+            'href': self.render_href(),
+            'text': self.render_text(),
+        })
 
     def render_text(self, mode: Mode = Mode.HTML) -> str:
         if self.has_text():

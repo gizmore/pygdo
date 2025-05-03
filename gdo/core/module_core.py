@@ -31,6 +31,8 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.core.GDT_Template import GDT_Template, Templite
+from gdo.core.GDT_TemplateHTML import GDT_TemplateHTML
 from gdo.core.GDT_UInt import GDT_UInt
 from gdo.core.GDT_User import GDT_User
 from gdo.core.InstallCore import InstallCore
@@ -65,6 +67,8 @@ class module_core(GDO_Module):
     def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):
             delattr(GDO_User, 'SYSTEM')
+        Templite.cache = {}
+        GDT_TemplateHTML.CACHE = {}
         self.clear_all_lru_caches()
 
     def clear_all_lru_caches(self):

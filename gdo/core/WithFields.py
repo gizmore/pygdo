@@ -52,9 +52,10 @@ class WithFields:
     def render(self, mode: Mode = Mode.HTML):
         return self.render_fields(mode)
 
-    def render_fields(self, mode: Mode = Mode.HTML):
-        output = []
-        if hasattr(self, '_fields'):
-            for gdt in self._fields:
-                output.append(gdt.render(mode))
-        return " ".join(output)
+    def render_html(self) -> str:
+        return self.render_fields()
+
+    def render_fields(self, mode: Mode = Mode.HTML) -> str:
+        if not hasattr(self, '_fields'):
+            return ''
+        return " ".join([gdt.render(mode) for gdt in self._fields])

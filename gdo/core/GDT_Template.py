@@ -130,9 +130,6 @@ class GDT_Template(GDT):
         '_t_vals',
     )
 
-    # def __init__(self):
-    #     super().__init__()
-
     def template(self, modulename: str, filename: str, vals: dict = None):
         self._t_module = modulename
         self._t_file = filename
