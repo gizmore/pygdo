@@ -36,9 +36,7 @@ class GDT_TemplateHTML(GDT):
 
     def get_replaced_html(self) -> str:
         html = self.get_html()
-        for key, val in self._tpl_args.items():
-            html = val.join(html.split(f"{{{{{key}}}}}"))
-        return html
+        return html % self._tpl_args
 
     ##########
     # Render #

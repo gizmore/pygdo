@@ -50,6 +50,23 @@ count = "Count"
 directory = "Directory"
 please_choose = "Please choose..."
 
+###########
+# GDT_Int #
+###########
+suggest_any_int = "Any whole number"
+suggest_max_int = "A whole number up to %d"
+suggest_min_int = "A whole number from %d"
+suggest_range_int = "A whole number between %d and %d"
+
+###########
+# GDT_Float #
+###########
+suggest_any_float = "Any decimal number"
+suggest_max_float = "A decimal number up to %.01f"
+suggest_min_float = "A decimal number from %.01f"
+suggest_range_float = "A decimal number between %.01f and %.01f"
+
+
 ##################
 ### GDT_Select ###
 ##################

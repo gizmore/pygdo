@@ -6,6 +6,7 @@ from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
+from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.install.Installer import Installer
 from gdo.message.GDT_Message import GDT_Message
 from gdotest.TestUtil import GDOTestCase
@@ -15,6 +16,7 @@ class GDO_Foo(GDO):
 
     def gdo_columns(self) -> list[GDT]:
         return [
+            GDT_AutoInc('foo_id'),
             GDT_Message('foo_msg').label_raw('MSG'),
         ]
 

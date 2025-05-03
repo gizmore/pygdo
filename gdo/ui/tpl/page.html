@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{lang}}">
+<html lang="%(lang)s">
 <head>
     <meta charset="UTF-8">
-    <title>{{title}}</title>
-    <meta name="description" content="{{descr}}">
-    <meta name="keywords" content="{{keywords}}">
-    {{css}}
-    {{css_inline}}
+    <title>%(title)s</title>
+    <meta name="description" content="%(descr)s">
+    <meta name="keywords" content="%(keywords)s">
+    %(css)s
+    %(css_inline)s
 </head>
 <body class="no-js">
 
@@ -15,31 +15,31 @@
 
 <nav id="gdo-left-bar" class="gdo-nav-bar">
     <div id="left">
-        {{left_bar}}
+        %(left_bar)s
     </div>
 </nav>
 <label for="gdo-left-nav"></label>
 
-<nav id="gdo-right-bar" class="gdo-nav-bar">{{right_bar}}</nav>
+<nav id="gdo-right-bar" class="gdo-nav-bar">%(right_bar)s</nav>
 <label for="gdo-right-nav"></label>
 
 <div id="gdo-pagewrap">
 
-	<header id="gdo-header">{{title_bar}}</header>
+	<header id="gdo-header">%(title_bar)s</header>
 
 	<div class="gdo-body">
 		<label for="gdo-left-nav" id="gdo-left-nav2"></label>
 		<label for="gdo-right-nav" id="gdo-right-nav2"></label>
 		<div class="gdo-main">
             <div id="gdo-top-bar">
-                {{top_bar}}
+                %(top_bar)s
             </div>
-            {{result}}
+            %(result)s
 		</div>
 	</div>
-	<footer id="gdo-footer">{{bottom_bar}}</footer>
+	<footer id="gdo-footer">%(bottom_bar)s</footer>
 </div>
-{{js}}
-{{js_inline}}
+%(js)s
+%(js_inline)s
 </body>
 </html>

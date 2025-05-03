@@ -1,11 +1,8 @@
 <div class="gdt-form">
-    <h4><%=field.render_title(Mode.HTML)%></h4>
-    <p><%=field.render_text(Mode.HTML)%></p>
-    <form method="POST" action="<%=field.render_href()%>" enctype="<%=field.render_enctype()%>">
-        <%
-        for gdt in field.fields():
-                write(gdt.render(Mode.FORM))
-        %>
-        <%=field._actions.render(Mode.FORM)%>
+    <h4>%(title)s</h4>
+    <p>%(text)s</p>
+    <form method="POST" action="%(href)s" enctype="%(enctype)s">
+        %(fields)s
+        %(actions)s
     </form>
 </div>

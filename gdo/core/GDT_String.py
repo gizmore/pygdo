@@ -199,3 +199,7 @@ class GDT_String(GDT_Field):
 
     def render_irc(self) -> str:
         return str(self.get_val())
+
+    def render_toml(self) -> str:
+        tt = self.render_tooltip() if self.has_tooltip() else ''
+        return f"{self.get_name()} = \"{self.get_val() or ''}\" # {tt} {self.render_suggestion()}\n"

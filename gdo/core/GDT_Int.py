@@ -1,12 +1,12 @@
 import sys
 
-from gdo.base.Util import NumericUtil
+from gdo.base.Trans import t
 from gdo.core.GDT_String import GDT_String
 
 
 class GDT_Int(GDT_String):
-    _min: int
-    _max: int
+    _min: int|None
+    _max: int|None
     _bytes: int
     _signed: bool
     _base: int
@@ -15,8 +15,8 @@ class GDT_Int(GDT_String):
         super().__init__(name)
         self._signed = True
         self._bytes = 4
-        self._min = -sys.maxsize - 1
-        self._max = sys.maxsize
+        self._min = None
+        self._max = None
         self._base = 10
 
     def is_orderable(self) -> bool:
@@ -107,15 +107,25 @@ class GDT_Int(GDT_String):
         return True
 
     def validate_min_max(self, value: int):
-        if value < self._min:
+        if self._min and value < self._min:
             return self.error('err_int_min', (self._min,))
-        if value > self._max:
+        if self._max and value > self._max:
             return self.error('err_int_max', (self._max,))
         return True
 
     ##########
     # Render #
     ##########
+
+    def render_suggestion(self) -> str:
+        if self._min is None and self._max is None:
+            return t('suggest_any_int')
+        if self._min is None:
+            return t('suggest_max_int', (self._max,))
+        if self._max is None:
+            return t('suggest_min_int', (self._min,))
+        return t('suggest_range_int', (self._min, self._max))
+
     # def render_toml(self) -> str:
     #     prefix = NumericUtil.output_prefix(self._base)
     #     return f"{self.get_name()} = {prefix}{self.get_val()}\n"
