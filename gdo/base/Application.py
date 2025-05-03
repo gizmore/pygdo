@@ -220,6 +220,7 @@ class Application:
         # cls.STORAGE.page = GDT_Page()
         # if not cls.STORAGE.DB:
         #     if 'db' in cls.CONFIG:
+        cls.TIME = round(time.time(), 6)
         if not cls.storage('DB'):
             cfg = cls.CONFIG['db']
             cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])

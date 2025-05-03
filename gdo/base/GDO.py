@@ -188,17 +188,20 @@ class GDO(WithName, WithBulk, GDT):
         return self
 
     def set_val(self, key, val: str, dirty: bool = True) -> Self:
-        # if self._vals.get(key) == val:
-        #     return self
+        if self._vals.get(key) == val:
+            return self
         if key in self._values:
             del self._values[key]
         self._vals[key] = val # if type(val) is bytes else Strings.nullstr(val)
         return self.dirty(key, dirty)
 
     def set_value(self, key: str, value: any, dirty: bool=True) -> Self:
-        val = self.column(key).to_val(value)
+        gdt = self.column(key)
+        new_val = gdt.to_val(value)
+        old_val = gdt.get_val()
+        if new_val == old_val: return self
         self._values[key] = value
-        self._vals[key] = val # if type(val) is bytes else Strings.nullstr(val)
+        self._vals[key] = new_val
         return self.dirty(key, dirty)
 
     def set_vals(self, vals: dict[str,str], dirty: bool=True) -> Self:
