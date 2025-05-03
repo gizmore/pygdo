@@ -60,7 +60,6 @@ def pygdo_application(environ, start_response):
         Logger.LINES_WRITTEN = 0
         #PYPP#END#
 
-        Cache.clear_ocache()
         if FRESH:
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")
             Application.init(os.path.dirname(__file__))
@@ -84,7 +83,6 @@ def pygdo_application(environ, start_response):
             Application.init_common()
             Application.init_web(environ)
             Application.init_thread(None)
-        Application.fresh_page()
 
         qs = parse_qs(environ['QUERY_STRING'])
 

@@ -1,13 +1,10 @@
-from __future__ import annotations
-
-import functools
 import re
 from datetime import timezone, datetime
+from functools import lru_cache
 from typing import Dict
 
 from gdo.base.Application import Application
-from gdo.base.Trans import tiso, t
-from gdo.base.Util import Arrays
+from gdo.base.Trans import tiso
 from gdo.date.GDO_Timezone import GDO_Timezone
 
 """
@@ -26,6 +23,7 @@ Method namings follow these conventions in signature elements:
 
 class Time:
     # Constants
+    ONE_MICROSECOND = 0.000001 # yes. this is even used and shown in page timings sometimes =) 03.May.2025 by gizmore!!!
     ONE_MILLISECOND = 0.001
     ONE_SECOND = 1
     ONE_MINUTE = 60
@@ -62,8 +60,8 @@ class Time:
     # Timezones #
     #############
 
-    @classmethod
-    def get_timezone_object(cls, timezone_name: str):
+    @staticmethod
+    def get_timezone_object(timezone_name: str):
         tz = GDO_Timezone.table().get_by_name(timezone_name)
         return timezone(tz.get_delta(), timezone_name)
 
@@ -71,8 +69,8 @@ class Time:
     # Get Date #
     ############
 
-    @classmethod
-    def get_date(cls, time: float = None, fmt: str = '%Y-%m-%d %H:%M:%S.%f') -> str:
+    @staticmethod
+    def get_date(time: float = None, fmt: str = '%Y-%m-%d %H:%M:%S.%f') -> str:
         """
         Get a formatted date string from a timestamp.
 
@@ -83,11 +81,11 @@ class Time:
         Returns:
             str: The formatted date string.
         """
-        dt = cls.get_datetime(time)
+        dt = Time.get_datetime(time)
         return dt.strftime(fmt) if dt else None
 
-    @classmethod
-    def get_datetime(cls, time: float = None) -> datetime:
+    @staticmethod
+    def get_datetime(time: float = None) -> datetime:
         """
         Get a datetime object from a timestamp.
 
@@ -102,8 +100,8 @@ class Time:
 
         return datetime.fromtimestamp(time, tz=timezone.utc)
 
-    @classmethod
-    def get_date_sec(cls, time: float = None) -> str:
+    @staticmethod
+    def get_date_sec(time: float = None) -> str:
         """
         Get a formatted date string without milliseconds from a timestamp.
 
@@ -113,10 +111,10 @@ class Time:
         Returns:
             str: The formatted date string without milliseconds.
         """
-        return cls.get_date(time, '%Y-%m-%d %H:%M:%S')
+        return Time.get_date(time, '%Y-%m-%d %H:%M:%S')
 
-    @classmethod
-    def get_date_without_time(cls, time: float = None) -> str:
+    @staticmethod
+    def get_date_without_time(time: float = None) -> str:
         """
         Get a date string without time part from a timestamp.
 
@@ -126,39 +124,39 @@ class Time:
         Returns:
             str: The date string without time part.
         """
-        return cls.get_date(time, '%Y-%m-%d')
+        return Time.get_date(time, '%Y-%m-%d')
 
     ###################
     # PARSE Timestamp #
     ###################
 
-    @classmethod
-    def parse_time(cls, date: str, tz: str = None, format: str = 'parse') -> float:
-        return cls.parse_time_iso(Application.LANG_ISO, date, tz, format)
+    @staticmethod
+    def parse_time(date: str, tz: str = None, format: str = 'parse') -> float:
+        return Time.parse_time_iso(Application.LANG_ISO, date, tz, format)
 
-    @classmethod
-    def parse_time_db(cls, date: str) -> float:
-        return cls.parse_time(date, cls.TIMEZONE, 'db')
+    @staticmethod
+    def parse_time_db(date: str) -> float:
+        return Time.parse_time(date, Time.TIMEZONE, 'db')
 
-    @classmethod
-    def parse_time_iso(cls, iso: str, date: str, tz: str = None, format: str = 'parse') -> float:
-        datetime_obj = cls.parse_datetime_iso(iso, date, tz, format)
+    @staticmethod
+    def parse_time_iso(iso: str, date: str, tz: str = None, format: str = 'parse') -> float:
+        datetime_obj = Time.parse_datetime_iso(iso, date, tz, format)
         return float(datetime_obj.timestamp()) if datetime_obj else None
 
     ##################
     # Parse Datetime #
     ##################
 
-    @classmethod
-    def parse_datetime(cls, date: str, tz: str = None, fmt: str = 'parse') -> None | datetime:
-        return cls.parse_datetime_iso(Application.LANG_ISO, date, tz, fmt)
+    @staticmethod
+    def parse_datetime(date: str, tz: str = None, fmt: str = 'parse') -> None | datetime:
+        return Time.parse_datetime_iso(Application.LANG_ISO, date, tz, fmt)
 
-    @classmethod
-    def parse_datetime_db(cls, date: str, tz: str = TIMEZONE) -> None | datetime:
-        return cls.parse_datetime_iso('en', date, tz, 'db')
+    @staticmethod
+    def parse_datetime_db(date: str, tz: str = TIMEZONE) -> None | datetime:
+        return Time.parse_datetime_iso('en', date, tz, 'db')
 
-    @classmethod
-    def parse_datetime_iso(cls, iso: str, date: str, tz: str = None, fmt: str = 'parse') -> None | datetime:
+    @staticmethod
+    def parse_datetime_iso(iso: str, date: str, tz: str = None, fmt: str = 'parse') -> None | datetime:
         if not date:
             return None
 
@@ -180,11 +178,11 @@ class Time:
         else:
             fmt = tiso(iso, 'df_' + fmt)
 
-        tz = tz or cls.TIMEZONE
+        tz = tz or Time.TIMEZONE
         if tz == 'UTC':
             dt = datetime.strptime(date, fmt)
         else:
-            tz = cls.get_timezone_object(tz)
+            tz = Time.get_timezone_object(tz)
             dt = datetime.strptime(date, fmt).replace(tzinfo=tz)
         return dt
 
@@ -192,103 +190,103 @@ class Time:
     # Display #
     ###########
 
-    @classmethod
-    def display_timestamp(cls, timestamp: float, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
-        return cls.display_timestamp_iso(Application.LANG_ISO, timestamp, fmt, default, tz)
+    @staticmethod
+    def display_timestamp(timestamp: float, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
+        return Time.display_timestamp_iso(Application.LANG_ISO, timestamp, fmt, default, tz)
 
-    @classmethod
-    def display_timestamp_iso(cls, iso: str, timestamp: float, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
+    @staticmethod
+    def display_timestamp_iso(iso: str, timestamp: float, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
         if timestamp <= 0:
             return default
-        dt = datetime.fromtimestamp(timestamp, cls.get_timezone_object(tz or cls.TIMEZONE))
-        return cls.display_datetime_iso(iso, dt, fmt, default, tz)
+        dt = datetime.fromtimestamp(timestamp, Time.get_timezone_object(tz or Time.TIMEZONE))
+        return Time.display_datetime_iso(iso, dt, fmt, default, tz)
 
-    @classmethod
-    def display_datetime_iso(cls, iso: str, datetime_obj: datetime = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
+    @staticmethod
+    def display_datetime_iso(iso: str, datetime_obj: datetime = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
         fmt = tiso(iso, "df_" + fmt)
-        return cls.display_datetime_format(datetime_obj, fmt, default, tz)
+        return Time.display_datetime_format(datetime_obj, fmt, default, tz)
 
-    @classmethod
-    def display_datetime_format(cls, datetime_obj: datetime = None, fmt: str = 'Y-m-d H:i:s.v', default: str = '---', tz: str = None) -> str:
+    @staticmethod
+    def display_datetime_format(datetime_obj: datetime = None, fmt: str = 'Y-m-d H:i:s.v', default: str = '---', tz: str = None) -> str:
         if not datetime_obj:
             return default
-        tz = cls.get_timezone_object(tz or cls.TIMEZONE)
+        tz = Time.get_timezone_object(tz or Time.TIMEZONE)
         dt = datetime.fromtimestamp(datetime_obj.timestamp()).replace(tzinfo=tz)
         return dt.strftime(fmt)
 
-    @classmethod
-    def display_date(cls, date: str = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
-        return cls.display_date_iso(Application.LANG_ISO, date, fmt, default, tz)
+    @staticmethod
+    def display_date(date: str = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
+        return Time.display_date_iso(Application.LANG_ISO, date, fmt, default, tz)
 
-    @classmethod
-    def display_date_iso(cls, iso: str, date: str = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
+    @staticmethod
+    def display_date_iso(iso: str, date: str = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
         if date is None:
             return default
-        d = cls.parse_datetime_db(date)
-        return cls.display_datetime_iso(iso, d, fmt, default, tz)
+        d = Time.parse_datetime_db(date)
+        return Time.display_datetime_iso(iso, d, fmt, default, tz)
 
-    @classmethod
-    def display_datetime(cls, datetime_obj: datetime = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
-        return cls.display_datetime_iso(Application.LANG_ISO, datetime_obj, fmt, default, tz)
+    @staticmethod
+    def display_datetime(datetime_obj: datetime = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
+        return Time.display_datetime_iso(Application.LANG_ISO, datetime_obj, fmt, default, tz)
 
-    @classmethod
-    def display_time_iso(cls, iso: str, time: datetime = None, fmt: str = 'short', default: str = '---', timezone_id: str = None) -> str:
-        dt = cls.get_datetime(time)
-        return cls.display_datetime_iso(iso, dt, fmt, default, timezone_id)
+    @staticmethod
+    def display_time_iso(iso: str, time: datetime = None, fmt: str = 'short', default: str = '---', timezone_id: str = None) -> str:
+        dt = Time.get_datetime(time)
+        return Time.display_datetime_iso(iso, dt, fmt, default, timezone_id)
 
     ##############
     # Timestamps #
     ##############
 
-    @classmethod
-    def get_diff_date(cls, date_one: str, date_now: str) -> float:
-        now = date_now or cls.get_date(Application.TIME)
-        a = cls.parse_datetime_db(now)
-        b = cls.parse_datetime_db(date_one)
+    @staticmethod
+    def get_diff_date(date_one: str, date_now: str) -> float:
+        now = date_now or Time.get_date(Application.TIME)
+        a = Time.parse_datetime_db(now)
+        b = Time.parse_datetime_db(date_one)
         return (a - b).total_seconds()
 
-    @classmethod
-    def get_diff_time(cls, time_one: float, time_two: float = None) -> float:
+    @staticmethod
+    def get_diff_time(time_one: float, time_two: float = None) -> float:
         time_two = time_two if time_two is not None else Application.TIME
-        a = cls.get_datetime(time_one)
-        b = cls.get_datetime(time_two)
+        a = Time.get_datetime(time_one)
+        b = Time.get_datetime(time_two)
         return (a - b).total_seconds()
 
-    @classmethod
-    def get_time(cls, date: str = None) -> float:
-        return cls.parse_time(date, 'UTC', 'db') if date else Application.TIME
+    @staticmethod
+    def get_time(date: str = None) -> float:
+        return Time.parse_time(date, 'UTC', 'db') if date else Application.TIME
 
     #######
     # Age #
     #######
-    @classmethod
-    def get_time_ago(cls, date: str = None) -> float:
-        return Application.TIME - cls.get_time(date)
+    @staticmethod
+    def get_time_ago(date: str = None) -> float:
+        return Application.TIME - Time.get_time(date)
 
-    @classmethod
-    def get_age_in_years(cls, duration: float) -> float:
-        return duration / cls.ONE_YEAR
+    @staticmethod
+    def get_age_in_years(duration: float) -> float:
+        return duration / Time.ONE_YEAR
 
-    @classmethod
-    def display_age(cls, date: str = None) -> str:
-        return cls.display_age_ts(cls.get_time(date))
+    @staticmethod
+    def display_age(date: str = None) -> str:
+        return Time.display_age_ts(Time.get_time(date))
 
-    @classmethod
-    def display_age_ts(cls, timestamp: float) -> str:
-        return cls.human_duration(Application.TIME - timestamp)
+    @staticmethod
+    def display_age_ts(timestamp: float) -> str:
+        return Time.human_duration(Application.TIME - timestamp)
 
-    @classmethod
-    def human_duration(cls, seconds: float, n_units: int = 2, with_millis: bool = True, remove_zero_units: bool = True) -> str:
-        return cls.human_duration_iso(Application.LANG_ISO, seconds, n_units, with_millis, remove_zero_units)
+    @staticmethod
+    def human_duration(seconds: float, n_units: int = 2, with_millis: bool = True, remove_zero_units: bool = True) -> str:
+        return Time.human_duration_iso(Application.LANG_ISO, seconds, n_units, with_millis)
 
-    @classmethod
-    def human_duration_iso(cls, iso: str, seconds: float, n_units: int = 2, with_millis: bool = True, remove_zero_units: bool = True) -> str:
-        factors = cls._human_duration_factors(iso)
-        return cls._human_duration_raw(seconds, n_units, factors, with_millis, remove_zero_units)
+    @staticmethod
+    def human_duration_iso(iso: str, seconds: float, n_units: int = 2, with_millis: bool = True) -> str:
+        factors = Time._human_duration_factors(iso)
+        return Time._human_duration_raw(seconds, n_units, factors, with_millis)
 
-    @classmethod
-    @functools.cache
-    def _human_duration_factors(cls, iso: str):
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _human_duration_factors(iso: str):
         factors = {
             'tu_us': 1000000,
             'tu_ms': 1000,
@@ -301,45 +299,44 @@ class Time:
         }
         return {tiso(iso, key): val for key, val in factors.items()}
 
-    @classmethod
-    def _human_duration_raw(cls, seconds: float, n_units: int, factors: dict, with_millis: bool = True, remove_zero_units: bool = True) -> str:
+    @staticmethod
+    def _human_duration_raw(seconds: float, n_units: int, factors: dict, with_millis: bool = True) -> str:
         values = []
         factor_keys = list(factors.keys())
         if with_millis:
             for unit in factor_keys[:2]:  # 'us' and 'ms'
                 remainder = seconds * factors[unit]
                 remainder, value = divmod(remainder, 1000)
-                values.append((int(value), unit))
-        remainder = int(seconds)
+                if value >= 1: values.append((value, unit))
+        remainder = round(seconds)
         for unit in factor_keys[2:]:  # 's' and above
             remainder, value = divmod(remainder, factors[unit])
-            if int(value):
-                values.append((int(value), unit))
-        result = " ".join(f"{v}{u}" for v, u in reversed(values[-n_units:]) if v)
+            if value: values.append((value, unit))
+        result = " ".join(["%d%s" % (v, u) for v, u in reversed(values[-n_units:]) if v])
         return result if result else "0s"
 
-    @classmethod
-    def display_age_iso(cls, date: str, iso: str) -> str:
-        return cls.display_age_ts_iso(cls.get_time(date), iso)
+    @staticmethod
+    def display_age_iso(date: str, iso: str) -> str:
+        return Time.display_age_ts_iso(Time.get_time(date), iso)
 
-    @classmethod
-    def display_age_ts_iso(cls, timestamp: float, iso: str) -> str:
-        return cls.human_duration_iso(iso, Application.TIME - timestamp)
+    @staticmethod
+    def display_age_ts_iso(timestamp: float, iso: str) -> str:
+        return Time.human_duration_iso(iso, Application.TIME - timestamp)
 
-    @classmethod
-    def week_timestamp(cls, year: int, week: int) -> int:
-        week_start = datetime.now(tz=cls.get_timezone_object(cls.UTC)).date().isoformat()
+    @staticmethod
+    def week_timestamp(year: int, week: int) -> int:
+        week_start = datetime.now(tz=Time.get_timezone_object(Time.UTC)).date().isoformat()
         week_start = datetime.fromisoformat(week_start).isocalendar()
         week_start = datetime.strptime(f'{year}-{week}-{week_start[2]}', '%G-%V-%u').timestamp()
         return int(week_start)
 
-    @classmethod
-    def human_duration_en(cls, seconds: float, n_units: int = 2, with_millis: bool = False) -> str:
-        return cls.human_duration_iso('en', seconds, n_units, with_millis)
+    @staticmethod
+    def human_duration_en(seconds: float, n_units: int = 2, with_millis: bool = False) -> str:
+        return Time.human_duration_iso('en', seconds, n_units, with_millis)
 
-    @classmethod
-    def is_valid_duration(cls, duration: str, min_val: float = None, max_val: float = None) -> bool:
-        seconds = cls.human_to_seconds(duration)
+    @staticmethod
+    def is_valid_duration(duration: str, min_val: float = None, max_val: float = None) -> bool:
+        seconds = Time.human_to_seconds(duration)
         if seconds is None or not isinstance(seconds, (int, float)):
             return False
         if min_val is not None and seconds < min_val:
@@ -348,8 +345,8 @@ class Time:
             return False
         return True
 
-    @classmethod
-    def human_to_seconds(cls, duration: str) -> float | None:
+    @staticmethod
+    def human_to_seconds(duration: str) -> float | None:
         if duration is None:
             return None
         multi = {
@@ -365,7 +362,7 @@ class Time:
             'y': 31536000,
         }
         matches = []
-        for match in re.finditer(r'([\.\d]+)\s*([suµnmhdwoy]{0,2})', duration):
+        for match in re.finditer(r'([.\d]+)\s*([suµnmhdwoy]{0,2})', duration):
             matches.append((float(match.group(1)), match.group(2)))
         back = 0.0
         for match in matches:
@@ -386,12 +383,12 @@ class Time:
     def get_day(date: str) -> str:
         return date[8:10]
 
-    @classmethod
-    def is_sunday(cls, time: int = 0, timezone_id: str = 'UTC') -> bool:
-        return cls.is_day(str(cls.SUNDAY), time, timezone_id)
+    @staticmethod
+    def is_sunday(time: int = 0, timezone_id: str = 'UTC') -> bool:
+        return Time.is_day(str(Time.SUNDAY), time, timezone_id)
 
-    @classmethod
-    def is_day(cls, day: str, time: int = 0, timezone_id: str = 'UTC') -> bool:
-        time = time or datetime.now(tz=cls.get_timezone_object(timezone_id)).timestamp()
+    @staticmethod
+    def is_day(day: str, time: int = 0, timezone_id: str = 'UTC') -> bool:
+        time = time or datetime.now(tz=Time.get_timezone_object(timezone_id)).timestamp()
         dt = datetime.fromtimestamp(time).strftime('%u')
         return dt == day

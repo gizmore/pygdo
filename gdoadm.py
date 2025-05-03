@@ -42,6 +42,7 @@ class App:
             update      Triggers after update hooks.
             skel        Create a module skeleton inside an existing module folder.
             pypp        Filter the sourcecode through pypp - the python pre-processor.
+            yarn        Run the yarn bundler for all modules.
         ''')
         parser.add_argument('command', help='subcommand to run')
         args = parser.parse_args(sys.argv[1:2])
@@ -56,6 +57,10 @@ class App:
         pp = pypp.pypp.PyPP()
         pp.preprocess_path(Application.file_path(), True)
         print('All done!')
+
+    def yarn(self):
+        self._run_yarn_script()
+        print('All done')
 
     def configure(self):
         Files.create_dir(Application.file_path('files/'))
@@ -308,7 +313,6 @@ class App:
             print("No modules found!", file=sys.stderr)
             exit(-1)
         Installer.install_modules(modules, True)
-        self._run_yarn_script()
         Cache.clear()
         print("All Done!")
 
@@ -428,11 +432,10 @@ class App:
         print("All done!")
 
     def _run_yarn_script(self):
-        print("Running ./gdo_yarn.sh ")
+        print("Running ./gdo_yarn.sh")
         result = subprocess.run([Application.file_path('gdo_yarn.sh')], capture_output=True, text=True)
         print(result.stdout)
         print(result.stderr, file=sys.stderr)
-        print("Done.")
 
     def _run_requirement_scripts(self):
         pass

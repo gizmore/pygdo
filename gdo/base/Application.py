@@ -33,7 +33,7 @@ class Application:
     EVENTS: 'Events'
     STORAGE = threading.local()
     LANG_ISO = 'en'
-    TIME = time.time()
+    TIME = round(time.time(), 6)
     FIRST_TIME = TIME
     IPC_TS = TIME
     #PYPP#START#
@@ -180,6 +180,8 @@ class Application:
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.user = None
+        from gdo.base.Cache import Cache
+        Cache.clear_ocache()
 
     @classmethod
     def init_asgi(cls, scope):
@@ -204,7 +206,8 @@ class Application:
     @classmethod
     def init_common(cls):
         cls.STORAGE.mode = Mode.HTML
-        cls.tick()
+        cls.fresh_page()
+        # cls.tick()
         cls.DB_READS = 0 #PP#DELETE#
         cls.DB_WRITES = 0 #PP#DELETE#
         cls.STORAGE.user = None
