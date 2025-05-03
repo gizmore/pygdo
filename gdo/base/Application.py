@@ -22,7 +22,7 @@ from gdo.base.Util import Arrays
 
 
 class Application:
-    DB: 'Database' = None
+    DB: 'Database'
     RUNNING = True
     PROTOCOL = 'http'
     IS_HTTP = False
@@ -57,11 +57,16 @@ class Application:
         cls.IS_HTTP = is_http
 
     @classmethod
+    def has_db(cls):
+        return cls.db() is not None
+
+    @classmethod
     def init(cls, path: str, config_file: str = 'protected/config.toml'):
         from gdo.base.ModuleLoader import ModuleLoader
         from gdo.base.Trans import Trans
         cls.PATH = os.path.normpath(path) + '/'
         Logger.init(cls.PATH + "protected/logs/")
+        Application.init_common()
         Trans.init()
         os.environ['TZ'] = 'UTC'
         time.tzset()
@@ -72,9 +77,9 @@ class Application:
         config_path = os.path.join(cls.PATH, config_path)
         cls.CONFIG_PATH = config_path
         if os.path.isfile(config_path):
-            with open(config_path, 'r') as f:
+            with open(config_path, 'r', encoding='utf-8') as f:
                 cls.CONFIG = tomlkit.load(f)
-                # cls.init_thread(None)
+                cls.init_thread(None)
         else:
             from gdo.install.Config import Config
             cls.CONFIG = Config.defaults()
@@ -84,12 +89,7 @@ class Application:
                    int(cls.config('redis.port', '6379')),
                    int(cls.config('redis.db', '0')),
                    cls.config('redis.uds', ''))
-        Application.init_common()
         cls.IPC_TS = cls.TIME
-
-    @classmethod
-    def has_db(cls):
-        return cls.db() is not None
 
     @classmethod
     def file_path(cls, path: str = ''):
@@ -175,7 +175,7 @@ class Application:
         cls.STORAGE.headers = {}
         cls.init_cookies_wsgi(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
-        cls.PROTOCOL = environ['REQUEST_SCHEME']
+        cls.PROTOCOL = environ.get('REQUEST_SCHEME', environ.get('wsgi.url_scheme'))
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.user = None
@@ -216,19 +216,20 @@ class Application:
     @classmethod
     def init_thread(cls, thread):
         from gdo.base.Database import Database
-        from gdo.ui.GDT_Page import GDT_Page
-        cls.STORAGE.user = None
-        cls.mode(Mode.HTML)
-        cls.STORAGE.lang = 'en'
-        cls.STORAGE.page = GDT_Page()
-        if not cls.DB:
-            if 'db' in cls.CONFIG:
-                cfg = cls.CONFIG['db']
-                cls.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
+        # from gdo.ui.GDT_Page import GDT_Page
+        # cls.STORAGE.user = None
+        # cls.mode(Mode.HTML)
+        # cls.STORAGE.lang = 'en'
+        # cls.STORAGE.page = GDT_Page()
+        # if not cls.STORAGE.DB:
+        #     if 'db' in cls.CONFIG:
+        if not cls.storage('DB'):
+            cfg = cls.CONFIG['db']
+            cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
 
     @classmethod
     def db(cls) -> 'Database':
-        return cls.DB
+        return cls.STORAGE.DB
 
     @classmethod
     def init_cookies_wsgi(cls, environ):

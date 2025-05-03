@@ -66,7 +66,6 @@ def pygdo_application(environ, start_response):
             Application.init(os.path.dirname(__file__))
             Application.init_common()
             Application.init_web(environ)
-            Application.init_thread(None)
             if not Application.LOOP:
                 Application.LOOP = asyncio.new_event_loop()
             loader = ModuleLoader.instance()
@@ -84,7 +83,8 @@ def pygdo_application(environ, start_response):
             #PYPP#END#
             Application.init_common()
             Application.init_web(environ)
-            Application.fresh_page()
+            Application.init_thread(None)
+        Application.fresh_page()
 
         qs = parse_qs(environ['QUERY_STRING'])
 
