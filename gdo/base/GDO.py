@@ -34,6 +34,7 @@ class GDO(WithName, WithBulk, GDT):
     _vals: dict[str, str|bytes]
     _values: dict[str, any]
     _dirty: list[str]
+    _all_dirty: bool
     _last_id: int|None
     _my_id: str|None
     _blank: bool
@@ -61,6 +62,7 @@ class GDO(WithName, WithBulk, GDT):
         self._vals = {}
         self._values = {}
         self._dirty = []
+        self._all_dirty = False
         self._last_id = None
         self._my_id = None
         self._blank = False
@@ -85,6 +87,7 @@ class GDO(WithName, WithBulk, GDT):
     def gdo_wake_up(self) -> Self:
         self._values = {}
         self._dirty = []
+        self._all_dirty = False
         self._blank = False
         return self
 
@@ -95,8 +98,7 @@ class GDO(WithName, WithBulk, GDT):
     @classmethod
     def blank(cls, vals: dict = None, mark_blank: bool = True) -> Self:
         vals = vals or {}
-        for name, gdt in cls.table().columns().items():
-            vals[name] = vals.get(name, gdt.get_initial())
+        vals = {name: vals.get(name, gdt.get_initial()) for name, gdt in cls.table().columns().items()}
         back = cls()
         back._vals = vals
         back._blank = mark_blank
@@ -224,7 +226,7 @@ class GDO(WithName, WithBulk, GDT):
         return self
 
     def all_dirty(self, dirty: bool=True) -> Self:
-        self._dirty = list(self.columns().keys()) if dirty else []
+        self._all_dirty = dirty
         return self
 
     def query(self) -> Query:
@@ -268,9 +270,7 @@ class GDO(WithName, WithBulk, GDT):
     def get_by_vals(self, vals: dict[str, str]) -> Self:
         if cached := Cache.obj_search(self, vals):
             return cached
-        where = []
-        for k, v in vals.items():
-            where.append(f'{k}={self.quote(v)}')
+        where = [f'{k}={self.quote(v)}' for k, v in vals.items()]
         return self.table().select().where(' AND '.join(where)).first().exec().fetch_object()
 
     def my_id(self, gid: str) -> Self:
@@ -311,7 +311,6 @@ class GDO(WithName, WithBulk, GDT):
     def soft_replace(self) -> Self:
         if old := self.get_by_id(*self.get_ids()):
             return old.vals(self._vals).all_dirty().save()
-            # return old.all_dirty(False)
         return self.all_dirty().insert()
 
     def insert(self) -> Self:
@@ -332,8 +331,8 @@ class GDO(WithName, WithBulk, GDT):
     def dirty_vals(self) -> dict[str, str]:
         vals = {}
         for name, gdt in self.columns().items():
-            if hasattr(gdt, '_val'):
-                if name in self._dirty and not gdt.is_primary():
+            if not gdt.is_primary():
+                if self._all_dirty or name in self._dirty:
                     vals.update(gdt.gdo(self).dirty_vals())
         return vals
 
