@@ -2,6 +2,8 @@ from enum import Enum
 
 from typing import TYPE_CHECKING
 
+from gdo.core.GDT_TemplateHTML import tplhtml
+
 if TYPE_CHECKING:
     from gdo.form.MethodForm import MethodForm
 
@@ -75,10 +77,17 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def render(self, mode: Mode = Mode.HTML):
         if mode in (Mode.HTML, Mode.FORM):
             return self.render_html()
-        return '' #self._method.render(mode)
+        return ''
 
     def render_html(self):
-        return GDT_Template.python('form', 'form.html', {'field': self})
+        return tplhtml('form', 'form.html', {
+            'title': self.render_title(),
+            'text': self.render_text(),
+            'href': self.render_href(),
+            'enctype': self.render_enctype(),
+            'fields': self.render_fields(Mode.FORM),
+            'actions': self._actions.render_fields(),
+        })
 
     def render_cli(self):
         return ''

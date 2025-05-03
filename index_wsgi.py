@@ -66,6 +66,7 @@ def pygdo_application(environ, start_response):
             Application.init(os.path.dirname(__file__))
             Application.init_common()
             Application.init_web(environ)
+            Application.init_thread(None)
             if not Application.LOOP:
                 Application.LOOP = asyncio.new_event_loop()
             loader = ModuleLoader.instance()

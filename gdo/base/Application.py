@@ -22,6 +22,7 @@ from gdo.base.Util import Arrays
 
 
 class Application:
+    DB: 'Database' = None
     RUNNING = True
     PROTOCOL = 'http'
     IS_HTTP = False
@@ -73,7 +74,7 @@ class Application:
         if os.path.isfile(config_path):
             with open(config_path, 'r') as f:
                 cls.CONFIG = tomlkit.load(f)
-                cls.init_thread(None)
+                # cls.init_thread(None)
         else:
             from gdo.install.Config import Config
             cls.CONFIG = Config.defaults()
@@ -184,7 +185,7 @@ class Application:
         cls.ASGI = True
         cls.IS_HTTP = True
         cls.tick()
-        cls.request_method(scope['method'])
+        cls.STORAGE.request_method = scope['method']
         cls.STORAGE.time_start = time.time()
         cls.STORAGE.environ = scope
         cls.STORAGE.environ['headers'] = cls.asgi_headers(scope)
@@ -205,11 +206,9 @@ class Application:
     @classmethod
     def init_common(cls):
         cls.STORAGE.mode = Mode.HTML
-        #cls.STORAGE.request_method = 'HEAD'
         cls.tick()
         cls.DB_READS = 0 #PP#DELETE#
         cls.DB_WRITES = 0 #PP#DELETE#
-        cls.init_thread(None)
         cls.STORAGE.user = None
         cls.STORAGE.lang = 'en'
         Logger._user = None
@@ -222,14 +221,14 @@ class Application:
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.page = GDT_Page()
-        if not cls.storage('DB'):
+        if not cls.DB:
             if 'db' in cls.CONFIG:
                 cfg = cls.CONFIG['db']
-                cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
+                cls.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
 
     @classmethod
     def db(cls) -> 'Database':
-        return cls.STORAGE.DB
+        return cls.DB
 
     @classmethod
     def init_cookies_wsgi(cls, environ):

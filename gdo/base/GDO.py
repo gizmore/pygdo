@@ -116,9 +116,10 @@ class GDO(WithName, WithBulk, GDT):
         return self.render_name()
 
     @functools.cache
-    def primary_key_column(self) -> GDT:
+    def primary_key_column(self) -> GDT|None:
         for gdt in self.columns().values():
             return gdt
+        return None
 
     def is_persisted(self) -> bool:
         return not self._blank
@@ -276,13 +277,13 @@ class GDO(WithName, WithBulk, GDT):
         self._my_id = gid
         return self
 
-    def get_id(self) -> str:
-        if self._blank: return ''
+    def get_id(self) -> str|None:
         if self._my_id: return self._my_id
+        if self._blank: return ''
         from gdo.core.GDT_AutoInc import GDT_AutoInc
         out = []
         for pk in self.get_pk_columns():
-            val = pk._val
+            val = pk.get_val()
             if type(pk) == GDT_AutoInc:
                 if val != '0':
                     self._my_id = val

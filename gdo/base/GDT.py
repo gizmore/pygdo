@@ -4,21 +4,19 @@ import traceback
 from copy import deepcopy
 from typing import Self
 
-from annotated_types.test_cases import cases
-from typing_extensions import TYPE_CHECKING
-
 from gdo.base.Exceptions import GDOException
 from gdo.base.Trans import Trans, t
 from gdo.base.WithSerialization import WithSerialization
+from gdo.base.Render import Mode
+from gdo.base.Util import Strings
 
+
+from typing_extensions import TYPE_CHECKING
 if TYPE_CHECKING:
     from gdo.base.Query import Query
     from gdo.base.Method import Method
     from gdo.base.GDO_Module import GDO_Module
     from gdo.form.GDT_Form import GDT_Form
-
-from gdo.base.Render import Mode
-from gdo.base.Util import Strings
 
 
 class GDT(WithSerialization):
