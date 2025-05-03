@@ -1,7 +1,5 @@
-from gdo.base.GDT import GDT
-
-
 class WithName:
+
     _name: str
 
     def name(self, name: str):
@@ -9,7 +7,7 @@ class WithName:
         return self
 
     def generate_name(self):
-        return self.__class__.__name__ + "#" + str(GDT.GDT_COUNT)
+        return f'{self.__class__.__name__}#{id(self)}'
 
     def get_name(self):
         return self._name
