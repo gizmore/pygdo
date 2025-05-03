@@ -87,6 +87,7 @@ class IconUTF8(IconProvider):
             'medal': '🥇',
             'menu': '≡',
             'message': '☰',
+            'metal': '🤘',
             'minus': '-',
             'money': '$',
             'name': '📛',
