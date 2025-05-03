@@ -299,10 +299,7 @@ class Time:
             'tu_w': 52.14,
             'tu_y': 9999,
         }
-        back = {}
-        for key, val in factors.items():
-            back[tiso(iso, key)] = val
-        return back
+        return {tiso(iso, key): val for key, val in factors.items()}
 
     @classmethod
     def _human_duration_raw(cls, seconds: float, n_units: int, factors: dict, with_millis: bool = True, remove_zero_units: bool = True) -> str:
