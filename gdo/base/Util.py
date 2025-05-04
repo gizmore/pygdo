@@ -5,6 +5,8 @@ import mimetypes
 import string
 
 import asyncio
+from functools import lru_cache
+
 import magic
 
 import getpass
@@ -126,6 +128,9 @@ class CLI:
         return Bash.get_server().get_or_create_user(name)
 
 class Strings:
+
+    HTML_PATTERN = re.compile(r'[&"\'<>]')
+
     @staticmethod
     def substr_from(s: str, frm: str, default='') -> str:
         """Return substring from the first occurrence of `frm` in `s`, or `default` if `frm` is not found."""
@@ -155,22 +160,26 @@ class Strings:
         """Return None on empty strings"""
         return str(s) if s else None
 
-    @classmethod
-    def html(cls, s: str, mode: Mode = Mode.HTML):
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def html_replacement_dict() -> dict[str,str]:
+        return {
+            '&': '&amp;',
+            '"': '&quot;',
+            "'": '&#039;',
+            '<': '&lt;',
+            '>': '&gt;',
+        }
+
+    @staticmethod
+    def html(s: str, mode: Mode = Mode.HTML) -> str:
         """
         Escape output for various formats
         """
-        if s is None:
-            return ''
-        match mode:
-            case Mode.HTML:
-                return (s.replace('&', '&amp;').
-                        replace('"', '&quot;').
-                        replace("'", '&#039;').
-                        replace('<', '&lt;').
-                        replace('>', '&gt;'))
-            case _:
-                return s
+        if mode.is_html() and s is not None:
+            html_map = Strings.html_replacement_dict()
+            return Strings.HTML_PATTERN.sub(lambda m: html_map[m.group(0)], s)
+        return ''
 
     @classmethod
     def html_to_text(cls, html: str):
@@ -214,8 +223,8 @@ class Strings:
             return match.group(1)
         return None
 
-    @classmethod
-    def replace_all(cls, s: str, replace: dict):
+    @staticmethod
+    def replace_all(s: str, replace: dict):
         for search, replce in replace.items():
             s = s.replace(search, replce)
         return s
@@ -505,6 +514,7 @@ class Random:
         if lst:
             index = cls.mrand(0, len(lst) - 1)
             return lst[index]
+        return None
 
 
 class Permutations:
