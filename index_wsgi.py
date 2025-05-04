@@ -205,12 +205,10 @@ def pygdo_application(environ, start_response):
             elif mode == Mode.TXT:
                 Application.header('Content-Type', 'text/plain; Charset=UTF-8')
 
+            page = Application.get_page()
+            result = page.result(result).method(method)
             if mode == Mode.HTML:
-                page = Application.get_page()
-                result = page.result(result).method(method)
-                for module in ModuleLoader.instance().enabled():
-                    # module.gdo_load_scripts(page)
-                    module.gdo_init_sidebar(page)
+                page.init_sidebars()
                 SIDEBARS = True
 
             session.save()

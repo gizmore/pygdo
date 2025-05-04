@@ -319,7 +319,7 @@ class Files:
     @staticmethod
     @functools.lru_cache()
     def mime(path: str):
-        return magic.Magic(mime=True, keep_going=True).from_file(path)
+        return magic.Magic(mime=True, keep_going=False).from_file(path)
 
     @staticmethod
     @functools.lru_cache()

@@ -36,9 +36,8 @@ class GDO_Session(GDO):
         """
         cookie = Application.get_cookie(cls.COOKIE_NAME)
         if cookie == cls.DEFAULT_COOKIE:
-            token = GDT_Token.random()
             instance = cls.blank({
-                'sess_token': token,
+                'sess_token': GDT_Token.random(),
             })
             if create_session:  # Only create a session if wanted. We do not want to create sessions on file_server()
                 instance.save()

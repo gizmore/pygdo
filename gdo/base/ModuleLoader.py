@@ -4,9 +4,10 @@ import sys
 
 from typing_extensions import Self
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 
 from gdo.base.Logger import Logger
+from gdo.base.Trans import t
 
 if TYPE_CHECKING:
     from gdo.base.GDO_Module import GDO_Module
@@ -19,38 +20,39 @@ from gdo.base.Exceptions import GDOException, GDODBException
 from gdo.base.GDO_ModuleVal import GDO_ModuleVal
 from gdo.base.Method import Method
 from gdo.base.Result import ResultType
-from gdo.base.Util import Files
+from gdo.base.Util import Files, html
 
 
 class ModuleLoader:
-    _cache: dict[str, 'GDO_Module']
-    _methods: dict[str, any]
-    _methods_sqn: dict[str, type[Method]]
-    _enabled: []
+    _cache: dict[str, 'GDO_Module'] # name
+    _methods: dict[str, 'GDO_Module'] # trigger
+    _enabled: list['GDO_Module']
 
     @classmethod
     def instance(cls) -> Self:
         return Application.LOADER
 
     def enabled(self) -> list['GDO_Module']:
-        yield from self._enabled
+        return self._enabled
 
     def reset(self):
         self._cache.clear()
 
     def gdo_import(self, name: str) -> 'GDO_Module':
-        mn = importlib.import_module("gdo." + name)
-        classname = 'module_' + name
-        if klass := mn.__dict__.get(classname):
+        mn = importlib.import_module(f"gdo.{name}")
+        if klass := mn.__dict__.get(f"module_{name}"):
             self._cache[name] = module = klass.blank({
                 'module_name': name,
                 'module_enabled': '0',
             })
             module._blank = False
             return module
+        raise GDOException(t('err_module', (html(name),)))
 
     def __init__(self):
-        self._cache = self.__dict__.get('_cache', {})
+        self._cache = {}
+        self._enabled = []
+        self._methods = {}
 
     def get_module(self, module_name: str) -> 'GDO_Module':
         return self._cache.get(module_name, None)
@@ -189,7 +191,6 @@ class ModuleLoader:
         """
         Init all methods
         """
-        self._methods = {}
         for module in self._cache.values():
             for method in module.get_methods():
                 try:

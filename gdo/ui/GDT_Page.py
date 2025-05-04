@@ -3,6 +3,7 @@ import functools
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
+from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_TemplateHTML import tplhtml
@@ -87,3 +88,7 @@ class GDT_Page(GDT):
             'code': Application.get_status_code(),
             'data': self._result.render_json(),
         }
+
+    def init_sidebars(self):
+        for module in ModuleLoader.instance().enabled():
+            module.gdo_init_sidebar(self)
