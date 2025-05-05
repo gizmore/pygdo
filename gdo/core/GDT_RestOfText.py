@@ -21,5 +21,5 @@ class GDT_RestOfText(GDT_Repeat):
     def is_multiple(self) -> bool:
         return True
 
-    def render_form(self) -> str:
-        return self._proxy.render_form()
+    # def render_form(self) -> str:
+    #     return self._proxy.render_form()

@@ -55,6 +55,9 @@ class GDT_Page(GDT):
         self._method = method
         return self
 
+    def render_txt(self) -> str:
+        return self._result.render_txt()
+
     def render_html(self):
         return tplhtml('ui', 'page.html', {
             'lang': Application.LANG_ISO,

@@ -1,5 +1,6 @@
 import sys
 
+from gdo.base.Render import Mode
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_UInt import GDT_UInt
 from gdo.core.WithProxy import WithProxy
@@ -58,6 +59,15 @@ class GDT_Repeat(WithProxy, GDT_UInt):
         if value > self._max:
             return self.error('err_repeat_max', (self._max,))
         return True
+    
+    def render(self, mode: Mode = Mode.HTML):
+        super().render(mode)
+
+    def render_txt(self, mode: Mode = Mode.HTML):
+        out = ""
+        for val in self.get_val():
+            out += val
+        return out
 
     def render_cli(self) -> str:
         out = ""
