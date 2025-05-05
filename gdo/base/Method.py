@@ -170,7 +170,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         """
         Required for IRC functions when a user is member, but not authed.
         """
-        return True
+        return False
 
     def gdo_execute(self) -> GDT:
         raise GDOError('err_stub')

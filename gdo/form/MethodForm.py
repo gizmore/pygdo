@@ -18,6 +18,9 @@ class MethodForm(Method):
         '_form',
     )
 
+    def gdo_needs_authentication(self) -> bool:
+        return True
+
     def gdo_parameters(self) -> list[GDT]:
         return GDO.EMPTY_LIST
 

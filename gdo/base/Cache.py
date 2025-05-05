@@ -140,9 +140,9 @@ class Cache:
 
             if ocached := cls.OCACHE[cn].get(gid):
                 if after_write:
-                    ocached.set_vals(gdo._vals)
+                    ocached.vals(gdo._vals)
                 if rcached:
-                    ocached.set_vals(rcached)
+                    ocached.vals(rcached)
                 return ocached.all_dirty(False)
 
             if after_write:
@@ -151,7 +151,7 @@ class Cache:
                 return gdo
 
             if rcached:
-                gdo.set_vals(rcached)
+                gdo.vals(rcached)
             elif rcached := cls.get(cn, gid):
                 gdo.set_vals(rcached)
             else:
