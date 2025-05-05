@@ -208,6 +208,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def _mome_tkey(self, key: str) -> str:
         return f'{key}_{self.gdo_module().get_name()}_{self.get_name()}'
 
+    def get_method_id(self) -> str:
+        from gdo.core.GDO_Method import GDO_Method
+        return GDO_Method.for_method(self).get_id()
+
     ##############
     # Parameters #
     ##############
@@ -363,15 +367,23 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         else:
             return gdt.render(Mode.TXT)
 
-    # def _nested_parse(self):
-    #     self.init_parameters()
-
     async def _nested_execute_parse(self) -> 'GDT':
         result = self.gdo_execute()
         self.gdo_after_execute()
         return result
 
     def _prepare_nested_permissions(self, method: 'Method') -> bool:
+        if not self._env_user.is_authenticated():
+            if token := self._raw_args.get_val('_auth'):
+                if uid := self.validate_auth_token(token[0]):
+                    from gdo.core.GDO_User import GDO_User
+                    user = GDO_User.table().get_by_aid(uid)
+                    self.env_user(user, True)
+                    user._authenticated = True
+                    Application.set_current_user(user)
+                    # user.authenticate(self._env_session)
+                    # self._env_session.set_header()
+                    return True
         if not method.has_permission(method._env_user):
             self.error('err_permissions')
             return False
@@ -392,7 +404,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
 
     @functools.cache
     def get_fqn(self) -> str:
-        return self.__module__ + "." + self.__class__.__name__
+        return f"{self.__module__}.{self.__class__.__name__}"
 
     @classmethod
     def gdo_default_enabled_server(cls) -> bool:

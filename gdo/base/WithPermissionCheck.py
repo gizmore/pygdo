@@ -1,10 +1,14 @@
+import base64
+import hashlib
+import hmac
 from typing import Type
 
 from gdo.base.Application import Application
-from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.base.Util import module_enabled, href, Arrays, dump, urlencode
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
 
@@ -19,7 +23,6 @@ class WithPermissionCheck:
         if cached.get(user):
             return True
         from gdo.core.GDO_Permission import GDO_Permission
-        from gdo.core.GDT_UserType import GDT_UserType
         typestr = self.gdo_user_type()
         if typestr:
             types = typestr.split(',')
@@ -34,7 +37,7 @@ class WithPermissionCheck:
         if not self.gdo_in_channels() and self._env_channel is not None:
             return False if not display_error else self.err_not_in_channel()
         if self.gdo_needs_authentication():
-            if user.get_user_type() in (GDT_UserType.MEMBER, GDT_UserType.CHAPPY, GDT_UserType.LINK, GDT_UserType.DEVICE) and not user._authenticated:
+            if not user._authenticated:
                 return False if not display_error else self.err_not_authenticated()
         if not self.gdo_has_permission(user):
             return False if not display_error else self.err_generic_permission()
@@ -122,3 +125,41 @@ class WithPermissionCheck:
     def err_generic_permission(self):
         self.err('err_permissions')
         return False
+
+    ########
+    # AUTH #
+    ########
+    def create_autologin_token(self, user_id: str = None, method_id: str = None, valid_for_hours: int = 120) -> str:
+        from gdo.date.Time import Time
+        user_id = user_id or self._env_user.get_id()
+        method_id = method_id or self.get_method_id()
+        valid_ts = str(int(Application.TIME + Time.ONE_HOUR * valid_for_hours))
+        secret = Application.config('core.secret')
+        data = f"{user_id}|{method_id}|{valid_ts}"
+        sig = hmac.new(secret.encode(), data.encode(), hashlib.sha1).hexdigest()
+        token = f"{data}|{sig}"
+        return base64.urlsafe_b64encode(token.encode()).decode()
+
+    def validate_auth_token(self, token: str) -> str:
+        try:
+            from gdo.core.GDO_Method import GDO_Method
+            token = base64.urlsafe_b64decode(token).decode()
+            parts = token.split('|')
+            if len(parts) != 4: return ''
+            user_id, token_method_id, valid_until_str, provided_sig = parts
+            valid_until = int(valid_until_str)
+            secret = Application.config('core.secret')
+            my_id = GDO_Method.for_method(self).get_id()
+            if token_method_id != my_id: return ''
+            if valid_until < Application.TIME: return ''
+            data = f"{user_id}|{my_id}|{valid_until}"
+            expected_sig = hmac.new(secret.encode(), data.encode(), hashlib.sha1).hexdigest()
+            if not hmac.compare_digest(expected_sig, provided_sig):
+                return ''
+            return user_id
+        except Exception as ex:
+            Logger.exception(ex, 'Cannot validate auth token.')
+            return ''
+
+
+

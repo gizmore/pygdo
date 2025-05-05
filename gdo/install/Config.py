@@ -4,6 +4,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import Arrays, Files
 from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_Template import GDT_Template
+from gdo.core.GDT_Token import GDT_Token
 from gdo.date.Time import Time
 
 
@@ -28,6 +29,7 @@ class Config:
             cls.data_str('core.sitename', 'PyGDO', "Short abbrev of the site's name, like WeChall or Google."),
             cls.data_str('core.web_root', '/', 'Needs to end with a slash, E.g.: "/" or "/www/".'),
             cls.data_str('core.domain', 'localhost', "full domain for full urls in mails."),
+            cls.data_str('core.secret', GDT_Token.random(32), "Secret used in token calculations."),
             cls.data_int('core.port', 80, 'Plaintext HTTP port.').min(0).max(65535),
             cls.data_int('core.port_tls', 443, "Encrypted HTTPS port.").min(0).max(65535),
             cls.data_int('core.force_tls', 0, "Redirect every HTTP to HTTPS?").min(0).max(1),
@@ -39,7 +41,7 @@ class Config:
             cls.data_int('core.profile', 0, 'Enable yappi Profiler?').min(0).max(1),
             cls.data_int('core.allocs', 0, 'Enable memory allocation profiler?').min(0).max(1),
             GDT_Section().title_raw('File'),
-            cls.data_int('file.block_size', 4096),
+            cls.data_int('file.block_size', 4096, "Blocksize for chunked data.").min(1024).max(2**23),
             cls.data_str('file.directory', 'files/'),
             cls.data_str('file.umask', "0600"),
             cls.data_str('dir.umask', "0700"),
@@ -83,7 +85,7 @@ class Config:
     @classmethod
     def data_str(cls, key_path: str, default: str, tt: str='') -> GDT:
         from gdo.core.GDT_String import GDT_String
-        gdt = GDT_String(key_path)
+        gdt = GDT_String(key_path).not_null()
         if tt:
             gdt.tooltip_raw(tt, False)
         v = Arrays.walk(Application.CONFIG, key_path)
@@ -93,7 +95,7 @@ class Config:
     @classmethod
     def data_int(cls, key_path: str, default: int, tt: str='') -> GDT:
         from gdo.core.GDT_Int import GDT_Int
-        gdt = GDT_Int(key_path).initial(str(default))
+        gdt = GDT_Int(key_path).initial(str(default)).not_null()
         if tt:
             gdt.tooltip_raw(tt, False)
         v = Arrays.walk(Application.CONFIG, key_path)

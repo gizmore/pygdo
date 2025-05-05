@@ -60,9 +60,7 @@ class GDT_Message(GDT_Composite, GDT_Text):
     def get_rendered(self, mode: Mode) -> str:
         gdt = self.get_output_gdt(mode)
         output = gdt.get_val()
-        if output is None:
-            return self.get_rendered_now(gdt, mode)
-        return output
+        return output if output else self.get_rendered_now(gdt, mode)
 
     def get_rendered_now(self, gdt: GDT, mode: Mode) -> str:
         html = self.converted_html()

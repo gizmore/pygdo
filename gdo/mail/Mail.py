@@ -4,6 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from gdo.base.Application import Application
+from gdo.base.Logger import Logger
 from gdo.base.Util import Strings
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Template import tpl
@@ -86,6 +87,7 @@ class Mail:
         self.SENT += 1
         if self.is_debug():
             self.print_mail_to_screen()
+            self.log_mail()
             return True
         if self._lazy:
             GDO_Mail.blank({
@@ -98,7 +100,14 @@ class Mail:
 
     def print_mail_to_screen(self):
         Application.get_page()._top_bar.add_field(GDT_HTML().text(self._body_text()))
-        pass
+
+    def log_mail(self):
+        Logger.write('mail.log', self._subject, False)
+        Logger.write('mail.log', '-'*48, False)
+        Logger.write('mail.log', self._body_text(), False)
+        Logger.write('mail.log', '-'*48, False)
+        Logger.write('mail.log', self._body_html(), False)
+        Logger.write('mail.log', '-'*48, False)
 
     def _body_html(self) -> str:
         return tpl('mail', 'mail.html', {"mail": self})

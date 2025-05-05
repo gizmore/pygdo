@@ -5,7 +5,6 @@ from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Method import GDT_Method
 from gdo.core.GDT_String import GDT_String
-from gdo.core.MethodCronjob import MethodCronjob
 from gdo.date.Time import Time
 from gdo.date.GDT_Created import GDT_Created
 

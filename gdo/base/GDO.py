@@ -183,6 +183,7 @@ class GDO(WithName, WithBulk, GDT):
         self._vals = vals
         self._values.clear()
         self._dirty.clear()
+        self._all_dirty = False
         self._my_id = None
         self._blank = False
         return self
@@ -350,7 +351,7 @@ class GDO(WithName, WithBulk, GDT):
         if not self.is_persisted():
             return self.insert()
         obj = self
-        if len(self._dirty):
+        if len(self._dirty) or self._all_dirty:
             dirty = self.dirty_vals()
             obj.before_update()
             obj.query().type(Type.UPDATE).set_vals(dirty).where(self.pk_where()).exec()

@@ -113,7 +113,8 @@ class Result:
         if (row := self.fetch_assoc()) is None:
             return None
         if self._nocache:
-            return self.get_reused_object().vals(row)
+            obj = self._table.__class__()
+            return obj.vals(row)
         else:
             obj = self._table.__class__()
             obj._vals = row #.update(row)

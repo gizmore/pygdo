@@ -225,7 +225,7 @@ def pygdo_application(environ, start_response):
             if Application.config('core.profile') == '1':
                 if qs.get('__yappi', None):
                     with open(Application.file_path('temp/yappi.log'), 'a') as f:
-                        yappi.get_func_stats().print_all(out=f, columns={
+                        yappi.get_func_stats().sort('ncall', 'tavg').print_all(out=f, columns={
                             0: ("name", 64),
                             1: ("ncall", 12),
                             2: ("tsub", 8),

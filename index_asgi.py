@@ -96,6 +96,7 @@ async def app(scope, receive, send):
 
             Application.init_asgi(scope)
             Application.init_common()
+            Application.tick()
 
             qs = parse_qs(scope['query_string'].decode())
 

@@ -26,6 +26,16 @@ class GDT_String(GDT_Field):
     _re_options: int
     _input_type: str
 
+    # __slots__ = (
+    #     '_encoding',
+    #     '_case_s',
+    #     '_min_len',
+    #     '_max_len',
+    #     '_pattern',
+    #     '_re_options',
+    #     '_input_type',
+    # )
+
     def __init__(self, name):
         super().__init__(name)
         self._encoding = Encoding.UTF8
@@ -109,9 +119,7 @@ class GDT_String(GDT_Field):
     def gdo_column_define_collate(self) -> str:
         if self._encoding == Encoding.BINARY:
             return self.EMPTY_STR
-        append = '_general_ci'
-        if self._case_s:
-            append = '_bin'
+        append = '_bin' if self._case_s else '_general_ci'
         return f" COLLATE {self.gdo_column_define_charset()}{append}"
 
     def gdo_compare(self, gdt: GDT) -> int:

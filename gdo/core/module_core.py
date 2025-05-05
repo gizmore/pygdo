@@ -78,6 +78,7 @@ class module_core(GDO_Module):
                     if hasattr(obj, 'cache_clear') and callable(obj.cache_clear):
                         obj.cache_clear()
             except Exception as ex:
+
                 Logger.exception(ex, f"cache_clear failed for {obj}")
 
     def gdo_dependencies(self) -> list:

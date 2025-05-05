@@ -56,6 +56,8 @@ class Application:
     def is_http(cls, is_http: bool):
         cls.IS_HTTP = is_http
 
+
+
     @classmethod
     def has_db(cls):
         return cls.db() is not None
@@ -174,12 +176,16 @@ class Application:
         cls.STORAGE.headers = {}
         cls.init_cookies_wsgi(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
-        cls.PROTOCOL = environ.get('REQUEST_SCHEME', environ.get('wsgi.url_scheme'))
+        cls.PROTOCOL = environ.get('REQUEST_SCHEME', environ.get('wsgi.url_scheme', cls.config('core.force_tls', '0'))).lower()
         cls.mode(Mode.HTML)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.user = None
         from gdo.base.Cache import Cache
         Cache.clear_ocache()
+
+    @classmethod
+    def is_tls(cls) -> bool:
+        return cls.PROTOCOL == 'https'
 
     @classmethod
     def init_asgi(cls, scope):
@@ -331,3 +337,13 @@ class Application:
     @classmethod
     def get_status_code(cls) -> int:
         return int(cls.get_status()[0:3])
+
+    @classmethod
+    def get_current_port(cls, pre_colon: str = ':') -> str:
+        if cls.is_tls() or Application.config('core.force_tls', '0') == '1':
+            port = Application.config('core.tls_port')
+            return port if port == '443' else pre_colon + port
+        else:
+            port = Application.config('core.port')
+            return port if port == '80' else pre_colon + port
+

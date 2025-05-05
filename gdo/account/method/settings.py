@@ -36,7 +36,7 @@ class settings(MethodForm):
         ]
 
     def get_module(self) -> GDO_Module:
-        return self.init_param_value('module')
+        return self.param_value('module')
 
     def gdo_create_form(self, form: GDT_Form) -> None:
         module = self.get_module()
