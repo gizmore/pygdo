@@ -1,3 +1,5 @@
+from typing import Iterator
+
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.GDO import GDO
@@ -96,13 +98,13 @@ class MethodForm(Method):
             self.init_parameter(gdt)
         return params
 
-    def form_parameters(self) -> list[GDT]:
+    def form_parameters(self) -> Iterator[GDT]:
         yield from self.get_form().all_fields()
         yield from self.get_form().actions().all_fields()
 
     def cli_auto_button(self):
         for gdt in self.get_form().actions().all_fields():
-            if isinstance(gdt, GDT_Submit) and gdt._default_button:
+            if type(gdt) is GDT_Submit and gdt._default_button:
                 self._raw_args.add_arg(gdt.get_name(), '1')
                 break
         return self
