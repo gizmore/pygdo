@@ -224,16 +224,6 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                 self.init_parameter(gdt)
         return self._parameters
 
-    # def set_parameter_positions(self):
-    #     for gdt in self._parameters.values():
-    #         if gdt.is_positional():
-    #             self._ppos += 1
-    #             gdt.position(self._ppos)
-
-    # def init_parameter_by_key(self, key: str):
-    #     gdt = self.parameter(key)
-    #     return self.init_parameter(gdt)
-
     def init_parameter(self, gdt: GDT) -> GDT:
         val = None
         self._parameters[gdt.get_name()] = gdt
@@ -252,20 +242,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         val = val[0] if type(val) is list and not gdt.is_multiple() else val
         return gdt.val(val)
 
-    # def init_parameters(self, reset: bool = False):
-    #     # if reset and hasattr(self, '_parameters'):
-    #     #     del self._parameters
-    #     #     self.parameters()
-    #     for gdt in self._parameters.values():
-    #         self.init_parameter(gdt)
-
     def parameter(self, key: str, init: bool = False) -> GDT:
         return self.parameters().get(key)
-
-    # def init_param_val(self, key: str, throw: bool = True) -> str|None:
-    #     gdt = self.parameter(key)
-    #     self.init_parameter(gdt)
-    #     return self.param_val(key, throw)
 
     def param_val(self, key: str, throw: bool = True) -> str|None:
         gdt = self.parameter(key)
@@ -275,11 +253,6 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         elif throw:
             raise GDOParamError('err_param', (key, gdt.render_error()))
         return None
-
-    # def init_param_value(self, key: str, throw: bool = True) -> any:
-    #     gdt = self.parameter(key)
-    #     self.init_parameter(gdt)
-    #     return self.param_value(key, throw)
 
     def param_value(self, key: str, throw: bool = True) -> any:
         gdt = self.parameter(key)
@@ -378,11 +351,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                 if uid := self.validate_auth_token(token[0]):
                     from gdo.core.GDO_User import GDO_User
                     user = GDO_User.table().get_by_aid(uid)
-                    self.env_user(user, True)
+                    self.env_user(user, False)
                     user._authenticated = True
                     Application.set_current_user(user)
-                    # user.authenticate(self._env_session)
-                    # self._env_session.set_header()
                     return True
         if not method.has_permission(method._env_user):
             self.error('err_permissions')
