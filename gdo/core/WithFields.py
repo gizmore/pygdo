@@ -50,10 +50,18 @@ class WithFields:
     # Render #
     ##########
     def render(self, mode: Mode = Mode.HTML):
+        if mode == Mode.JSON:
+            return self.render_json()
         return self.render_fields(mode)
 
     def render_html(self) -> str:
         return self.render_fields()
+
+    def render_json(self):
+        out = {}
+        for gdt in self.all_fields():
+            out.update(gdt.render_json())
+        return out
 
     def render_fields(self, mode: Mode = Mode.HTML) -> str:
         if not hasattr(self, '_fields'):

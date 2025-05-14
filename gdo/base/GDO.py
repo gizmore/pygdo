@@ -231,6 +231,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def all_dirty(self, dirty: bool=True) -> Self:
         self._all_dirty = dirty
+        self._dirty = self._dirty if dirty else []
         return self
 
     def query(self) -> Query:

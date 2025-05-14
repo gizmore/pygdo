@@ -195,10 +195,9 @@ class GDT_String(GDT_Field):
         return ''
 
     def render_json(self):
-        dic = {
+        return {
             self.get_name(): self.get_val(),
         }
-        return jsn(dic)
 
     def render_form(self):
         if self.is_hidden():

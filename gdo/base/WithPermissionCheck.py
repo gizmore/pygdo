@@ -36,9 +36,9 @@ class WithPermissionCheck:
             return False if not display_error else self.err_not_in_private()
         if not self.gdo_in_channels() and self._env_channel is not None:
             return False if not display_error else self.err_not_in_channel()
-        if self.gdo_needs_authentication():
-            if not user._authenticated:
-                return False if not display_error else self.err_not_authenticated()
+        # if self.gdo_needs_authentication():
+        #     if not user._authenticated:
+        #         return False if not display_error else self.err_not_authenticated()
         if not self.gdo_has_permission(user):
             return False if not display_error else self.err_generic_permission()
         if not self.allows_connector():

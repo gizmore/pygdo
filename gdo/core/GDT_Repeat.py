@@ -61,7 +61,7 @@ class GDT_Repeat(WithProxy, GDT_UInt):
         return True
     
     def render(self, mode: Mode = Mode.HTML):
-        super().render(mode)
+        return super().render(mode)
 
     def render_txt(self, mode: Mode = Mode.HTML):
         out = ""
