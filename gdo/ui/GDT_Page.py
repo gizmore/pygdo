@@ -7,6 +7,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.base.Util import jsn
 from gdo.core.GDT_Container import GDT_Container
+from gdo.core.GDT_Serialize import GDT_Serialize, SerializeMode
 from gdo.core.GDT_TemplateHTML import tplhtml
 from gdo.ui.GDT_Bar import GDT_Bar
 
@@ -88,10 +89,11 @@ class GDT_Page(GDT):
         return "\n".join([f'<link rel="stylesheet" href="{url}" />' for url in cls._css])
 
     def render_json(self):
-        return jsn({
+        json = {
             'code': Application.get_status_code(),
             'data': self._result.render_json(),
-        })
+        }
+        return GDT_Serialize('json').mode(SerializeMode.JSON).to_val(json)
 
     def init_sidebars(self):
         for module in ModuleLoader.instance().enabled():

@@ -1,7 +1,7 @@
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.core.GDT_Serialize import GDT_Serialize, Mode
+from gdo.core.GDT_Serialize import GDT_Serialize, SerializeMode
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_TableName import GDT_TableName
 
@@ -12,7 +12,7 @@ class ipc_gdo(Method):
         return [
             GDT_TableName('table').not_null(),
             GDT_String('id').not_null(),
-            GDT_Serialize('dirty').mode(Mode.JSON),
+            GDT_Serialize('dirty').mode(SerializeMode.JSON),
         ]
 
     def gdo_execute(self) -> GDT:

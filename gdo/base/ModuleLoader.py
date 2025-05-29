@@ -10,6 +10,7 @@ from gdo.base.Logger import Logger
 from gdo.base.Trans import t
 
 if TYPE_CHECKING:
+    from gdo.base.Method import Method
     from gdo.base.GDO_Module import GDO_Module
 
 import glob
@@ -18,14 +19,13 @@ import importlib
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException, GDODBException
 from gdo.base.GDO_ModuleVal import GDO_ModuleVal
-from gdo.base.Method import Method
 from gdo.base.Result import ResultType
 from gdo.base.Util import Files, html
 
 
 class ModuleLoader:
     _cache: dict[str, 'GDO_Module'] # name
-    _methods: dict[str, 'GDO_Module'] # trigger
+    _methods: dict[str, 'Method'] # trigger
     _enabled: list['GDO_Module']
 
     @classmethod
