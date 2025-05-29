@@ -1,6 +1,7 @@
 import sys
 
 from gdo.base.Trans import t
+from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_String import GDT_String
 
 
@@ -25,12 +26,8 @@ class GDT_Int(GDT_String):
     #######
     # GDT #
     #######
-    # def val(self, val: str | list):
-    #     if self._multiple:
-    #         return super().val(val)
-    #     if val is None:
-    #         return None
-    #     return super().val(val)
+    def get_val(self):
+        return GDT_Field.get_val(self)
 
     ##############
     # Attributes #

@@ -204,7 +204,7 @@ def all_private_messages():
         out += "\n".join(msgs)
         out += "\n"
         msgs.clear()
-    return out
+    return out.strip()
 
 def cli_plug(user: 'GDO_User', command: str) -> str:
     return text_plug(Mode.CLI, command, user)

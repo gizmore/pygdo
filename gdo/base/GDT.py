@@ -273,26 +273,27 @@ class GDT(WithSerialization):
         return self.render_gdt(mode)
 
     def render_gdt(self, mode: Mode) -> str|dict|list|None:
-        match mode:
-            case Mode.NIL: return ''
-            case Mode.HTML: return self.render_html()
-            case Mode.CELL: return self.render_cell()
-            case Mode.FORM: return self.render_form()
-            case Mode.LIST: return self.render_list()
-            case Mode.CARD: return self.render_card()
-            case Mode.CLI: return self.render_cli()
-            case Mode.IRC: return self.render_irc()
-            case Mode.TELEGRAM: return self.render_telegram()
-            case Mode.XML: return self.render_xml()
-            case Mode.JSON: return self.render_json()
-            case Mode.MAIL: return self.render_mail()
-            case Mode.TXT: return self.render_txt()
-            case Mode.MARKDOWN: return self.render_markdown()
-            case Mode.GTK: return self.render_gtk()
-            case Mode.RSS: return self.render_rss()
-            case Mode.DOC: return self.render_doc()
-            case Mode.TOML: return self.render_toml()
-        raise GDOException(t('err_render_mode', (str(mode),)))
+        return getattr(self, f"render_{mode.name.lower()}")()
+        # match mode:
+        #     case Mode.NIL: return ''
+        #     case Mode.HTML: return self.render_html()
+        #     case Mode.CELL: return self.render_cell()
+        #     case Mode.FORM: return self.render_form()
+        #     case Mode.LIST: return self.render_list()
+        #     case Mode.CARD: return self.render_card()
+        #     case Mode.CLI: return self.render_cli()
+        #     case Mode.IRC: return self.render_irc()
+        #     case Mode.TELEGRAM: return self.render_telegram()
+        #     case Mode.XML: return self.render_xml()
+        #     case Mode.JSON: return self.render_json()
+        #     case Mode.MAIL: return self.render_mail()
+        #     case Mode.TXT: return self.render_txt()
+        #     case Mode.MARKDOWN: return self.render_markdown()
+        #     case Mode.GTK: return self.render_gtk()
+        #     case Mode.RSS: return self.render_rss()
+        #     case Mode.DOC: return self.render_doc()
+        #     case Mode.TOML: return self.render_toml()
+        # raise GDOException(t('err_render_mode', (str(mode),)))
 
     def render_method(self, mode: Mode):
         return getattr(self, f'render_{mode.name.lower()}')

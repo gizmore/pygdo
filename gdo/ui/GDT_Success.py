@@ -37,5 +37,5 @@ class GDT_Success(GDT_Panel):
     def render_irc(self) -> str:
         return Render.green(self.render_text(Mode.IRC), Mode.IRC)
 
-    def render_html(self):
-        return Render.green(f"{self.render_title(Mode.HTML)}: {self.render_text(Mode.HTML)}", Mode.HTML)
+    # def render_html(self):
+    #     return Render.green(f"{self.render_title(Mode.HTML)}: {self.render_text(Mode.HTML)}", Mode.HTML)
