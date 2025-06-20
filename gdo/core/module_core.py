@@ -1,4 +1,3 @@
-import asyncio
 import gc
 import types
 from datetime import datetime
@@ -10,7 +9,6 @@ from gdo.base.Exceptions import GDOException
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
-from gdo.base.Method import Method
 from gdo.core import GDO_MethodValServerBlob
 from gdo.core.Connector import Connector
 from gdo.core.GDO_Channel import GDO_Channel

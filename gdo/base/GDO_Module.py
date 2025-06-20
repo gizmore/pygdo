@@ -1,5 +1,4 @@
 import importlib
-import os
 from glob import glob
 
 from typing_extensions import Self
@@ -17,13 +16,13 @@ from gdo.base.Exceptions import GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import t
-from gdo.base.Util import Files, href, err, msg
+from gdo.base.Util import Files, href, err, msg, Strings
 from gdo.base.WithModuleConfig import WithModuleConfig
 
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1031"
+    CORE_REV = "PyGDOv8.0.2-r1032"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -144,17 +143,19 @@ class GDO_Module(WithModuleConfig, GDO):
     def get_methods(self) -> list['Method']:
         methods = []
         dirname = self.file_path('method')
-        for file_name in glob(dirname, recursive=True):
+        for file_name, file_path in glob(dirname, recursive=True):
             if not file_name.startswith('_'):
-                method = self.instantiate_method(file_name[:-3])
+                method = self.instantiate_method(file_path)
                 methods.append(method)
         return methods
 
     def get_method(self, name: str) -> 'Method':
-        return self.instantiate_method(name)
+        return self.instantiate_method(f"gdo.{self.get_name()}.method.{name}")
 
-    def instantiate_method(self, name: str) -> 'Method':
-        module_path = f"gdo.{self.get_name()}.method.{name}"
+    def instantiate_method(self, path: str) -> 'Method':
+        path = path.replace('/', '.')
+        name = Strings.substr_from(path, '.method.')
+        module_path =  f"gdo.{self.get_name()}.method.{path}"
         if method_class := self.METHOD_CACHE.get(module_path):
             return method_class().module(self)
         try:

@@ -468,6 +468,7 @@ class Arrays:
 
 
 class Random:
+
     _seed: int
     _old_state: any
 
@@ -481,38 +482,47 @@ class Random:
     def __exit__(self, *a):
         random.setstate(self._old_state)
 
-    @classmethod
-    def init(cls, seed: int):
+    @staticmethod
+    def init(seed: int):
         random.seed(seed)
 
-    @classmethod
-    def token(cls, length: int):
+    @staticmethod
+    def token(length: int):
         return secrets.token_hex(length)
 
-    @classmethod
-    def mrand(cls, min: int = 0, max: int = sys.maxsize):
-        return random.randint(min, max)
+    @staticmethod
+    def rand(lo: int = 0, hi: int = sys.maxsize):
+        return lo + secrets.randbelow(hi - lo + 1)
 
-    @classmethod
-    def mrandf(cls, min: float = None, max: float = None):
-        if min is None:
-            min = -sys.float_info.max
-        if max is None:
-            max = sys.float_info.max
-        return random.uniform(min, max)
+    @staticmethod
+    def randf(lo: float = 0.0, hi: float = 1.0):
+        r = secrets.randbits(53) / (1 << 53)
+        return lo + (hi - lo) * r
 
-    @classmethod
-    def dict_key(cls, dic: dict):
+    @staticmethod
+    def mrand(lo: int = 0, hi: int = sys.maxsize):
+        return random.randint(lo, hi)
+
+    @staticmethod
+    def mrandf(lo: float = None, hi: float = None):
+        if lo is None:
+            lo = -sys.float_info.max
+        if hi is None:
+            hi = sys.float_info.max
+        return random.uniform(lo, hi)
+
+    @staticmethod
+    def dict_key(dic: dict):
         """
         Return a random dictionary key
         """
         keys = list(dic.keys())
-        return cls.list_item(keys)
+        return Random.list_item(keys)
 
-    @classmethod
-    def list_item(cls, lst: list):
+    @staticmethod
+    def list_item(lst: list):
         if lst:
-            index = cls.mrand(0, len(lst) - 1)
+            index = Random.mrand(0, len(lst) - 1)
             return lst[index]
         return None
 
