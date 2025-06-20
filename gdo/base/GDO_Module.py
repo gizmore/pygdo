@@ -1,3 +1,4 @@
+import functools
 import importlib
 from glob import glob
 
@@ -22,7 +23,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1032"
+    CORE_REV = "PyGDOv8.0.2-r1033"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -143,19 +144,20 @@ class GDO_Module(WithModuleConfig, GDO):
     def get_methods(self) -> list['Method']:
         methods = []
         dirname = self.file_path('method')
-        for file_name, file_path in glob(dirname, recursive=True):
+        for file_name, file_path, file_ext in glob(f"{dirname}/**/*", recursive=True):
             if not file_name.startswith('_'):
                 method = self.instantiate_method(file_path)
                 methods.append(method)
         return methods
 
+    @functools.lru_cache
     def get_method(self, name: str) -> 'Method':
         return self.instantiate_method(f"gdo.{self.get_name()}.method.{name}")
 
     def instantiate_method(self, path: str) -> 'Method':
-        path = path.replace('/', '.')
-        name = Strings.substr_from(path, '.method.')
-        module_path =  f"gdo.{self.get_name()}.method.{path}"
+        mnam = path.replace('/', '.')
+        name = Strings.substr_from(mnam, '.method.')
+        module_path =  f"gdo.{self.get_name()}.method.{name}"
         if method_class := self.METHOD_CACHE.get(module_path):
             return method_class().module(self)
         try:
