@@ -1,5 +1,6 @@
 import importlib
 import os
+from glob import glob
 
 from typing_extensions import Self
 
@@ -22,7 +23,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1030"
+    CORE_REV = "PyGDOv8.0.2-r1031"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -143,11 +144,10 @@ class GDO_Module(WithModuleConfig, GDO):
     def get_methods(self) -> list['Method']:
         methods = []
         dirname = self.file_path('method')
-        if Files.exists(dirname):
-            for file_name in os.listdir(dirname):
-                if not file_name.startswith('_'):
-                    method = self.instantiate_method(file_name[:-3])
-                    methods.append(method)
+        for file_name in glob(dirname, recursive=True):
+            if not file_name.startswith('_'):
+                method = self.instantiate_method(file_name[:-3])
+                methods.append(method)
         return methods
 
     def get_method(self, name: str) -> 'Method':

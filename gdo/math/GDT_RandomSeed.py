@@ -11,8 +11,12 @@ class GDT_RandomSeed(GDT_UInt):
         self.bytes(8)
         self._init_random = False
 
+    def init_random(self, init_random: bool = True):
+        self._init_random = init_random
+        return self
+
     def gdo_before_create(self, gdo):
-        if not self.get_val():
+        if not self.get_val() and self._init_random:
             gdo.set_value(self._name, Random.mrand(1))
         return self
     
