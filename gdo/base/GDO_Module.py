@@ -6,6 +6,8 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING, Type
 
+from gdo.base.Logger import Logger
+
 if TYPE_CHECKING:
     from gdo.ui.GDT_Page import GDT_Page
     from gdo.base.Method import Method
@@ -144,19 +146,17 @@ class GDO_Module(WithModuleConfig, GDO):
     def get_methods(self) -> list['Method']:
         methods = []
         dirname = self.file_path('method')
-        for file_name, file_path, file_ext in glob(f"{dirname}/**/*", recursive=True):
-            if not file_name.startswith('_'):
-                method = self.instantiate_method(file_path)
+        for file_name in glob(f"{dirname}/**/*", recursive=True):
+            if not '__' in file_name and Files.is_file(file_name):
+                name = Strings.substr_from(file_name[:-3].replace('/', '.'), '.method.')
+                method = self.instantiate_method(name)
                 methods.append(method)
         return methods
 
-    @functools.lru_cache
     def get_method(self, name: str) -> 'Method':
-        return self.instantiate_method(f"gdo.{self.get_name()}.method.{name}")
+        return self.instantiate_method(name)
 
-    def instantiate_method(self, path: str) -> 'Method':
-        mnam = path.replace('/', '.')
-        name = Strings.substr_from(mnam, '.method.')
+    def instantiate_method(self, name: str) -> 'Method':
         module_path =  f"gdo.{self.get_name()}.method.{name}"
         if method_class := self.METHOD_CACHE.get(module_path):
             return method_class().module(self)
@@ -169,6 +169,9 @@ class GDO_Module(WithModuleConfig, GDO):
             return method_class().module(self)
         except ModuleNotFoundError:
             raise GDOMethodException(self.get_name(), name)
+        except  Exception as x:
+            Logger.exception(x)
+            pass
 
     def href(self, method_name: str, append: str = '', format: str = 'html'):
         return href(self.get_name(), method_name, append, format)
