@@ -194,9 +194,9 @@ class ModuleLoader:
         for module in self._cache.values():
             for method in module.get_methods():
                 try:
-                    if trigger := method.__class__.gdo_trigger():
+                    if trigger := method.gdo_trigger():
                         self._methods[trigger.lower()] = method
-                        if trig := method.__class__.gdo_trig():
+                        if trig := method.gdo_trig():
                             if trig.lower() not in self._methods:
                                 self._methods[trig.lower()] = method
                 except Exception as ex:

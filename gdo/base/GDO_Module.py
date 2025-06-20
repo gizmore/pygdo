@@ -25,7 +25,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1034"
+    CORE_REV = "PyGDOv8.0.2-r1035"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -162,7 +162,7 @@ class GDO_Module(WithModuleConfig, GDO):
             return method_class().module(self)
         try:
             mn = importlib.import_module(module_path)
-            method_class = getattr(mn, name, None)
+            method_class = getattr(mn, Strings.rsubstr_from(name, '.', name), None)
             if not method_class:
                 raise GDOMethodException(self.get_name(), name)
             self.METHOD_CACHE[module_path] = method_class
