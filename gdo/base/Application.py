@@ -221,7 +221,7 @@ class Application:
         from gdo.base.Database import Database
         # from gdo.ui.GDT_Page import GDT_Page
         # cls.STORAGE.user = None
-        # cls.mode(Mode.HTML)
+        cls.mode(Mode.HTML)
         # cls.STORAGE.lang = 'en'
         # cls.STORAGE.page = GDT_Page()
         # if not cls.STORAGE.DB:
