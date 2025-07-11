@@ -366,8 +366,8 @@ class App:
             modules = ModuleLoader.instance().load_modules_fs(args.module, False)
             modules = list(modules.values())
             for module in modules:
-                if module := ModuleLoader.instance().load_module_db(module.get_name()):
-                    print(f"Wiping module {module.get_name()}")
+                if module := ModuleLoader.instance().load_module_db(module.get_name):
+                    print(f"Wiping module {module.get_name}")
                     Installer.wipe(module)
                 else:
                     print(f"Module is not installed.")
@@ -455,6 +455,7 @@ async def run_pygdo_admin():
             import unittest  # Required for unittest detection later
             config_file = 'protected/config_test.toml'
         Application.init(path, config_file)
+        Application.init_common()
         try:
             Application.init_cli()
         except Exception as ex:

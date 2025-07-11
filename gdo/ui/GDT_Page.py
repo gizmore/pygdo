@@ -40,7 +40,7 @@ class GDT_Page(GDT):
 
     def __init__(self):
         super().__init__()
-        self.init()
+        # self.init()
 
     def init(self):
         self._title_bar = GDT_Bar('title').horizontal()
@@ -48,6 +48,7 @@ class GDT_Page(GDT):
         self._left_bar = GDT_Bar('left').vertical()
         self._right_bar = GDT_Bar('right').vertical()
         self._bottom_bar = GDT_Container()
+        return self
 
     def result(self, result: GDT):
         self._result = result

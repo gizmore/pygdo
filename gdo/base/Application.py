@@ -115,16 +115,13 @@ class Application:
 
     @classmethod
     def fresh_page(cls):
-        from gdo.ui.GDT_Page import GDT_Page
-        cls.STORAGE.page = page = GDT_Page()
-        cls.status('200 OK')
-        return page
+        if not hasattr(cls.STORAGE, 'page'):
+            from gdo.ui.GDT_Page import GDT_Page
+            cls.STORAGE.page = GDT_Page()
+        return cls.STORAGE.page.init()
 
     @classmethod
     def get_page(cls) -> 'GDT_Page':
-        # if not hasattr(cls.STORAGE, 'page'):
-        #     from gdo.ui.GDT_Page import GDT_Page
-        #     cls.STORAGE.page = GDT_Page()
         return cls.STORAGE.page
 
     @classmethod

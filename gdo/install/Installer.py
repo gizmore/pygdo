@@ -71,7 +71,7 @@ class Installer:
     @classmethod
     def install_module(cls, module: GDO_Module, verbose: bool = False) -> bool:
         if verbose:
-            print(f"Installing module {module.get_name()}")
+            print(f"Installing module {module.get_name}")
         if not module.is_installable():
             return False
         classes = module.gdo_classes()
@@ -90,14 +90,14 @@ class Installer:
     @classmethod
     def install_module_entry(cls, module: GDO_Module):
         loader = ModuleLoader.instance()
-        db = loader.load_module_db(module.get_name())
+        db = loader.load_module_db(module.get_name)
         mid = '0'
         if db is not None:
             mid = db.get_id()
             module = db
         module.vals({
             'module_id': mid,
-            'module_name': module.get_name(),
+            'module_name': module.get_name,
             'module_enabled': '1',
             'module_priority': str(module._priority),
         })
@@ -208,4 +208,4 @@ class Installer:
 
     @classmethod
     def get_repo_info(cls, module: GDO_Module):
-        return cls.load_provider_toml()[module.get_name()]
+        return cls.load_provider_toml()[module.get_name]

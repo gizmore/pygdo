@@ -37,7 +37,7 @@ class GDT_File(GDT_Object):
 
     def gdo_added_to_form(self, form: 'GDT_Form'):
         form.multipart()
-        self.upload_path(f"{form._method.gdo_module().get_name()}.{form._method.get_name()}.{self._name}")
+        self.upload_path(f"{form._method.gdo_module().get_name}.{form._method.get_name()}.{self._name}")
 
     ###########
     # Options #

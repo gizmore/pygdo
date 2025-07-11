@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import cached_property
 
 
 class Mode(Enum):
@@ -28,6 +29,10 @@ class Mode(Enum):
     DOC = 20
     TOML = 21
 
+    def __init__(self, *_):
+        self.lower = self.name.lower()
+        self.render_func_name = f"render_{self.lower}"
+
     @classmethod
     def explicit(cls) -> list['Mode']:
         return [
@@ -44,7 +49,6 @@ class Mode(Enum):
 
     def is_textual(self):
         return not self.is_html()
-
 
 class Render:
     """

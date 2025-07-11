@@ -36,6 +36,9 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
         self._actions = GDT_Menu()
         self._slim = False
         self._encoding = Encoding.URLENCODED
+        self._text_key = ''
+        self._text_args = None
+        self._text_escaped = False
 
     def method(self, method: 'MethodForm'):
         self._method = method

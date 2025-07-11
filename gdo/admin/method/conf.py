@@ -53,7 +53,7 @@ class conf(Method):
         loader = ModuleLoader.instance()
         all_ = {}
         for module in loader._cache.values():
-            name = Render.bold(module.get_name(), self._env_mode)
+            name = Render.bold(module.get_name, self._env_mode)
             confs = module.gdo_module_config()
             confs = [gdt for gdt in confs if gdt.is_writable()]
             if confs:

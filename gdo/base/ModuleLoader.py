@@ -109,12 +109,12 @@ class ModuleLoader:
         return False
 
     def on_module_installed(self, module: 'GDO_Module'):
-        self._cache[module.get_name()] = module
+        self._cache[module.get_name] = module
         module.init()
 
     def after_delete(self, module: GDO_Module):
-        if module.get_name() in self._cache:
-            del self._cache[module.get_name()]
+        if module.get_name in self._cache:
+            del self._cache[module.get_name]
 
     def load_modules_db(self, enabled: None | bool = True):
         from gdo.base.GDO_Module import GDO_Module
@@ -167,7 +167,7 @@ class ModuleLoader:
             if enabled and not module.is_enabled():
                 continue
             module.init()
-            module.gdo_load_scripts(GDT_Page())
+            module.gdo_load_scripts(Application.get_page())
 
     def reload_modules(self):
         self.init_modules(True, True)

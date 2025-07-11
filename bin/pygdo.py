@@ -52,6 +52,7 @@ async def pygdo(line: str = None):
 
     Logger.init(os.path.dirname(__file__)+"/../../protected/logs/")
     Application.init(__file__ + "/../../", args.config)
+    Application.init_common()
     loader = ModuleLoader.instance()
     loader.load_modules_db()
     loader.init_modules(True, True)

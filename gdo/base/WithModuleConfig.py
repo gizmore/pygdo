@@ -51,10 +51,10 @@ class WithModuleConfig:
                     'mv_val': val,
                 }).soft_replace()
                 from gdo.base.IPC import IPC
-                IPC.send('base.ipc_modconf', (self.get_name(), key, val))
+                IPC.send('base.ipc_modconf', (self.get_name, key, val))
                 gdt.val(val)
         else:
-            raise GDOValidationException(self.get_name(), key, val)
+            raise GDOValidationException(self.get_name, key, val)
         return self
 
     def increase_config_val(self, key: str, by: int | float):

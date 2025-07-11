@@ -52,42 +52,39 @@ class Trans:
     def __exit__(self, *args):
         Application.STORAGE.lang = self.old_iso
 
-    @classmethod
-    def init(cls):
-        cls._load()
+    @staticmethod
+    def init():
+        Trans._load()
 
-    @classmethod
-    def _load(cls):
+    @staticmethod
+    def _load():
         pattern = os.path.join(Application.file_path('gdo/'), "*", "lang", "*.toml")
         for lang_file in glob.glob(pattern, recursive=True):
-            cls._load_file(lang_file)
-        cls.EN = cls.CACHE.get('en', {})
+            Trans._load_file(lang_file)
+        Trans.EN = Trans.CACHE.get('en', {})
 
-    @classmethod
-    def _load_file(cls, lang_file: str):
+    @staticmethod
+    def _load_file(lang_file: str):
         iso = Strings.rsubstr_from(lang_file, 'lang/')
         iso = iso[-7:-5]
-        if iso not in cls.CACHE:
-            cls.CACHE[iso] = {}
+        if iso not in Trans.CACHE:
+            Trans.CACHE[iso] = {}
         with open(lang_file, 'r', encoding='UTF-8') as fd:
             more = tomlkit.load(fd)
-            cls.CACHE[iso].update(more)
+            Trans.CACHE[iso].update(more)
 
-    @classmethod
-    def t(cls, key: str, args: tuple=None):
-        return tiso(Application.STORAGE.lang, key, args)
+    @staticmethod
+    def t(key: str, args: tuple=None):
+        if format := Trans.CACHE.get(Application.STORAGE.lang, Trans.EN).get(key):
+            return format % args if args else format
+        return key % args if args else key
 
-    @classmethod
-    def tiso(cls, iso: str, key: str, args: tuple = None):
-        try:
-            if format := cls.CACHE.get(iso, cls.EN).get(key): #, cls.EN.get(key, key))
-                return format % args if args else format
-            return key % args if args else key
-        except:
-            if args:
-                return key + "(" + str(args) + ")"
-            return key
+    @staticmethod
+    def tiso(iso: str, key: str, args: tuple = None):
+        if format := Trans.CACHE.get(iso, Trans.EN).get(key):
+            return format % args if args else format
+        return key % args if args else key
 
-    @classmethod
-    def has(cls, key: str) -> bool:
-        return key in cls.CACHE[Application.STORAGE.lang]
+    @staticmethod
+    def has(key: str) -> bool:
+        return key in Trans.CACHE[Application.STORAGE.lang]

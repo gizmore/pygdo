@@ -39,7 +39,7 @@ def create_providers():
     data = {}
     for module in modules.values():
         if module.is_installable():
-            data[module.get_name()] = [
+            data[module.get_name] = [
                 [get_git_remote(module.file_path())],
                 module.gdo_dependencies(),
                 module.gdo_is_site_module(),

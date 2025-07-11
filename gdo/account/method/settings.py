@@ -45,8 +45,8 @@ class settings(MethodForm):
             if isinstance(gdt, GDT_Field):
                 gdt = GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current())
             form.add_field(gdt)
-        form.href(href('account', 'all_settings', f'&module={module.get_name()}'))
-        form.actions().add_field(GDT_Submit(f'submit_{module.get_name()}').calling(self.form_submitted))
+        form.href(href('account', 'all_settings', f'&module={module.get_name}'))
+        form.actions().add_field(GDT_Submit(f'submit_{module.get_name}').calling(self.form_submitted))
 
     def form_submitted(self):
         user = self._env_user

@@ -1,8 +1,9 @@
 import functools
 import importlib
-from functools import lru_cache
+from functools import lru_cache, cache
 from glob import glob
 
+from discord.utils import cached_property
 from typing_extensions import Self
 
 from typing import TYPE_CHECKING, Type, Iterator
@@ -26,7 +27,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1062"
+    CORE_REV = "PyGDOv8.0.2-r1063"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -42,7 +43,7 @@ class GDO_Module(WithModuleConfig, GDO):
 
     @classmethod
     def instance(cls) -> Self:
-        return ModuleLoader.instance().get_module(cls.get_name())
+        return ModuleLoader.instance().get_module(cls.__name__[7:])
 
     def __init__(self):
         super().__init__()
@@ -55,7 +56,7 @@ class GDO_Module(WithModuleConfig, GDO):
 
     def is_core_module(self) -> bool:
         from gdo.core.module_core import module_core
-        return self.get_name() in module_core.instance().gdo_dependencies()
+        return self.get_name in module_core.instance().gdo_dependencies()
 
     def gdo_licenses(self) -> list[str]:
         return ['LICENSE']
@@ -78,9 +79,9 @@ class GDO_Module(WithModuleConfig, GDO):
     def gdo_is_site_module(self) -> bool:
         return False
 
-    @classmethod
-    def get_name(cls):
-        return cls.__name__[7:]
+    @cached_property
+    def get_name(self):
+        return self.__class__.__name__[7:]
 
     @classmethod
     def gdo_table_name(cls) -> str:
@@ -133,16 +134,16 @@ class GDO_Module(WithModuleConfig, GDO):
         pass
 
     def file_path(self, append=''):
-        return Application.file_path(f"gdo/{self.get_name()}/{append}")
+        return Application.file_path(f"gdo/{self.get_name}/{append}")
 
     def www_path(self, filename: str) -> str:
-        return f"{Application.config('core.web_root')}gdo/{self.get_name()}/{filename}"
+        return f"{Application.config('core.web_root')}gdo/{self.get_name}/{filename}"
 
     def www_url(self, filename: str) -> str:
-        return f"http://{Application.config('core.domain')}/gdo/{self.get_name()}/{filename}"
+        return f"http://{Application.config('core.domain')}/gdo/{self.get_name}/{filename}"
 
     def render_name(self):
-        return t(f"module_{self.get_name()}")
+        return t(f"module_{self.get_name}")
 
     @lru_cache
     def get_method_klasses(self) -> dict[str,type['Method']]:
@@ -168,11 +169,11 @@ class GDO_Module(WithModuleConfig, GDO):
     def instantiate_method(self, name: str) -> 'Method':
         klass = self.get_method_klasses().get(name)
         if not klass:
-            raise GDOMethodException(self.get_name(), name)
+            raise GDOMethodException(self.get_name, name)
         return klass().module(self)
 
     def href(self, method_name: str, append: str = '', format: str = 'html'):
-        return href(self.get_name(), method_name, append, format)
+        return href(self.get_name, method_name, append, format)
 
     ##########
     # Errors #

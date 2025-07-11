@@ -4,10 +4,10 @@ from gdo.base.Util import Strings
 
 class WithText:
     _text_key: str
-    _text_args: tuple
+    _text_args: tuple|None
     _text_escaped: bool
 
-    def text(self, key, args: tuple = None, escaped: bool = False):
+    def text(self, key: str, args: tuple = None, escaped: bool = False):
         self._text_key = key
         self._text_args = args
         return self.text_escaped(escaped)
@@ -23,7 +23,5 @@ class WithText:
         return hasattr(self, '_text_key')
 
     def render_text(self, mode: Mode = Mode.HTML) -> str:
-        if not self.has_text():
-            return ''
         out = t(self._text_key, self._text_args)
         return Strings.html(out, mode) if self._text_escaped else out

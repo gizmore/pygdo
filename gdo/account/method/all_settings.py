@@ -20,7 +20,7 @@ class all_settings(Method):
         loader = ModuleLoader.instance()
         for module in loader._cache.values():
             for _ in module.all_user_settings():
-                method = settings().args_copy(self).env_copy(self).input('module', module.get_name())
+                method = settings().args_copy(self).env_copy(self).input('module', module.get_name)
                 cont.add_field(method)
                 break
         for method in cont.all_fields():

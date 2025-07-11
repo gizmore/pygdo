@@ -63,7 +63,7 @@ def pygdo_application(environ, start_response):
         if FRESH:
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")
             Application.init(os.path.dirname(__file__))
-            Application.init_common()
+            # Application.init_common()
             Application.init_web(environ)
             if not Application.LOOP:
                 Application.LOOP = asyncio.new_event_loop()

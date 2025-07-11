@@ -25,6 +25,7 @@ class GDT_String(GDT_Field):
     _pattern: str
     _re_options: int
     _input_type: str
+    _normalize: bool
 
     # __slots__ = (
     #     '_encoding',
@@ -46,6 +47,7 @@ class GDT_String(GDT_Field):
         self._re_options = 0
         self._case_s = False
         self._input_type = 'text'
+        self._normalize = False
         self.label(name)
 
     def is_orderable(self) -> bool:
@@ -60,6 +62,10 @@ class GDT_String(GDT_Field):
 
     def maxlen(self, maxlen: int):
         self._max_len = maxlen
+        return self
+
+    def normalize(self, normalize: bool = True):
+        self._normalize = normalize
         return self
 
     def case_s(self, case_s=True):
@@ -89,7 +95,7 @@ class GDT_String(GDT_Field):
 
     def val(self, val: str | list):
         if type(val) is str and not self._multiple:
-            if self._encoding == Encoding.UTF8:
+            if self._normalize:
                 return super().val(self.utf8_normalize(val))
         return super().val(val)
 

@@ -92,7 +92,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         The CLI/Text trigger for non Web connectors. Return an empty string to disable all CLI connectors.
         """
         module = cls.gdo_module()
-        return f"{module.get_name()}.{cls.__name__}"
+        return f"{module.get_name}.{cls.__name__}"
 
     @classmethod
     def gdo_trig(cls) -> str:
@@ -202,11 +202,11 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return t('keywords') if thas('keywords') else 'PyGDO,Website,HTTP Handler,WSGI'
 
     def _mome(self):
-        return f"{self.gdo_module().get_name()}.{self.get_name()}"
+        return f"{self.gdo_module().get_name}.{self.get_name()}"
 
     @functools.cache
     def _mome_tkey(self, key: str) -> str:
-        return f'{key}_{self.gdo_module().get_name()}_{self.get_name()}'
+        return f'{key}_{self.gdo_module().get_name}_{self.get_name()}'
 
     def get_method_id(self) -> str:
         from gdo.core.GDO_Method import GDO_Method
@@ -371,7 +371,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
 
     @functools.cache
     def get_sqn(self) -> str:
-        return f"{self.gdo_module().get_name()}.{self.get_name()}"
+        return f"{self.gdo_module().get_name}.{self.get_name()}"
 
     @functools.cache
     def get_fqn(self) -> str:
