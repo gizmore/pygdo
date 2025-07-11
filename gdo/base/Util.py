@@ -129,8 +129,6 @@ class CLI:
 
 class Strings:
 
-    HTML_PATTERN = re.compile(r'[&"\'<>]')
-
     @staticmethod
     def substr_from(s: str, frm: str, default='') -> str:
         """Return substring from the first occurrence of `frm` in `s`, or `default` if `frm` is not found."""
@@ -155,31 +153,24 @@ class Strings:
         index = s.rfind(to)
         return s[:index] if index >= 0 else default
 
-    @staticmethod
-    def nullstr(s: str):
-        """Return None on empty strings"""
-        return str(s) if s else None
+    # @staticmethod
+    # def nullstr(s: str):
+    #     """Return None on empty strings"""
+    #     return str(s) if s else None
 
-    @staticmethod
-    @lru_cache(maxsize=None)
-    def html_replacement_dict() -> dict[str,str]:
-        return {
-            '&': '&amp;',
-            '"': '&quot;',
-            "'": '&#039;',
-            '<': '&lt;',
-            '>': '&gt;',
-        }
+    HTML_ESCAPE_TABLE = str.maketrans({
+        '&': '&amp;',
+        '"': '&quot;',
+        "'": '&#039;',
+        '<': '&lt;',
+        '>': '&gt;',
+    })
 
     @staticmethod
     def html(s: str, mode: Mode = Mode.HTML) -> str:
-        """
-        Escape output for various formats
-        """
         if mode.is_html() and s is not None:
-            html_map = Strings.html_replacement_dict()
-            return Strings.HTML_PATTERN.sub(lambda m: html_map[m.group(0)], s)
-        return ''
+            return s.translate(Strings.HTML_ESCAPE_TABLE)
+        return s or ''
 
     @classmethod
     def html_to_text(cls, html: str):
