@@ -90,10 +90,12 @@ def pygdo_application(environ, start_response):
         args = ParseArgs()
 
         if '_url' in qs:
-            url = unquote(Strings.substr_from(qs['_url'][0], '/'))
+            url = unquote(Strings.substr_from(qs['_url'][0], '/', qs['_url'][0]))
             del qs['_url']
             if not url:
                 url = 'core.welcome.html'
+        elif environ['PATH_INFO'] != '/':
+            url = environ['PATH_INFO'].lstrip('/')
 
         lang = 'en'
         if '_lang' in qs:
