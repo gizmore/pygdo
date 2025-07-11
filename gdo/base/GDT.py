@@ -74,10 +74,10 @@ class GDT(WithSerialization):
     #PYPP#END#
 
     def __str__(self):
-        return f"{self.get_name()}#{id(self)}"
+        return self.get_name()
 
     def __repr__(self):
-        return f"{self.get_name()}#{id(self)}"
+        return self.get_name()
 
     @classmethod
     @lru_cache

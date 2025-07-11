@@ -36,8 +36,10 @@ class Trans:
     """
     Speed optimized i18n.
     """
-    EN = {}
-    CACHE = {}
+    EN: dict[str, str] = {}
+    CACHE = {
+        'en': EN,
+    }
 
     old_iso: str
     new_iso: str
@@ -61,7 +63,7 @@ class Trans:
         pattern = os.path.join(Application.file_path('gdo/'), "*", "lang", "*.toml")
         for lang_file in glob.glob(pattern, recursive=True):
             Trans._load_file(lang_file)
-        Trans.EN = Trans.CACHE.get('en', {})
+        # Trans.EN = Trans.CACHE.get('en')
 
     @staticmethod
     def _load_file(lang_file: str):
@@ -75,15 +77,16 @@ class Trans:
 
     @staticmethod
     def t(key: str, args: tuple=None):
-        if format := Trans.CACHE.get(Application.STORAGE.lang, Trans.EN).get(key):
-            return format % args if args else format
-        return key % args if args else key
+        return Trans.tiso(Application.STORAGE.lang, key, args)
 
     @staticmethod
     def tiso(iso: str, key: str, args: tuple = None):
-        if format := Trans.CACHE.get(iso, Trans.EN).get(key):
-            return format % args if args else format
-        return key % args if args else key
+        try:
+            if format := Trans.CACHE.get(iso, Trans.EN).get(key):
+                return format % args if args else format
+        except:
+            pass
+        return key + str(args)
 
     @staticmethod
     def has(key: str) -> bool:
