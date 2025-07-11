@@ -1,10 +1,11 @@
 import functools
 import importlib
+from functools import lru_cache
 from glob import glob
 
 from typing_extensions import Self
 
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Type, Iterator
 
 from gdo.base.Logger import Logger
 
@@ -25,7 +26,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1055"
+    CORE_REV = "PyGDOv8.0.2-r1056"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -143,35 +144,32 @@ class GDO_Module(WithModuleConfig, GDO):
     def render_name(self):
         return t(f"module_{self.get_name()}")
 
-    def get_methods(self) -> list['Method']:
-        methods = []
+    @lru_cache
+    def get_method_klasses(self) -> dict[str,type['Method']]:
+        methods = {}
         dirname = self.file_path('method')
         for file_name in glob(f"{dirname}/**/*", recursive=True):
             if not '__' in file_name and Files.is_file(file_name):
-                name = Strings.substr_from(file_name[:-3].replace('/', '.'), '.method.')
-                method = self.instantiate_method(name)
-                methods.append(method)
+                path = Strings.substr_from(file_name, Application.file_path())
+                mod_path = path.replace('/', '.')[:-3]
+                name = Strings.rsubstr_from(mod_path, '.')
+                mn = importlib.import_module(mod_path)
+                klass = getattr(mn, name)
+                methods[name] = klass
         return methods
+
+    def get_methods(self) -> Iterator['Method']:
+        for klass in self.get_method_klasses().values():
+            yield klass().module(self)
 
     def get_method(self, name: str) -> 'Method':
         return self.instantiate_method(name)
 
     def instantiate_method(self, name: str) -> 'Method':
-        module_path =  f"gdo.{self.get_name()}.method.{name}"
-        if method_class := self.METHOD_CACHE.get(module_path):
-            return method_class().module(self)
-        try:
-            mn = importlib.import_module(module_path)
-            mn = getattr(mn, Strings.rsubstr_from(name, '.', name))
-            if not mn:
-                raise GDOMethodException(self.get_name(), name)
-            self.METHOD_CACHE[module_path] = mn
-            return mn().module(self)
-        except ModuleNotFoundError:
+        klass = self.get_method_klasses().get(name)
+        if not klass:
             raise GDOMethodException(self.get_name(), name)
-        except  Exception as x:
-            Logger.exception(x)
-            pass
+        return klass().module(self)
 
     def href(self, method_name: str, append: str = '', format: str = 'html'):
         return href(self.get_name(), method_name, append, format)

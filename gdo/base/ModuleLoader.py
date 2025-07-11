@@ -25,7 +25,7 @@ from gdo.base.Util import Files, html
 
 class ModuleLoader:
     _cache: dict[str, 'GDO_Module'] # name
-    _methods: dict[str, 'Method'] # trigger
+    _methods: dict[str, type['Method']] # trigger
     _enabled: list['GDO_Module']
 
     @classmethod
@@ -59,13 +59,10 @@ class ModuleLoader:
 
     def get_method(self, method_trigger: str) -> Method | None:
         try:
-            method = self._methods[method_trigger.lower()]
-            fqn = method.get_fqn()
-            module_name, class_name = fqn.rsplit('.', 1)
-            module = importlib.import_module(module_name)
-            class_object = getattr(module, class_name)
-            return class_object()
-        except Exception:
+            klass = self._methods[method_trigger.lower()]
+            return klass()
+        except Exception as ex:
+            Logger.exception(ex)
             return None
 
     def sort_cache(self):
@@ -192,13 +189,12 @@ class ModuleLoader:
         Init all methods
         """
         for module in self._cache.values():
-            for method in module.get_methods():
+            for method in module.get_method_klasses().values():
                 try:
                     if trigger := method.gdo_trigger():
                         self._methods[trigger.lower()] = method
                         if trig := method.gdo_trig():
-                            if trig.lower() not in self._methods:
-                                self._methods[trig.lower()] = method
+                            self._methods[trig.lower()] = method
                 except Exception as ex:
                     Logger.exception(ex, f"Error in {method.__module__}.{method.__class__.__name__}")
 

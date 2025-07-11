@@ -2,6 +2,7 @@ import binascii
 import functools
 import traceback
 from copy import deepcopy
+from functools import lru_cache
 from typing import Self
 
 from gdo.base.Exceptions import GDOException
@@ -79,7 +80,7 @@ class GDT(WithSerialization):
         return f"{self.get_name()}#{id(self)}"
 
     @classmethod
-    @functools.cache
+    @lru_cache
     def gdo_module(cls) -> 'GDO_Module':
         from gdo.base.ModuleLoader import ModuleLoader
         mn = Strings.substr_from(cls.__module__, 'gdo.')

@@ -51,7 +51,8 @@ class help(Method):
         loader = ModuleLoader.instance()
         grouped = {}
         mode = self._env_mode
-        for cmd, method in loader._methods.items():
+        for klass in loader._methods.values():
+            method = klass()
             module_name = method.gdo_module().render_name()
             method.env_copy(self)
             if method.allows_connector() and not method.gdo_method_hidden():
