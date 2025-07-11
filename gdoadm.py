@@ -329,7 +329,6 @@ class App:
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules(True, True)
-        from gdo.base.Trans import Trans
 
         if args.server:
             server = GDO_Server.table().get_by_id(args.server)
@@ -443,6 +442,7 @@ class App:
 
 async def run_pygdo_admin():
     try:
+        Application.LOOP = asyncio.get_running_loop()
         path = os.path.dirname(__file__) + "/"
         parser = argparse.ArgumentParser()
         parser.add_argument('--config', '-c', nargs='?', default='protected/config.toml')
