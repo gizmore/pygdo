@@ -54,7 +54,7 @@ class Events:
             for subscriber in self._subscribers[event_name]:
                 result = subscriber['callback'](*args, **kwargs)
                 while asyncio.iscoroutine(result):
-                    result = asyncio.run(result)
+                    result = Application.LOOP.run_until_complete(result)
                 subscriber['count'] -= 1
                 if subscriber['count'] == 0:
                     to_delete.append(subscriber['callback'])
@@ -75,6 +75,8 @@ class Events:
 
     async def update_timers(self, current_time: float):
         expired_timers = []
+        num_timers = len(self._timers)
+        i = 0
         for timer in self._timers:
             if current_time >= timer['next_run']:
                 try:
@@ -86,5 +88,8 @@ class Events:
                     timer['next_run'] = current_time + timer['duration']
                 else:
                     expired_timers.append(timer)
+            i += 1
+            if i >= num_timers:
+                break
         for expired_timer in expired_timers:
             self._timers.remove(expired_timer)

@@ -190,7 +190,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     GDOTestCase.MESSAGES[user.get_id()] = []
     result = method.execute()
     while asyncio.iscoroutine(result):
-        result = asyncio.run(result)
+        result = Application.LOOP.run_until_complete(result)
     out = cli_top(mode)
     out += "\n"
     out += all_private_messages()
