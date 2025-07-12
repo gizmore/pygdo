@@ -22,6 +22,7 @@ from itertools import product
 from typing import Sequence
 
 import msgspec.json
+from magic import Magic
 
 from gdo.base.Render import Mode
 
@@ -39,18 +40,8 @@ def urlencode(s: str):
     return urllib.parse.quote_plus(s)
 
 
-# class GDOJSONEncoder(json.JSONEncoder):
-#     def default(self, obj):
-#         return str(obj)
-
-
 def jsn(obj: any):
-    # from gdo.base.Application import Application
-    # indent = Application.config('core.json_debug', '0')
     return msgspec.json.encode(obj)
-    # indent = 4 if indent != '0' else 0
-    # return json.dumps(obj, cls=GDOJSONEncoder, indent=indent, sort_keys=True)
-
 
 def bytelen(s: str, encoding: str = 'utf-8') -> int:
     """
@@ -61,7 +52,6 @@ def bytelen(s: str, encoding: str = 'utf-8') -> int:
         return len(s)
 
     return len(s.encode(encoding))
-    # return sys.getsizeof(s) - sys.getsizeof("") does not work!
 
 
 def err(key: str, args: tuple = None, title: str = 'PyGDO'):
@@ -152,11 +142,6 @@ class Strings:
         """Return substring up to (excluding) the last occurrence of `to` in `s`, or `default` if `to` is not found."""
         index = s.rfind(to)
         return s[:index] if index >= 0 else default
-
-    # @staticmethod
-    # def nullstr(s: str):
-    #     """Return None on empty strings"""
-    #     return str(s) if s else None
 
     HTML_ESCAPE_TABLE = str.maketrans({
         '&': '&amp;',
@@ -308,7 +293,9 @@ class Files:
     @staticmethod
     @functools.lru_cache()
     def mime(path: str):
-        return magic.Magic(mime=True, keep_going=False).from_file(path)
+        if path[-4:] == '.css':
+            return 'text/css'
+        return magic.from_file(path, mime=True)
 
     @staticmethod
     def size(path: str) -> int:

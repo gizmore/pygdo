@@ -26,7 +26,7 @@ class module_date(GDO_Module):
         ]
 
     def gdo_load_scripts(self, page: 'GDT_Page'):
-        self.add_bower_js('moment/src/moment.js')
-        self.add_bower_js('moment/src/locale/de.js')
-        self.add_bower_js('moment/src/locale/en-gb.js')
+        self.add_bower_js('moment/moment.js')
+        self.add_bower_js('moment/locale/de.js')
+        self.add_bower_js('moment/locale/en-gb.js')
         self.add_js('js/gdo8-date.js')
