@@ -83,7 +83,6 @@ class InstallTestCase(GDOTestCase):
 
     def test_07_install_all_modules(self):
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'install', "--all"], capture_output=True)
-        # self.assertEqual(result.stderr, b"", "Install all works without error.")
         self.assertIsNotNone(result, "Install all")
 
     def test_08_install_admin_user(self):

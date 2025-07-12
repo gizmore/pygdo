@@ -41,7 +41,7 @@ class file_server(Method):
             Application.status("304 Not Modified")
             return GDT_HTML()
 
-        mime_type, _ = Files.mime2(file_path)
+        mime_type = Files.mime(file_path)
         Application.header('Content-Type', mime_type or 'application/octet-stream')
         Application.header('Content-Length', str(path.getsize(file_path)))
         return GDT_FileOut().path(file_path)

@@ -1,8 +1,7 @@
-import json
 import pickle
 from enum import Enum
 
-import msgpack
+import msgspec.json
 
 from gdo.base.Application import Application
 from gdo.base.WithSerialization import WithSerialization
@@ -32,27 +31,24 @@ class GDT_Serialize(GDT_Text):
     def to_val(self, value) -> bytes | str | None:
         if not value:
             return None
+        if self._mode == SerializeMode.JSON:
+            return msgspec.json.encode(value)
+        if self._mode == SerializeMode.MSGPACK:
+            return msgspec.msgpack.encode(value)
         if self._mode == SerializeMode.GDOPACK:
             return value.gdopack()
-        if self._mode == SerializeMode.MSGPACK:
-            return msgpack.dumps(value)
-        if self._mode == SerializeMode.JSON:
-            indent = 3 if Application.config('core.json_debug') == '1' else None
-            return json.dumps(value, check_circular=False, indent=indent)
         return pickle.dumps(value)
 
     def to_value(self, val: bytes | str):
         if val is None:
             return None
+        if self._mode == SerializeMode.JSON:
+            return msgspec.json.decode(val)
+        if self._mode == SerializeMode.MSGPACK:
+            return msgspec.msgpack.decode(val)
         if self._mode == SerializeMode.GDOPACK:
             return WithSerialization.gdounpack(val)
-        if self._mode == SerializeMode.MSGPACK:
-            return msgpack.loads(val)
-        if self._mode == SerializeMode.JSON:
-            return json.loads(val)
         return pickle.loads(val)
 
     def validate(self, val: str|None) -> bool:
-        if val is None:
-            return super().validate(val)
-        return True
+        return super().validate(val) if val is None else True

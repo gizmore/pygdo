@@ -90,7 +90,8 @@ class Application:
                    cls.config('redis.host', 'localhost'),
                    int(cls.config('redis.port', '6379')),
                    int(cls.config('redis.db', '0')),
-                   cls.config('redis.uds', ''))
+                   cls.config('redis.uds', ''),
+                   int(cls.config('redis.zlib_level', -1)))
         cls.IPC_TS = cls.TIME
 
     @classmethod

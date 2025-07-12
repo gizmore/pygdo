@@ -72,11 +72,11 @@ class GDO(WithName, WithBulk, GDT):
         GDO.GDO_ALIVE -= 1
     #PYPP#END#
 
-    def __str__(self):
-        return f"{self.get_name()}({self.get_id()}): {str(list(self._vals.values()))}"
-
-    def __repr__(self):
-        return f"{self.get_name()}({self.get_id()}): {str(list(self._vals.values()))}"
+    # def __str__(self):
+    #     return f"{self.get_name()}({self.get_id()}): {str(list(self._vals.values()))}"
+    #
+    # def __repr__(self):
+    #     return f"{self.get_name()}({self.get_id()}): {str(list(self._vals.values()))}"
 
     def gdo_redis_fields(self) -> list[str]:
         return [
@@ -193,7 +193,7 @@ class GDO(WithName, WithBulk, GDT):
             return self
         if key in self._values:
             del self._values[key]
-        self._vals[key] = val # if type(val) is bytes else Strings.nullstr(val)
+        self._vals[key] = val
         return self.dirty(key, dirty)
 
     def set_value(self, key: str, value: any, dirty: bool=True) -> Self:

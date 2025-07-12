@@ -2,7 +2,7 @@ import hashlib
 import functools
 import zlib
 
-import msgpack
+import msgspec.msgpack
 from redis import Redis
 from functools import lru_cache, wraps
 
@@ -41,9 +41,12 @@ class Cache:
     RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
     NCACHE: list[str] = []                  # list of non persistent GDO table names
 
+    ZLIB_LEVEL: int = -1
+
     @classmethod
-    def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0, uds: str=''):
+    def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0, uds: str='', zlib_level: int=-1):
         if enabled:
+            cls.ZLIB_LEVEL = zlib_level
             if uds:
                 cls.RCACHE = Redis(unix_socket_path=uds, decode_responses=False)
             else:
@@ -256,7 +259,8 @@ class Cache:
             key = f"{key}:{args_key}" if args_key else key
             if packed := cls.RCACHE.get(key):
                 cls.HITS += 1 #PYPP#DELETE#
-                return WithSerialization.gdounpack(zlib.decompress(packed))
+                data = zlib.decompress(packed) if cls.ZLIB_LEVEL >= 0 else packed
+                return WithSerialization.gdounpack(data)
             cls.MISS += 1 #PYPP#DELETE#
         return default
 
@@ -266,10 +270,11 @@ class Cache:
             if hasattr(value, 'gdopack'):
                 value = value.gdopack()
             else:
-                value = msgpack.dumps(value)
+                value = msgspec.msgpack.encode(value)
             cls.UPDATES += 1 #PYPP#DELETE#
             key = f"{key}:{args_key}" if args_key else key
-            cls.RCACHE.set(key, zlib.compress(value))
+            data = zlib.compress(value, cls.ZLIB_LEVEL) if cls.ZLIB_LEVEL >= 0 else value
+            cls.RCACHE.set(key, data)
 
     @classmethod
     def remove(cls, key: str = None, args_key: str = None):

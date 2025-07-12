@@ -24,7 +24,7 @@ class CoreTestCase(GDOTestCase):
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
-        loader.init_modules()
+        loader.init_modules(True, True)
         loader.init_cli()
         web_gizmore()
         cli_gizmore()

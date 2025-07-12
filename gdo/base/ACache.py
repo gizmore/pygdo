@@ -1,10 +1,9 @@
 import zlib
 
-import msgpack
+import msgspec.msgpack
 from redis.asyncio import Redis
 
 from gdo.base import GDO
-from gdo.base.Logger import Logger
 from gdo.base.WithSerialization import WithSerialization
 
 
@@ -84,7 +83,7 @@ class ACache:
             if isinstance(value, WithSerialization):
                 value = value.gdopack()
             else:
-                value = msgpack.dumps(value)
+                value = msgspec.msgpack.encode(value)
             cls.UPDATES += 1 #PYPP#DELETE#
             key = f"{key}:{args_key}" if args_key else key
             await cls.ACACHE.set(key, zlib.compress(value))

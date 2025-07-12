@@ -1,5 +1,6 @@
 import importlib
-import msgpack
+
+import msgspec.msgpack
 
 
 class WithSerialization:
@@ -21,7 +22,7 @@ class WithSerialization:
 
     def gdopack(self) -> bytes:
         """Serialize object with a magic prefix for fast unpacking."""
-        return self.MAGIC_NUM + msgpack.dumps(self.gdopack2())
+        return self.MAGIC_NUM + msgspec.msgpack.encode(self.gdopack2())
 
     def gdopack2(self) -> dict:
         """Convert object into a serializable dict, handling nested objects."""
@@ -43,7 +44,7 @@ class WithSerialization:
     def gdounpack(cls, data: bytes):
         """Deserialize object and detect if it's a packed GDO."""
         is_gdo = data.startswith(cls.MAGIC_NUM)
-        unpacked_data = msgpack.loads(data[4:] if is_gdo else data)
+        unpacked_data = msgspec.msgpack.decode(data[4:] if is_gdo else data)
         return cls.gdopinstances(unpacked_data) if is_gdo else unpacked_data
 
     @staticmethod

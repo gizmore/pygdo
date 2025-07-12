@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 import functools
-import mimetypes
 import string
 
 import asyncio
-from functools import lru_cache
 
 import magic
 
 import getpass
 import hashlib
-import json
 import os.path
 import random
 import re
@@ -23,6 +20,8 @@ from collections import OrderedDict
 from html import unescape
 from itertools import product
 from typing import Sequence
+
+import msgspec.json
 
 from gdo.base.Render import Mode
 
@@ -40,16 +39,17 @@ def urlencode(s: str):
     return urllib.parse.quote_plus(s)
 
 
-class GDOJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        return str(obj)
+# class GDOJSONEncoder(json.JSONEncoder):
+#     def default(self, obj):
+#         return str(obj)
 
 
 def jsn(obj: any):
-    from gdo.base.Application import Application
-    indent = Application.config('core.json_debug', '0')
-    indent = 4 if indent != '0' else 0
-    return json.dumps(obj, cls=GDOJSONEncoder, indent=indent, sort_keys=True)
+    # from gdo.base.Application import Application
+    # indent = Application.config('core.json_debug', '0')
+    return msgspec.json.encode(obj)
+    # indent = 4 if indent != '0' else 0
+    # return json.dumps(obj, cls=GDOJSONEncoder, indent=indent, sort_keys=True)
 
 
 def bytelen(s: str, encoding: str = 'utf-8') -> int:
@@ -210,14 +210,12 @@ class Strings:
         Get the first matching group value of a string match
         """
         match = re.search(pattern, string)
-        if match:
-            return match.group(1)
-        return None
+        return match.group(1) if match else None
 
     @staticmethod
     def replace_all(s: str, replace: dict):
-        for search, replce in replace.items():
-            s = s.replace(search, replce)
+        for search, r in replace.items():
+            s = s.replace(search, r)
         return s
 
 
@@ -311,11 +309,6 @@ class Files:
     @functools.lru_cache()
     def mime(path: str):
         return magic.Magic(mime=True, keep_going=False).from_file(path)
-
-    @staticmethod
-    @functools.lru_cache()
-    def mime2(path: str):
-        return mimetypes.guess_type(path)
 
     @staticmethod
     def size(path: str) -> int:

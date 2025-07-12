@@ -73,7 +73,10 @@ class Trans:
             Trans.CACHE[iso] = {}
         with open(lang_file, 'r', encoding='UTF-8') as fd:
             more = tomlkit.load(fd)
-            Trans.CACHE[iso].update(more)
+            cache = Trans.CACHE[iso]
+            for k, v in more.items():
+                cache[k] = str(v)
+            # Trans.CACHE[iso].update(more)
 
     @staticmethod
     def t(key: str, args: tuple=None):

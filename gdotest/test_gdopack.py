@@ -20,13 +20,11 @@ class GDOPackTestCase(GDOTestCase):
     def setUp(self):
         super().setUp()
         Application.init(os.path.dirname(__file__) + "/../")
-        # Cache.clear()
-        # install_module('core')
         loader = ModuleLoader.instance()
         Cache.clear()
         loader.reset()
         loader.load_modules_db(True)
-        loader.init_modules()
+        loader.init_modules(True, True)
         loader.init_cli()
         cli_gizmore()
 

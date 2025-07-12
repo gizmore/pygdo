@@ -262,7 +262,7 @@ class GDO_User(GDO):
 
     @functools.cache
     def render_name(self) -> str:
-        return f'{self.gdo_val('user_displayname')}{{{self.get_server().get_id()}}}'
+        return f'{self.gdo_val('user_displayname')}{{{self.gdo_val('user_server')}}}'
 
     #########
     # Hooks #

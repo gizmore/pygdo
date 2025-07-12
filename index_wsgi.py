@@ -215,7 +215,9 @@ def pygdo_application(environ, start_response):
 
             session.save()
             headers = Application.get_headers()
-            response = result.render(mode).encode()
+            response = result.render(mode)
+            if mode != Mode.JSON:
+                response = response.encode()
             headers.extend([('Content-Length', str(len(response)))])
             start_response(Application.get_status(), headers)
 
