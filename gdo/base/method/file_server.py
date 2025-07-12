@@ -32,7 +32,7 @@ class file_server(Method):
         mtime = os.path.getmtime(file_path)
         etag = str(mtime) + "." + GDO_Module.CORE_REV
         last_modified = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(mtime))
-        expires = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(mtime + 30 * 24 * 60 * 60))  # 30 days expiration
+        # expires = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(mtime + 30 * 24 * 60 * 60))  # 30 days expiration
         hdr('Etag', etag)
         hdr('Last-Modified', last_modified)
         # hdr('Expires', expires)
