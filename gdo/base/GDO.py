@@ -423,12 +423,12 @@ class GDO(WithName, WithBulk, GDT):
 
     def before_select(self, query: Query):
         for gdt in self.columns().values():
-            gdt.gdo_before_select(self, query)
+            gdt.gdo(self).gdo_before_select(self, query)
         self.gdo_before_select(self, query)
 
     def before_create(self):
         for gdt in self.columns().values():
-            gdt.gdo_before_create(self)
+            gdt.gdo(self).gdo_before_create(self)
         self.gdo_before_create(self)
 
     def after_create(self):
@@ -438,7 +438,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def before_update(self):
         for gdt in self.columns().values():
-            gdt.gdo_before_update(self)
+            gdt.gdo(self).gdo_before_update(self)
         self.gdo_before_update(self)
 
     def after_update(self):
@@ -448,7 +448,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def before_delete(self):
         for gdt in self.columns().values():
-            gdt.gdo_before_delete(self)
+            gdt.gdo(self).gdo_before_delete(self)
         self.gdo_before_delete(self)
 
     def after_delete(self):

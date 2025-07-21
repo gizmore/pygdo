@@ -32,7 +32,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self):
         super().setUp()
-        Application.LOOP = asyncio.new_event_loop()
+        Application.LOOP = asyncio.get_event_loop()
 #            Application.LOOP = asyncio.new_event_loop()
 
     # def tearDown(self):
