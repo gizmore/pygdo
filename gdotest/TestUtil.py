@@ -196,6 +196,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     out += all_private_messages()
     out += "\n"
     out += result.render(mode)
+    print(out)
     return out.strip()
 
 def all_private_messages():
