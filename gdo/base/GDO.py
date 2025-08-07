@@ -211,6 +211,9 @@ class GDO(WithName, WithBulk, GDT):
         return self
 
     def save_vals(self, vals: dict) -> Self:
+        """
+        Also saves all dirty vars... bug? consistency?
+        """
         return self.set_vals(vals).save()
 
     def save_val(self, key: str, val: str) -> Self:
