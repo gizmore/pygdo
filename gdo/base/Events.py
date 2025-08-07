@@ -70,6 +70,11 @@ class Events:
         timer = {'duration': duration, 'callback': callback, 'repeat': repeat, 'next_run': Application.TIME + duration}
         self._timers.append(timer)
 
+    def add_timer_async(self, duration: float, callback: callable, repeat: int = 1):
+        self.add_timer(
+            duration,
+            callback, repeat=repeat)
+
     def remove_timer(self, callback):
         self._timers = [timer for timer in self._timers if timer['callback'] != callback]
 

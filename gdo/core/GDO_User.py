@@ -55,6 +55,9 @@ class GDO_User(GDO):
         f.append('_settings')
         return f
 
+    def __repr__(self):
+        return f"{self.get_val('user_name')}{self.get_server_id()}"
+
     def on_reload(self):
         self._settings = {}
 

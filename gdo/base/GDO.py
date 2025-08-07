@@ -418,7 +418,7 @@ class GDO(WithName, WithBulk, GDT):
     # Events #
     ##########
     def on_reload(self):
-        Cache.reload(self.gdo_table_name(), self.get_id())
+        # Cache.reload(self.gdo_table_name(), self.get_id())
         return self
 
     def before_select(self, query: Query):
