@@ -32,8 +32,8 @@ class ConsoleThread(Thread):
         from gdo.base.Application import Application
         while RUNNING:
             Application.tick()
-            while not Application.MESSAGES.empty():
-                await Application.MESSAGES.get().execute()
+            await Application.EVENTS.update_timers(Application.TIME)
+            Application.execute_queue()
             await asyncio.sleep(0.5)
 
 async def pygdo(line: str = None):
