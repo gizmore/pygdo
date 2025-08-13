@@ -1,5 +1,6 @@
 import functools
 from asyncio import iscoroutine
+from functools import lru_cache
 
 from typing import TYPE_CHECKING, Self
 
@@ -452,8 +453,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     # Config User #
     ###############
 
+    @lru_cache
     def _config_user(self):
-        return GDO.EMPTY_LIST
+        return self.gdo_method_config_user()
 
     def save_config_user(self, key: str, val: str):
         Logger.debug(f"{self.get_name()}.save_config_user({key}, {val})")

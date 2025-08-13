@@ -32,7 +32,7 @@ class InstallCore:
             Application.SERVER = GDO_Server.blank({
                 'serv_name': 'Bash',
                 'serv_connector': 'bash',
-                'serv_trigger': '.',
+                'serv_trigger': '$',
             }).insert()
 
     @classmethod

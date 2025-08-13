@@ -56,8 +56,6 @@ class Application:
     def is_http(cls, is_http: bool):
         cls.IS_HTTP = is_http
 
-
-
     @classmethod
     def has_db(cls):
         return cls.db() is not None
@@ -344,4 +342,10 @@ class Application:
         else:
             port = Application.config('core.port')
             return port if port == '80' else pre_colon + port
+
+    @classmethod
+    def execute_queue(cls) -> None:
+        while not cls.MESSAGES.empty():
+            msg = cls.MESSAGES.get()
+            gdt = msg.execute()
 

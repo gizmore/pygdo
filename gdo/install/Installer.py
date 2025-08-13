@@ -27,18 +27,6 @@ class Installer:
             cls.install_module(module, verbose)
 
         if verbose:
-            print("Re-Loading installed modules.")
-        loader = ModuleLoader.instance()
-        Cache.clear()
-        loader.reset()
-        modules = loader.load_modules_db()
-        loader.init_modules(True, True)
-
-        if verbose:
-            print("Migrating core for user settings.")
-        Installer.migrate_gdo(GDO_UserSetting.table())
-
-        if verbose:
             print("Calling module install hooks")
         for module in modules:
             try:
@@ -46,6 +34,19 @@ class Installer:
             except Exception as ex:
                 Logger.exception(ex)
                 return False
+
+        if verbose:
+            print("Re-Loading installed modules.")
+        loader = ModuleLoader.instance()
+        # Cache.clear()
+        # loader.reset()
+        modules = loader.load_modules_db()
+        loader.init_modules(True, True)
+
+        if verbose:
+            print("Migrating core for user settings.")
+        Installer.migrate_gdo(GDO_UserSetting.table())
+
         clear_cache().gdo_execute()
         return True
 

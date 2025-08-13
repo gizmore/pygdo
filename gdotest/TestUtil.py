@@ -2,6 +2,7 @@ import asyncio
 
 from typing_extensions import TYPE_CHECKING
 
+from gdo.base.Message import Message
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 
 if TYPE_CHECKING:
@@ -186,16 +187,22 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     session = GDO_Session.for_user(user)
     Application.fresh_page()
     Application.mode(mode)
-    method = Parser(mode, user, server, channel, session).parse(line[1:])
     GDOTestCase.MESSAGES[user.get_id()] = []
-    result = method.execute()
+    if not line[0].isalnum():
+        method = Parser(mode, user, server, channel, session).parse(line[1:])
+        result = method.execute()
+    else:
+        message = Message(line, Mode.CLI).env_user(user).env_server(server).env_channel(channel).env_mode(Mode.CLI).env_session(session).env_http(False)
+        result = message.execute()
     while asyncio.iscoroutine(result):
         result = Application.LOOP.run_until_complete(result)
+    Application.execute_queue()
     out = cli_top(mode)
     out += "\n"
     out += all_private_messages()
     out += "\n"
-    out += result.render(mode)
+    if result:
+        out += result.render(mode)
     print(out)
     return out.strip()
 

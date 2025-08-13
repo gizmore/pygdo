@@ -41,11 +41,14 @@ class ModuleLoader:
     def gdo_import(self, name: str) -> 'GDO_Module':
         mn = importlib.import_module(f"gdo.{name}")
         if klass := mn.__dict__.get(f"module_{name}"):
-            self._cache[name] = module = klass.blank({
-                'module_name': name,
-                'module_enabled': '0',
-            })
-            module._blank = False
+            if name not in self._cache:
+                self._cache[name] = module = klass.blank({
+                    'module_name': name,
+                    'module_enabled': '0',
+                })
+                module._blank = False
+            else:
+                module = self._cache[name]
             return module
         raise GDOException(t('err_module', (html(name),)))
 
@@ -111,6 +114,7 @@ class ModuleLoader:
     def on_module_installed(self, module: 'GDO_Module'):
         self._cache[module.get_name] = module
         module.init()
+        self.init_user_settings()
 
     def after_delete(self, module: GDO_Module):
         if module.get_name in self._cache:

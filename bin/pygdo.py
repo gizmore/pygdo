@@ -24,6 +24,7 @@ class ConsoleThread(Thread):
         from gdo.base.Application import Application
         Application.init_common()
         Application.init_cli()
+        Application.init_thread(self)
         asyncio.run(self.loop())
 
     async def loop(self):
@@ -120,6 +121,7 @@ async def process_line(line: str) -> None:
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = await gdt
+            Application.execute_queue()
             message._gdt_result = GDT_Container()
             message._gdt_result.add_field(Application.get_page()._top_bar)
             message._gdt_result.add_field(gdt)
