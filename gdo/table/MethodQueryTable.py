@@ -9,6 +9,9 @@ class MethodQueryTable(MethodTable):
     def gdo_table_query(self) -> Query:
         return self.gdo_table().select()
 
+    def get_num_results(self) -> int:
+        return int(self.gdo_table_query().only_select('COUNT(*)').no_order().exec().fetch_val())
+
     def get_table_result(self) -> Result:
         query = self.gdo_table_query()
         if self.gdo_ordered():

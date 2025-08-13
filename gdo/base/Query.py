@@ -138,7 +138,8 @@ class Query:
         return self
 
     def no_order(self):
-        delattr(self, '_order')
+        if hasattr(self, '_order'):
+            delattr(self, '_order')
         return self
 
     def first(self):
