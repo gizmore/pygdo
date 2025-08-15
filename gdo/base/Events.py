@@ -4,6 +4,9 @@ from gdo.base.Logger import Logger
 
 
 class Events:
+    """
+    (c)2024 gizmore + chappy@chappy-bot.net (R.I.P.)
+    """
     FOREVER = 2000000000
 
     _subscribers: dict[str, list[dict]]

@@ -42,7 +42,7 @@ if searched:
         write('<tr>')
         for gdt in method.gdo_table_headers():
             func = f'render_{gdt.get_name()}'
-            write('<td>ggg')
+            write('<td>')
             if hasattr(method, func):
                 write(getattr(method, func)(gdt.gdo(gdo), gdo))
             else:
