@@ -308,7 +308,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             if tr:
                 db.begin()
             if not self._prepare_nested_permissions(self):
-                return self
+                return self.empty()
             return await self._nested_execute(self, True)
         except (GDOParamError, GDOError) as ex:
             err_raw(str(ex))
