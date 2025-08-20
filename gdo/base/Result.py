@@ -110,9 +110,6 @@ class Result:
         """
         Fetch the next row as an object piped through the cache
         """
-        from gdo.shadowdogs.SD_Player import SD_Player
-        if self._table is SD_Player.table():
-            pass
         if (row := self.fetch_assoc()) is None:
             return None
         if self._nocache:
