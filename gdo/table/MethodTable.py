@@ -145,7 +145,6 @@ class MethodTable(WithGDO, MethodForm):
     #########
     @functools.cache
     def get_table(self) -> GDT_Table:
-        self.parameters()
         table = GDT_Table()
         table.method(self)
         self.gdo_create_table(table)

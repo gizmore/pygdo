@@ -1,9 +1,11 @@
 import asyncio
 
+from aiohttp.abc import ClearCookiePredicate
 from typing_extensions import TYPE_CHECKING
 
 from gdo.base.Message import Message
 from gdo.core.GDO_UserPermission import GDO_UserPermission
+from gdo.core.method.clear_cache import clear_cache
 
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
@@ -34,7 +36,6 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         super().setUp()
         Application.LOOP = asyncio.get_event_loop()
-#            Application.LOOP = asyncio.new_event_loop()
 
     # def tearDown(self):
     #     super().tearDown()

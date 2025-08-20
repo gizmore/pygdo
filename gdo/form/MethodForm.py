@@ -45,7 +45,7 @@ class MethodForm(Method):
         # if reset:
         #     delattr(self, '_parameters')
         if not hasattr(self, '_form'): # or reset:
-            self._form = GDT_Form().href(self.href()).method(self).title_raw(self.gdo_render_title())
+            self._form = GDT_Form().href(self.href()).method(self) #.title_raw(self.gdo_render_title())
             self.gdo_create_form(self._form)
             # self.parameters()
         return self._form
