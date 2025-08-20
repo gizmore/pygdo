@@ -137,9 +137,6 @@ class Cache:
 
     @classmethod
     def obj_for(cls, gdo: GDO, rcached: dict[str,str]|None = None, after_write: bool = False) -> GDO:
-        from gdo.shadowdogs.SD_Player import SD_Player
-        if isinstance(gdo, SD_Player):
-            pass
         if gdo.gdo_cached():
             gid = gdo.get_id()
             cn = gdo.gdo_table_name()
