@@ -70,7 +70,7 @@ class Events:
 
     def add_timer(self, duration: float, callback: callable, repeat: int = 1):
         from gdo.base.Application import Application
-        print(str(callback), duration, repeat)
+        # print(str(callback), duration, repeat)
         timer = {'duration': duration, 'callback': callback, 'repeat': repeat, 'next_run': Application.TIME + duration}
         self._timers.append(timer)
 

@@ -164,11 +164,11 @@ async def repl():
     with patch_stdout():  # allows async print + input without clobbering
         while RUNNING:
             try:
-                input_line = await session.prompt_async(">>> ")
+                input_line = session.prompt(">>> ")
                 if input_line:
                     if input_line.lower() == "exit":
                         break
-                    Application.tick()
+                    # Application.tick()
                     await process_line(input_line)
             except (GDOModuleException, GDOError) as ex:
                 print(str(ex))
