@@ -205,7 +205,6 @@ class Application:
     def init_common(cls):
         cls.STORAGE.mode = Mode.HTML
         cls.fresh_page()
-        # cls.tick()
         cls.DB_READS = 0 #PP#DELETE#
         cls.DB_WRITES = 0 #PP#DELETE#
         cls.STORAGE.user = None
@@ -215,13 +214,9 @@ class Application:
     @classmethod
     def init_thread(cls, thread):
         from gdo.base.Database import Database
-        # from gdo.ui.GDT_Page import GDT_Page
-        # cls.STORAGE.user = None
         cls.mode(Mode.HTML)
-        # cls.STORAGE.lang = 'en'
-        # cls.STORAGE.page = GDT_Page()
-        # if not cls.STORAGE.DB:
-        #     if 'db' in cls.CONFIG:
+        cls.fresh_page()
+        cls.STORAGE.lang = 'en'
         cls.TIME = round(time.time(), 6)
         if not cls.storage('DB'):
             cfg = cls.CONFIG['db']
