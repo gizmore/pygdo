@@ -1,3 +1,4 @@
+from gdo.base.Trans import t
 from gdo.base.Util import html
 from gdo.core.GDT_UInt import GDT_UInt
 from gdo.core.WithObject import WithObject
@@ -18,6 +19,9 @@ class GDT_Object(WithObject, GDT_UInt):
 
     def render_irc(self) -> str:
         return self.render_txt()
+
+    def render_suggestion(self) -> str:
+        return t('suggest_object')
 
     def render_txt(self) -> str:
         return f"{self.get_value().render_name()}"

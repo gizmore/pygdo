@@ -123,6 +123,8 @@ class WithObject:
     def validate(self, val: str|None) -> bool:
         if self.get_value():
             return True
+        else:
+            val = None
         if self.has_error():
             return False
         if not super().validate(val):

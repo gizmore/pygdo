@@ -217,6 +217,7 @@ class Application:
         cls.mode(Mode.HTML)
         cls.fresh_page()
         cls.STORAGE.lang = 'en'
+        cls.STORAGE.user = None
         cls.TIME = round(time.time(), 6)
         if not cls.storage('DB'):
             cfg = cls.CONFIG['db']
