@@ -176,6 +176,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def gdo_execute(self) -> GDT:
         raise GDOError('err_stub')
 
+    def gdo_before_execute(self):
+        pass
+
     def gdo_after_execute(self):
         pass
 
@@ -307,6 +310,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         try:
             if tr:
                 db.begin()
+            self.gdo_before_execute()
             if not self._prepare_nested_permissions(self):
                 return self.empty()
             return await self._nested_execute(self, True)

@@ -246,6 +246,9 @@ class GDO_User(GDO):
     def is_staff(self) -> bool:
         return self.has_permission('staff')
 
+    def is_human(self) -> bool:
+        return self.is_type(GDT_UserType.MEMBER)
+
     def has_permission(self, permission: str) -> bool:
         from gdo.core.GDO_Permission import GDO_Permission
         return GDO_Permission.has_permission(self, permission)
