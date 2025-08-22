@@ -24,7 +24,7 @@ class GDO(WithName, WithBulk, GDT):
     """
     ID_SEPARATOR = ':'  # Multiple primary keys supported
     HASH_LENGTH = 16
-
+    GDT_AutoInc = None
     #PYPP#START#
     GDO_COUNT = 0
     GDO_ALIVE = 0
@@ -288,11 +288,13 @@ class GDO(WithName, WithBulk, GDT):
     def get_id(self) -> str|None:
         if self._my_id: return self._my_id
         if self._blank: return ''
-        from gdo.core.GDT_AutoInc import GDT_AutoInc
+        if not self.__class__.GDT_AutoInc:
+            from gdo.core.GDT_AutoInc import GDT_AutoInc
+            self.__class__.GDT_AutoInc = GDT_AutoInc
         out = []
         for pk in self.get_pk_columns():
             val = pk.get_val()
-            if type(pk) == GDT_AutoInc:
+            if type(pk) == self.__class__.GDT_AutoInc:
                 if val != '0':
                     self._my_id = val
                 return val

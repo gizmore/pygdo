@@ -1,11 +1,9 @@
 import asyncio
 
-from aiohttp.abc import ClearCookiePredicate
 from typing_extensions import TYPE_CHECKING
 
 from gdo.base.Message import Message
 from gdo.core.GDO_UserPermission import GDO_UserPermission
-from gdo.core.method.clear_cache import clear_cache
 
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
@@ -36,23 +34,6 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         super().setUp()
         Application.LOOP = asyncio.get_event_loop()
-
-    # def tearDown(self):
-    #     super().tearDown()
-    #     if Application.LOOP:
-    #         asyncio.wait_for(asyncio.all_tasks())
-
-    # def setUp(self):
-    #     self._profile = cProfile.Profile()
-    #     self._profile.enable()
-    #
-    # def tearDown(self):
-    #     p = Stats(self._profile)
-    #     p.strip_dirs()
-    #     p.sort_stats('cumtime')
-    #     p.print_stats()
-    #
-
 
 def reinstall_module(name):
     drop_module(name)

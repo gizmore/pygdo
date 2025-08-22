@@ -2,3 +2,7 @@ module_mail = "E-Mail"
 
 email_confirmed = "Email confirmed at"
 link_change_mail = "Change E-Mail"
+
+mt_mail_send = "Send Email"
+md_mail_send = "Send an Email to a single user."
+msg_mail_send = "Mail has been sent."

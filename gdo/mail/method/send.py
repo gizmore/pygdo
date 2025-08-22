@@ -25,3 +25,4 @@ class send(Method):
         mail.subject(self.param_val('subject'))
         mail.body(self.param_value('body'))
         mail.send_to_user(to)
+        return self.msg('msg_mail_send')
