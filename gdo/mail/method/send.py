@@ -18,7 +18,7 @@ class send(Method):
     def gdo_execute(self) -> GDT:
         sender = self._env_user
         to = self.param_value('to')
-        if not to.has_mail():
+        if not to.get_mail():
             return self.error('err_user_no_mail')
         mail = Mail.from_bot()
         mail.reply_to(sender.get_mail())
