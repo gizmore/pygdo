@@ -221,15 +221,7 @@ class GDO(WithName, WithBulk, GDT):
         return self.save()
 
     def increment(self, key: str, by: float|int) -> Self:
-        gdt = self.column(key)
-        old = gdt.get_value()
-        new = old + by
-        if gdt._max is not None and new > gdt._max:
-            new = gdt._max
-        elif gdt._min is not None and new < gdt._min:
-            new = gdt._min
-        self.set_val(key, str(new))
-        return self
+        return self.save_val(key, str(self.gdo_value(key) + by))
 
     @classmethod
     def get_name(cls):
