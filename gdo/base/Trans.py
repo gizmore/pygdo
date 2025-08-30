@@ -60,7 +60,7 @@ class Trans:
 
     @staticmethod
     def _load():
-        pattern = os.path.join(Application.file_path('gdo/'), "*", "lang", "*.toml")
+        pattern = os.path.join(Application.file_path('gdo/'), "*", "lang", "**", "*.toml")
         for lang_file in glob.glob(pattern, recursive=True):
             Trans._load_file(lang_file)
         # Trans.EN = Trans.CACHE.get('en')
@@ -89,7 +89,7 @@ class Trans:
                 return format % args if args else format
         except:
             pass
-        return key + str(args)
+        return key + str(args) if args else key
 
     @staticmethod
     def has(key: str) -> bool:
