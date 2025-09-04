@@ -15,16 +15,17 @@ class GDT_Select(GDT_ComboBox):
         else:
             return self._choices
         if not self.is_not_null():
-            self._choices['0'] = t('please_choose')
+            self._choices[''] = t('please_choose')
         self._choices.update(self.gdo_choices())
         return self._choices
 
     def validate(self, val: str|None) -> bool:
         if val is None:
             return super().validate(val)
-        if val not in self.init_choices().keys():
-            return self.error_invalid_choice()
-        return True
+        if (value := self.to_value(val)) is not None:
+            self.value(value)
+            return True
+        return self.error_invalid_choice()
 
     def error_invalid_choice(self):
         suggestions = self.render_suggestion()
@@ -38,7 +39,18 @@ class GDT_Select(GDT_ComboBox):
 
     def to_value(self, val: str):
         self.init_choices()
-        return self._choices.get(val, None)
+        matches = []
+        val = val.lower()
+        for k, v in self._choices.items():
+            if k.lower().startswith(val):
+                matches.append(v)
+        if len(matches) == 1: return matches[0]
+        matches = []
+        for k, v in self._choices.items():
+            if val in k.lower():
+                matches.append(v)
+        if len(matches) == 1: return matches[0]
+        return None
 
     ##########
     # Render #

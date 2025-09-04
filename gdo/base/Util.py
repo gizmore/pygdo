@@ -437,6 +437,13 @@ class Arrays:
             size += sum(cls.mem_size(i, seen) for i in obj)
         return size
 
+    @staticmethod
+    def extend_unknown(target: dict, source: dict) -> dict:
+        """Extend target with keys from source, but only if they are not already present."""
+        for k, v in source.items():
+            target.setdefault(k, v)
+        return target
+
 
 class Random:
 

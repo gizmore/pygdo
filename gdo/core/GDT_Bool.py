@@ -11,17 +11,7 @@ class GDT_Bool(GDT_Select):
         return GDT_UInt(self.get_name()).bytes(1).gdo_column_define()
 
     def gdo_choices(self) -> dict:
-        choices = {}
-        if not self._not_null:
-            choices[''] = 'please_select'
-        choices['1'] = 'yes'
-        choices['0'] = 'no'
-        return choices
-
-    def to_value(self, val: str):
-        if val == '1':
-            return True
-        elif val == '0':
-            return False
-        else:
-            return None
+        return {
+            '0': False,
+            '1': True,
+        }

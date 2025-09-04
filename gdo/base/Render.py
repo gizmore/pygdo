@@ -1,7 +1,6 @@
 from enum import Enum
 from functools import cached_property
 
-
 class Mode(Enum):
     """
     Rendering Modes for GDTs
@@ -92,7 +91,9 @@ class Render:
                 return f'red({mode.name})'
 
     @classmethod
-    def bold(cls, s: str, mode: Mode) -> str | list:
+    def bold(cls, s: str, mode: Mode = None) -> str | list:
+        from gdo.base.Application import Application
+        mode = mode or Application.get_mode()
         match mode:
             case Mode.TXT | Mode.MARKDOWN:
                 return f"**{s}**"

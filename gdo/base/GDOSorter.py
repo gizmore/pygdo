@@ -16,7 +16,7 @@ class GDOSorter:
             for key, direction in sort_dict.items():
                 cmp = gdo1.column(key).gdo_compare(gdo2.column(key))
                 if direction.lower() == 'desc':
-                    cmp = cmp * -1
+                    cmp *= -1
                 if cmp:
                     return cmp
             return 0  # Equal values

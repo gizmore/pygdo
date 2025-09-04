@@ -26,6 +26,7 @@ from gdo.base.Util import Files, html
 class ModuleLoader:
     _cache: dict[str, 'GDO_Module'] # name
     _methods: dict[str, type['Method']] # trigger
+    _meths: dict[str, type['Method']] # trigger
     _enabled: list['GDO_Module']
 
     @classmethod
@@ -56,13 +57,15 @@ class ModuleLoader:
         self._cache = {}
         self._enabled = []
         self._methods = {}
+        self._meths = {}
 
     def get_module(self, module_name: str) -> 'GDO_Module':
         return self._cache.get(module_name, None)
 
     def get_method(self, method_trigger: str) -> Method | None:
         try:
-            klass = self._methods[method_trigger.lower()]
+            trig = method_trigger.lower()
+            klass = self._methods.get(trig, self._meths.get(trig))
             return klass()
         except Exception as ex:
             Logger.exception(ex)
@@ -75,7 +78,7 @@ class ModuleLoader:
 
     def load_modules_fs(self, pattern='*', installed=False):
         loaded = {}
-        patterns = pattern.split(',')
+        patterns = pattern.lower().split(',')
         for pattern in patterns:
             path = Application.file_path('gdo/')
             matches = glob.glob(pattern, root_dir=path)
@@ -198,7 +201,9 @@ class ModuleLoader:
                     if trigger := method.gdo_trigger():
                         self._methods[trigger.lower()] = method
                         if trig := method.gdo_trig():
-                            self._methods[trig.lower()] = method
+                            self._meths[trig.lower()] = method
+                        else:
+                            self._meths[trigger.lower()] = method
                 except Exception as ex:
                     Logger.exception(ex, f"Error in {method.__module__}.{method.__class__.__name__}")
 

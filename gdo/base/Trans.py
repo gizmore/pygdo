@@ -59,6 +59,12 @@ class Trans:
         Trans._load()
 
     @staticmethod
+    def reload():
+        Trans.EN = {}
+        Trans.CACHE = { 'en': Trans.EN }
+        Trans.init()
+
+    @staticmethod
     def _load():
         pattern = os.path.join(Application.file_path('gdo/'), "*", "lang", "**", "*.toml")
         for lang_file in glob.glob(pattern, recursive=True):

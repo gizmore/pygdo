@@ -132,7 +132,7 @@ class GDT_File(GDT_Object):
     # Validate #
     ############
     def validate(self, val: str|None) -> bool:
-        value = self.get_value()
+        value = self.to_value(val)
         if not value:
             return super().validate(val)
         return self.validate_files(value)

@@ -47,7 +47,7 @@ class Installer:
             print("Migrating core for user settings.")
         Installer.migrate_gdo(GDO_UserSetting.table())
 
-        clear_cache().gdo_execute()
+        # clear_cache().gdo_execute()
         return True
 
     @classmethod

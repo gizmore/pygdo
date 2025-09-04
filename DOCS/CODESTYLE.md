@@ -19,7 +19,6 @@ so the project agrees on some aspects of Python Programming.
 ## Type hinting
 
 I do not annotate everything, especially i often omit return values.
-Return -> Self is always omitted, because somehow it does not work in PyCharm nicely :(
 
 PyGDO has a lot of circular dependencies in the core and base module.
 In extension modules it is better.

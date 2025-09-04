@@ -49,12 +49,20 @@ class GDT(WithSerialization):
                 replace("'", "\\'"))
 
     @staticmethod
+    def escape_search(val: str) -> str:
+        return GDT.EMPTY_STR if val is None else GDT.escape(val).replace('%', '\\%')
+
+    @staticmethod
     def quote(val: str | bytes) -> str:
         if val is None or val == '':
             return GDT.NULL_STRING
         if type(val) is bytes:
             return f"UNHEX('{GDT.escape(val)}')"
         return f"'{GDT.escape(val)}'"
+
+    @classmethod
+    def fqcn(cls) -> str:
+        return cls.__module__ + '.' + cls.__name__
 
     #PYPP#START#
     def __init__(self):
@@ -77,7 +85,7 @@ class GDT(WithSerialization):
         return self.get_name()
 
     def __repr__(self):
-        return self.get_name()
+        return f"{self.__class__.__name__}({self.get_name()})={self.get_val()}"
 
     @classmethod
     @lru_cache

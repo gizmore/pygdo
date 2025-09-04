@@ -74,6 +74,7 @@ class WithObject:
         return GDO.EMPTY_LIST
 
     def get_by_name(self, var: str) -> list[GDO] | GDO | None:
+        var = var.lower()
         gdos = self.query_gdos(var)
         if self._multiple:
             return gdos
@@ -86,9 +87,10 @@ class WithObject:
         middles = {}
         for gdo in gdos:
             name = gdo.render_name()
-            if name.lower() == var.lower():
+            nam = name.lower()
+            if nam == var:
                 return gdo
-            if name.lower().startswith(var.lower()):
+            if nam.startswith(var):
                 firsts.append(gdo)
             middles[name] = gdo
 

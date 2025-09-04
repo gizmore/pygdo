@@ -16,7 +16,7 @@ class Connector:
     AVAILABLE = {}  # Static all
     TEXT_CONNECTORS = []  # Static without web
 
-    _server: 'GDO_Server'  # instance server
+    _server: 'GDO_Server|None'  # instance server
     _connected: bool
     _connecting: bool
     _tried_connecting: bool
@@ -45,6 +45,7 @@ class Connector:
     ############
     def __init__(self):
         super().__init__()
+        self._server = None
         self._connected = False
         self._connecting = False
         self._tried_connecting = False

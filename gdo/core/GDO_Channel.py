@@ -86,3 +86,9 @@ class GDO_Channel(GDO):
         user_name = user.get_name()
         del self._users[user_name]
         Application.EVENTS.publish('user_left_channel', user, self)
+
+    def is_online(self) -> bool:
+        return self.get_server()._channels.get(self.get_id()) is not None
+
+    def is_user_online(self, user: GDO_User) -> bool:
+        return self._users.get(user.get_id()) is not None

@@ -7,6 +7,7 @@ from gdo.core.GDT_Container import GDT_Container
 if TYPE_CHECKING:
     from gdo.core.Connector import Connector
     from gdo.core.GDO_User import GDO_User
+    from gdo.core.GDO_Channel import GDO_Channel
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOParamError, GDOModuleException

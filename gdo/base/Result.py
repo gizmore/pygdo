@@ -113,11 +113,12 @@ class Result:
         if (row := self.fetch_assoc()) is None:
             return None
         if self._nocache:
-            obj = self._table.__class__()
-            return obj.vals(row)
+            obj = self._table.gdo_real_class(row)()
+            obj._vals = row
+            return obj
         else:
-            obj = self._table.__class__()
-            obj._vals = row #.update(row)
+            obj = self._table.gdo_real_class(row)()
+            obj._vals.update(row)
             return Cache.obj_for(obj, None, False)
 
     @functools.cache

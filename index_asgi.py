@@ -173,7 +173,7 @@ async def app(scope, receive, send):
                     Application.set_session(session)
                     server = user.get_server()
                     channel = None
-                    args = ParseArgs()
+                    # args = ParseArgs()
                     args.add_path_vars(url)
                     args.add_get_vars(qs)
                     try:

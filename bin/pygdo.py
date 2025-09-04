@@ -115,6 +115,7 @@ async def process_line(line: str) -> None:
         message = Message(line, Mode.CLI)
         message.env_server(server).env_user(user, True)
         Application.EVENTS.publish('new_message', message)
+        line = message._message
         if line.startswith(trigger):
             method = parser.parse_line(line[1:])
             Application.fresh_page().method(method)

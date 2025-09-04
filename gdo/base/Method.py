@@ -278,6 +278,12 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def href(self, append: str = '', format: str = 'html') -> str:
         return self.gdo_module().href(self.get_name(), append, format)
 
+    def execute_command(self, line: str):
+        from gdo.base.Parser import Parser
+        parser = Parser(self._env_mode, self._env_user, self._env_server, self._env_channel, self._env_session)
+        method = parser.parse_line(line)
+        return method.execute()
+
     ###########
     # Message #
     ###########

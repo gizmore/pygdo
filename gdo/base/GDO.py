@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import hashlib
 import traceback
+from functools import lru_cache
 from typing import Self, Generator
 
 from gdo.base.Exceptions import GDOException
@@ -78,6 +79,10 @@ class GDO(WithName, WithBulk, GDT):
     # def __repr__(self):
     #     return f"{self.get_name()}({self.get_id()}): {str(list(self._vals.values()))}"
 
+    @classmethod
+    def gdo_real_class(cls, vals: dict[str,str]) -> type[GDO]:
+        return cls
+
     def gdo_redis_fields(self) -> list[str]:
         return [
             '_vals',
@@ -96,13 +101,20 @@ class GDO(WithName, WithBulk, GDT):
         return Cache.table_for(cls)
 
     @classmethod
-    def blank(cls, vals: dict = None, mark_blank: bool = True) -> Self:
-        vals = vals or {}
-        vals = {name: vals.get(name, gdt.get_initial()) for name, gdt in cls.table().columns().items()}
+    def blank(cls, vals: dict | None = None, mark_blank: bool = True) -> "Self":
         back = cls()
-        back._vals = vals
-        back._blank = mark_blank
-        return back.all_dirty()
+        back.fill_defaults(vals, mark_blank)
+        return back
+
+    def fill_defaults(self, vals: dict|None=None, mark_blank: bool = True):
+        cols = self.table().column_items()
+        out = vals if vals else {}
+        for name, gdt in cols:
+            if name not in out:
+                out[name] = gdt.get_initial()
+        self._vals = out
+        self._blank = mark_blank
+        return self.all_dirty()
 
     def gdo_hash(self) -> str:
         hash_me = hashlib.sha256()
@@ -131,6 +143,9 @@ class GDO(WithName, WithBulk, GDT):
     def gdo_table_name(cls) -> str:
         return cls.__name__.lower()
 
+    def gdo_can_persist(self) -> bool:
+        return True
+
     def gdo_table_engine(self) -> str:
         return 'InnoDB'
 
@@ -158,6 +173,10 @@ class GDO(WithName, WithBulk, GDT):
 
     def columns(self) -> dict[str,GDT]:
         return Cache.columns_for(self.__class__)
+
+    @lru_cache
+    def column_items(self) -> dict[str,GDT]:
+        return self.columns().items()
 
     def columns_only(self, *names: str) -> list[GDT]:
         return [self.column(key) for key in names]
@@ -195,6 +214,13 @@ class GDO(WithName, WithBulk, GDT):
             del self._values[key]
         self._vals[key] = val
         return self.dirty(key, dirty)
+
+    def set_temp(self, key: str, val: str) -> Self:
+        self._vals[key] = val
+        return self
+
+    def get_temp(self, key: str, default: str) -> str:
+        return  self._vals.get(key, default)
 
     def set_value(self, key: str, value: any, dirty: bool=True) -> Self:
         gdt = self.column(key)
@@ -330,13 +356,15 @@ class GDO(WithName, WithBulk, GDT):
         return self.insert_or_replace(Type.REPLACE)
 
     def insert_or_replace(self, type_: Type) -> Self:
-        self.before_create()
-        query = self.query().type(type_).set_vals(self.insert_vals())
-        self._last_id = query.exec().lastrowid
-        self._blank = False
-        self.all_dirty(False)
-        self.after_create()
-        return Cache.update_for(self)
+        if self.gdo_can_persist():
+            self.before_create()
+            query = self.query().type(type_).set_vals(self.insert_vals())
+            self._last_id = query.exec().lastrowid
+            self._blank = False
+            self.all_dirty(False)
+            self.after_create()
+            return Cache.update_for(self)
+        return self
 
     def dirty_vals(self) -> dict[str, str]:
         vals = {}
@@ -354,22 +382,23 @@ class GDO(WithName, WithBulk, GDT):
         return vals
 
     def save(self):
-        if not self.is_persisted():
-            return self.insert()
         obj = self
-        if len(self._dirty) or self._all_dirty:
-            dirty = self.dirty_vals()
-            obj.before_update()
-            obj.query().type(Type.UPDATE).set_vals(dirty).where(self.pk_where()).exec()
-            self._blank = False
-            obj.after_update()
-            from gdo.base.IPC import IPC
-            if Arrays.mem_size(dirty) > IPC.MAX_EVENT_ARG_SIZE:
-                dirty = None
-            obj.all_dirty(False)
-            if obj.gdo_cached():
-                IPC.send('base.ipc_gdo', (self.gdo_table_name(), self.get_id(), dirty))
-                return Cache.update_for(obj)
+        if self.gdo_can_persist():
+            if not self.is_persisted():
+                return self.insert()
+            if len(self._dirty) or self._all_dirty:
+                dirty = self.dirty_vals()
+                obj.before_update()
+                obj.query().type(Type.UPDATE).set_vals(dirty).where(self.pk_where()).exec()
+                self._blank = False
+                obj.after_update()
+                from gdo.base.IPC import IPC
+                if Arrays.mem_size(dirty) > IPC.MAX_EVENT_ARG_SIZE:
+                    dirty = None
+                obj.all_dirty(False)
+                if obj.gdo_cached():
+                    IPC.send('base.ipc_gdo', (self.gdo_table_name(), self.get_id(), dirty))
+                    return Cache.update_for(obj)
         return obj
 
     ##########
@@ -380,7 +409,7 @@ class GDO(WithName, WithBulk, GDT):
         return self.query().type(Type.DELETE)
 
     def delete(self):
-        if self.is_persisted():
+        if self.is_persisted() and self.gdo_can_persist():
             self.before_delete()
             self.delete_query().where(self.pk_where()).exec()
             vals = {gdt.get_name(): gdt.get_val() for gdt in self.get_pk_columns()}

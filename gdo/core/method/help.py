@@ -7,6 +7,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render
 from gdo.base.Util import html
 from gdo.core.Connector import Connector
+from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_String import GDT_String
 
 
@@ -24,6 +25,7 @@ class help(Method):
 
     def gdo_parameters(self) -> list[GDT]:
         return [
+            GDT_Bool('short').not_null().initial('0'),
             GDT_String('trigger').positional(),
         ]
 
@@ -51,7 +53,8 @@ class help(Method):
         loader = ModuleLoader.instance()
         grouped = {}
         mode = self._env_mode
-        for klass in loader._methods.values():
+        meths = loader._meths if self.param_value('short') else loader._methods
+        for klass in meths.values():
             method = klass()
             module_name = method.gdo_module().render_name()
             method.env_copy(self)

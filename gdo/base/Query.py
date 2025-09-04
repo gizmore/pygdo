@@ -34,6 +34,7 @@ class Query:
     _columns: str
     _vals: dict[str, str]
     _where: str
+    _having: str
     _order: str
     _offset: int
     _limit: int
@@ -48,7 +49,11 @@ class Query:
         self._join = ''
         self._joined_objects = []
         self._where = ''
+        self._having = ''
         self._nocache = False
+
+    def __repr__(self):
+        return f"QRY: {self.build_query()}"
 
     def is_select(self):
         if self.is_raw() and self._raw.startswith('SELECT'):
@@ -130,6 +135,13 @@ class Query:
             self._where = f"({where})"
         return self
 
+    def having(self, having: str, op='AND'):
+        if self._having:
+            self._having += f" {op} ({having})"
+        else:
+            self._having = f"({having})"
+        return self
+
     def order(self, order: str):
         if hasattr(self, '_order'):
             self._order += f", {order}"
@@ -202,7 +214,7 @@ class Query:
         if self.is_raw():
             return self._raw
         if self.is_select():
-            return f"SELECT {self._columns} FROM {self._table} {self._join}{self._build_where()}{self._build_order()}{self.build_limit()}"
+            return f"SELECT {self._columns} FROM {self._table} {self._join}{self._build_where()}{self._build_having()}{self._build_order()}{self.build_limit()}"
         if self.is_delete():
             return f"DELETE FROM {self._table} {self._join} WHERE {self._where}"
         if self.is_insert():
@@ -221,6 +233,12 @@ class Query:
     def _build_where(self) -> str:
         if self._where:
             return f' WHERE {self._where}'
+        return ''
+
+
+    def _build_having(self) -> str:
+        if self._having:
+            return f' HAVING {self._having}'
         return ''
 
     def _build_order(self):
