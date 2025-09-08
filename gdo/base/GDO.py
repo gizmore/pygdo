@@ -68,6 +68,14 @@ class GDO(WithName, WithBulk, GDT):
         self._my_id = None
         self._blank = False
 
+    @classmethod
+    def __new__(cls, *args, **kwargs):
+        gdo = super().__new__(cls)
+        gdo._vals = {}
+        gdo._values = {}
+        gdo._dirty = []
+        return gdo
+
     #PYPP#START#
     def __del__(self):
         GDO.GDO_ALIVE -= 1

@@ -85,7 +85,7 @@ class Cache:
     def table_for(cls, gdo_klass: type[GDO]):
         cn = gdo_klass
         if not (gdo := cls.TCACHE.get(cn)):
-            cls.TCACHE[cn] = gdo = gdo_klass()
+            cls.TCACHE[cn] = gdo = gdo_klass.__new__(gdo_klass)
             cls.CCACHE[cn] = cls.build_ccache(gdo_klass)
             cls.PCACHE[cn] = cls.build_pkcache(gdo_klass)
             if gdo.gdo_cached():

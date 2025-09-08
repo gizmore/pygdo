@@ -42,12 +42,12 @@ class GDT_Select(GDT_ComboBox):
         matches = []
         val = val.lower()
         for k, v in self._choices.items():
-            if k.lower().startswith(val):
+            if k.lower().startswith(val) or (type(v) == str and v.lower().startswith(val)):
                 matches.append(v)
         if len(matches) == 1: return matches[0]
         matches = []
         for k, v in self._choices.items():
-            if val in k.lower():
+            if val in k.lower() or (type(v) == str and val in v.lower()):
                 matches.append(v)
         if len(matches) == 1: return matches[0]
         return None

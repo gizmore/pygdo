@@ -31,3 +31,7 @@ Here is a small collection of often used and inherited GDT.
 This is an object entity, probably using the database.
 Overwrite gdo_columns() to return a list of GDTs.
 
+ - If you (ab)use this class as a DTO, override gdo_can_persist()
+ - If you inherit from your own GDO classes with polymorphism, override gdo_real_class()
+
+

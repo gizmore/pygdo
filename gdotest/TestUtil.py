@@ -4,6 +4,8 @@ from typing_extensions import TYPE_CHECKING
 
 from gdo.base.Message import Message
 from gdo.core.GDO_UserPermission import GDO_UserPermission
+from gdo.shadowdogs import module_shadowdogs
+from gdo.shadowdogs.engine.Shadowdogs import Shadowdogs
 
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
@@ -35,10 +37,22 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         super().setUp()
         Application.LOOP = asyncio.get_event_loop()
 
+    async def ticker_for(self, user: 'GDO_User' = None):
+        user = user or cli_gizmore()
+        await self.ticker(Shadowdogs.USERMAP[user.get_id()].get_busy_seconds() + 2)
+
+    async def ticker(self, ticks: int = 1):
+        print(f"{ticks} ticks pass buy.")
+        for i in range(0, ticks - 1):
+            i = self.TICKS + i
+            Application.TIME += 1
+            await Application.EVENTS.update_timers(module_shadowdogs.instance().cfg_time())
+        self.TICKS += ticks
+
+
 def reinstall_module(name):
     drop_module(name)
     return install_module(name)
-
 
 def drop_module(name: str):
     module = ModuleLoader.instance().load_module_fs(name)
