@@ -115,10 +115,12 @@ class Result:
         if self._nocache:
             obj = self._table.gdo_real_class(row)()
             obj._vals = row
+            obj._blank = False
             return obj
         else:
             obj = self._table.gdo_real_class(row)()
             obj._vals.update(row)
+            obj._blank = False
             return Cache.obj_for(obj, None, False)
 
     @functools.cache

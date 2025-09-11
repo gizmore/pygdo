@@ -74,6 +74,10 @@ class GDO(WithName, WithBulk, GDT):
         gdo._vals = {}
         gdo._values = {}
         gdo._dirty = []
+        gdo._all_dirty = False
+        gdo._last_id = None
+        gdo._my_id = None
+        gdo._blank = False
         return gdo
 
     #PYPP#START#
