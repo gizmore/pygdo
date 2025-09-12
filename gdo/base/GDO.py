@@ -95,6 +95,10 @@ class GDO(WithName, WithBulk, GDT):
     def gdo_real_class(cls, vals: dict[str,str]) -> type[GDO]:
         return cls
 
+    @classmethod
+    def gdo_base_class(cls) -> type[GDO]:
+        return cls
+
     def gdo_redis_fields(self) -> list[str]:
         return [
             '_vals',
@@ -110,7 +114,7 @@ class GDO(WithName, WithBulk, GDT):
 
     @classmethod
     def table(cls) -> Self:
-        return Cache.table_for(cls)
+        return Cache.table_for(cls.gdo_base_class())
 
     @classmethod
     def blank(cls, vals: dict | None = None, mark_blank: bool = True) -> "Self":

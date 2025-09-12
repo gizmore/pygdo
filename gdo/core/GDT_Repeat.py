@@ -46,6 +46,8 @@ class GDT_Repeat(WithProxy, GDT_UInt):
         return values
 
     def validate(self, vals: str | None) -> bool:
+        if vals is None:
+            return self.validate_null(vals)
         if not self.validate_min_max(len(vals)):
             return False
         for val in vals:

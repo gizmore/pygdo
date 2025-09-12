@@ -62,7 +62,7 @@ class WithSerialization:
             class_path = dic.get(WithSerialization.MAGIC_KEY)
             if not class_path:
                 return {key: WithSerialization.gdopinstances(value) for key, value in dic.items()}
-
+            print(class_path)
             # Restore object from class path
             module_name, class_name = class_path.rsplit(".", 1)
             module = importlib.import_module(module_name)

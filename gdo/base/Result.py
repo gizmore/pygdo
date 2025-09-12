@@ -28,6 +28,8 @@ class Result:
     def __init__(self, result: MySQLCursorDict, gdo: 'GDO' = None):
         self._result = result
         self._table = gdo
+        if gdo is None:
+            pass
         self._iter = ResultType.OBJECT
         self._nocache = False
 
