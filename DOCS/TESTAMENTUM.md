@@ -1,5 +1,9 @@
 # PyGDO Testamentum
 
+In case of my early death, surely not suicide or vanishing,
+i gift my property to my closest friends of the challenge scene.
+
+
 ### Copyright
 
 I hereby gift all my PyGDO Projects to the wechall.net admins, in ownership ranking order:
@@ -16,4 +20,3 @@ gizmore@wechall.net (C.Busch)
 30.Apr.2024 via github.com push
 
 ===============================
-
