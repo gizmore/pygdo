@@ -37,10 +37,6 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         super().setUp()
         Application.LOOP = asyncio.get_event_loop()
 
-    async def ticker_for(self, user: 'GDO_User' = None):
-        user = user or cli_gizmore()
-        await self.ticker(Shadowdogs.USERMAP[user.get_id()].get_busy_seconds() + 2)
-
     async def ticker(self, ticks: int = 1):
         print(f"{ticks} ticks pass buy.")
         for i in range(0, ticks - 1):
@@ -48,6 +44,10 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
             Application.TIME += 1
             await Application.EVENTS.update_timers(module_shadowdogs.instance().cfg_time())
         self.TICKS += ticks
+
+    async def ticker_for(self, user: 'GDO_User' = None):
+        user = user or cli_gizmore()
+        await self.ticker(Shadowdogs.USERMAP[user.get_id()].get_busy_seconds() + 2)
 
 
 def reinstall_module(name):

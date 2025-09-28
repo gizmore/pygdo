@@ -12,6 +12,7 @@ err_not_in_private = "This method does not work in private."
 err_not_in_channel = "This method does not work inside channels."
 err_not_authenticated = "Your account is not authenticated."
 err_violate_unique = "A record for this already exists."
+err_gdo_validate = "GDO validation error for %s with %s: %s"
 
 and = "and"
 decimal_point = '.'

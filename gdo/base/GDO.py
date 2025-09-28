@@ -223,7 +223,7 @@ class GDO(WithName, WithBulk, GDT):
         self._blank = False
         return self
 
-    def set_val(self, key, val: str, dirty: bool = True) -> Self:
+    def set_val(self, key, val: str|None, dirty: bool = True) -> Self:
         if self._vals.get(key) == val:
             return self
         if key in self._values:
@@ -231,7 +231,7 @@ class GDO(WithName, WithBulk, GDT):
         self._vals[key] = val
         return self.dirty(key, dirty)
 
-    def set_temp(self, key: str, val: str) -> Self:
+    def set_temp(self, key: str, val: str|None) -> Self:
         self._vals[key] = val
         return self
 
@@ -258,7 +258,7 @@ class GDO(WithName, WithBulk, GDT):
         """
         return self.set_vals(vals).save()
 
-    def save_val(self, key: str, val: str) -> Self:
+    def save_val(self, key: str, val: str|None) -> Self:
         self.set_val(key, val)
         return self.save()
 
@@ -353,7 +353,7 @@ class GDO(WithName, WithBulk, GDT):
     def validated(self):
         for name, gdt in self.columns().items():
             if not gdt.gdo(self).validated():
-                raise GDOException(t('err_gdo_validate', (name, gdt.render_error())))
+                raise GDOException(t('err_gdo_validate', (name, gdt.render_val(), gdt.render_error())))
         return self
 
     ####################

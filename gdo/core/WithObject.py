@@ -66,7 +66,7 @@ class WithObject:
         return self.get_value()
 
     def query_gdos(self, val: str) -> list[GDO]:
-        if val[0].isdigit():
+        if val.isdigit():
             if gdo := self._table.get_by_aid(val):
                 return [gdo]
         if gdt := self._table.name_column():

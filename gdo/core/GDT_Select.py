@@ -44,6 +44,8 @@ class GDT_Select(GDT_ComboBox):
         for k, v in self._choices.items():
             if k.lower().startswith(val) or (type(v) == str and v.lower().startswith(val)):
                 matches.append(v)
+            if k.lower() == val or (type(v) == str and v.lower() == val):
+                return v
         if len(matches) == 1: return matches[0]
         matches = []
         for k, v in self._choices.items():

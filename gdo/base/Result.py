@@ -108,6 +108,10 @@ class Result:
         row = self.fetch_row()
         return None if row is None else row[col_num]
 
+    @functools.cache
+    def get_reused_object(self) -> 'GDO':
+        return self._table.__class__()
+
     def fetch_object(self) -> 'GDO':
         """
         Fetch the next row as an object piped through the cache
@@ -121,13 +125,9 @@ class Result:
             return obj
         else:
             obj = self._table.gdo_real_class(row)()
-            obj._vals.update(row)
+            obj._vals = row
             obj._blank = False
             return Cache.obj_for(obj, None, False)
-
-    @functools.cache
-    def get_reused_object(self) -> 'GDO':
-        return self._table.__class__()
 
     def fetch_column(self, col_num: int = 0) -> list[str]:
         result = []

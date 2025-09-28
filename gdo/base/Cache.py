@@ -192,7 +192,7 @@ class Cache:
             if delete:
                 cls.remove(tn, gid)
             else:
-                return cls.obj_for(gdo.blank(rcached, False), rcached, False).my_id(gid)
+                return cls.obj_for(gdo.gdo_real_class(rcached).blank(rcached, False), rcached, False).my_id(gid)
         return None
 
     @classmethod
