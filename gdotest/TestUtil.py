@@ -49,6 +49,10 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         user = user or cli_gizmore()
         await self.ticker(Shadowdogs.USERMAP[user.get_id()].get_busy_seconds() + 2)
 
+    async def party_ticker_for(self, user: 'GDO_User' = None):
+        user = user or cli_gizmore()
+        p = Shadowdogs.USERMAP[user.get_id()].get_party()
+        await self.ticker(p.get_eta_s() + 2)
 
 def reinstall_module(name):
     drop_module(name)
