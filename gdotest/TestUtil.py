@@ -31,6 +31,7 @@ from index_wsgi import application
 
 class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     MESSAGES: dict[str, list[str]] = {}
+    TICKS: int = 0
     _profile: cProfile
 
     def setUp(self):
