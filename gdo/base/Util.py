@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import functools
 import string
+import functools
 
 import asyncio
 
@@ -22,9 +22,15 @@ from itertools import product
 from typing import Sequence
 
 import msgspec.json
-from magic import Magic
 
 from gdo.base.Render import Mode
+
+from prompt_toolkit.shortcuts import print_formatted_text as pt_print
+from prompt_toolkit.formatted_text import ANSI
+
+def gdo_print(s: str, end="\n"):
+    pt_print(ANSI(s), end=end)
+
 
 
 def hdr(name: str, value: str):

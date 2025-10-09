@@ -3,6 +3,7 @@ import asyncio
 from typing_extensions import TYPE_CHECKING
 
 from gdo.base.Message import Message
+from gdo.base.Util import gdo_print
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.shadowdogs import module_shadowdogs
 from gdo.shadowdogs.engine.Shadowdogs import Shadowdogs
@@ -39,7 +40,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         Application.LOOP = asyncio.get_event_loop()
 
     async def ticker(self, ticks: int = 1):
-        print(f"{ticks} ticks pass buy.")
+        gdo_print(f"{ticks} ticks pass buy.")
         for i in range(0, ticks - 1):
             i = self.TICKS + i
             Application.TIME += 1
@@ -204,7 +205,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     out += "\n"
     if result:
         out += result.render(mode)
-    print(out)
+    gdo_print(out)
     return out.strip()
 
 def all_private_messages():

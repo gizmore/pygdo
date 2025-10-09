@@ -10,7 +10,7 @@ import better_exceptions
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
 
-from gdo.base.Util import Files
+from gdo.base.Util import Files, gdo_print
 
 
 class Logger:
@@ -47,7 +47,7 @@ class Logger:
 
     @classmethod
     def debug(cls, content: str):
-        print(content)
+        gdo_print(content)
         cls.write('debug.log', content, False)
 
     @classmethod
@@ -62,7 +62,7 @@ class Logger:
 
     @classmethod
     def cron(cls, content: str):
-        print(content)
+        gdo_print(content)
         cls.write('cron.log', content)
 
     @classmethod

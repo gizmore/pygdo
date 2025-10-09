@@ -13,28 +13,14 @@ from prompt_toolkit.shortcuts import PromptSession
 
 RUNNING = 1
 
-class ConsoleThread(Thread):
-
-    def __init__(self):
-        super().__init__()
-        self.name = "PyGDOConsoleThread"
-        self.daemon = True
-
-    def run(self):
-        from gdo.base.Application import Application
-        Application.init_common()
-        Application.init_cli()
-        Application.init_thread(self)
-        asyncio.run(self.loop())
-
-    async def loop(self):
-        global RUNNING
-        from gdo.base.Application import Application
-        while RUNNING:
-            Application.tick()
-            await Application.EVENTS.update_timers(Application.TIME)
-            await Application.execute_queue()
-            await asyncio.sleep(0.5)
+async def event_pump():
+    global RUNNING
+    from gdo.base.Application import Application
+    while RUNNING:
+        Application.tick()
+        await Application.EVENTS.update_timers(Application.TIME)
+        await Application.execute_queue()
+        await asyncio.sleep(0.5)
 
 async def pygdo(line: str = None):
     from gdo.base.Application import Application
@@ -122,7 +108,7 @@ async def process_line(line: str) -> None:
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = await gdt
-            Application.execute_queue()
+            await Application.execute_queue()
             message._gdt_result = GDT_Container()
             message._gdt_result.add_field(Application.get_page()._top_bar)
             message._gdt_result.add_field(gdt)
@@ -151,6 +137,7 @@ async def repl():
     from gdo.base.Util import CLI
     from gdo.base.IPC import IPC
     global RUNNING
+    asyncio.create_task(event_pump())
     # thread = ConsoleThread()
     # thread.start()
     if not sys.stdin.isatty():
@@ -162,7 +149,7 @@ async def repl():
     session = PromptSession(
         history=FileHistory(Application.files_path(f'repl/{user.get_name()}.txt')),
     )
-    with patch_stdout():  # allows async print + input without clobbering
+    with patch_stdout():
         while RUNNING:
             try:
                 input_line = await session.prompt_async(">>> ")
@@ -182,7 +169,6 @@ async def repl():
         # Thread.join()
 
 async def launcher(line: str = None):
-    asyncio.create_task(ConsoleThread().loop())
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))
     sys.path.append(parent_dir)
     from gdo.base.Application import Application
