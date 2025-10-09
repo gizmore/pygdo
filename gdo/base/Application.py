@@ -4,6 +4,7 @@ import queue
 import sys
 import threading
 import time
+from asyncio import iscoroutine
 
 import tomlkit
 
@@ -340,8 +341,9 @@ class Application:
             return port if port == '80' else pre_colon + port
 
     @classmethod
-    def execute_queue(cls) -> None:
+    async def execute_queue(cls) -> None:
         while not cls.MESSAGES.empty():
             msg = cls.MESSAGES.get()
             gdt = msg.execute()
-
+            while iscoroutine(gdt):
+                gdt = await gdt

@@ -33,7 +33,7 @@ class ConsoleThread(Thread):
         while RUNNING:
             Application.tick()
             await Application.EVENTS.update_timers(Application.TIME)
-            Application.execute_queue()
+            await Application.execute_queue()
             await asyncio.sleep(0.5)
 
 async def pygdo(line: str = None):
@@ -151,8 +151,8 @@ async def repl():
     from gdo.base.Util import CLI
     from gdo.base.IPC import IPC
     global RUNNING
-    thread = ConsoleThread()
-    thread.start()
+    # thread = ConsoleThread()
+    # thread.start()
     if not sys.stdin.isatty():
         print("Terminal is no tty.")
     user = CLI.get_current_user()
@@ -165,11 +165,10 @@ async def repl():
     with patch_stdout():  # allows async print + input without clobbering
         while RUNNING:
             try:
-                input_line = session.prompt(">>> ")
+                input_line = await session.prompt_async(">>> ")
                 if input_line:
                     if input_line.lower() == "exit":
                         break
-                    # Application.tick()
                     await process_line(input_line)
             except (GDOModuleException, GDOError) as ex:
                 print(str(ex))
@@ -180,9 +179,10 @@ async def repl():
                 from gdo.base.Logger import Logger
                 Logger.exception(ex)
         RUNNING = 0
-        thread.join()
+        # Thread.join()
 
 async def launcher(line: str = None):
+    asyncio.create_task(ConsoleThread().loop())
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))
     sys.path.append(parent_dir)
     from gdo.base.Application import Application
