@@ -189,8 +189,6 @@ class Cache:
             else:
                 return ocached
         if rcached := cls.get(tn, gid):
-            if tn == 'gdo_user':
-                pass
             if delete:
                 cls.remove(tn, gid)
             else:
