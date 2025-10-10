@@ -39,6 +39,7 @@ class GDT_Select(GDT_ComboBox):
 
     def to_value(self, val: str):
         self.init_choices()
+        if val is None: return None
         matches = []
         val = val.lower()
         for k, v in self._choices.items():

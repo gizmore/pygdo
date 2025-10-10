@@ -198,7 +198,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
         result = message.execute()
     while asyncio.iscoroutine(result):
         result = Application.LOOP.run_until_complete(result)
-    Application.execute_queue()
+    asyncio.ensure_future(Application.execute_queue())
     out = cli_top(mode)
     out += "\n"
     out += all_private_messages()
