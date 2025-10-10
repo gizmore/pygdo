@@ -29,7 +29,6 @@ class Connector:
 
     @classmethod
     def register(cls, klass, is_text: bool = True):
-        # Logger.debug(f"Connector.register({klass.__name__})")
         name = klass.__name__.lower()
         if name not in cls.AVAILABLE:
             cls.AVAILABLE[name] = klass
@@ -38,7 +37,7 @@ class Connector:
 
     @classmethod
     def get_by_name(cls, name: str):
-        return cls.AVAILABLE[name.lower()]()
+        return cls.AVAILABLE[name.lower()]
 
     ############
     # Instance #
@@ -53,6 +52,9 @@ class Connector:
 
     def __repr__(self):
         return f"{self.__class__.__name__}#{self._server}"
+
+    def __eq__(self, other):
+        return type(self) == type(other) and (self._server == other._server or (self._server is None and other._server is None))
 
     def get_render_mode(self) -> Mode:
         return Mode.TXT

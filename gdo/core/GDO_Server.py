@@ -84,7 +84,7 @@ class GDO_Server(GDO):
 
     def get_connector(self) -> Connector:
         if self._connector is None:
-            self._connector = self.gdo_value('serv_connector')
+            self._connector = self.gdo_value('serv_connector')()
             self._connector.server(self)
         return self._connector
 

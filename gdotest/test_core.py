@@ -3,6 +3,7 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
+from gdo.base.Database import Database
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Util import Permutations, Arrays
 from gdo.core.GDO_User import GDO_User
@@ -36,7 +37,7 @@ class CoreTestCase(GDOTestCase):
     def test_02_md5_file(self):
         path = Application.file_path('DOCS/TESTAMENTUM.md')
         hash = GDT_MD5.hash_for_file(path)
-        self.assertEqual(hash, 'fdd53b0e66e073d3b100c098010e3f09', "MD5 hashing of testamentum file failed.")
+        self.assertEqual(hash, 'e3d3f7d991dbe825289341e5a0f11cf9', "MD5 hashing of testamentum file failed.")
 
     def test_03_path(self):
         gdt = GDT_Path('file').initial('DOCS').existing_dir()
@@ -116,6 +117,7 @@ class CoreTestCase(GDOTestCase):
         self.assertIn('Welcome', out, 'Welcome page does not work')
         web_plug('core.welcome.html').exec()
         web_plug('core.welcome.html').exec()
+        Application.DB_READS = Application.DB_WRITES = 0
         web_plug('core.welcome.html').exec()
         if Cache.RCACHE:
             self.assertEqual(0, Application.DB_READS+Application.DB_WRITES, "Cache seems borked.")

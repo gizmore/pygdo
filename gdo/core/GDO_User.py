@@ -34,13 +34,13 @@ class GDO_User(GDO):
     _authenticated: bool
     _network_user: object  # User on a server network. Like discord's - message.author
     _session: 'GDO_Session'
-    _settings: dict[str,str]
+    # _settings: dict[str,str]
 
     __slots__ = (
         '_authenticated',
         '_network_user',
         '_session',
-        '_settings',
+        # '_settings',
     )
 
     def __init__(self):
@@ -48,7 +48,6 @@ class GDO_User(GDO):
         self._authenticated = False
         self._network_user = None
         self._session = None
-        self._settings = {}
 
     def gdo_redis_fields(self) -> list[str]:
         f = super().gdo_redis_fields()
@@ -57,9 +56,6 @@ class GDO_User(GDO):
 
     def __repr__(self):
         return f"{self.get_val('user_name')}{self.get_server_id()}"
-
-    def on_reload(self):
-        self._settings = {}
 
     @classmethod
     def system(cls) -> Self:
@@ -145,9 +141,22 @@ class GDO_User(GDO):
     # Settings #
     ############
 
+    GDO_UserSetting = None
+    def gdo_user_settings(self):
+        if self.__class__.GDO_UserSetting is None:
+            from gdo.core.GDO_UserSetting import GDO_UserSetting
+            self.__class__.GDO_UserSetting = GDO_UserSetting
+        return self.__class__.GDO_UserSetting
+
+    GDT_UserSetting = None
+    def gdt_user_settings(self):
+        if self.__class__.GDT_UserSetting is None:
+            from gdo.core.GDT_UserSetting import GDT_UserSetting
+            self.__class__.GDT_UserSetting = GDT_UserSetting
+        return self.__class__.GDT_UserSetting
+
     def with_settings_query(self, settings: list[tuple[str, str, str]]) -> Query:
-        from gdo.core.GDO_UserSetting import GDO_UserSetting
-        return GDO_UserSetting.get_users_with_settings_query(None, settings)
+        return self.gdo_user_settings().get_users_with_settings_query(None, settings)
 
     def with_settings_result(self, settings: list[tuple[str, str, str]]) -> Result:
         return self.with_settings_query(settings).exec()
@@ -156,33 +165,29 @@ class GDO_User(GDO):
         return self.with_settings_result(settings).fetch_all()._items
 
     def get_setting_val(self, key: str) -> str:
-        from gdo.core.GDO_UserSetting import GDO_UserSetting
-        if set := self._settings.get(key):
+        if key in self._vals:
             Cache.VHITS += 1 #PYPP#DELETE#
-            return set
-        self._settings[key] = set = GDO_UserSetting.setting_column(key, self).get_val()
+            return self._vals[key]
+        self._vals[key] = set = self.gdo_user_settings().setting_column(key, self).get_val()
+        Cache.update_for(self)
         return set
 
     def get_setting_value(self, key: str) -> any:
-        from gdo.core.GDT_UserSetting import GDT_UserSetting
-        from gdo.core.GDO_UserSetting import GDO_UserSetting
-        gdt = GDT_UserSetting.KNOWN[key]
-        if set := self._settings.get(key):
-            Cache.VHITS += 1 #PYPP#DELETE#
-            return gdt.to_value(set)
-        return GDO_UserSetting.setting_column(key, self).get_value()
+        var = self.get_setting_val(key)
+        gdt = self.gdo_user_settings().setting_column(key, self)
+        return gdt.get_value()
 
     def save_setting(self, key: str, val: str):
-        from gdo.core.GDO_UserSetting import GDO_UserSetting
         if val != self.get_setting_val(key):
-            self._settings[key] = val
-            GDO_UserSetting.blank({
+            self._vals[key] = val
+            self.gdo_user_settings().blank({
                 'uset_user': self.get_id(),
                 'uset_key': key,
                 'uset_val': val,
             }).soft_replace()
             IPC.send('base.ipc_uset', (self.get_id(), key, val))
             Application.EVENTS.publish(f'user_setting_{key}_changed', self, val)
+            return Cache.update_for(self)
         return self
 
     def increase_setting(self, key: str, by: float | int):
@@ -190,10 +195,9 @@ class GDO_User(GDO):
         return self.save_setting(key, str(old + by))
 
     def reset_setting(self, key: str):
-        from gdo.core.GDO_UserSetting import GDO_UserSetting
-        if key in self._settings:
-            del self._settings[key]
-        GDO_UserSetting.table().delete_by_id(self.get_id(), key)
+        if key in self._vals:
+            del self._vals[key]
+        self.gdo_user_settings().table().delete_by_id(self.get_id(), key)
         return self
 
     ###############

@@ -25,7 +25,7 @@ class DogTestCase(GDOTestCase):
 
     def test_01_connector_gdt(self):
         gdt = GDT_Connector("conn").initial("web")
-        conn = gdt.get_value()
+        conn = gdt.get_value()()
         self.assertIsInstance(conn, Web, "Cannot get initial Web connector")
 
     def test_02_connector_add(self):

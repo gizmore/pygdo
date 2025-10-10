@@ -1,3 +1,4 @@
+from gdo.base.GDT import GDT
 from gdo.base.Trans import t
 from gdo.base.Util import Arrays
 from gdo.core.GDT_ComboBox import GDT_ComboBox
@@ -73,4 +74,4 @@ class GDT_Select(GDT_ComboBox):
         return ", ".join(examples)
 
     def render_form(self):
-        return tpl('core', 'form_select.html', {"field": self})
+        return tpl('core', 'form_select.html', {"field": self, 'GDT': GDT})

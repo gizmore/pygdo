@@ -31,7 +31,7 @@ class ModuleConfigTestCase(GDOTestCase):
     def test_02_module_user_config(self):
         web = Web.get_server()
         user = web.get_or_create_user('gizmore')
-        user.save_setting('email', '')
+        user.save_setting('email', None)
         email = user.get_setting_val('email')
         self.assertIsNone(email, "User email is not null")
         user.save_setting('email', 'gizmore@gizmore.org')

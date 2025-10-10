@@ -3,7 +3,7 @@
     <select id="<%=field._name%>" name="<%=field._name%>">
         <%
         for key, gdt in field.init_choices().items():
-            if not isinstance(gdt, str):
+            if isinstance(gdt, GDT):
                 gdt = gdt.render_list()
             writeln(f'<option{field.html_selected(key)} value="{key}">{gdt}</option>')
         %>

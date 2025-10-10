@@ -35,7 +35,7 @@ class add_server(Method):
         return self.param_val('password')
 
     def get_connector(self):
-        return self.param_value('connector')
+        return self.param_value('connector')()
 
     def get_url(self):
         return self.param_val('url')

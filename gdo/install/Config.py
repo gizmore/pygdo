@@ -52,7 +52,7 @@ class Config:
             cls.data_str('db.name', 'pygdo8'),
             cls.data_str('db.user', 'pygdo8'),
             cls.data_str('db.pass', 'pygdo8'),
-            cls.data_int('db.debug', 0),
+            cls.data_int('db.debug', 0, 'Global DB Debug. 0=off, 1=query, 2=stacktrace'),
             GDT_Section().title_raw('Cache'),
             cls.data_int('redis.enabled', 0),
             cls.data_str('redis.uds', ""),

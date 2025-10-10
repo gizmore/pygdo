@@ -189,6 +189,8 @@ class Cache:
             else:
                 return ocached
         if rcached := cls.get(tn, gid):
+            if tn == 'gdo_user':
+                pass
             if delete:
                 cls.remove(tn, gid)
             else:
@@ -275,6 +277,7 @@ class Cache:
             key = f"{key}:{args_key}" if args_key else key
             data = zlib.compress(value, cls.ZLIB_LEVEL) if cls.ZLIB_LEVEL >= 0 else value
             cls.RCACHE.set(key, data)
+        return value
 
     @classmethod
     def remove(cls, key: str = None, args_key: str = None):

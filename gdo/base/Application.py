@@ -105,13 +105,20 @@ class Application:
     def temp_path(cls, path: str = ''):
         return cls.file_path('temp/' + path)
 
+    module_user = None
+    @classmethod
+    def get_module_user(cls):
+        if cls.module_user is None:
+            from gdo.user.module_user import module_user
+            cls.module_user = module_user
+        return cls.module_user
+
     @classmethod
     def set_current_user(cls, user):
         cls.STORAGE.user = user
         cls.STORAGE.lang = user.get_lang_iso()
         Logger.user(user)
-        from gdo.user.module_user import module_user
-        module_user.instance().set_last_activity(user)
+        cls.get_module_user().instance().set_last_activity(user)
 
     @classmethod
     def fresh_page(cls):
