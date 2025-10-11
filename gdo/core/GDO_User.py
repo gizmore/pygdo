@@ -49,10 +49,10 @@ class GDO_User(GDO):
         self._network_user = None
         self._session = None
 
-    def gdo_redis_fields(self) -> list[str]:
-        f = super().gdo_redis_fields()
-        f.append('_settings')
-        return f
+    # def gdo_redis_fields(self) -> list[str]:
+    #     f = super().gdo_redis_fields()
+    #     # f.append('_settings')
+    #     return f
 
     def __repr__(self):
         return f"{self.get_val('user_name')}{self.get_server_id()}"

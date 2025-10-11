@@ -65,10 +65,10 @@ class Database:
         return self.get_link().insert_id()
 
     def query(self, query: str, debug: bool = False):
-        from gdo.base.Application import Application
         try:
             link = self.get_link()
             #PYPP#START#
+            from gdo.base.Application import Application
             Application.DB_WRITES += 1
             self.debug_query(query, debug)
             #PYPP#END#

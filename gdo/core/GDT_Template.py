@@ -1,7 +1,6 @@
 import functools
 import os
 import re
-import sys
 from io import StringIO
 
 from gdo.base.Application import Application
@@ -16,6 +15,7 @@ from gdo.base.Util import html, Files
 class Templite(object):
     cache = {}
     delimiters = ('<%', '%>')
+    PATTERN = re.compile('%s(.*?)%s' % delimiters, re.DOTALL)
 
     def __init__(self, filename: str, encoding: str='utf-8', caching: bool=True):
         filename = os.path.abspath(filename)
@@ -41,9 +41,7 @@ class Templite(object):
         offset = 0
         tokens = ['# -*- coding: %s -*-' % self.encoding]
         start, end = self.delimiters
-        escaped = (re.escape(start), re.escape(end))
-        regex = re.compile('%s(.*?)%s' % escaped, re.DOTALL)
-        for i, part in enumerate(regex.split(source)):
+        for i, part in enumerate(self.PATTERN.split(source)):
             part = part.replace('\\'.join(start), start)
             part = part.replace('\\'.join(end), end)
             if i % 2 == 0:

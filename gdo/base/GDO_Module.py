@@ -23,7 +23,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1149"
+    CORE_REV = "PyGDOv8.0.2-r1150"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -185,27 +185,31 @@ class GDO_Module(WithModuleConfig, GDO):
     ##########
     # Assets #
     ##########
+    GDT_Page = None
+    def gdt_page(self):
+        if not self.__class__.GDT_Page:
+            from gdo.ui.GDT_Page import GDT_Page
+            self.__class__.GDT_Page = GDT_Page
+        return self.__class__.GDT_Page
+
     def add_css(self, filename: str):
-        from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"
-        GDT_Page._css.append(path)
+        self.gdt_page()._css.append(path)
         return self
 
     def add_bower_css(self, filename: str):
         return self.add_css(f'node_modules/{filename}')
 
     def add_js(self, filename: str):
-        from gdo.ui.GDT_Page import GDT_Page
         path = f"{self.www_path(filename)}?v={self.CORE_REV}"
-        GDT_Page._js.append(path)
+        self.gdt_page()._js.append(path)
         return self
 
     def add_bower_js(self, filename: str):
         return self.add_js(f'node_modules/{filename}')
 
     def add_js_inline(self, code: str):
-        from gdo.ui.GDT_Page import GDT_Page
-        GDT_Page._js_inline += f"<script>\n{code}\n</script>\n"
+        self.gdt_page()._js_inline += f"<script>\n{code}\n</script>\n"
         return self
 
     ##########

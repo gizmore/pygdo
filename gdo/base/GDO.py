@@ -524,9 +524,15 @@ class GDO(WithName, WithBulk, GDT):
     ########
     # Name #
     ########
+    GDT_Name = None
+    def gdt_name(self):
+        if not self.__class__.GDT_Name:
+            from gdo.core.GDT_Name import GDT_Name
+            self.__class__.GDT_Name = GDT_Name
+        return self.__class__.GDT_Name
+
     def name_column(self) -> GDT:
-        from gdo.core.GDT_Name import GDT_Name
-        return self.column_of(GDT_Name)
+        return self.column_of(self.gdt_name())
 
     def column_of(self, type: type[GDT]) -> GDT|None:
         for gdt in self.columns().values():

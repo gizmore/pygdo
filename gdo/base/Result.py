@@ -67,22 +67,37 @@ class Result:
             raise StopIteration
         return data
 
+    GDT_Dict = None
+    def gdt_dict(self):
+        if self.__class__.GDT_Dict is None:
+            from gdo.core.GDT_Dict import GDT_Dict
+            self.__class__.GDT_Dict = GDT_Dict
+        return self.__class__.GDT_Dict
+
+    GDT_List = None
+    def gdt_list(self):
+        if self.__class__.GDT_List is None:
+            from gdo.core.GDT_List import GDT_List
+            self.__class__.GDT_List = GDT_List
+        return self.__class__.GDT_List
+
+
     def fetch_all(self) -> 'GDT_List':
-        from gdo.core.GDT_List import GDT_List
-        return GDT_List(*[row for row in self])
+        return self.gdt_list()(*[row for row in self])
 
     def fetch_all_dict(self) -> 'GDT_Dict':
-        from gdo.core.GDT_Dict import GDT_Dict
-        result = GDT_Dict()
-        if self._iter == ResultType.OBJECT:
+        result = self.gdt_dict()()
+        mode = self._iter
+        setitem = result.__setitem__
+        if mode is ResultType.OBJECT:
             for row in self:
-                result[row.get_id()] = row
-        elif self._iter == ResultType.ASSOC:
+                setitem(row.get_id(), row)
+        elif mode is ResultType.ASSOC:
             for row in self:
-                result[next(iter(row.keys()))] = row
+                setitem(next(iter(row)), row)
         else:
             for row in self:
-                result[row[0]] = row
+                setitem(row[0], row)
         return result
 
     def fetch_row(self) -> list[str] | None:
@@ -98,7 +113,6 @@ class Result:
         row = self._result.fetchone()
         if row is None:
             self.close()
-            return None
         return row
 
     def fetch_val(self, col_num: int = 0):
