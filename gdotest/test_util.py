@@ -4,7 +4,8 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import t
-from gdo.base.Util import Strings, Arrays, href, Random
+from gdo.base.Util import Strings, Arrays, Random
+from gdo.base.util.href import href
 from gdotest.TestUtil import GDOTestCase
 
 

@@ -5,9 +5,11 @@ from typing import Type
 
 from gdo.base.Application import Application
 from gdo.base.Logger import Logger
-from gdo.base.Util import module_enabled, href, Arrays, dump, urlencode
+from gdo.base.Util import module_enabled, Arrays, dump, urlencode
 
 from typing import TYPE_CHECKING
+
+from gdo.base.util.href import href
 
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User

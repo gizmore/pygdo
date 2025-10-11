@@ -4,7 +4,8 @@ from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
-from gdo.base.Util import Files, href
+from gdo.base.Util import Files
+from gdo.base.util.href import href
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_MD5 import GDT_MD5

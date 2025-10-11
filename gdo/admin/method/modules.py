@@ -7,8 +7,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render, Mode
 from gdo.base.Result import Result
 from gdo.base.ResultArray import ResultArray
-from gdo.base.Trans import Trans
-from gdo.base.Util import href
+from gdo.base.util.href import href
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Name import GDT_Name
 from gdo.table.MethodTable import MethodTable

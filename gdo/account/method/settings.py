@@ -5,7 +5,8 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Render import Render
 from gdo.base.Trans import t
-from gdo.base.Util import href, html, dump
+from gdo.base.Util import html
+from gdo.base.util.href import href
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Field import GDT_Field

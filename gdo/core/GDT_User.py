@@ -3,7 +3,8 @@ from typing_extensions import Self
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Query import Query
-from gdo.base.Util import Strings, href
+from gdo.base.Util import Strings
+from gdo.base.util.href import href
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Object import GDT_Object
 from gdo.core.WithCompletion import WithCompletion

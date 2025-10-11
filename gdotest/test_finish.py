@@ -5,7 +5,9 @@ from gdo.base.Application import Application
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import Trans
-from gdotest.TestUtil import GDOTestCase
+from gdo.base.Util import gdo_print
+from gdo.core.GDO_Session import GDO_Session
+from gdotest.TestUtil import GDOTestCase, web_gizmore, cli_gizmore
 
 
 class FinishTestCase(GDOTestCase):
@@ -28,6 +30,11 @@ class FinishTestCase(GDOTestCase):
         loader.load_modules_db(True)
         loader.init_modules(True, True)
         loader.init_cli()
+        giz = web_gizmore()
+        Application.STORAGE.cookies = {}
+        Application.set_current_user(giz)
+        Application.set_session(GDO_Session.start(True))
+        cli_gizmore()
 
     def test_01_slots(self):
         classes = [
@@ -39,6 +46,16 @@ class FinishTestCase(GDOTestCase):
             for klass in module.gdo_classes():
                 gdo = klass.blank()
                 self.check_slots(gdo)
+
+    def test_02_include_all_files(self):
+        count = 0
+        for module in ModuleLoader.instance()._cache.values():
+            for method in module.get_methods():
+                method.execute()
+                count += 1
+        gdo_print(f"Tested {count} methods for import errors.")
+
+
 
     # def test_01_no_translation_errors(self):
     #     count = len(Trans.FAILURES)

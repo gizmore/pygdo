@@ -6,6 +6,8 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING, Type, Iterator
 
+from gdo.base.util.href import href
+
 if TYPE_CHECKING:
     from gdo.ui.GDT_Page import GDT_Page
     from gdo.base.Method import Method
@@ -17,13 +19,13 @@ from gdo.base.Exceptions import GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import t
-from gdo.base.Util import Files, href, err, msg, Strings
+from gdo.base.Util import Files, err, msg, Strings
 from gdo.base.WithModuleConfig import WithModuleConfig
 
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1150"
+    CORE_REV = "PyGDOv8.0.2-r1151"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
