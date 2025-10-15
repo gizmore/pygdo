@@ -37,7 +37,7 @@ class CoreTestCase(GDOTestCase):
     def test_02_md5_file(self):
         path = Application.file_path('DOCS/TESTAMENTUM.md')
         hash = GDT_MD5.hash_for_file(path)
-        self.assertEqual(hash, 'e3d3f7d991dbe825289341e5a0f11cf9', "MD5 hashing of testamentum file failed.")
+        self.assertEqual(hash, 'b02f883862ebe02ff4a83a37e8a37fcb', "MD5 hashing of testamentum file failed.")
 
     def test_03_path(self):
         gdt = GDT_Path('file').initial('DOCS').existing_dir()

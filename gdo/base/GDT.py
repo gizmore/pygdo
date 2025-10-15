@@ -206,7 +206,7 @@ class GDT(WithSerialization):
 
     def to_val(self, value) -> str:
         if value is None:
-            return self.EMPTY_STR
+            return None
         return str(value)
 
     def to_value(self, val: str):

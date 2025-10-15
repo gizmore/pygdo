@@ -10,9 +10,9 @@ from gdo.ui.WithTooltip import WithTooltip
 
 class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullable, GDT):
     _name: str
-    _val: str
+    _val: str|None
     _prev: str
-    _initial: str
+    _initial: str|None
     _converted: bool
     _primary: bool
     _unique: bool
@@ -26,8 +26,8 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         super().__init__()
         self._name = name
         self._not_null = False
-        self._val = ''
-        self._initial = ''
+        self._val = None
+        self._initial = None
         self._primary = False
         self._value = None
         self._converted = False
@@ -140,7 +140,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         return ''
 
     def gdo_column_define_default(self) -> str:
-        if self._initial != '':
+        if self._initial is not None:
             return " DEFAULT " + self.quote(self._initial)
         return ''
 
