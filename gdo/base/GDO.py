@@ -224,6 +224,7 @@ class GDO(WithName, WithBulk, GDT):
         return self
 
     def set_val(self, key, val: str|None, dirty: bool = True) -> Self:
+        val = str(val) if val is not None else val
         if self._vals.get(key) == val:
             return self
         if key in self._values:
