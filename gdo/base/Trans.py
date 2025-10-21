@@ -1,9 +1,11 @@
 import glob
 import os
+import re
 
 import tomlkit
 
 from gdo.base.Application import Application
+from gdo.base.Render import Render
 from gdo.base.Util import Strings, dump
 
 from typing import TYPE_CHECKING
@@ -33,6 +35,9 @@ def sitename() -> str:
 
 
 class Trans:
+
+    REGEX_BOLD = re.compile(r'\*\*(.+?)\*\*')
+
     """
     Speed optimized i18n.
     """
@@ -90,6 +95,14 @@ class Trans:
 
     @staticmethod
     def tiso(iso: str, key: str, args: tuple = None):
+        return Trans.replace_output(Trans.tiso2(iso, key, args))
+
+    @staticmethod
+    def replace_output(text: str) -> str:
+        return Trans.REGEX_BOLD.sub(lambda m: Render.bold(m.group(1), Application.get_mode()), text)
+
+    @staticmethod
+    def tiso2(iso: str, key: str, args: tuple = None):
         try:
             if format := Trans.CACHE.get(iso, Trans.EN).get(key):
                 return format % args if args else format
