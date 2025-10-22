@@ -30,6 +30,8 @@ from gdo.core.connector.Bash import Bash
 from gdo.install.Installer import Installer
 from index_wsgi import application
 
+better_exceptions.hook()
+
 
 class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     MESSAGES: dict[str, list[str]] = {}
@@ -41,9 +43,8 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         Application.LOOP = asyncio.get_event_loop()
 
     async def ticker(self, ticks: int = 1):
-        gdo_print(f"{ticks} ticks pass buy.")
-        for i in range(0, ticks - 1):
-            i = self.TICKS + i
+        # gdo_print(f"{ticks} ticks pass buy.")
+        for i in range(ticks):
             Application.TIME += 1
             await Application.EVENTS.update_timers(module_shadowdogs.instance().cfg_time())
         self.TICKS += ticks
@@ -55,7 +56,9 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     async def party_ticker_for(self, user: 'GDO_User' = None):
         user = user or cli_gizmore()
         p = Shadowdogs.USERMAP[user.get_id()].get_party()
-        await self.ticker(p.get_eta_s() + 2)
+        a = p.get_action()
+        while a == p.get_action():
+            await self.ticker(1)
 
 def reinstall_module(name):
     drop_module(name)

@@ -4,6 +4,7 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Render import Render, Mode
 from gdo.base.Trans import Trans
 from gdo.base.Util import gdo_print
 from gdo.core.GDO_Session import GDO_Session
@@ -47,11 +48,13 @@ class FinishTestCase(GDOTestCase):
                 gdo = klass.blank()
                 self.check_slots(gdo)
 
-    def test_02_include_all_files(self):
+    async def test_02_include_all_files(self):
+        gizmore = cli_gizmore()
         count = 0
         for module in ModuleLoader.instance()._cache.values():
             for method in module.get_methods():
-                method.execute()
+                method.env_server(gizmore.get_server()).env_user(gizmore).env_session(GDO_Session.for_user(gizmore)).env_mode(Mode.CLI)
+                await method.execute()
                 count += 1
         gdo_print(f"Tested {count} methods for import errors.")
 

@@ -102,12 +102,19 @@ class IPC:
         else:
             cls.send_to_dog(event, args)
 
+    launch = None
+    @classmethod
+    def method_launch(cls):
+        if not cls.launch:
+            from gdo.core.method.launch import launch
+            cls.launch = launch
+        return cls.launch
+
     @classmethod
     def send_to_dog(cls, event: str, args: any):
         GDO_Event.to_dog(event, args)
         if not cls.PID:
-            from gdo.core.method.launch import launch
-            cls.PID = int(Files.get_contents(launch.lock_path()))
+            cls.PID = int(Files.get_contents(cls.method_launch()().lock_path()))
         try:
             os.kill(cls.PID, signal.SIGUSR1)
         except ProcessLookupError:

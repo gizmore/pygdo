@@ -21,7 +21,7 @@ class GDT_Serialize(GDT_Text):
     def __init__(self, name: str):
         super().__init__(name)
         self._mode = SerializeMode.JSON
-        self.binary()
+        # self.binary()
         self.maxlen(65535)
 
     def mode(self, mode: SerializeMode):
