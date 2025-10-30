@@ -120,7 +120,7 @@ class Cache:
     @classmethod
     def columns_for(cls, gdo_klass: type[GDO]) -> dict[str,GDT]:
         cls.table_for(gdo_klass)
-        return cls.CCACHE[gdo_klass]
+        return cls.CCACHE.get(gdo_klass, GDT.EMPTY_DICT)
 
     @classmethod
     def column_for(cls, gdo_klass: type[GDO], key: str) -> GDT|None:
