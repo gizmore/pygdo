@@ -11,6 +11,8 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import PromptSession
 
+from gdo.base.IPC import IPC
+
 RUNNING = 1
 
 async def event_pump():

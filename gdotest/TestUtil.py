@@ -60,6 +60,13 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         while a == p.get_action():
             await self.ticker(1)
 
+    async def party_ticker_until(self, action: str, user: 'GDO_User' = None):
+        user = user or cli_gizmore()
+        p = Shadowdogs.USERMAP[user.get_id()].get_party()
+        while action != p.get_action_name():
+            await self.ticker(1)
+
+
 def reinstall_module(name):
     drop_module(name)
     return install_module(name)

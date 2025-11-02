@@ -20,11 +20,11 @@ class GDO_UserSetting(GDO):
         if gdo := cls.get_setting(user, key):
             return gdt.val(gdo.get_val())
         else:
-            cls.blank({
-                'uset_user': user.get_id(),
-                'uset_key': key,
-                'uset_val': gdt.get_initial(),
-            }).insert()
+            # cls.blank({
+            #     'uset_user': user.get_id(),
+            #     'uset_key': key,
+            #     'uset_val': gdt.get_initial(),
+            # }).insert()
             return gdt.val(gdt.get_initial())
 
     """

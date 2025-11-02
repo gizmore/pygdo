@@ -32,7 +32,6 @@ def gdo_print(s: str, end="\n"):
     pt_print(ANSI(s), end=end)
 
 
-
 def hdr(name: str, value: str):
     from gdo.base.Application import Application
     Application.header(name, value)

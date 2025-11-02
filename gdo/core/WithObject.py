@@ -38,7 +38,7 @@ class WithObject:
         t = self._table
         pk = t.primary_key_column()
         tn = t.gdo_table_name()
-        return f"FOREIGN KEY({self._name}) REFERENCES {tn}({pk.get_name()}) ON UPDATE CASCADE ON DELETE {self._on_delete}"
+        return f"FOREIGN KEY({self._name}) REFERENCES {tn}({pk.get_name()}) ON UPDATE {self._on_delete} ON DELETE {self._on_delete}"
 
     ### rand
 

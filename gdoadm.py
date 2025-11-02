@@ -16,6 +16,7 @@ from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.method.clear_cache import clear_cache
+from gdo.core.method.launch import launch
 from gdo.install.Config import Config
 from gdo.install.Installer import Installer
 from gdo.mail import module_mail
@@ -329,6 +330,7 @@ class App:
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules(True, True)
+        # launch().execute()
 
         if args.server:
             server = GDO_Server.table().get_by_id(args.server)

@@ -27,7 +27,7 @@ class Application:
     RUNNING = True
     PROTOCOL = 'http'
     IS_HTTP = False
-    IS_DOG = False
+    IS_DOG = None
     LOOP = None
     ASGI = False
     LOADER: 'ModuleLoader'

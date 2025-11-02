@@ -174,6 +174,9 @@ class GDO(WithName, WithBulk, GDT):
         """
         return False
 
+    def gdo_ipc(self) -> bool:
+        return True
+
     ###########
     # Columns #
     ###########
@@ -415,7 +418,8 @@ class GDO(WithName, WithBulk, GDT):
                     dirty = None
                 obj.all_dirty(False)
                 if obj.gdo_cached():
-                    IPC.send('base.ipc_gdo', (self.gdo_table_name(), self.get_id(), dirty))
+                    if self.gdo_ipc():
+                        IPC.send('base.ipc_gdo', (self.gdo_table_name(), self.get_id(), dirty))
                     return Cache.update_for(obj)
         return obj
 
