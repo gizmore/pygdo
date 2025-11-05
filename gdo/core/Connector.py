@@ -49,6 +49,7 @@ class Connector:
         self._connecting = False
         self._tried_connecting = False
         self._connect_failures = 0
+        self._next_connect_time = Application.TIME
 
     def __repr__(self):
         return f"{self.__class__.__name__}#{self._server}"
@@ -137,7 +138,7 @@ class Connector:
         self._connect_failures = 0
 
     def server(self, server):
-        if not hasattr(self, '_server'):
+        if not self._server:
             self._server = server
             self._next_connect_time = Application.TIME
         return self

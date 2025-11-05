@@ -454,7 +454,7 @@ async def run_pygdo_admin():
         sys.argv.extend(rest)
         config_file = args.config
         if args.unittests:
-            import unittest  # Required for unittest detection later
+            Application.IS_TEST = True
             config_file = 'protected/config_test.toml'
         Application.init(path, config_file)
         Application.init_common()

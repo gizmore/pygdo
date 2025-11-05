@@ -28,6 +28,7 @@ class Application:
     PROTOCOL = 'http'
     IS_HTTP = False
     IS_DOG = None
+    IS_TEST = False
     LOOP = None
     ASGI = False
     LOADER: 'ModuleLoader'
@@ -320,7 +321,7 @@ class Application:
 
     @classmethod
     def is_unit_test(cls):
-        return 'unittest' in sys.modules.keys()
+        return cls.IS_TEST
 
     @classmethod
     def domain(cls) -> str:

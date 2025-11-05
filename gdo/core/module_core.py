@@ -57,7 +57,7 @@ class module_core(GDO_Module):
                     raise GDOException("OUCH! No Application.LOOP")
                 nest_asyncio.apply(Application.LOOP)
             else:
-                nest_asyncio.apply()
+                nest_asyncio.apply(Application.LOOP)
         except Exception as ex:
             Logger.exception(ex)
             raise ex

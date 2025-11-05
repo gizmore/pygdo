@@ -103,7 +103,7 @@ class launch(Method):
         if not server._has_loop:
             Logger.debug(f"step server {server.render_name()}")
             server._has_loop = True
-            asyncio.create_task(server.loop())
+            asyncio.run_coroutine_threadsafe(server.loop(), loop=Application.LOOP)
 
     async def mainloop_process_ai(self):
         while not Application.MESSAGES.empty():

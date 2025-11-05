@@ -40,6 +40,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self):
         super().setUp()
+        Application.IS_TEST = True
         Application.LOOP = asyncio.get_event_loop()
 
     async def ticker(self, ticks: int = 1):
