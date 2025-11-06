@@ -34,9 +34,6 @@ async def pygdo(line: str = None):
     parser.add_argument('--config', nargs='?', default='protected/config.toml')
     args, rest = parser.parse_known_args(sys.argv[1:])
 
-    if args.test:
-        import unittest  # Required for unittest detection later
-
     Logger.init(os.path.dirname(__file__)+"/../../protected/logs/")
     Application.init(__file__ + "/../../", args.config)
     Application.init_common()

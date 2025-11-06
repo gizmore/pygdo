@@ -20,6 +20,8 @@ err_select_candidates = "Too many results: %s."
 err_invalid_choice = "Invalid choice. Suggestions: %s."
 err_invalid_choice_no_suggestions = "Invalid choice."
 err_path_not_exists = "The file %s does not exist."
+err_str_pattern = "Invalid input. It has to match r'%s'."
+
 
 ################
 ### Messages ###

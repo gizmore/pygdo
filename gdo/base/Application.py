@@ -30,6 +30,7 @@ class Application:
     IS_DOG = None
     IS_TEST = False
     LOOP = None
+    TASKS = {}
     ASGI = False
     LOADER: 'ModuleLoader'
     EVENTS: 'Events'

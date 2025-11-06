@@ -80,13 +80,15 @@ class launch(Method):
                 if self.tried_connecting():
                     await Application.EVENTS.update_timers(Application.TIME)
                 for server in self.SERVERS:
-                    self.mainloop_step_server(server)
-                await self.mainloop_process_ai()
+                    await self.mainloop_step_server(server)
+                await Application.execute_queue()
                 if self._signaled:
                     from gdo.base.IPC import IPC
                     self._signaled = False
                     IPC.dog_execute_events()
                 await asyncio.sleep(sleep_ms)
+                await asyncio.wait(Application.TASKS.values(), timeout=1.42)
+                # asyncio.gather(Application.TASKS.values())
         except KeyboardInterrupt as ex:
             die().input('message', 'CTRL-C got pressed!').gdo_execute()
             time.sleep(1)
@@ -99,14 +101,8 @@ class launch(Method):
     def tried_connecting(self):
         return Application.runtime() > 30
 
-    def mainloop_step_server(self, server: GDO_Server):
+    async def mainloop_step_server(self, server: GDO_Server):
         if not server._has_loop:
             Logger.debug(f"step server {server.render_name()}")
             server._has_loop = True
-            asyncio.run_coroutine_threadsafe(server.loop(), loop=Application.LOOP)
-
-    async def mainloop_process_ai(self):
-        while not Application.MESSAGES.empty():
-            Application.fresh_page()
-            message = Application.MESSAGES.get()
-            await message.execute()
+            Application.TASKS[server.get_name()] = asyncio.create_task(server.loop(), name=server.get_name())

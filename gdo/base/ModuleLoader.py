@@ -62,14 +62,12 @@ class ModuleLoader:
     def get_module(self, module_name: str) -> 'GDO_Module':
         return self._cache.get(module_name, None)
 
+    def get_method_type(self, method_trigger: str) -> type[Method]|None:
+        trig = method_trigger.lower()
+        return self._methods.get(trig, self._meths.get(trig))
+
     def get_method(self, method_trigger: str) -> Method | None:
-        try:
-            trig = method_trigger.lower()
-            klass = self._methods.get(trig, self._meths.get(trig))
-            return klass()
-        except Exception as ex:
-            Logger.exception(ex)
-            return None
+        return self.get_method_type(method_trigger)()
 
     def sort_cache(self):
         cc = sorted(self._cache.items(), key=lambda mod: mod[1]._priority)

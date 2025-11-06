@@ -180,7 +180,7 @@ class GDO_Server(GDO):
             if not conn.is_connected():
                 if not conn.is_connecting():
                     if conn.should_connect_now():
-                        conn.connect()
+                        await conn.connect()
             await asyncio.sleep(2)
 
     ###########

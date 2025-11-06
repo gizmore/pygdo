@@ -11,8 +11,10 @@ class GDT_Method(GDT_Select):
         self.maxlen(64)
 
     def gdo_choices(self):
-        triggers = ModuleLoader.instance()._methods.keys()
-        return {key: key for key in triggers}
+        back = {}
+        back.update(ModuleLoader.instance()._meths)
+        back.update(ModuleLoader.instance()._methods)
+        return back
 
     def to_value(self, val: str):
-        return ModuleLoader.instance().get_method(val) if val else None
+        return ModuleLoader.instance().get_method_type(val) if val else None

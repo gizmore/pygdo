@@ -15,7 +15,7 @@ class MethodConf(Method):
         ]
 
     def get_method(self) -> Method:
-        return self.param_value('method').env_copy(self)
+        return self.param_value('method')().env_copy(self)
 
     def get_configs(self, method: Method) -> list:
         raise Exception("OOPS, get_configs not implemented.")

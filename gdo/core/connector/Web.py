@@ -22,6 +22,6 @@ class Web(Connector):
             cls.PUBLIC = cls.get_server().get_or_create_channel(cls.PUBLIC_NAME)
         return cls.PUBLIC
 
-    def gdo_connect(self) -> bool:
+    async def gdo_connect(self) -> bool:
         self._connected = True
         return True

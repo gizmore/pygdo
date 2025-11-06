@@ -69,15 +69,15 @@ class Connector:
         """
         return True
 
-    def gdo_connect(self) -> bool:
+    async def gdo_connect(self) -> bool:
         self._connected = True
         return True
 
-    def gdo_disconnect(self, quit_message: str):
-        pass
+    async def gdo_disconnect(self, quit_message: str):
+        return
 
     def gdo_disconnected(self):
-        pass
+        return
 
     async def gdo_send_to_channel(self, msg: Message):
         Logger.debug(f"{self.get_name()} has stub send_to_channel()")
@@ -100,23 +100,23 @@ class Connector:
     def should_connect_now(self) -> bool:
         return Application.TIME >= self._next_connect_time
 
-    def connect(self) -> bool:
+    async def connect(self) -> bool:
         Logger.debug("Connector.connect()")
         self._connecting = True
         self._tried_connecting = True
-        self.gdo_connect()
+        await self.gdo_connect()
         if self._connected:
             self.connect_success()
         else:
             self.connect_failed()
         return self._connected
 
-    def disconnect(self, quit_message: str = None) -> bool:
+    async def disconnect(self, quit_message: str = None) -> bool:
         """
         Actively disconnect
         """
         Logger.debug(f"disconnect({quit_message})")
-        self.gdo_disconnect(quit_message or "PyGDO QUIT without further message")
+        await self.gdo_disconnect(quit_message or "PyGDO QUIT without further message")
         self.disconnected()
         return True
 
