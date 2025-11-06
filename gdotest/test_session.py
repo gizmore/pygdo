@@ -20,7 +20,6 @@ class SessionTestCase(GDOTestCase):
 
     def test_cli_session(self):
         from gdo.core.GDO_Session import GDO_Session
-        Cache.clear()
         user = CLI.get_current_user()
         result = cli_plug(user, "$echo hi")
         self.assertIn('hi', result, 'echo does not work for session test.')
@@ -36,6 +35,8 @@ class SessionTestCase(GDOTestCase):
         session = GDO_Session.for_user(user)
         got = session.get('tea')
         self.assertEqual(sat, got, 'session does not work across processes')
+        session = GDO_Session.for_user(user)
+        self.assertTrue(session, 'ooops')
 
 
 if __name__ == '__main__':

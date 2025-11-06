@@ -18,7 +18,7 @@ class NopeConverter(MySQLConverter):
     def row_to_python(self, row_data: tuple[bytearray], desc: list):
         return tuple(
             val.decode('utf-8') if val is not None and not (desc[i][7] & FieldFlag.BLOB)
-            else val
+            else bytes(val) if val is not None else None
             for i, val in enumerate(row_data)
         )
 #        return map(lambda val: val.decode('utf-8') if val is not None else val, row_data)

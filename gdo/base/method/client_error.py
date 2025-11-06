@@ -20,4 +20,4 @@ class client_error(Method):
 
     def gdo_execute(self) -> GDT:
         Application.status("400 Client Error")
-        return GDT_Error.from_exception(self._exception)
+        return GDT_Error.from_exception(self._exception) if hasattr(self, '_exception') else self.empty()

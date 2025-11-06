@@ -228,7 +228,7 @@ class GDO(WithName, WithBulk, GDT):
         return self
 
     def set_val(self, key, val: str|None, dirty: bool = True) -> Self:
-        val = str(val) if val is not None else val
+        # val = str(val) if val is not None else val
         if self._vals.get(key) == val:
             return self
         if key in self._values:
@@ -246,8 +246,8 @@ class GDO(WithName, WithBulk, GDT):
     def set_value(self, key: str, value: any, dirty: bool=True) -> Self:
         gdt = self.column(key)
         new_val = gdt.to_val(value)
-        # old_val = gdt.get_val()
-        # if new_val == old_val: return self
+        old_val = gdt.get_val()
+        if new_val == old_val: return self
         self._values[key] = value
         self._vals[key] = new_val
         return self.dirty(key, dirty)
@@ -402,6 +402,14 @@ class GDO(WithName, WithBulk, GDT):
                 vals.update(gdt.gdo(self).dirty_vals())
         return vals
 
+    IPC = None
+    @classmethod
+    def ipc(cls):
+        if cls.IPC is None:
+            from gdo.base.IPC import IPC
+            cls.IPC = IPC
+        return cls.IPC
+
     def save(self):
         obj = self
         if self.gdo_can_persist():
@@ -413,7 +421,7 @@ class GDO(WithName, WithBulk, GDT):
                 obj.query().type(Type.UPDATE).set_vals(dirty).where(self.pk_where()).exec()
                 self._blank = False
                 obj.after_update()
-                from gdo.base.IPC import IPC
+                IPC = self.ipc()
                 if Arrays.mem_size(dirty) > IPC.MAX_EVENT_ARG_SIZE:
                     dirty = None
                 obj.all_dirty(False)

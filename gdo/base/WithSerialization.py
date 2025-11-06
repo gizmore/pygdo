@@ -52,7 +52,7 @@ class WithSerialization:
         """Reconstruct objects recursively, avoiding excessive type checking."""
         dic_type = type(dic)
 
-        if dic_type in {int, float, str, bool, bytes} or dic is None:
+        if dic_type in {int, float, str, bool, bytes, bytearray} or dic is None:
             return dic
 
         if dic_type is list:
