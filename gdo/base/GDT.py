@@ -44,6 +44,8 @@ class GDT(WithSerialization):
             return GDT.EMPTY_STR
         if type(val) is bytes:
             return binascii.hexlify(val).decode('ascii')
+        if type(val) is int:
+            return str(val)
         return (val.replace('\\', '\\\\').
                 replace('"', '\\"').
                 replace("'", "\\'"))
@@ -58,6 +60,8 @@ class GDT(WithSerialization):
             return GDT.NULL_STRING
         if type(val) is bytes:
             return f"UNHEX('{GDT.escape(val)}')"
+        if type(val) is int:
+            return str(val)
         return f"'{GDT.escape(val)}'"
 
     @classmethod

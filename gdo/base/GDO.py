@@ -252,6 +252,11 @@ class GDO(WithName, WithBulk, GDT):
         self._vals[key] = new_val
         return self.dirty(key, dirty)
 
+    def set_values(self, values: dict[str, any], dirty: bool=True):
+        for key, value in values.items():
+            self.set_value(key, value, dirty)
+        return self
+
     def set_vals(self, vals: dict[str,str], dirty: bool=True) -> Self:
         for key, val in vals.items():
             self.set_val(key, val, dirty)
@@ -262,6 +267,9 @@ class GDO(WithName, WithBulk, GDT):
         Also saves all dirty vars... bug? consistency?
         """
         return self.set_vals(vals).save()
+
+    def save_values(self, values: dict) -> Self:
+        return self.set_values(values).save()
 
     def save_val(self, key: str, val: str|None) -> Self:
         self.set_val(key, val)

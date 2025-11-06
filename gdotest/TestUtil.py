@@ -67,6 +67,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         p = Shadowdogs.USERMAP[user.get_id()].get_party()
         while action != p.get_action_name():
             await self.ticker(1)
+        await self.ticker(1)
 
 
 def reinstall_module(name):

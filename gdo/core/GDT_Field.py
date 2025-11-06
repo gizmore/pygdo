@@ -74,8 +74,8 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         self._gdo = gdo
         val = gdo._vals.get(self._name)
         self.val(val)
-        if value := gdo._values.get(self._name):
-            self._value = value
+        if self._name in gdo._values:
+            self._value = gdo._values.get(self._name)
             self._converted = True
         return self
 
