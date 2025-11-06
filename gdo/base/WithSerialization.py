@@ -40,12 +40,12 @@ class WithSerialization:
 
         return data
 
-    @classmethod
-    def gdounpack(cls, data: bytes):
+    @staticmethod
+    def gdounpack(data: bytes):
         """Deserialize object and detect if it's a packed GDO."""
-        is_gdo = data.startswith(cls.MAGIC_NUM)
+        is_gdo = data.startswith(WithSerialization.MAGIC_NUM)
         unpacked_data = msgspec.msgpack.decode(data[4:] if is_gdo else data)
-        return cls.gdopinstances(unpacked_data) if is_gdo else unpacked_data
+        return WithSerialization.gdopinstances(unpacked_data) if is_gdo else unpacked_data
 
     @staticmethod
     def gdopinstances(dic):
