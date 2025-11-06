@@ -246,8 +246,8 @@ class GDO(WithName, WithBulk, GDT):
     def set_value(self, key: str, value: any, dirty: bool=True) -> Self:
         gdt = self.column(key)
         new_val = gdt.to_val(value)
-        old_val = gdt.get_val()
-        if new_val == old_val: return self
+        # old_val = gdt.get_val()
+        # if new_val == old_val: return self
         self._values[key] = value
         self._vals[key] = new_val
         return self.dirty(key, dirty)

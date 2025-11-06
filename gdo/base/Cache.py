@@ -58,8 +58,7 @@ class Cache:
         cls.CCACHE = {}
         cls.PCACHE = {}
         cls.clear_ocache()
-        if cls.RCACHE:
-            cls.RCACHE.flushdb()
+        cls.remove()
         Files.empty_dir(Application.file_path('cache/'))
 
     #PYPP#START#

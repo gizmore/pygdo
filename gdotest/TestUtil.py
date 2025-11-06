@@ -42,6 +42,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         super().setUp()
         Application.IS_TEST = True
         Application.LOOP = asyncio.get_event_loop()
+        all_private_messages()
 
     async def ticker(self, ticks: int = 1):
         # gdo_print(f"{ticks} ticks pass buy.")
