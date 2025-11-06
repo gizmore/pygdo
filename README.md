@@ -20,15 +20,15 @@ but it boils down to:
 git clone https://github.com/gizmore/pygdo
 cd pygdo
 pip3 install -r requirements.txt
-./gdo_admin.sh configure
+./gdo_adm.sh configure
 nano protected/config.php
-./gdo_admin.sh database --mysql -x > sudo mysql  # To create a database
-./gdo_admin.sh provide dog_website  # or any other modules wanted
-./gdo_admin.sh install --all
-./gdo_admin.sh setenv -x
-sudo ./gdo_admin.sh webconfig --apache > /etc/apache2/sites-enabled/099_pygdo.conf
+./gdo_adm.sh database --mysql -x > sudo mysql  # To create a database
+./gdo_adm.sh provide dog_website  # or any other modules wanted
+./gdo_adm.sh install --all
+./gdo_adm.sh setenv -x
+sudo ./gdo_adm.sh webconfig --apache > /etc/apache2/sites-enabled/099_pygdo.conf
 /etc/init.d/apache2/restart
-./gdo_admin.sh cronjob -x  # if cronjobs are wanted
+./gdo_adm.sh cronjob -x  # if cronjobs are wanted
 pygdo echo Hello World!
 ```
 
