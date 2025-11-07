@@ -53,7 +53,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def ticker_for(self, user: 'GDO_User' = None):
         user = user or cli_gizmore()
-        await self.ticker(Shadowdogs.USERMAP[user.get_id()].get_busy_seconds() + 2)
+        return await self.ticker(Shadowdogs.USERMAP[user.get_id()].get_busy_seconds() + 2)
 
     async def party_ticker_for(self, user: 'GDO_User' = None):
         user = user or cli_gizmore()
