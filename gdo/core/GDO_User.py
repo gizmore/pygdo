@@ -70,7 +70,7 @@ class GDO_User(GDO):
     @functools.lru_cache
     def ghost(cls):
         return cls.blank({
-            # 'user_id': '0',
+            'user_id': '0',
             'user_server': '2',
             'user_type': GDT_UserType.GHOST,
             'user_displayname': 'Guest',

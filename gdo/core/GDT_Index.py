@@ -56,3 +56,7 @@ class GDT_Index(WithName, GDT):
         fields = ', '.join(self._index_fields)
         using = f" USING {self._index_using}" if self._index_using else ''
         return f"{self._index_type} {self.get_name()} ({fields}){using}"
+
+    def is_hidden(self) -> bool:
+        return True
+    
