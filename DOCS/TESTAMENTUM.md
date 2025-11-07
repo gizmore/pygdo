@@ -15,9 +15,8 @@ I hereby gift all my PyGDO Projects to the wechall.net admins, in ownership rank
 
 SIGNED,
 
-gizmore@wechall.net (Christian Bush)
+gizmore@wechall.net (Christian Busch)
 
 30.Apr.2024 via github.com push
 
 ===============================
-
