@@ -9,7 +9,8 @@ class GDT_Bar(WithFlow, WithName, GDT_Container):
 
     def __init__(self, name: str = None):
         super().__init__()
-        self.name(name or self.generate_name())
+        self._name = name
+        # self.name(name or self.generate_name())
 
     def render_html(self, mode: Mode = Mode.HTML):
         return tplhtml('ui', 'bar.html', {
@@ -19,4 +20,4 @@ class GDT_Bar(WithFlow, WithName, GDT_Container):
         })
 
     def render_bar_fields(self):
-        return "\n".join([f"<li>{gdt.render_html()}</li>" for gdt in self.fields()])
+        return "\n".join([f"<li>{gdt.render_html()}</li>" for gdt in self._fields])

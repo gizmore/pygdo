@@ -3,4 +3,7 @@ from gdo.core.WithFields import WithFields
 
 
 class GDT_Container(WithFields, GDT):
-    pass
+
+    def __init__(self):
+        super().__init__()
+        self._fields = []

@@ -17,7 +17,7 @@ class set_name(MethodForm):
         return 'member,guest'
 
     def gdo_create_form(self, form: GDT_Form) -> None:
-        form.add_field(
+        form.add_fields(
             GDT_UserName('name').not_null(),
             GDT_Validator().validator(form, 'name', self.validate_name),
         )

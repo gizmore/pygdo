@@ -8,9 +8,9 @@ from gdo.ui.WithTitle import WithTitle
 
 class GDT_Link(WithHREF, WithTitle, WithText, WithName, GDT):
 
-    def __init__(self):
+    def __init__(self, name: str=None):
         super().__init__()
-        self._name = self.generate_name()
+        self._name = name # self.generate_name()
 
     def render_form(self):
         return self.render_html()

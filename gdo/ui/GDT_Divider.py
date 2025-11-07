@@ -15,7 +15,7 @@ class GDT_Divider(WithTitle, WithFlow, GDT):
 
     def __init__(self):
         super().__init__()
-        self.horizontal()
+        self._flow_horz = True
 
     def render_html(self) -> str:
         return '\n<span class="gdt-divider gdt-horizontal"></span>\n'

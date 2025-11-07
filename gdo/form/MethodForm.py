@@ -59,7 +59,7 @@ class MethodForm(Method):
             return form.get_field(key).flow_upload()
 
         clicked = None
-        for button in form.actions().fields():
+        for button in form.actions()._fields:
             if button._default_button and not Application.IS_HTTP:
                 clicked = button
             if isinstance(button, GDT_Submit) and button.get_val():

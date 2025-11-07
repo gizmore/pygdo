@@ -55,7 +55,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
         for gdt in self.all_fields():
             self.validate_gdt(gdt)
         if not self.has_error():
-            for gdt in self.fields():
+            for gdt in self._fields:
                 gdt.gdo_form_validated(self)
             return True
         return False
@@ -64,10 +64,14 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
         self._encoding = Encoding.MULTIPART
         return self
 
-    def add_field(self, *fields):
-        super().add_field(*fields)
-        for gdt in fields:
-            gdt.gdo_added_to_form(self)
+    def add_field(self, field):
+        super().add_field(field)
+        field.gdo_added_to_form(self)
+
+    def add_fields(self, *fields):
+        super().add_fields(*fields)
+        for field in fields:
+            field.gdo_added_to_form(self)
 
     ##########
     # Render #

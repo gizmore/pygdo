@@ -10,16 +10,20 @@ class WithFields:
     _fields: list[GDT]
 
     def get_fields(self) -> list[GDT]:
-        if not hasattr(self, '_fields'):
-            self._fields = []
+        # if not hasattr(self, '_fields'):
+        #     self._fields = []
         return self._fields
 
-    def add_field(self, *fields):
-        self.get_fields().extend(fields)
+    def add_field(self, field):
+        self._fields.append(field)
+        return self
+
+    def add_fields(self, *fields):
+        self._fields.extend(fields)
         return self
 
     def get_field(self, name: str):
-        for gdt in self.fields():
+        for gdt in self._fields:
             if gdt.get_name() == name:
                 return gdt
             if hasattr(gdt, 'get_field'):
@@ -30,18 +34,18 @@ class WithFields:
     def has_fields(self) -> bool:
         return True
 
-    def fields(self) -> list[GDT]:
-        return self._fields if hasattr(self, '_fields') else GDO.EMPTY_LIST
+    # def fields(self) -> list[GDT]:
+    #     return self._fields if hasattr(self, '_fields') else GDO.EMPTY_LIST
 
     def all_fields(self) -> Iterator[GDT]:
         """
         Returns an iterator that iterates over all nested fields.
         """
-        if self.has_fields():
-            for gdt in self.fields():
-                yield gdt
-                if gdt.has_fields():
-                    yield from gdt.all_fields()
+        # if self.has_fields():
+        for gdt in self._fields:
+            yield gdt
+            if hasattr(gdt, '_fields'):
+                yield from gdt._fields
 
     # def clear(self):
     #     self.get_fields().clear()

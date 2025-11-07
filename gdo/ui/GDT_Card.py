@@ -50,7 +50,7 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
     def creator_header(self):
         creator = self._gdo.column_of(GDT_Creator)
         created = self._gdo.column_of(GDT_Created)
-        self.get_header().add_field(creator, created)
+        self.get_header().add_fields(creator, created)
         if module_enabled('avatar'):
             self.get_header().add_field(GDT_Avatar('avatar').for_user(creator.get_value()))
         return self

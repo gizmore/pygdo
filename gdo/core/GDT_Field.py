@@ -81,7 +81,8 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
 
     def initial(self, val: str):
         self._initial = val
-        return self.val(val)
+        self._val = val
+        return self #.val(val)
 
     def initial_value(self, value: any):
         return self.initial(self.to_val(value))

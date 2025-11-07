@@ -251,8 +251,8 @@ class GDT(WithSerialization):
         key = f"tt_{self.get_name()}"
         return t(key) if Trans.has(key) else ''
 
-    def fields(self) -> list['GDT']:
-        return self.EMPTY_LIST
+    # def fields(self) -> list['GDT']:
+    #     return self.EMPTY_LIST
 
     def all_fields(self):
         return self.EMPTY_LIST

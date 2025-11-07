@@ -21,9 +21,7 @@ class configure(MethodForm):
         form.add_field(
             module.column('module_priority')
         )
-        for gdt in module._module_config.values():
-            form.add_field(gdt)
-
+        form.add_fields(*module._module_config.values())
         super().gdo_create_form(form)
 
     def form_submitted(self):

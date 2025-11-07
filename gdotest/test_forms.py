@@ -23,7 +23,7 @@ class FormTestCase(GDOTestCase):
         gizmore = web_gizmore()
         Application.set_session(GDO_Session.for_user(gizmore))
         form = GDT_Form()
-        form.add_field(GDT_String("login"), GDT_CSRF(), GDT_Submit())
+        form.add_fields(GDT_String("login"), GDT_CSRF(), GDT_Submit())
         form.actions().add_field(GDT_Submit())
         tpl = form.render_html()
         self.assertIn('<form', tpl, 'check if form somewhat renders')
