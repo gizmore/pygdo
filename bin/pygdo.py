@@ -34,6 +34,7 @@ async def pygdo(line: str = None):
     parser.add_argument('--config', nargs='?', default='protected/config.toml')
     args, rest = parser.parse_known_args(sys.argv[1:])
 
+    Application.IS_DOG = True
     Logger.init(os.path.dirname(__file__)+"/../../protected/logs/")
     Application.init(__file__ + "/../../", args.config)
     Application.init_common()
@@ -43,7 +44,6 @@ async def pygdo(line: str = None):
     Application.init_cli()
     loader.init_cli()
     Files.create_dir(Application.files_path('repl/'))
-    Application.IS_DOG = True
 
     if args.dogmode:
         global RUNNING

@@ -48,7 +48,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         # gdo_print(f"{ticks} ticks pass buy.")
         for i in range(ticks):
             Application.TIME += 1
-            await Application.EVENTS.update_timers(module_shadowdogs.instance().cfg_time())
+            await Application.EVENTS.update_timers(Application.TIME)
         self.TICKS += ticks
 
     async def ticker_for(self, user: 'GDO_User' = None):
