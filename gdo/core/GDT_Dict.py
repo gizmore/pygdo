@@ -5,13 +5,9 @@ class GDT_Dict(GDT):
 
     _dict: dict[str, any]
 
-    def __init__(self, **kwargs):
+    def __init__(self, _dict: dict):
         super().__init__()
-        self._dict = {}
-        for key, value in kwargs.items():
-            if isinstance(value, dict):
-                value = GDT_Dict(**value)
-            self._dict[key] = value
+        self._dict = _dict
 
     def gdo_redis_fields(self) -> list[str]:
         return [
@@ -35,3 +31,6 @@ class GDT_Dict(GDT):
 
     def values(self):
         return self._dict.values()
+
+    def render_json(self):
+        return self._dict

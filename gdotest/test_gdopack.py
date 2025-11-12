@@ -29,7 +29,7 @@ class GDOPackTestCase(GDOTestCase):
         cli_gizmore()
 
     def test_01_pack_unpack(self):
-        gdt = GDT_Dict(**{'foo': 'bar', 'eins': 1, 'zwo': GDT_Dict(**{'uff': 'hiya'})})
+        gdt = GDT_Dict({'foo': 'bar', 'eins': 1, 'zwo': GDT_Dict({'uff': 'hiya'})})
         packed = gdt.gdopack()
         self.assertIn(b'foo', packed, "Cannot pack GDT dict #1")
         self.assertIn(b'eins', packed, "Cannot pack GDT dict #2")
