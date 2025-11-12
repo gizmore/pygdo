@@ -37,7 +37,7 @@ class Connector:
 
     @classmethod
     def get_by_name(cls, name: str):
-        return cls.AVAILABLE[name.lower()]
+        return cls.AVAILABLE.get(name.lower(), None)
 
     ############
     # Instance #

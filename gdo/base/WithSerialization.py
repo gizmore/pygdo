@@ -1,4 +1,5 @@
 import importlib
+import sys
 
 import msgspec.msgpack
 
@@ -64,7 +65,10 @@ class WithSerialization:
                 return {key: WithSerialization.gdopinstances(value) for key, value in dic.items()}
             # Restore object from class path
             module_name, class_name = class_path.rsplit(".", 1)
-            module = importlib.import_module(module_name)
+            if module_name in sys.modules:
+                module = sys.modules[module_name]
+            else:
+                module = importlib.import_module(module_name)
             klass = getattr(module, class_name)
             obj = klass.__new__(klass)
             obj._blank = False
