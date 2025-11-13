@@ -7,6 +7,8 @@ from gdo.ui.WithFlow import WithFlow
 
 class GDT_Bar(WithFlow, WithName, GDT_Container):
 
+    __slots__ = ('_flow_horz',)
+
     def __init__(self, name: str = None):
         super().__init__()
         self._name = name

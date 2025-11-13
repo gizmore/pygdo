@@ -1,9 +1,9 @@
-import bcrypt
 from gdo.core.GDT_String import GDT_String
 
 
 class GDT_Password(GDT_String):
     SALT_LEN: int = 12
+    BCRYPT = None
 
     def __init__(self, name):
         super().__init__(name)
@@ -13,11 +13,18 @@ class GDT_Password(GDT_String):
 
     @classmethod
     def check(cls, hash_: str, plain: str) -> bool:
-        return bcrypt.checkpw(plain.encode(), hash_.encode())
+        return cls.bcrypt().checkpw(plain.encode(), hash_.encode())
 
     @classmethod
     def hash(cls, plain: str):
-        return bcrypt.hashpw(plain.encode(), bcrypt.gensalt(cls.SALT_LEN)).decode()
+        return cls.bcrypt().hashpw(plain.encode(), cls.bcrypt().gensalt(cls.SALT_LEN)).decode()
+
+    @classmethod
+    def bcrypt(cls):
+        if not cls.BCRYPT:
+            import bcrypt
+            cls.BCRYPT = bcrypt
+        return cls.BCRYPT
 
     def val(self, val: str | list):
         val = val[0] if type(val) is list else val

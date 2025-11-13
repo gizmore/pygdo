@@ -560,3 +560,12 @@ class GDO(WithName, WithBulk, GDT):
         for gdt in self.columns().values():
             if isinstance(gdt, type):
                 return gdt.gdo(self)
+
+    ##########
+    # Render #
+    ##########
+    def render_json(self):
+        back = {}
+        for gdt in self.columns().values():
+            back[gdt.get_name()] = self.gdo_val(gdt.get_name())
+        return back

@@ -274,12 +274,13 @@ class Files:
             from gdo.base.Logger import Logger
             Logger.exception(ex)
 
+    EXT_TYPES = {'css': 'text/css', 'js': 'application/javascript'}
+
     @staticmethod
     @functools.lru_cache()
-    def mime(path: str):
-        if path[-4:] == '.css':
-            return 'text/css'
-        return magic.from_file(path, mime=True)
+    def mime(path: str) -> str:
+        ext = Strings.rsubstr_from(path, '.')
+        return Files.EXT_TYPES[ext] if ext in Files.EXT_TYPES else magic.from_file(path, mime=True)
 
     @staticmethod
     def size(path: str) -> int:

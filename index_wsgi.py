@@ -1,15 +1,15 @@
 import asyncio
-import cgi
 import os.path
 import sys
+from io import BytesIO
 from urllib.parse import parse_qs, unquote
 
 import better_exceptions
+from multipart import MultipartParser
 
 from gdo.base.IPC import IPC
 from gdo.base.ParseArgs import ParseArgs
 from gdo.base.Application import Application
-from gdo.base.ChunkedResponse import ChunkedResponse
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException, GDOParamNameException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
@@ -163,18 +163,20 @@ def pygdo_application(environ, start_response):
                 method = not_found().env_server(server).env_user(session.get_user()).input('_url', url)
 
             if environ['REQUEST_METHOD'] == 'POST' and environ['CONTENT_TYPE'].startswith('multipart/form-data'):
-                post_variables = cgi.FieldStorage(
-                    fp=environ['wsgi.input'],
-                    environ=environ,
-                    keep_blank_values=True
-                )
-                fields = {}
-                for var in post_variables:
-                    if filename := post_variables[var].filename:
-                        args.add_file(var, filename, post_variables[var].value)
-                    else:
-                        fields[var] = post_variables[var].value
-                args.add_post_vars(fields)
+                    ctype = environ.get('CONTENT_TYPE', '')
+                    length = int(environ.get('CONTENT_LENGTH', 0))
+                    body = environ['wsgi.input'].read(length)
+                    _, params = ctype.split(";", 1)
+                    boundary = params.strip().split("=", 1)[1]
+                    parser = MultipartParser(BytesIO(body), boundary.encode())
+                    fields = {}
+                    files = {}
+                    for part in parser:
+                        if part.filename:
+                            args.add_file(part.name, part.filename, part.raw)
+                        else:
+                            fields[part.name] = part.value
+                    args.add_post_vars(fields)
 
             elif environ['REQUEST_METHOD'] == 'POST':  # POST PARAMS
                 content_length = int(environ.get('CONTENT_LENGTH', 0))

@@ -29,6 +29,7 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.core.GDT_Serialize import GDT_Serialize
 from gdo.core.GDT_Template import GDT_Template, Templite
 from gdo.core.GDT_TemplateHTML import GDT_TemplateHTML
 from gdo.core.GDT_UInt import GDT_UInt
@@ -39,6 +40,7 @@ from gdo.core.connector.Web import Web
 from gdo.date.Time import Time
 from gdo.date.GDT_DateTime import GDT_DateTime
 from gdo.date.GDT_Timestamp import GDT_Timestamp
+import msgspec.json
 
 
 class module_core(GDO_Module):
@@ -51,16 +53,7 @@ class module_core(GDO_Module):
         Connector.register(Bash)
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
-        try:
-            if Application.IS_HTTP and not Application.ASGI:
-                if not Application.LOOP:
-                    raise GDOException("OUCH! No Application.LOOP")
-                nest_asyncio.apply(Application.LOOP)
-            else:
-                nest_asyncio.apply(Application.LOOP)
-        except Exception as ex:
-            Logger.exception(ex)
-            raise ex
+        nest_asyncio.apply(Application.LOOP)
 
     def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):
@@ -76,7 +69,6 @@ class module_core(GDO_Module):
                     if hasattr(obj, 'cache_clear') and callable(obj.cache_clear):
                         obj.cache_clear()
             except Exception as ex:
-
                 Logger.exception(ex, f"cache_clear failed for {obj}")
 
     def gdo_dependencies(self) -> list:
@@ -159,3 +151,10 @@ class module_core(GDO_Module):
     def gdo_load_scripts(self, page):
         self.add_js('js/pygdo.js')
         self.add_css('css/pygdo.css')
+        self.add_js_inline("window.gdo.config = "+msgspec.json.encode(self.get_core_js()).decode('utf8')+";")
+
+    def get_core_js(self):
+        return {
+            'user': GDO_User.current().render_json(),
+            'webroot': Application.config('core.web_root'),
+        }

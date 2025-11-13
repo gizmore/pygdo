@@ -4,6 +4,10 @@ from gdo.core.WithFields import WithFields
 
 class GDT_Container(WithFields, GDT):
 
+    __slots__ = (
+        '_fields',
+    )
+
     def __init__(self):
         super().__init__()
         self._fields = []

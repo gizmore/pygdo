@@ -172,7 +172,8 @@ class ModuleLoader:
             if enabled and not module.is_enabled():
                 continue
             module.init()
-            module.gdo_load_scripts(Application.get_page())
+            if Application.IS_HTTP:
+                module.gdo_load_scripts(Application.get_page())
 
     def reload_modules(self):
         self.init_modules(True, True)
