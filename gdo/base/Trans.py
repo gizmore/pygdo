@@ -2,6 +2,7 @@ import glob
 import os
 import re
 
+import msgspec.json
 import tomlkit
 
 from gdo.base.Application import Application
@@ -95,6 +96,8 @@ class Trans:
 
     @staticmethod
     def tiso(iso: str, key: str, args: tuple = None):
+        if iso == 'bot':
+            return msgspec.json.encode({'key':key, 'args': args})
         return Trans.replace_output(Trans.tiso2(iso, key, args))
 
     @staticmethod
