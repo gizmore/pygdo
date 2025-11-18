@@ -17,8 +17,8 @@ from gdotest.TestUtil import cli_gizmore, GDOTestCase, reinstall_module, install
 
 class GDOPackTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         Cache.clear()
@@ -28,7 +28,7 @@ class GDOPackTestCase(GDOTestCase):
         loader.init_cli()
         cli_gizmore()
 
-    def test_01_pack_unpack(self):
+    async def test_01_pack_unpack(self):
         gdt = GDT_Dict({'foo': 'bar', 'eins': 1, 'zwo': GDT_Dict({'uff': 'hiya'})})
         packed = gdt.gdopack()
         self.assertIn(b'foo', packed, "Cannot pack GDT dict #1")
@@ -39,18 +39,18 @@ class GDOPackTestCase(GDOTestCase):
         self.assertEqual('bar', gdt['foo'], 'Cannot unpack GDT dict #2')
         self.assertEqual('hiya', gdt['zwo']['uff'], 'Cannot unpack GDT dict #3')
 
-    def test_02_pack_html(self):
+    async def test_02_pack_html(self):
         gdt = GDT_HTML().html('<h1>Test</h1>')
         packed = gdt.gdopack()
         gdt = WithSerialization.gdounpack(packed)
-        self.assertEqual('<h1>Test</h1>', gdt.render(Mode.HTML), 'Cannot unpack GDT_HTML #1')
+        self.assertEqual('<h1>Test</h1>', gdt.render(Mode.html), 'Cannot unpack GDT_HTML #1')
 
-    def test_03_primitive_cache(self):
+    async def test_03_primitive_cache(self):
         Cache.set('a', 'b', 'c')
         d = Cache.get('a', 'b')
         self.assertEqual('c', d, 'cannot gdo pack str.')
 
-    def test_04_system_user_cache(self):
+    async def test_04_system_user_cache(self):
         clear_cache().gdo_execute()
         gdo1 = GDO_User.system()
         gdo2 = GDO_User.table().get_by_id('1')
@@ -58,7 +58,7 @@ class GDOPackTestCase(GDOTestCase):
         gdo3 = GDO_User.table().get_by_id('1')
         self.assertEqual(gdo3, gdo2, 'GDO OCache not working #2')
 
-    def test_05_gdo_serial(self):
+    async def test_05_gdo_serial(self):
         Cache.clear()
         bash = GDO_Server.table().get_by_id('1')
         packed = bash.gdopack()

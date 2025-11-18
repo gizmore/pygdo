@@ -19,23 +19,20 @@ class GDT_Success(GDT_Panel):
     def html_class(self):
         return 'gdt-success alert alert-success'
 
-    def render(self, mode: Mode = Mode.HTML):
+    def render(self, mode: Mode = Mode.html):
         if not self._no_log:
             with Trans('en'):
                 Logger.message(self.render_txt())
         return super().render(mode)
 
     def render_txt(self):
-        return self.render_text(Mode.TXT)
+        return self.render_text(Mode.txt)
 
     def render_cli(self):
-        return Render.green(self.render_text(Mode.CLI), Mode.CLI)
+        return Render.green(self.render_text(Mode.cli), Mode.cli)
 
     def render_telegram(self):
-        return Render.green(self.render_text(Mode.TELEGRAM), Mode.TELEGRAM)
+        return Render.green(self.render_text(Mode.telegram), Mode.telegram)
 
     def render_irc(self) -> str:
-        return Render.green(self.render_text(Mode.IRC), Mode.IRC)
-
-    # def render_html(self):
-    #     return Render.green(f"{self.render_title(Mode.HTML)}: {self.render_text(Mode.HTML)}", Mode.HTML)
+        return Render.green(self.render_text(Mode.irc), Mode.irc)

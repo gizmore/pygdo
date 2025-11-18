@@ -67,7 +67,7 @@ class dir_server(MethodTable):
         return ResultArray(files, self.gdo_table())
 
     def render_file_name(self, gdt: GDT, gdo: GDO):
-        return GDT_Link().href("/"+self.get_path()+"/"+gdt.get_val()).text_raw(gdt.get_val()).render(Mode.HTML)
+        return GDT_Link().href("/"+self.get_path()+"/"+gdt.get_val()).text_raw(gdt.get_val()).render(Mode.html)
 
     def render_file_icon(self, gdt: GDT_Icon, gdo: GDO_File):
         path = self.get_dir() + "/" + gdo.get_name()
@@ -78,4 +78,4 @@ class dir_server(MethodTable):
                 'text/plain': 'file',
             }
             icon = map.get(gdo.get_mime(), 'file')
-        return gdt.icon_name(icon).render(Mode.CELL)
+        return gdt.icon_name(icon).render(Mode.cell)

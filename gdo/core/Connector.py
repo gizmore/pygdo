@@ -58,7 +58,7 @@ class Connector:
         return type(self) == type(other) and (self._server == other._server or (self._server is None and other._server is None))
 
     def get_render_mode(self) -> Mode:
-        return Mode.TXT
+        return Mode.txt
 
     def gdo_has_channels(self) -> bool:
         return False

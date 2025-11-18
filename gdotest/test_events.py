@@ -10,15 +10,15 @@ from gdotest.TestUtil import GDOTestCase
 
 class EventsTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         Application.init_cli()
         ModuleLoader.instance().load_modules_db()
         ModuleLoader.instance().init_modules()
         ModuleLoader.instance().init_cli()
 
-    def test_01_events(self):
+    async def test_01_events(self):
         y = 0
 
         def foo(x):
@@ -39,7 +39,7 @@ class EventsTestCase(GDOTestCase):
 
         Application.EVENTS.reset_all()
 
-    def test_02_timers(self):
+    async def test_02_timers(self):
         y = 0
         def tck():
             Application.tick()

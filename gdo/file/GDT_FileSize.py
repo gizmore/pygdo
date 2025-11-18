@@ -15,5 +15,5 @@ class GDT_FileSize(GDT_UInt):
             index += 1
         return f"{bytes_size:.{decimal_places}f} {units[index]}"
 
-    def render(self, mode: Mode = Mode.HTML):
+    def render(self, mode: Mode = Mode.html):
         return self.to_human(self.get_value())

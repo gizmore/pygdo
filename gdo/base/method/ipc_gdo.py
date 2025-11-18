@@ -12,7 +12,7 @@ class ipc_gdo(Method):
         return [
             GDT_TableName('table').not_null(),
             GDT_String('id').not_null(),
-            GDT_Serialize('dirty').mode(SerializeMode.JSON),
+            GDT_Serialize('dirty').mode(SerializeMode.json),
         ]
 
     def gdo_execute(self) -> GDT:

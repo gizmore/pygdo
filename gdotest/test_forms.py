@@ -13,13 +13,13 @@ from gdotest.TestUtil import web_gizmore, GDOTestCase
 
 class FormTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
 
-    def test_forms(self):
+    async def test_forms(self):
         gizmore = web_gizmore()
         Application.set_session(GDO_Session.for_user(gizmore))
         form = GDT_Form()

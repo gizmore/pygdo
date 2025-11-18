@@ -18,14 +18,14 @@ class test_automatically(GDOTestCase):
 
     FAILED: int = 0
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules(True, True)
         Application.init_cli()
 
-    def test_01_test_defaults(self):
+    async def test_01_test_defaults(self):
         for module in ModuleLoader.instance()._cache.values():
             for method in module.get_methods():
                 self.method_test(method)
@@ -46,10 +46,10 @@ class test_automatically(GDOTestCase):
                 result = method.gdo_execute()
                 while iscoroutine(result):
                     result = asyncio.run(result)
-                result.render(Mode.HTML)
-                result.render(Mode.FORM)
-                result.render(Mode.TXT)
-                result.render(Mode.JSON)
+                result.render(Mode.html)
+                result.render(Mode.form)
+                result.render(Mode.txt)
+                result.render(Mode.json)
         except GDOParamError:
             pass
         except Exception as ex:

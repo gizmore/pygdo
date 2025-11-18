@@ -80,8 +80,8 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def render_enctype(self) -> str:
         return self._encoding.value
 
-    def render(self, mode: Mode = Mode.HTML):
-        if mode in (Mode.HTML, Mode.FORM):
+    def render(self, mode: Mode = Mode.html):
+        if mode in (Mode.html, Mode.form):
             return self.render_html()
         return ''
 
@@ -91,7 +91,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
             'text': self.render_text(),
             'href': self.render_href(),
             'enctype': self.render_enctype(),
-            'fields': self.render_fields(Mode.FORM),
+            'fields': self.render_fields(Mode.form),
             'actions': self._actions.render_fields(),
         })
 

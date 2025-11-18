@@ -1,3 +1,4 @@
+import asyncio
 import gc
 import types
 from datetime import datetime
@@ -53,7 +54,8 @@ class module_core(GDO_Module):
         Connector.register(Bash)
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
-        nest_asyncio.apply(Application.LOOP)
+        if not Application.IS_TEST:
+            nest_asyncio.apply(Application.LOOP)
 
     def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):

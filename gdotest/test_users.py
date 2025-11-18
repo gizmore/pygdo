@@ -10,13 +10,13 @@ from gdotest.TestUtil import GDOTestCase
 
 class UsersTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + '/../')
         ModuleLoader.instance().load_modules_db()
         ModuleLoader.instance().init_modules()
 
-    def test_web_user(self):
+    async def test_web_user(self):
         gizmore = Web.get_server().get_or_create_user('gizmore')
         self.assertIsInstance(gizmore, GDO_User, "Cannot create gizmore for webserver")
 

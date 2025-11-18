@@ -232,7 +232,7 @@ async def app(scope, receive, send):
 
                 mode = args.get_mode()
                 page = Application.get_page()
-                if Application.get_mode() == Mode.HTML:
+                if Application.get_mode() == Mode.html:
                     Application.header('Content-Type', 'text/html; charset=UTF-8')
                     for module in ModuleLoader.instance().enabled():
                         module.gdo_init_sidebar(page)
@@ -240,10 +240,10 @@ async def app(scope, receive, send):
                 elif mode.is_html():
                     result = page.result(result).method(method).render_html()
                     Application.header('Content-Type', 'text/html; charset=UTF-8')
-                elif mode == Mode.JSON:
+                elif mode == Mode.json:
                     result = jsn(page.result(result).method(method).render_json())
                     Application.header('Content-Type', 'application/json; Charset=UTF-8')
-                elif mode == Mode.TXT:
+                elif mode == Mode.txt:
                     result = page.result(result).method(method).render_txt()
                     Application.header('Content-Type', 'text/plain; Charset=UTF-8')
 
@@ -293,7 +293,7 @@ async def app(scope, receive, send):
     except Exception as ex:
         try:
             Logger.exception(ex)
-            out = Application.get_page().result(GDT_Error.from_exception(ex)).method(server_error()).render(Mode.HTML)
+            out = Application.get_page().result(GDT_Error.from_exception(ex)).method(server_error()).render(Mode.html)
             try:
                 await send({
                     'type': 'http.response.start',

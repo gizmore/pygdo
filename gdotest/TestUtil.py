@@ -1,13 +1,13 @@
 import asyncio
 import better_exceptions
+import logging
 
+import nest_asyncio
 from typing_extensions import TYPE_CHECKING
 
 from gdo.base.Message import Message
 from gdo.base.Util import gdo_print
 from gdo.core.GDO_UserPermission import GDO_UserPermission
-from gdo.shadowdogs import module_shadowdogs
-from gdo.shadowdogs.engine.Shadowdogs import Shadowdogs
 
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
@@ -38,10 +38,16 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     TICKS: int = 0
     _profile: cProfile
 
-    def setUp(self):
-        super().setUp()
+    def __init__(self, name: str):
+        super().__init__(name)
+        logging.getLogger("asyncio").setLevel(logging.ERROR)
+
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.IS_TEST = True
-        Application.LOOP = asyncio.get_event_loop()
+        Application.LOOP = loop = asyncio.get_running_loop()
+        nest_asyncio.apply(loop)
+        loop.set_debug(False)
         all_private_messages()
 
     async def ticker(self, ticks: int = 1):
@@ -51,20 +57,29 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
             await Application.EVENTS.update_timers(Application.TIME)
         self.TICKS += ticks
 
+    Shadowdogs = None
+    @classmethod
+    def sd(cls):
+        if not cls.Shadowdogs:
+            from gdo.shadowdogs.engine.Shadowdogs import Shadowdogs
+            cls.Shadowdogs = Shadowdogs
+        return cls.Shadowdogs
+
     async def ticker_for(self, user: 'GDO_User' = None):
+
         user = user or cli_gizmore()
-        return await self.ticker(Shadowdogs.USERMAP[user.get_id()].get_busy_seconds() + 2)
+        return await self.ticker(self.sd().USERMAP[user.get_id()].get_busy_seconds() + 2)
 
     async def party_ticker_for(self, user: 'GDO_User' = None):
         user = user or cli_gizmore()
-        p = Shadowdogs.USERMAP[user.get_id()].get_party()
+        p = self.sd().USERMAP[user.get_id()].get_party()
         a = p.get_action()
         while a == p.get_action():
             await self.ticker(1)
 
     async def party_ticker_until(self, action: str, user: 'GDO_User' = None):
         user = user or cli_gizmore()
-        p = Shadowdogs.USERMAP[user.get_id()].get_party()
+        p = self.sd().USERMAP[user.get_id()].get_party()
         start = Application.TIME
         while action != p.get_action_name():
             await self.ticker(1)
@@ -112,7 +127,7 @@ class WebPlug:
         self.args = f"_url={url}"
         self._ip = '::1'
         self._environ = {}
-        Application.mode(Mode.HTML)
+        Application.mode(Mode.html)
         Application.fresh_page()
 
     def ip(self, ip: str):
@@ -211,7 +226,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
         method = Parser(mode, user, server, channel, session).parse(line[1:])
         result = method.execute()
     else:
-        message = Message(line, Mode.CLI).env_user(user).env_server(server).env_channel(channel).env_mode(Mode.CLI).env_session(session).env_http(False)
+        message = Message(line, Mode.cli).env_user(user).env_server(server).env_channel(channel).env_mode(Mode.cli).env_session(session).env_http(False)
         result = message.execute()
     while asyncio.iscoroutine(result):
         result = Application.LOOP.run_until_complete(result)
@@ -234,9 +249,9 @@ def all_private_messages():
     return out.strip()
 
 def cli_plug(user: 'GDO_User', command: str) -> str:
-    return text_plug(Mode.CLI, command, user)
+    return text_plug(Mode.cli, command, user)
 
-def cli_top(mode: Mode = Mode.TXT):
+def cli_top(mode: Mode = Mode.txt):
     return Application.get_page()._top_bar.render(mode)
 
 def cli_user(username: str) -> 'GDO_User':

@@ -8,4 +8,4 @@ class GDT_Stroke(GDT_Span):
         return 'strike'
 
     def render_cli(self):
-        return Render.strike(super().render_fields(Mode.CLI), Mode.CLI)
+        return Render.strike(super().render_fields(Mode.cli), Mode.cli)

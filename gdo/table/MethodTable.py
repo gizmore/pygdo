@@ -177,11 +177,11 @@ class MethodTable(WithGDO, MethodForm):
     ##########
     # Render #
     ##########
-    def render(self, mode: Mode = Mode.HTML):
+    def render(self, mode: Mode = Mode.html):
         return self.get_table().render(mode)
 
     def render_gdo(self, gdo: GDO, mode: Mode) -> any:
-        if mode == Mode.JSON:
+        if mode == Mode.json:
             return { gdt.get_name(): gdt.gdo(gdo).render_json() for gdt in self.gdo_table_headers()}
         self._curr_table_row_id += 1
         return f"{Render.bold(str(self._curr_table_row_id), mode)}-{gdo.render_name()}"

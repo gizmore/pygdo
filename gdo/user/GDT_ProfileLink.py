@@ -26,6 +26,3 @@ class GDT_ProfileLink(GDT_Link):
     def with_avatar(self, with_avatar: bool = True):
         self._with_avatar = with_avatar
         return self
-
-
-    # def render(self, mode: Mode = Mode.HTML):

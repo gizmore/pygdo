@@ -15,17 +15,17 @@ from gdotest.TestUtil import reinstall_module, GDOTestCase, web_plug
 
 class InstallTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         Application.init_cli()
 
-    def test_01_core_config(self):
+    async def test_01_core_config(self):
         db = Application.db()
         self.assertTrue(db.is_configured(), 'Database is configured')
         self.assertIsNotNone(db.get_link(), 'Database is ready')
 
-    def test_01b_all_modules_have_nice_deps(self):
+    async def test_01b_all_modules_have_nice_deps(self):
         loader = ModuleLoader.instance()
         modules = loader.load_modules_fs()
         tested = 0
@@ -37,18 +37,18 @@ class InstallTestCase(GDOTestCase):
                 tested += 1
         self.assertGreater(tested, 5, "Does not have much dependencies tested!")
 
-    def test_01c_installer_resolves_all_dependencies(self):
+    async def test_01c_installer_resolves_all_dependencies(self):
         loader = ModuleLoader.instance()
         modules = loader.load_modules_fs()
         with_deps = Installer.modules_with_deps(list(modules.values()))
         self.assertEqual(len(modules), len(with_deps), "Something is fishy in module deps!")
 
-    def test_02_wipe(self):
+    async def test_02_wipe(self):
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'wipe', "--all"], capture_output=True)
         with self.assertRaises(GDODBException, msg="Test if all modules are deleted"):
             GDO_Module.table().count_where()
 
-    def test_03_core_install(self):
+    async def test_03_core_install(self):
         loader = ModuleLoader.instance()
         modules = loader.load_modules_fs()
         loader.init_modules()
@@ -66,30 +66,30 @@ class InstallTestCase(GDOTestCase):
         mc_two = GDO_Module.table().count_where()
         self.assertEqual(mc_one, mc_two, "Test if no more modules are installed on a second run")
 
-    def test_04_loading_of_modules(self):
+    async def test_04_loading_of_modules(self):
         loader = ModuleLoader.instance()
         mods = loader.load_modules_db(False)
         self.assertEqual(len(mods), 0, 'Test if loading uninstalled modules from db somewhat works')
 
-    def test_05_system_created(self):
+    async def test_05_system_created(self):
         self.assertIsInstance(GDO_User.system(), GDO_User, 'Test if system user exists')
         self.assertEqual(GDO_User.system().get_id(), '1', 'Test if system user has ID#1')
 
-    def test_06_install_single_modules(self):
+    async def test_06_install_single_modules(self):
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'install', "date"], capture_output=True)
         self.assertIn('All Done!', result.stdout.decode('UTF-8'), "Install one single module")
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'install', "ma*,date"], capture_output=True)
         self.assertIn('All Done!', result.stdout.decode('UTF-8'), "Install some modules")
 
-    def test_07_install_all_modules(self):
+    async def test_07_install_all_modules(self):
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'install', "--all"], capture_output=True)
         self.assertIsNotNone(result, "Install all")
 
-    def test_08_install_admin_user(self):
+    async def test_08_install_admin_user(self):
         subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'admin', "gizmore5", "11111111", "gizmore@gizmore.org"], capture_output=True)
         self.assertTrue(GDO_User.table().get_by_vals({'user_name': 'gizmore5', 'user_server': '1'}).is_admin(), 'Cannot create admin user')
 
-    def test_09_reinstall_module(self):
+    async def test_09_reinstall_module(self):
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
         loader.init_modules(True, True)

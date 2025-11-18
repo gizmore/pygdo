@@ -111,7 +111,7 @@ class WithObject:
         if gdo is None:
             return GDT.EMPTY_STR
         if gdo.is_persisted():
-            return f"{Render.bold(gdo.get_id(), Mode.CLI)}-{gdo.render_name()}"
+            return f"{Render.bold(gdo.get_id(), Mode.cli)}-{gdo.render_name()}"
         else:
             return gdo.render_name()
 

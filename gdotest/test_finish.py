@@ -24,8 +24,8 @@ class FinishTestCase(GDOTestCase):
             except:
                 pass
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
@@ -37,7 +37,7 @@ class FinishTestCase(GDOTestCase):
         Application.set_session(GDO_Session.start(True))
         cli_gizmore()
 
-    def test_01_slots(self):
+    async def test_01_slots(self):
         classes = [
             Method,
         ]
@@ -53,14 +53,14 @@ class FinishTestCase(GDOTestCase):
         count = 0
         for module in ModuleLoader.instance()._cache.values():
             for method in module.get_methods():
-                method.env_server(gizmore.get_server()).env_user(gizmore).env_session(GDO_Session.for_user(gizmore)).env_mode(Mode.CLI)
+                method.env_server(gizmore.get_server()).env_user(gizmore).env_session(GDO_Session.for_user(gizmore)).env_mode(Mode.cli)
                 # await method.execute()
                 count += 1
         gdo_print(f"Tested {count} methods for import errors.")
 
 
 
-    # def test_01_no_translation_errors(self):
+    # async def test_01_no_translation_errors(self):
     #     count = len(Trans.FAILURES)
     #     missing = ', '.join(Trans.FAILURES.keys())
     #     self.assertEqual(count, 0, f'There are Translation errors left: {missing}.')

@@ -46,7 +46,7 @@ if searched:
             if hasattr(method, func):
                 write(getattr(method, func)(gdt.gdo(gdo), gdo))
             else:
-                write(gdt.gdo(gdo).render(Mode.CELL))
+                write(gdt.gdo(gdo).render(Mode.cell))
             write('</td>')
         write('</tr>\n')
     %>

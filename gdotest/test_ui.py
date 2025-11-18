@@ -13,31 +13,31 @@ from gdotest.TestUtil import web_plug, GDOTestCase
 
 class UITestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
 
-    def test_01_template(self):
+    async def test_01_template(self):
         s = GDT_String('login')
         tpl = s.render_form()
         self.assertIn("text", tpl, 'Test if string form renders somewhat 1')
         self.assertIn("login", tpl, 'Test if string form renders somewhat 2')
 
-    def test_02_flow(self):
+    async def test_02_flow(self):
         horz = GDT_Divider().title_raw('Test').horizontal().render_cli()
         self.assertEqual('|', horz[1], 'Divider does not start with pipe')
 
-    def test_03_section(self):
-        sect = GDT_Section().title_raw("Test").render_title(Mode.CLI)
+    async def test_03_section(self):
+        sect = GDT_Section().title_raw("Test").render_title(Mode.cli)
         self.assertIn(sect, "Test", 'Section does not render in CLI mode.')
 
-    def test_04_method_errors(self):
+    async def test_04_method_errors(self):
         result = web_plug("math.calc.html").post({'submit': '1', 'expression': 'PI * 3'}).exec()
         self.assertIn('<form', result, 'erroneous page does not render fallback')
 
-    def test_05_human_filesize(self):
+    async def test_05_human_filesize(self):
         self.assertEqual(GDT_FileSize.to_human(1024), '1.00 KB', "human file size 1kb failed")
 
 

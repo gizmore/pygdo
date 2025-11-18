@@ -55,7 +55,7 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
             self.get_header().add_field(GDT_Avatar('avatar').for_user(creator.get_value()))
         return self
 
-    def render(self, mode: Mode = Mode.HTML):
+    def render(self, mode: Mode = Mode.html):
         if mode.is_html():
             return self.render_html()
         if mode.is_textual():
@@ -67,7 +67,7 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
             'field': self,
         })
 
-    def render_text(self, mode: Mode = Mode.HTML):
+    def render_text(self, mode: Mode = Mode.html):
         text = self._header.render(mode)
         text += ' - '
         text += self._content.render(mode)

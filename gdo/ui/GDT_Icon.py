@@ -14,7 +14,7 @@ class GDT_Icon(WithIcon, WithName, GDT):
         self.icon_color(color)
         self.icon_size(size)
 
-    def render(self, mode: Mode = Mode.HTML):
+    def render(self, mode: Mode = Mode.html):
         return self.render_icon(mode)
 
     def render_label(self) -> str:

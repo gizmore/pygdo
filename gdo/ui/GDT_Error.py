@@ -26,23 +26,23 @@ class GDT_Error(GDT_Panel):
             return 'gdt-exception alert alert-danger'
         return 'gdt-error alert alert-warning'
 
-    def render(self, mode: Mode = Mode.HTML):
+    def render(self, mode: Mode = Mode.html):
         if not self._trace:
             with Trans('en'):
-                Logger.error(self.render_text(Mode.TXT))
+                Logger.error(self.render_text(Mode.txt))
         return super().render(mode)
 
     def render_txt(self):
-        return "!!! " + self.render_text(Mode.TXT)
+        return "!!! " + self.render_text(Mode.txt)
 
     def render_cli(self):
-        return Render.red(self.render_text(Mode.CLI), Mode.CLI)
+        return Render.red(self.render_text(Mode.cli), Mode.cli)
 
     def render_irc(self) -> str:
-        return Render.red(self.render_text(Mode.IRC), Mode.IRC)
+        return Render.red(self.render_text(Mode.irc), Mode.irc)
 
     def render_telegram(self):
-        return Render.red(self.render_text(Mode.TELEGRAM), Mode.TELEGRAM)
+        return Render.red(self.render_text(Mode.telegram), Mode.telegram)
 
     @classmethod
     def from_exception(cls, ex: Exception, title: str = 'PyGDO'):

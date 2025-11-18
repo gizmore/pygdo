@@ -10,13 +10,13 @@ from gdotest.TestUtil import GDOTestCase
 
 class DBTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules(True, True)
 
-    def test_01_single_identity_cache(self):
+    async def test_01_single_identity_cache(self):
         clear_cache().gdo_execute()
         user1 = GDO_User.system()
         user2 = GDO_User.table().select().where('user_id=1').first().exec().fetch_object()

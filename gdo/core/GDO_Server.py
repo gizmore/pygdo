@@ -1,7 +1,6 @@
 import asyncio
 from typing import TYPE_CHECKING
 
-from gdo.base.Logger import Logger
 from gdo.core.GDT_Bool import GDT_Bool
 
 if TYPE_CHECKING:

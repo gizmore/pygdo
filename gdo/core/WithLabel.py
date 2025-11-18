@@ -24,7 +24,7 @@ class WithLabel:
     def has_label(self) -> bool:
         return hasattr(self, '_label_key')
 
-    def render_label(self, mode: Mode = Mode.HTML):
+    def render_label(self, mode: Mode = Mode.html):
         trans = t(self._label_key, self._label_args)
         if self._label_escape:
             trans = Strings.html(trans, mode)

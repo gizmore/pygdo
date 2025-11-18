@@ -22,8 +22,8 @@ class GDO_Foo(GDO):
 
 class MessageTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
@@ -32,17 +32,17 @@ class MessageTestCase(GDOTestCase):
         Application.db().drop_table(GDO_Foo.table().gdo_table_name())
         Installer.install_gdo(GDO_Foo)
 
-    def test_01_composition(self):
+    async def test_01_composition(self):
         gdo = GDO_Foo.blank({
             'foo_msg': '<b><i>hello world!</i></b>',
         })
         gdt = gdo.column('foo_msg')
         self.assertIsInstance(gdt, GDT_Message, "Cannot get GDT_Message for GDO_Foo")
-        out = gdt.render(Mode.MARKDOWN)
+        out = gdt.render(Mode.markdown)
         self.assertIn('***hello world!***', out, "Message markdown is broken")
-        out = gdt.render(Mode.CLI)
+        out = gdt.render(Mode.cli)
         self.assertIn('\x1b[1m\x1b[3mhello world!\x1b[0m\x1b[0m', out, "Message cli is broken")
-        out = gdt.render(Mode.FORM)
+        out = gdt.render(Mode.form)
         self.assertIn('<textarea', out, "Message form is broken")
 
 if __name__ == '__main__':

@@ -173,7 +173,7 @@ class Application:
         cls.STORAGE.cookies = {}
         cls.STORAGE.request_method = "POST"
         cls.fresh_page()
-        cls.mode(Mode.CLI)
+        cls.mode(Mode.cli)
 
     @classmethod
     def init_web(cls, environ):
@@ -183,7 +183,7 @@ class Application:
         cls.init_cookies_wsgi(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
         cls.PROTOCOL = environ.get('REQUEST_SCHEME', environ.get('wsgi.url_scheme', cls.config('core.force_tls', '0'))).lower()
-        cls.mode(Mode.HTML)
+        cls.mode(Mode.html)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.user = None
         from gdo.base.Cache import Cache
@@ -213,7 +213,7 @@ class Application:
 
     @classmethod
     def init_common(cls):
-        cls.STORAGE.mode = Mode.HTML
+        cls.STORAGE.mode = Mode.html
         cls.fresh_page()
         cls.DB_READS = 0 #PP#DELETE#
         cls.DB_WRITES = 0 #PP#DELETE#
@@ -224,7 +224,7 @@ class Application:
     @classmethod
     def init_thread(cls, thread):
         from gdo.base.Database import Database
-        cls.mode(Mode.HTML)
+        cls.mode(Mode.html)
         cls.fresh_page()
         cls.STORAGE.lang = 'en'
         cls.STORAGE.user = None

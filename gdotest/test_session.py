@@ -10,15 +10,15 @@ from gdotest.TestUtil import cli_plug, GDOTestCase
 
 class SessionTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules(True, True)
         loader.init_cli()
 
-    def test_cli_session(self):
+    async def test_cli_session(self):
         from gdo.core.GDO_Session import GDO_Session
         user = CLI.get_current_user()
         result = cli_plug(user, "$echo hi")

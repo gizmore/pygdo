@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from gdo.base.Application import Application
+from gdo.base.WithPygdo import WithPygdo
 
 if TYPE_CHECKING:
     from gdo.base.GDO import GDO
@@ -24,7 +25,7 @@ class NopeConverter(MySQLConverter):
 #        return map(lambda val: val.decode('utf-8') if val is not None else val, row_data)
 
 
-class Database:
+class Database(WithPygdo):
     db_host: str
     db_name: str
     username: str
@@ -68,8 +69,7 @@ class Database:
         try:
             link = self.get_link()
             #PYPP#START#
-            from gdo.base.Application import Application
-            Application.DB_WRITES += 1
+            self.application().DB_WRITES += 1
             self.debug_query(query, debug)
             #PYPP#END#
             cursor = self.cursor(False)
@@ -79,10 +79,9 @@ class Database:
             raise GDODBException(ex.msg, query)
 
     def select(self, query: str, dictionary: bool = True, gdo: 'GDO' = None, debug: bool = False):
-        from gdo.base.Application import Application
         try:
             #PYPP#START#
-            Application.DB_READS += 1
+            self.application().DB_READS += 1
             self.debug_query(query, debug)
             #PYPP#END#
             cursor = self.cursor(dictionary)
@@ -95,8 +94,7 @@ class Database:
     def debug_query(self, query: str, debug: bool = False):
         level = Application.config('db.debug')
         if level != '0' or debug:
-            from gdo.base.Util import msg
-            msg('%s', (query,), no_log=True)
+            self.util().msg('%s', (query,), no_log=True)
             Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES) + ": " + query)
             if level == '2':
                 import traceback

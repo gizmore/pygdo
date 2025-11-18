@@ -1,25 +1,24 @@
-import os
 import unittest
+import os
+import subprocess
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.install.Config import Config
-from gdotest.TestUtil import GDOTestCase
+from gdotest.TestUtil import GDOTestCase, reinstall_module
 
 
 class ConfigureTestCase(GDOTestCase):
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         Application.init_cli()
 
-    def test_01_configure(self):
+    async def test_01_configure(self):
         ModuleLoader.instance().load_modules_db(True)
-        ModuleLoader.instance().init_modules()
+        ModuleLoader.instance().init_modules(True, True)
         date1 = Application.CONFIG['gen']['date']
-        data = Config.data(Application.CONFIG)
-        Config.rewrite(Application.file_path('protected/config_test.toml'), data)
-        Application.init(Application.PATH)
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), "-u", "configure"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        Application.init(os.path.dirname(__file__) + "/../")
         date2 = Application.CONFIG['gen']['date']
         self.assertNotEqual(date1, date2, "Cannot rewrite config.")
 

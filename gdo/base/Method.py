@@ -349,7 +349,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         if return_gdt:
             return gdt
         else:
-            return gdt.render(Mode.TXT)
+            return gdt.render(Mode.txt)
 
     async def _nested_execute_parse(self) -> 'GDT':
         result = self.gdo_execute()
@@ -593,7 +593,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def render_page(self) -> GDT:
         return self.empty()
 
-    def render(self, mode: Mode = Mode.HTML):
+    def render(self, mode: Mode = Mode.html):
         if self.has_error():
             if self._env_http:
                 from gdo.ui.GDT_Error import GDT_Error
@@ -606,7 +606,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return ''
 
     def render_html(self) -> str:
-        return self.render_page().render(Mode.HTML)
+        return self.render_page().render(Mode.html)
 
     def render_cli(self) -> str:
         return ''

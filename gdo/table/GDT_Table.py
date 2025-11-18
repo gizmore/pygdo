@@ -51,20 +51,20 @@ class GDT_Table(WithName, GDT):
         return GDT_Template.python('table', filename, vals)
 
     def render_cli(self) -> str:
-        return self.render_textual(Mode.CLI)
+        return self.render_textual(Mode.cli)
 
     def render_txt(self) -> str:
-        return self.render_textual(Mode.TXT)
+        return self.render_textual(Mode.txt)
 
     def render_irc(self) -> str:
-        return self.render_textual(Mode.IRC)
+        return self.render_textual(Mode.irc)
 
     def render_json(self):
         result = self._table_method.gdo_table_result()
         back = {
             'table': {
                 'title': self._table_method.gdo_render_title(),
-                'rows': [self._table_method.render_gdo(gdo, Mode.JSON) for gdo in result],
+                'rows': [self._table_method.render_gdo(gdo, Mode.json) for gdo in result],
             },
         }
         return back

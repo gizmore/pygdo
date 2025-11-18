@@ -10,13 +10,13 @@ from gdotest.TestUtil import GDOTestCase
 
 class ModuleConfigTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
 
-    def test_01_module_config(self):
+    async def test_01_module_config(self):
         mod = module_core.instance()
         mod.save_config_val('send_404_mails', '0')
         ModuleLoader.instance().reset()
@@ -28,7 +28,7 @@ class ModuleConfigTestCase(GDOTestCase):
         got = mod.get_config_val('send_404_mails')
         self.assertEqual(got, '1', "Check if changed back config is working.")
 
-    def test_02_module_user_config(self):
+    async def test_02_module_user_config(self):
         web = Web.get_server()
         user = web.get_or_create_user('gizmore')
         user.save_setting('email', None)
@@ -38,7 +38,7 @@ class ModuleConfigTestCase(GDOTestCase):
         email = user.get_setting_val('email')
         self.assertEqual(email, 'gizmore@gizmore.org', "Cannot save user setting")
 
-    def test_03_module_user_settings(self):
+    async def test_03_module_user_settings(self):
         pass
 
 

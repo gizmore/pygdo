@@ -8,8 +8,8 @@ class GDT_Span(WithHTMLAttributes, GDT_Container):
     def get_tag(self) -> str:
         return 'span'
 
-    def render(self, mode: Mode = Mode.HTML):
-        if mode == Mode.HTML:
+    def render(self, mode: Mode = Mode.html):
+        if mode == Mode.html:
             tag = self.get_tag()
             attrs = self.html_attrs()
             attrs = f" {attrs}" if attrs else ''

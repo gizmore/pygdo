@@ -282,11 +282,11 @@ class GDT(WithSerialization):
     ##############
     # Render GDT #
     ##############
-    def render(self, mode: Mode = Mode.HTML):
+    def render(self, mode: Mode = Mode.html):
         return self.render_gdt(mode)
 
     def render_gdt(self, mode: Mode) -> str|dict|list|None:
-        return getattr(self, mode.render_func_name)()
+        return getattr(self, f"render_{mode.name}")()
 
     def render_method(self, mode: Mode):
         return getattr(self, f'render_{mode.name.lower()}')

@@ -1,4 +1,7 @@
-class WithName:
+from gdo.base.WithPygdo import WithPygdo
+
+
+class WithName(WithPygdo):
 
     _name: str
 

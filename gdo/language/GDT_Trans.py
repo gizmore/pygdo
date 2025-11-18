@@ -7,5 +7,5 @@ class GDT_Trans(WithText, GDT):
     """
     A snippet of translated text.
     """
-    def render(self, mode: Mode = Mode.HTML):
+    def render(self, mode: Mode = Mode.html):
         return self.render_text(mode)

@@ -9,27 +9,27 @@ from gdotest.TestUtil import GDOTestCase
 
 
 class test_argparser(GDOTestCase):
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules(True, True)
 
-    def test_01_cli(self):
+    async def test_01_cli(self):
         parser = ParseArgs()
         parser.add_cli_line("$echo 1 $(echo 2)")
         method = parser.get_method()
         self.assertIsInstance(method, echo, 'cli parsing failed.')
         self.assertEqual('1 2', method.gdo_execute().render_txt(), 'Nested echo no work')
 
-    def test_02_path_web(self):
+    async def test_02_path_web(self):
         parser = ParseArgs()
         parser.add_path_vars('/core.echo.html')
         method = parser.get_method()
         self.assertIsInstance(method, echo, 'web path parsing failed.')
 
-    def test_02_get_web(self):
+    async def test_02_get_web(self):
         parser = ParseArgs()
         parser.add_path_vars('/core.echo.html')
         qs = parse_qs('lst=2&lst=3&arg2=4')

@@ -8,8 +8,8 @@ from gdotest.TestUtil import GDOTestCase
 
 class FileTestCase(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         Application.init_cli()
         loader = ModuleLoader.instance()
@@ -17,7 +17,7 @@ class FileTestCase(GDOTestCase):
         loader.init_modules(True, True)
         loader.init_cli()
 
-    def test_01_multipart_enabled(self):
+    async def test_01_multipart_enabled(self):
         form = GDT_Form()
         form.add_field(GDT_FileUpload('file'))
         self.assertEqual(form._encoding, Encoding.MULTIPART, 'form is not multipart.')
