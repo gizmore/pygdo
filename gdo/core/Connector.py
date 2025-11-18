@@ -146,12 +146,12 @@ class Connector:
     async def send_to_channel(self, msg: Message, with_events: bool=True):
         await self.gdo_send_to_channel(msg)
         if with_events:
-            Application.EVENTS.publish('msg_sent', msg)
+            await Application.EVENTS.publish('msg_sent', msg)
 
     async def send_to_user(self, msg: Message, with_events: bool=True, notice: bool=False):
         await self.gdo_send_to_user(msg, notice)
         if with_events:
-            Application.EVENTS.publish('msg_sent', msg)
+            await Application.EVENTS.publish('msg_sent', msg)
 
     def is_user_online(self, user: GDO_User) -> bool:
         return user.get_name() in self._server._users
