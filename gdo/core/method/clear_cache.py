@@ -16,7 +16,7 @@ class clear_cache(Method):
     def gdo_trigger(cls) -> str:
         return "cc"
 
-    def gdo_execute(self) -> GDT:
+    async def gdo_execute(self) -> GDT:
         Cache.clear()
-        Application.EVENTS.publish('clear_cache')
+        await Application.EVENTS.publish('clear_cache')
         return self.reply('msg_cache_cleared')

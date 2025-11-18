@@ -8,7 +8,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Result import ResultType
-from gdo.base.Util import Arrays, msg, Files
+from gdo.base.Util import Arrays, msg, Files, gdo_print
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.method.clear_cache import clear_cache
 
@@ -16,27 +16,27 @@ from gdo.core.method.clear_cache import clear_cache
 class Installer:
 
     @classmethod
-    def install_modules(cls, modules: list[GDO_Module], verbose: bool = False):
+    async def install_modules(cls, modules: list[GDO_Module], verbose: bool = False):
         if verbose:
-            print("Collecting modules and dependencies.")
+            gdo_print("Collecting modules and dependencies.")
         modules = cls.modules_with_deps(modules)
 
         if verbose:
-            print(f"Installing {len(modules)} module entries.")
+            gdo_print(f"Installing {len(modules)} module entries.")
         for module in modules:
             cls.install_module(module, verbose)
 
         if verbose:
-            print("Calling module install hooks")
+            gdo_print("Calling module install hooks")
         for module in modules:
             try:
-                module.gdo_install()
+                await module.gdo_install()
             except Exception as ex:
                 Logger.exception(ex)
                 return False
 
         if verbose:
-            print("Re-Loading installed modules.")
+            gdo_print("Re-Loading installed modules.")
         loader = ModuleLoader.instance()
         # Cache.clear()
         # loader.reset()
@@ -44,7 +44,7 @@ class Installer:
         loader.init_modules(True, True)
 
         if verbose:
-            print("Migrating core for user settings.")
+            gdo_print("Migrating core for user settings.")
         Installer.migrate_gdo(GDO_UserSetting.table())
 
         # clear_cache().gdo_execute()

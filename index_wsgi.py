@@ -5,6 +5,7 @@ from io import BytesIO
 from urllib.parse import parse_qs, unquote
 
 import better_exceptions
+import nest_asyncio
 from multipart import MultipartParser
 
 from gdo.base.IPC import IPC
@@ -67,12 +68,14 @@ def pygdo_application(environ, start_response):
             Application.init_web(environ)
             if not Application.LOOP:
                 Application.LOOP = asyncio.new_event_loop()
+            if Application.IS_TEST:
+                nest_asyncio.apply()
             loader = ModuleLoader.instance()
             loader.load_modules_db()
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
-            asyncio.run(IPC.web_register_ipc())
+            Application.LOOP.run_until_complete(IPC.web_register_ipc())
             FRESH = False
         else:
             #PYPP#START#
@@ -192,7 +195,7 @@ def pygdo_application(environ, start_response):
                 result = GDT_Error.from_exception(ex)
 
             while asyncio.iscoroutine(result):
-                result = asyncio.run(result)
+                result = Application.LOOP.run_until_complete(result)
 
             if type(result) is GDT_FileOut:
                 headers = Application.get_headers()

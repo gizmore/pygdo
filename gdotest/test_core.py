@@ -90,7 +90,7 @@ class CoreTestCase(GDOTestCase):
         self.assertIn('SELECT * FROM gdo_user', result, 'Database Debug output does not render.')
 
     async def test_10_reload_restricted(self):
-        petra = Bash.get_server().get_or_create_user('Petra')
+        petra = await Bash.get_server().get_or_create_user('Petra')
         method = reload().env_user(petra, True)
         has = method.has_permission(petra)
         self.assertEqual(has, False, "Permission check is not working")
@@ -98,7 +98,7 @@ class CoreTestCase(GDOTestCase):
         self.assertIn('ermission', out, "CLI Permission not working")
 
     async def test_11_help(self):
-        petra = Bash.get_server().get_or_create_user('Petra')
+        petra = await Bash.get_server().get_or_create_user('Petra')
         out = cli_plug(petra, "$help")
         self.assertIn("31mreload", out, "Reload should be red")
 

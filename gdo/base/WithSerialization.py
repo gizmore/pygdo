@@ -3,8 +3,10 @@ import sys
 
 import msgspec.msgpack
 
+from gdo.base.WithPygdo import WithPygdo
 
-class WithSerialization:
+
+class WithSerialization(WithPygdo):
     """
     GDOPack serializer.
     Uses a dict with a magic key to unmarshal objects.

@@ -2,6 +2,7 @@ import os
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.file.GDT_File import GDT_File
 from gdo.form.GDT_Form import GDT_Form, Encoding
 from gdotest.TestUtil import GDOTestCase
 
@@ -19,5 +20,5 @@ class FileTestCase(GDOTestCase):
 
     async def test_01_multipart_enabled(self):
         form = GDT_Form()
-        form.add_field(GDT_FileUpload('file'))
+        form.add_field(GDT_File('file'))
         self.assertEqual(form._encoding, Encoding.MULTIPART, 'form is not multipart.')

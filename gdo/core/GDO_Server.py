@@ -90,38 +90,38 @@ class GDO_Server(GDO):
     ##########
     # Events #
     ##########
-    def on_user_joined(self, user: 'GDO_User'):
+    async def on_user_joined(self, user: 'GDO_User'):
         self._users[user.get_name()] = user
         if not self.get_connector().gdo_needs_authentication():
             user._authenticated = True
-        Application.EVENTS.publish('user_joined_server', user)
+        await Application.EVENTS.publish('user_joined_server', user)
 
-    def on_user_quit(self, user: 'GDO_User'):
+    async def on_user_quit(self, user: 'GDO_User'):
         for name, channel in self._channels.items():
             channel.on_user_left(user)
         del self._users[user.get_name()]
-        Application.EVENTS.publish('user_quit_server', user)
+        await Application.EVENTS.publish('user_quit_server', user)
 
     ########
     # User #
     ########
 
-    def get_or_create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
+    async def get_or_create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
         user = self.get_user_by_name(username)
         if not user:
-            user = self.create_user(username, displayname or username, user_type)
+            user = await self.create_user(username, displayname or username, user_type)
         if username not in self._users:
-            self.on_user_joined(user)
+            await self.on_user_joined(user)
         return user
 
-    def create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
+    async def create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
         user = GDO_User.blank({
             'user_type': user_type,
             'user_name': username,
             'user_displayname': displayname or username,
             'user_server': self.get_id(),
         }).insert()
-        Application.EVENTS.publish('user_created', user)
+        await Application.EVENTS.publish('user_created', user)
         return user
 
     def get_user_by_name(self, username: str) -> GDO_User:

@@ -18,7 +18,7 @@ class test_argparser(GDOTestCase):
 
     async def test_01_cli(self):
         parser = ParseArgs()
-        parser.add_cli_line("$echo 1 $(echo 2)")
+        parser.add_cli_line(["$echo 1 $(echo 2)"])
         method = parser.get_method()
         self.assertIsInstance(method, echo, 'cli parsing failed.')
         self.assertEqual('1 2', method.gdo_execute().render_txt(), 'Nested echo no work')

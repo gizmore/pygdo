@@ -21,20 +21,20 @@ class EventsTestCase(GDOTestCase):
     async def test_01_events(self):
         y = 0
 
-        def foo(x):
+        async def foo(x):
             nonlocal y
             y += x
 
         Application.EVENTS.subscribe('test_event', foo)
-        Application.EVENTS.publish('test_event', 1)
-        Application.EVENTS.publish('test_event', 1)
+        await Application.EVENTS.publish('test_event', 1)
+        await Application.EVENTS.publish('test_event', 1)
         self.assertEqual(y, 2, 'basic event publishing does not work')
 
         Application.EVENTS.reset_all()
 
         Application.EVENTS.subscribe_once('test_event', foo)
-        Application.EVENTS.publish('test_event', 1)
-        Application.EVENTS.publish('test_event', 1)
+        await Application.EVENTS.publish('test_event', 1)
+        await Application.EVENTS.publish('test_event', 1)
         self.assertEqual(y, 3, 'basic event once publishing does not work')
 
         Application.EVENTS.reset_all()

@@ -99,7 +99,7 @@ class CLI:
     def get_current_user(cls):
         from gdo.core.connector.Bash import Bash
         name = getpass.getuser()
-        return Bash.get_server().get_or_create_user(name)
+        return asyncio.run(Bash.get_server().get_or_create_user(name))
 
 class Strings:
 

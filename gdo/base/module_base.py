@@ -20,7 +20,7 @@ class module_base(GDO_Module):
             GDO_ModuleVal,
         ]
 
-    def gdo_install(self):
+    async def gdo_install(self):
         Files.create_dir(Application.file_path('assets'))
         Files.create_dir(Application.file_path('cache'))
         Files.create_dir(Application.file_path('temp'))

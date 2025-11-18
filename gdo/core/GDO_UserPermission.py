@@ -11,17 +11,17 @@ from gdo.core.GDT_User import GDT_User
 class GDO_UserPermission(GDO):
 
     @classmethod
-    def grant(cls, user: GDO_User, perm_name: str):
-        cls.grant_permission(user, GDO_Permission.get_by_name(perm_name))
+    async def grant(cls, user: GDO_User, perm_name: str):
+        await cls.grant_permission(user, GDO_Permission.get_by_name(perm_name))
 
     @classmethod
-    def grant_permission(cls, user: GDO_User, permission: GDO_Permission):
+    async def grant_permission(cls, user: GDO_User, permission: GDO_Permission):
         cls.blank({
             'pu_user': user.get_id(),
             'pu_perm': permission.get_id(),
             'pu_has': '1',
         }).soft_replace()
-        Application.EVENTS.publish('permission_granted', user, permission.get_name())
+        await Application.EVENTS.publish('permission_granted', user, permission.get_name())
 
     @classmethod
     def users_with_perm_id(cls, perm_id: str) -> list[GDO_User]:

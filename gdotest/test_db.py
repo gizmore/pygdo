@@ -17,7 +17,7 @@ class DBTestCase(GDOTestCase):
         ModuleLoader.instance().init_modules(True, True)
 
     async def test_01_single_identity_cache(self):
-        clear_cache().gdo_execute()
+        await clear_cache().gdo_execute()
         user1 = GDO_User.system()
         user2 = GDO_User.table().select().where('user_id=1').first().exec().fetch_object()
         self.assertIs(user1, user2, "test if single identity cache works")

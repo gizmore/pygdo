@@ -12,6 +12,22 @@ class WithPygdo:
     msg = None
     err = None
     html = None
+    GDT_String = None
+    ModuleLoader = None
+
+    @classmethod
+    def loader(cls):
+        if not cls.ModuleLoader:
+            from gdo.base.ModuleLoader import ModuleLoader
+            cls.ModuleLoader = ModuleLoader
+        return cls.ModuleLoader.instance()
+
+    @classmethod
+    def gdt_string(cls):
+        if not cls.GDT_String:
+            from gdo.core.GDT_String import GDT_String
+            cls.GDT_String = GDT_String
+        return cls.GDT_String
 
     @classmethod
     def application(cls):
@@ -29,4 +45,4 @@ class WithPygdo:
             cls.msg = msg
             cls.err = err
             cls.html = html
-        return getattr(cls, )
+        return getattr(cls, util)

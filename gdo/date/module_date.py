@@ -15,7 +15,7 @@ class module_date(GDO_Module):
             GDO_Timezone,
         ]
 
-    def gdo_install(self):
+    async def gdo_install(self):
         from gdo.date.DateInstall import DateInstall
         DateInstall.now(self)
 

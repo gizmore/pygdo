@@ -46,9 +46,18 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         await super().asyncSetUp()
         Application.IS_TEST = True
         Application.LOOP = loop = asyncio.get_running_loop()
-        nest_asyncio.apply(loop)
+        asyncio.set_event_loop(loop)
+        nest_asyncio.apply()
         loop.set_debug(False)
         all_private_messages()
+
+    def _tearDownAsyncioRunner(self):
+        Application.LOOP.stop()
+        Application.LOOP.close()
+
+    # async def asyncTearDown(self):
+    #     Application.LOOP.stop()
+    #     Application.LOOP.close()
 
     async def ticker(self, ticks: int = 1):
         # gdo_print(f"{ticks} ticks pass buy.")
@@ -109,7 +118,7 @@ def install_modules(modules: list[str]):
 
 def install_module_b(name: str):
     module = ModuleLoader.instance().load_module_fs(name)
-    Installer.install_modules([module])
+    asyncio.run(Installer.install_modules([module]))
 
 
 class WebPlug:
@@ -202,7 +211,7 @@ class WebPlug:
         return back
 
     def user(self, username: str):
-        user = Web.get_server().get_or_create_user(username)
+        user = asyncio.run(Web.get_server().get_or_create_user(username))
         session = GDO_Session.for_user(user)
         self.COOKIES['GDO'] = session.cookie_value()
         return self
@@ -213,8 +222,7 @@ def web_plug(url):
 
 
 def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
-    if user is None:
-        user = cli_gizmore()
+    user = user or cli_gizmore()
     Application.set_current_user(user)
     server = user.get_server()
     channel = server.get_or_create_channel('test_channel')
@@ -255,19 +263,20 @@ def cli_top(mode: Mode = Mode.txt):
     return Application.get_page()._top_bar.render(mode)
 
 def cli_user(username: str) -> 'GDO_User':
-    return Bash.get_server().get_or_create_user(username)
+    return asyncio.run(Bash.get_server().get_or_create_user(username))
 
 def cli_gizmore():
-    user = Bash.get_server().get_or_create_user('gizmore')
-    GDO_UserPermission.grant(user, 'admin')
-    GDO_UserPermission.grant(user, 'staff')
-    GDO_UserPermission.grant(user, 'voice')
+    user = asyncio.run(Bash.get_server().get_or_create_user('gizmore'))
+    asyncio.run(make_admin(user))
     return user
 
 
 def web_gizmore():
-    user = Web.get_server().get_or_create_user('gizmore')
-    GDO_UserPermission.grant(user, 'admin')
-    GDO_UserPermission.grant(user, 'staff')
-    GDO_UserPermission.grant(user, 'voice')
+    user = asyncio.run(Web.get_server().get_or_create_user('gizmore'))
+    asyncio.run(make_admin(user))
     return user
+
+async def make_admin(user: GDO_User):
+    await GDO_UserPermission.grant(user, 'admin')
+    await GDO_UserPermission.grant(user, 'staff')
+    await GDO_UserPermission.grant(user, 'voice')

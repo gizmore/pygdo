@@ -8,5 +8,3 @@ bash gdo_adm.sh admin --server 2 gizmore 11111111 gizmore@wechall.net
 pygdo \$add_server giz irc tcp://irc.giz.org:6667
 bash gdo_adm.sh admin --server 3 gizmore 11111111 gizmore@wechall.net
 pygdo gdo_adm.sh cc
-pygdo \$add_server ws websocket
-bash gdo_adm.sh admin --server 4 gizmore 11111111 gizmore@wechall.net

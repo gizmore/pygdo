@@ -51,7 +51,7 @@ class GDOPackTestCase(GDOTestCase):
         self.assertEqual('c', d, 'cannot gdo pack str.')
 
     async def test_04_system_user_cache(self):
-        clear_cache().gdo_execute()
+        await clear_cache().gdo_execute()
         gdo1 = GDO_User.system()
         gdo2 = GDO_User.table().get_by_id('1')
         self.assertEqual(gdo1, gdo2, 'GDO OCache not working #1')

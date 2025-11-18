@@ -57,7 +57,7 @@ class module_core(GDO_Module):
         if not Application.IS_TEST:
             nest_asyncio.apply(Application.LOOP)
 
-    def on_cc(self):
+    async def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):
             delattr(GDO_User, 'SYSTEM')
         Templite.cache = {}
@@ -147,7 +147,7 @@ class module_core(GDO_Module):
             GDO_Event,
         ]
 
-    def gdo_install(self):
+    async def gdo_install(self):
         InstallCore.now()
 
     def gdo_load_scripts(self, page):

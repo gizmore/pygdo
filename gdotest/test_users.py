@@ -17,7 +17,7 @@ class UsersTestCase(GDOTestCase):
         ModuleLoader.instance().init_modules()
 
     async def test_web_user(self):
-        gizmore = Web.get_server().get_or_create_user('gizmore')
+        gizmore = await Web.get_server().get_or_create_user('gizmore')
         self.assertIsInstance(gizmore, GDO_User, "Cannot create gizmore for webserver")
 
 

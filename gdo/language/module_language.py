@@ -17,7 +17,7 @@ class module_language(GDO_Module):
             GDO_Language,
         ]
 
-    def gdo_install(self):
+    async def gdo_install(self):
         InstallLanguage.now()
 
     def gdo_user_settings(self) -> list[GDT]:

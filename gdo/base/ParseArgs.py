@@ -5,12 +5,14 @@ from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Util import Strings
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Generator
+
+from gdo.base.WithPygdo import WithPygdo
 
 if TYPE_CHECKING:
     from gdo.base.Method import Method
 
-class ParseArgs:
+class ParseArgs(WithPygdo):
     ARG_SEPARATOR = "~"
     ENTRY_SEPARATOR = ";"
     ESCAPED_SEPARATOR = ";;"
@@ -25,17 +27,16 @@ class ParseArgs:
     def __repr__(self):
         return f"ParserArgs(module={self.module}, method={self.method}, args={self.args})"
 
-    def get_val(self, key: str, default: str = "") -> list[str]:
+    def get_val(self, key: str, default: str = "") -> list[str]|str:
         return self.args.get(key, default)
 
-    def all_vals(self) -> dict[str, list[str]]:
+    def all_vals(self) -> Generator[tuple[Any, Any] | tuple[int, Any], None, None]:
         yield from self.args.items()
         yield from enumerate(self.pargs)
 
     def get_method(self) -> 'Method':
         try:
-            from gdo.base.ModuleLoader import ModuleLoader
-            method = ModuleLoader.instance().get_module_method(self.module, self.method)
+            method = self.loader().get_module_method(self.module, self.method)
             method._raw_args = self
             return method
         except:
@@ -92,7 +93,7 @@ class ParseArgs:
 
     def get_mode(self):
         try:
-            return Mode[self.mode.upper()]
+            return Mode[self.mode]
         except KeyError:
             pass
         return Application.get_mode()

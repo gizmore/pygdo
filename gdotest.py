@@ -1,5 +1,7 @@
 import unittest
 import asyncio
+
+import nest_asyncio
 import yappi
 
 from gdotest.test_admin import AdminTestCase
@@ -60,3 +62,4 @@ if __name__ == '__main__':
     runner.run(suite())
     # yappi.stop()
     # yappi.get_func_stats().print_all()
+

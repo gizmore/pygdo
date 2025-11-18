@@ -5,6 +5,8 @@ import os
 import subprocess
 import sys
 
+import nest_asyncio
+
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
@@ -25,7 +27,7 @@ from gdoproviders import git_remote_url
 
 class App:
 
-    def argparser(self):
+    async def argparser(self):
         parser = argparse.ArgumentParser(
             description='PyGdo admin utility.',
             usage='''gdo_adm.sh <command> [<args>]
@@ -51,19 +53,19 @@ class App:
             print('Unrecognized command')
             parser.print_help()
             exit(1)
-        getattr(self, args.command)()
+        await getattr(self, args.command)()
 
-    def pypp(self):
+    async def pypp(self):
         import pypp.pypp
         pp = pypp.pypp.PyPP()
         pp.preprocess_path(Application.file_path(), True)
         print('All done!')
 
-    def yarn(self):
+    async def yarn(self):
         self._run_yarn_script()
         print('All done')
 
-    def configure(self):
+    async def configure(self):
         Files.create_dir(Application.file_path('files/'))
         Files.create_dir(Application.file_path('protected/'))
         loader = ModuleLoader.instance()
@@ -85,11 +87,11 @@ class App:
             Config.rewrite(path, data)
         print("All Done!")
 
-    def cc(self):
+    async def cc(self):
         Cache.remove()
         print("All Done!")
 
-    def database(self):
+    async def database(self):
         parser = argparse.ArgumentParser(description='Print help for a database setup.')
         parser.add_argument('--mysql', '--mariadb', '-m', action='store_true', default=True)
         args = parser.parse_args(sys.argv[2:])
@@ -108,7 +110,7 @@ class App:
         else:
             parser.print_help()
 
-    def setenv(self):
+    async def setenv(self):
         parser = argparse.ArgumentParser(description='Append pygdo/bin/ to your PATH environment variables or help howto.')
         parser.add_argument('-x', '--execute', action='store_true')
         args = parser.parse_args(sys.argv[2:])
@@ -133,7 +135,7 @@ class App:
             print(f'Added {code} to your .bashrc')
             print("Now execute\n\nsource ~/.bashrc\n")
 
-    def webconfig(self):
+    async def webconfig(self):
         parser = argparse.ArgumentParser(description='Print webserver config. Example: ./gdo_adm.sh webconfig --apache')
         parser.add_argument('--apache', '-a', action='store_true')
         parser.add_argument('--nginx', '-n', action='store_true')
@@ -174,7 +176,7 @@ class App:
     def _load_provider_toml(self) -> dict:
         return Installer.load_provider_toml()
 
-    def provide(self):
+    async def provide(self):
         """
         GIT clone a module and it's dependencies.
         """
@@ -293,7 +295,7 @@ class App:
             print("Running pypp preprocessor.")
             subprocess.run(["pypp", "-r", Application.file_path()], check=True)
 
-    def install(self):
+    async def install(self):
         loader = ModuleLoader.instance()
         parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all or ./gdo_adm.sh install Core|Dog*')
         parser.add_argument('--reinstall', action='store_true')
@@ -313,11 +315,11 @@ class App:
         if not modules:
             print("No modules found!", file=sys.stderr)
             exit(-1)
-        Installer.install_modules(modules, True)
+        await Installer.install_modules(modules, True)
         Cache.clear()
         print("All Done!")
 
-    def admin(self):
+    async def admin(self):
         parser = argparse.ArgumentParser(description='Create / assign an admin user for a connector (web by default).'
                                                      'Example: ./gdo_adm.sh admin gizmore 11111111 gizmore@gizmore.org')
         parser.add_argument('--connector', '-c', default='bash')
@@ -341,12 +343,12 @@ class App:
             err(f'Unknown server')
             return
 
-        user = server.get_or_create_user(args.username)
-        GDO_UserPermission.grant(user, GDO_Permission.OWNER)
-        GDO_UserPermission.grant(user, GDO_Permission.ADMIN)
-        GDO_UserPermission.grant(user, GDO_Permission.STAFF)
-        GDO_UserPermission.grant(user, GDO_Permission.VOICE)
-        GDO_UserPermission.grant(user, GDO_Permission.CRONJOB)
+        user = await server.get_or_create_user(args.username)
+        await GDO_UserPermission.grant(user, GDO_Permission.OWNER)
+        await GDO_UserPermission.grant(user, GDO_Permission.ADMIN)
+        await GDO_UserPermission.grant(user, GDO_Permission.STAFF)
+        await GDO_UserPermission.grant(user, GDO_Permission.VOICE)
+        await GDO_UserPermission.grant(user, GDO_Permission.CRONJOB)
         if module_enabled('login'):
             from gdo.login import module_login
             module_login.instance().set_password_for(user, args.password)
@@ -356,7 +358,7 @@ class App:
                 module_mail.instance().set_email_for(user, email)
         print("All Done!")
 
-    def wipe(self):
+    async def wipe(self):
         parser = argparse.ArgumentParser(description='Remove modules. Example: ./gdo_adm.sh wipe --all OR ./gdo_adm.sh wipe ma*,irc ')
         parser.add_argument('--all', '-a', action='store_true')
         parser.add_argument('module', nargs='?')
@@ -377,7 +379,7 @@ class App:
             parser.print_help()
         print("All Done!")
 
-    def migrate(self):
+    async def migrate(self):
         parser = argparse.ArgumentParser(
             description='Migrate the database for a single module or all of them.')
         parser.add_argument('--all', '-a', action='store_true')
@@ -398,7 +400,7 @@ class App:
         Installer.migrate_modules(modules)
         print("All done!")
 
-    def update(self):
+    async def update(self):
         parser = argparse.ArgumentParser(description='Execute functions required after an update like clear_cache')
         args = parser.parse_args(sys.argv[2:])
         loader = ModuleLoader.instance()
@@ -408,7 +410,7 @@ class App:
         clear_cache().gdo_execute()
         print("All done!")
 
-    def skel(self):
+    async def skel(self):
         parser = argparse.ArgumentParser(
             description='Create a module skeleton because we are lazy. Example: ./gdo_adm.sh skel module_name. The folder gdo/module_name has to exist.')
         parser.add_argument('modulename')
@@ -432,18 +434,19 @@ class App:
         Files.touch(f"{base}requirements.txt", True)
         print("All done!")
 
-    def _run_yarn_script(self):
+    async def _run_yarn_script(self):
         print("Running ./gdo_yarn.sh")
         result = subprocess.run([Application.file_path('gdo_yarn.sh')], capture_output=True, text=True)
         print(result.stdout)
         print(result.stderr, file=sys.stderr)
 
-    def _run_requirement_scripts(self):
+    async def _run_requirement_scripts(self):
         pass
 
 
 async def run_pygdo_admin():
     try:
+        nest_asyncio.apply()
         Application.LOOP = asyncio.get_running_loop()
         path = os.path.dirname(__file__) + "/"
         parser = argparse.ArgumentParser()
@@ -463,7 +466,7 @@ async def run_pygdo_admin():
         except Exception as ex:
             Logger.exception(ex)
         Cache.clear()
-        App().argparser()
+        await App().argparser()
         if out := Application.get_page()._top_bar.render(Mode.cli):
             print(out)
     except Exception as ex:

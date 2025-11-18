@@ -94,7 +94,7 @@ class Database(WithPygdo):
     def debug_query(self, query: str, debug: bool = False):
         level = Application.config('db.debug')
         if level != '0' or debug:
-            self.util().msg('%s', (query,), no_log=True)
+            self.util('msg')('%s', (query,), no_log=True)
             Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES) + ": " + query)
             if level == '2':
                 import traceback

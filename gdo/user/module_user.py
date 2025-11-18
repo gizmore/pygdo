@@ -28,7 +28,7 @@ class module_user(GDO_Module):
     def gdo_init(self):
         Application.EVENTS.subscribe('permission_granted', self.on_permission_granted)
 
-    def on_permission_granted(self, user: GDO_User, perm_name: str):
+    async def on_permission_granted(self, user: GDO_User, perm_name: str):
         Cache.remove('users_with_permission')
 
     def gdo_user_settings(self) -> list[GDT]:
