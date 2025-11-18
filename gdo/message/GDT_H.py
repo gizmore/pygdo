@@ -15,7 +15,7 @@ class GDT_H(GDT_Span):
 
     def render_markdown(self):
         h = "#" * self._level
-        return f"{h} {super().render_fields(Mode.markdown)}"
+        return f"{h} {super().render_fields(Mode.render_markdown)}"
 
     def render_cli(self):
-        return super().render_fields(Mode.cli)
+        return super().render_fields(Mode.render_cli)

@@ -41,7 +41,7 @@ class GDT_Duration(GDT_String):
             return 0
         return Time.human_to_seconds(val)
 
-    def render(self, mode: Mode = Mode.html):
+    def render(self, mode: Mode = Mode.render_html):
         return Time.human_duration(self.get_value(), self._units)
 
     def validate(self, val: str|None) -> bool:

@@ -134,7 +134,7 @@ class GDT_Template(GDT):
         self._t_vals = vals
         return self
 
-    def render(self, mode: Mode = Mode.html):
+    def render(self, mode: Mode = Mode.render_html):
         return self.python(self._t_module, self._t_file, self._t_vals)
 
     @classmethod

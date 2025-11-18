@@ -53,9 +53,9 @@ class modules(MethodTable):
     def render_cli(self) -> str:
         gdo = self._gdo
         self._n += 1
-        n = Render.bold(str(self._n), Mode.cli)
+        n = Render.bold(str(self._n), Mode.render_cli)
         name = gdo.render_name()
-        name = Render.green(name, Mode.cli) if gdo.installed() else name
+        name = Render.green(name, Mode.render_cli) if gdo.installed() else name
         return f'{name}'
 
     def render_module_enabled(self, gdt: GDT_Bool, gdo: GDO_Module) -> str:

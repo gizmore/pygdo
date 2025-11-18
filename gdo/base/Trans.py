@@ -32,7 +32,7 @@ def thas(key: str) -> bool:
 
 
 def sitename() -> str:
-    return Application.config('core.sitename', 'PyGDO')
+    return t('sitename')
 
 
 class Trans:

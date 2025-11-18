@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import lru_cache
 
 from gdo.base.WithPygdo import WithPygdo
 
@@ -6,38 +7,39 @@ class Mode(Enum):
     """
     Rendering Modes for GDTs
     """
-    nil = 0
-    html = 1
-    cell = 2
-    form = 3
-    list = 4
-    card = 5
+    render_nil = 0
+    render_html = 1
+    render_cell = 2
+    render_form = 3
+    render_list = 4
+    render_card = 5
     RES_6 = 6
     RES_7 = 7
     RES_8 = 8
     RES_9 = 9
-    cli = 10
-    irc = 11
-    telegram = 12
-    xml = 13
-    json = 14
-    mail = 15
-    txt = 16
-    markdown = 17
-    gtk = 18
-    rss = 19
-    doc = 20
-    toml = 21
+    render_cli = 10
+    render_irc = 11
+    render_telegram = 12
+    render_xml = 13
+    render_json = 14
+    render_mail = 15
+    render_txt = 16
+    render_markdown = 17
+    render_gtk = 18
+    render_rss = 19
+    render_doc = 20
+    render_toml = 21
 
-    @classmethod
-    def explicit(cls) -> list['Mode']:
+    @staticmethod
+    @lru_cache
+    def explicit() -> 'list[Mode]':
         return [
-            cls.html,
-            cls.cli,
-            cls.irc,
-            cls.telegram,
-            cls.markdown,
-            cls.txt,
+            Mode.render_html,
+            Mode.render_cli,
+            Mode.render_irc,
+            Mode.render_telegram,
+            Mode.render_markdown,
+            Mode.render_txt,
         ]
 
     def is_html(self) -> bool:
@@ -60,15 +62,15 @@ class Render(WithPygdo):
         """
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.txt | Mode.markdown | Mode.telegram:
+            case Mode.render_txt | Mode.render_markdown | Mode.render_telegram:
                 return s
-            case Mode.cli:
+            case Mode.render_cli:
                 return cls._cli_color(s, '2')
-            case Mode.irc:
+            case Mode.render_irc:
                 return cls._irc_color(s, '03')
-            case Mode.html | Mode.cell | Mode.card | Mode.form | Mode.list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
                 return f"<span class=\"green\">{s}</span>"
-            case Mode.nil | _:
+            case Mode.render_nil | _:
                 return f'green({mode.name})'
 
     @classmethod
@@ -78,118 +80,118 @@ class Render(WithPygdo):
         """
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.txt | Mode.markdown | Mode.telegram:
+            case Mode.render_txt | Mode.render_markdown | Mode.render_telegram:
                 return s
-            case Mode.cli:
+            case Mode.render_cli:
                 return cls._cli_color(s, '1')
-            case Mode.irc:
+            case Mode.render_irc:
                 return cls._irc_color(s, '04')
-            case Mode.html | Mode.cell | Mode.card | Mode.form | Mode.list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
                 return f"<span class=\"red\">{s}</span>"
-            case Mode.nil | _:
+            case Mode.render_nil | _:
                 return f'red({mode.name})'
 
     @classmethod
     def bold(cls, s: str, mode: Mode = None) -> str | list:
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.txt | Mode.markdown:
+            case Mode.render_txt | Mode.render_markdown:
                 return f"**{s}**"
-            case Mode.cli:
+            case Mode.render_cli:
                 return cls._cli_mode('1', s)
-            case Mode.irc:
+            case Mode.render_irc:
                 return f"\x02{s}\x02"
-            case Mode.html | Mode.cell | Mode.card | Mode.form | Mode.list | Mode.telegram:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_telegram:
                 return f"<b>{s}</b>"
-            case Mode.nil | _:
+            case Mode.render_nil | _:
                 return f'bold({mode.name} {s})'
 
     @classmethod
     def dim(cls, s: str, mode: Mode = None) -> str | list:
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.txt:
+            case Mode.render_txt:
                 return s
-            case Mode.markdown | Mode.telegram:
+            case Mode.render_markdown | Mode.render_telegram:
                 return s
-            case Mode.cli:
+            case Mode.render_cli:
                 return cls._cli_mode('2', s)
-            case Mode.html | Mode.cell | Mode.card | Mode.form | Mode.list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
                 return f"<span class=\"dim\">{s}</span>"
-            case Mode.nil | _:
+            case Mode.render_nil | _:
                 return f'dim({mode.name})'
 
     @classmethod
     def italic(cls, s: str, mode: Mode = None) -> str | list:
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.txt:
+            case Mode.render_txt:
                 return f"/{s}/"
-            case Mode.markdown:
+            case Mode.render_markdown:
                 return f"*{s}*"
-            case Mode.cli:
+            case Mode.render_cli:
                 return cls._cli_mode('3', s)
-            case Mode.irc:
+            case Mode.render_irc:
                 return f"\x1D{s}\x1d"
-            case Mode.html | Mode.cell | Mode.card | Mode.form | Mode.list | Mode.telegram:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_telegram:
                 return f"<i>{s}</i>"
-            case Mode.nil | _:
+            case Mode.render_nil | _:
                 return f'italic({mode.name})'
 
     @classmethod
     def underline(cls, s: str, mode: Mode = None) -> str | list:
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.txt | Mode.markdown:
+            case Mode.render_txt | Mode.render_markdown:
                 return f"_{s}_"
-            case Mode.cli:
+            case Mode.render_cli:
                 return cls._cli_mode('4', s)
-            case Mode.irc:
+            case Mode.render_irc:
                 return f"\x1f{s}\x1f"
-            case Mode.html | Mode.cell | Mode.card | Mode.form | Mode.list | Mode.telegram:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_telegram:
                 return f"<u>{s}</u>"
-            case Mode.nil | _:
+            case Mode.render_nil | _:
                 return f'underline({mode.name})'
 
     @classmethod
     def strike(cls, s: str, mode: Mode = None) -> str | list:
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.txt | Mode.markdown | Mode.telegram:
+            case Mode.render_txt | Mode.render_markdown | Mode.render_telegram:
                 return f"~~{s}~~"
-            case Mode.cli:
+            case Mode.render_cli:
                 return cls._cli_mode('9', s)
-            case Mode.irc:
+            case Mode.render_irc:
                 return f"\x1e{s}\x1e"
-            case Mode.html | Mode.cell | Mode.card | Mode.form | Mode.list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
                 return f"<strike>{s}</strike>"
-            case Mode.nil | _:
+            case Mode.render_nil | _:
                 return f'strike({mode.name})'
 
     @classmethod
     def blink(cls, s: str, mode: Mode = None):
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.txt | Mode.markdown | Mode.telegram:
+            case Mode.render_txt | Mode.render_markdown | Mode.render_telegram:
                 return f"!{s}!"
-            case Mode.cli:
+            case Mode.render_cli:
                 return cls._cli_mode('5', s)
-            case Mode.html | Mode.cell | Mode.card | Mode.form | Mode.list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
                 return f'<span class="blink">{s}</span>'
-            case Mode.nil | _:
+            case Mode.render_nil | _:
                 return f'blink({mode.name})'
 
     @classmethod
     def invisible(cls, s: str, mode: Mode = None):
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.txt | Mode.markdown | Mode.telegram:
+            case Mode.render_txt | Mode.render_markdown | Mode.render_telegram:
                 return '_' * len(s)
-            case Mode.cli:
+            case Mode.render_cli:
                 return cls._cli_mode('6', s)
-            case Mode.html | Mode.cell | Mode.card | Mode.form | Mode.list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
                 return f'<span class="invisible">{s}</span>'
-            case Mode.nil | _:
+            case Mode.render_nil | _:
                 return f'invisible({mode.name})'
 
     ###########

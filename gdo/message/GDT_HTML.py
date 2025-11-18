@@ -20,7 +20,7 @@ class GDT_HTML(GDT):
         self._html = ''
 
     def text(self, text: str):
-        return self.html(Strings.html(text, Mode.html))
+        return self.html(Strings.html(text, Mode.render_html))
 
     def html(self, html: str) -> 'GDT_HTML':
         self._html = html

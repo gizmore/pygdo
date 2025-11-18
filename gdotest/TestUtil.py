@@ -136,7 +136,7 @@ class WebPlug:
         self.args = f"_url={url}"
         self._ip = '::1'
         self._environ = {}
-        Application.mode(Mode.html)
+        Application.mode(Mode.render_html)
         Application.fresh_page()
 
     def ip(self, ip: str):
@@ -234,7 +234,7 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
         method = Parser(mode, user, server, channel, session).parse(line[1:])
         result = method.execute()
     else:
-        message = Message(line, Mode.cli).env_user(user).env_server(server).env_channel(channel).env_mode(Mode.cli).env_session(session).env_http(False)
+        message = Message(line, Mode.render_cli).env_user(user).env_server(server).env_channel(channel).env_mode(Mode.render_cli).env_session(session).env_http(False)
         result = message.execute()
     while asyncio.iscoroutine(result):
         result = Application.LOOP.run_until_complete(result)
@@ -257,9 +257,9 @@ def all_private_messages():
     return out.strip()
 
 def cli_plug(user: 'GDO_User', command: str) -> str:
-    return text_plug(Mode.cli, command, user)
+    return text_plug(Mode.render_cli, command, user)
 
-def cli_top(mode: Mode = Mode.txt):
+def cli_top(mode: Mode = Mode.render_txt):
     return Application.get_page()._top_bar.render(mode)
 
 def cli_user(username: str) -> 'GDO_User':

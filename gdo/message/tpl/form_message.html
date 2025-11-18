@@ -2,7 +2,7 @@
 <label for="<%=field._name%>"><%=field.render_label()%></label>
 </div>
 <textarea id="<%=field._name%>" name="<%=field._name%>"
-aria-label="<%=field.render_label(Mode.html)%>"
+aria-label="<%=field.render_label(Mode.render_html)%>"
 <%=field.html_required()%>
 <%=field.html_readonly()%>><%=field.html_value()%></textarea>
 <% if field.has_error():

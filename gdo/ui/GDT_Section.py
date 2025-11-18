@@ -9,4 +9,4 @@ class GDT_Section(GDT_Divider):
         self.vertical()
 
     def render_toml(self) -> str:
-        return f"\n# {self.render_title(Mode.toml)}\n"
+        return f"\n# {self.render_title(Mode.render_toml)}\n"

@@ -282,14 +282,14 @@ class GDT(WithSerialization):
     ##############
     # Render GDT #
     ##############
-    def render(self, mode: Mode = Mode.html):
+    def render(self, mode: Mode = Mode.render_html):
         return self.render_gdt(mode)
 
     def render_gdt(self, mode: Mode) -> str|dict|list|None:
-        return getattr(self, f"render_{mode.name}")()
+        return getattr(self, mode.name)()
 
-    def render_method(self, mode: Mode):
-        return getattr(self, f'render_{mode.name.lower()}')
+    # def render_method(self, mode: Mode):
+    #     return getattr(self, f'render_{mode.name.lower()}')
 
     def render_toml(self) -> str:
         return f"{self.get_name()} = \"{self.get_val() or ''}\"\n"

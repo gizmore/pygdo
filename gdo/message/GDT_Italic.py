@@ -8,7 +8,7 @@ class GDT_Italic(GDT_Span):
         return 'i'
 
     def render_markdown(self):
-        return f"*{super().render_fields(Mode.markdown)}*"
+        return f"*{super().render_fields(Mode.render_markdown)}*"
 
     def render_cli(self):
-        return Render.italic(super().render_fields(Mode.cli), Mode.cli)
+        return Render.italic(super().render_fields(Mode.render_cli), Mode.render_cli)

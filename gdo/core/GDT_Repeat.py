@@ -62,10 +62,10 @@ class GDT_Repeat(WithProxy, GDT_UInt):
             return self.error('err_repeat_max', (self._max,))
         return True
     
-    def render(self, mode: Mode = Mode.html):
+    def render(self, mode: Mode = Mode.render_html):
         return super().render(mode)
 
-    def render_txt(self, mode: Mode = Mode.html):
+    def render_txt(self, mode: Mode = Mode.render_html):
         out = ""
         for val in self.get_val():
             out += val

@@ -46,10 +46,10 @@ class test_automatically(GDOTestCase):
                 result = method.gdo_execute()
                 while iscoroutine(result):
                     result = asyncio.run(result)
-                result.render(Mode.html)
-                result.render(Mode.form)
-                result.render(Mode.txt)
-                result.render(Mode.json)
+                result.render(Mode.render_html)
+                result.render(Mode.render_form)
+                result.render(Mode.render_txt)
+                result.render(Mode.render_json)
         except GDOParamError:
             pass
         except Exception as ex:

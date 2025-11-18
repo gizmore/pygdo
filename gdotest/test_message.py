@@ -38,11 +38,11 @@ class MessageTestCase(GDOTestCase):
         })
         gdt = gdo.column('foo_msg')
         self.assertIsInstance(gdt, GDT_Message, "Cannot get GDT_Message for GDO_Foo")
-        out = gdt.render(Mode.markdown)
+        out = gdt.render(Mode.render_markdown)
         self.assertIn('***hello world!***', out, "Message markdown is broken")
-        out = gdt.render(Mode.cli)
+        out = gdt.render(Mode.render_cli)
         self.assertIn('\x1b[1m\x1b[3mhello world!\x1b[0m\x1b[0m', out, "Message cli is broken")
-        out = gdt.render(Mode.form)
+        out = gdt.render(Mode.render_form)
         self.assertIn('<textarea', out, "Message form is broken")
 
 if __name__ == '__main__':

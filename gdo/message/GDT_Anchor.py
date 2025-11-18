@@ -8,4 +8,4 @@ class GDT_Anchor(GDT_Span):
         return 'a'
 
     def render_markdown(self):
-        return f"[{super().render_fields(Mode.markdown)}]({self.attr('href')})"
+        return f"[{super().render_fields(Mode.render_markdown)}]({self.attr('href')})"

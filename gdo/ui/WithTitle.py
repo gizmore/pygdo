@@ -11,7 +11,7 @@ class WithTitle:
     def has_title(self) -> bool:
         return hasattr(self, '_title_key')
 
-    def render_title(self, mode: Mode = Mode.html) -> str:
+    def render_title(self, mode: Mode = Mode.render_html) -> str:
         out = ''
         if self.has_title():
             out = t(self._title_key, self._title_args)

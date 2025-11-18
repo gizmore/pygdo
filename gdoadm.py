@@ -196,9 +196,9 @@ class App:
             for name in providers.keys():
                 bold = not (name in on_disk and on_disk[name].is_core_module())
                 green = loader.module_installed(name)
-                name = Render.underline(name, Mode.cli) if providers[name][2] else name
-                name = Render.bold(name, Mode.cli) if bold else name
-                name = Render.green(name, Mode.cli) if green else name
+                name = Render.underline(name, Mode.render_cli) if providers[name][2] else name
+                name = Render.bold(name, Mode.render_cli) if bold else name
+                name = Render.green(name, Mode.render_cli) if green else name
                 decorated.append(name)
             print(', '.join(decorated))
             exit(0)
@@ -467,7 +467,7 @@ async def run_pygdo_admin():
             Logger.exception(ex)
         Cache.clear()
         await App().argparser()
-        if out := Application.get_page()._top_bar.render(Mode.cli):
+        if out := Application.get_page()._top_bar.render(Mode.render_cli):
             print(out)
     except Exception as ex:
         Logger.exception(ex)

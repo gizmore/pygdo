@@ -10,7 +10,7 @@ class Web(Connector):
     PUBLIC: GDO_Channel = None
 
     def get_render_mode(self) -> Mode:
-        return Mode.html
+        return Mode.render_html
 
     @classmethod
     def get_server(cls) -> GDO_Server:

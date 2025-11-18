@@ -53,7 +53,7 @@ class FinishTestCase(GDOTestCase):
         count = 0
         for module in ModuleLoader.instance()._cache.values():
             for method in module.get_methods():
-                method.env_server(gizmore.get_server()).env_user(gizmore).env_session(GDO_Session.for_user(gizmore)).env_mode(Mode.cli)
+                method.env_server(gizmore.get_server()).env_user(gizmore).env_session(GDO_Session.for_user(gizmore)).env_mode(Mode.render_cli)
                 # await method.execute()
                 count += 1
         gdo_print(f"Tested {count} methods for import errors.")

@@ -43,7 +43,7 @@ class GDOPackTestCase(GDOTestCase):
         gdt = GDT_HTML().html('<h1>Test</h1>')
         packed = gdt.gdopack()
         gdt = WithSerialization.gdounpack(packed)
-        self.assertEqual('<h1>Test</h1>', gdt.render(Mode.html), 'Cannot unpack GDT_HTML #1')
+        self.assertEqual('<h1>Test</h1>', gdt.render(Mode.render_html), 'Cannot unpack GDT_HTML #1')
 
     async def test_03_primitive_cache(self):
         Cache.set('a', 'b', 'c')

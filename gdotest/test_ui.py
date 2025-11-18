@@ -30,7 +30,7 @@ class UITestCase(GDOTestCase):
         self.assertEqual('|', horz[1], 'Divider does not start with pipe')
 
     async def test_03_section(self):
-        sect = GDT_Section().title_raw("Test").render_title(Mode.cli)
+        sect = GDT_Section().title_raw("Test").render_title(Mode.render_cli)
         self.assertIn(sect, "Test", 'Section does not render in CLI mode.')
 
     async def test_04_method_errors(self):

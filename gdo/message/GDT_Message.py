@@ -49,7 +49,7 @@ class GDT_Message(GDT_Composite, GDT_Text):
     # Render #
     ##########
 
-    def render(self, mode: Mode = Mode.html):
+    def render(self, mode: Mode = Mode.render_html):
         if mode in Mode.explicit():
             return self.get_rendered(mode)
         return super().render(mode)

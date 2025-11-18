@@ -124,7 +124,7 @@ def pygdo_application(environ, start_response):
             Application.header('Content-Type', 'text/html; Charset=UTF-8')
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
-            yield Application.get_page().method(method).result(gdt).render(Mode.html).encode()
+            yield Application.get_page().method(method).result(gdt).render(Mode.render_html).encode()
             return
         if Files.is_file(path):
             session = GDO_Session.start(False)
@@ -142,7 +142,7 @@ def pygdo_application(environ, start_response):
             Application.header('Content-Type', 'text/html; Charset=UTF-8')
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
-            yield Application.get_page().method(method).result(gdt).render(Mode.html).encode()
+            yield Application.get_page().method(method).result(gdt).render(Mode.render_html).encode()
             return
         else:
             if Files.is_dir(path):
@@ -207,21 +207,21 @@ def pygdo_application(environ, start_response):
             mode = args.get_mode()
             if Application.is_html():
                 Application.header('Content-Type', 'text/html; Charset=UTF-8')
-            elif mode == Mode.json:
+            elif mode == Mode.render_json:
                 Application.header('Content-Type', 'application/json; Charset=UTF-8')
-            elif mode == Mode.txt:
+            elif mode == Mode.render_txt:
                 Application.header('Content-Type', 'text/plain; Charset=UTF-8')
 
             page = Application.get_page()
             result = page.result(result).method(method)
-            if mode == Mode.html:
+            if mode == Mode.render_html:
                 page.init_sidebars()
                 SIDEBARS = True
 
             session.save()
             headers = Application.get_headers()
             response = result.render(mode)
-            if mode != Mode.json:
+            if mode != Mode.render_json:
                 response = response.encode()
             headers.extend([('Content-Length', str(len(response)))])
             start_response(Application.get_status(), headers)
@@ -271,7 +271,7 @@ def error_page(ex, start_response, method: Method, status: str, trace: bool = Tr
     if not SIDEBARS:
         for module in loader.enabled():
             module.gdo_init_sidebar(page)
-    response_body = page.method(method).result(result).render(Mode.html)
+    response_body = page.method(method).result(result).render(Mode.render_html)
     response_headers = [
         ('Content-Type', 'text/html; Charset=UTF-8'),
         ('Content-Length', str(bytelen(response_body)))

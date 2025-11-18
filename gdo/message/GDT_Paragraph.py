@@ -8,4 +8,4 @@ class GDT_Paragraph(GDT_Span):
         return 'p'
 
     def render_markdown(self):
-        return "\n\n" + super().render_fields(Mode.markdown) + "\n\n"
+        return "\n\n" + super().render_fields(Mode.render_markdown) + "\n\n"

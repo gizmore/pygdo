@@ -75,7 +75,7 @@ class GDT_Page(GDT):
             'left_bar': self._left_bar.render_html(),
             'right_bar': self._right_bar.render_html(),
             'bottom_bar': self._bottom_bar.render_html(),
-            'result': self._result.render(Mode.html),
+            'result': self._result.render(Mode.render_html),
         })
 
     @classmethod

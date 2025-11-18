@@ -10,7 +10,7 @@ from gdo.base.Application import Application
 class Bash(Connector):
 
     def get_render_mode(self) -> Mode:
-        return Mode.cli
+        return Mode.render_cli
 
     @classmethod
     def get_server(cls) -> GDO_Server:

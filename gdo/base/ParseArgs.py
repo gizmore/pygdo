@@ -93,7 +93,7 @@ class ParseArgs(WithPygdo):
 
     def get_mode(self):
         try:
-            return Mode[self.mode]
+            return Mode[f"render_{self.mode}"]
         except KeyError:
             pass
         return Application.get_mode()

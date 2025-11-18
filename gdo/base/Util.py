@@ -37,7 +37,7 @@ def hdr(name: str, value: str):
     Application.header(name, value)
 
 
-def html(s: str, mode: Mode = Mode.html):
+def html(s: str, mode: Mode = Mode.render_html):
     return Strings.html(s, mode)
 
 
@@ -136,7 +136,7 @@ class Strings:
     })
 
     @staticmethod
-    def html(s: str, mode: Mode = Mode.html) -> str:
+    def html(s: str, mode: Mode = Mode.render_html) -> str:
         if mode.is_html() and s is not None:
             return s.translate(Strings.HTML_ESCAPE_TABLE)
         return s or ''

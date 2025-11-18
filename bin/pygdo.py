@@ -79,7 +79,7 @@ def get_parser():
     server = user.get_server()
     channel = server.get_or_create_channel(user.gdo_val('user_name'))
     session = GDO_Session.for_user(user)
-    return Parser(Mode.cli, user, server, channel, session)
+    return Parser(Mode.render_cli, user, server, channel, session)
 
 
 async def process_line(line: str) -> None:
@@ -95,7 +95,7 @@ async def process_line(line: str) -> None:
         user = CLI.get_current_user()
         trigger = server.get_trigger()
         parser = get_parser()
-        message = Message(line, Mode.cli)
+        message = Message(line, Mode.render_cli)
         message.env_server(server).env_user(user, True)
         Application.EVENTS.publish('new_message', message)
         line = message._message
@@ -109,8 +109,8 @@ async def process_line(line: str) -> None:
             message._gdt_result = GDT_Container()
             message._gdt_result.add_field(Application.get_page()._top_bar)
             message._gdt_result.add_field(gdt)
-            txt1 = gdt.render(Mode.cli)
-            txt2 = Application.get_page()._top_bar.render(Mode.cli)
+            txt1 = gdt.render(Mode.render_cli)
+            txt2 = Application.get_page()._top_bar.render(Mode.render_cli)
             if txt2:
                 message._result += txt2
             if txt1:
@@ -120,7 +120,7 @@ async def process_line(line: str) -> None:
             await message.deliver()
             method._env_session.save()
     except GDOParamError as ex:
-        print(Render.red(str(ex), Mode.cli))
+        print(Render.red(str(ex), Mode.render_cli))
 
 def handle_sigusr1(self, event: str, args: any = None):
     global RUNNING
