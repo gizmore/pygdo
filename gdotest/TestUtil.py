@@ -276,7 +276,7 @@ def web_gizmore():
     asyncio.run(make_admin(user))
     return user
 
-async def make_admin(user: GDO_User):
+async def make_admin(user: 'GDO_User'):
     await GDO_UserPermission.grant(user, 'admin')
     await GDO_UserPermission.grant(user, 'staff')
     await GDO_UserPermission.grant(user, 'voice')

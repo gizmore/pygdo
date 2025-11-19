@@ -48,6 +48,7 @@ class Mode(Enum):
     def is_textual(self):
         return not self.is_html()
 
+
 class Render(WithPygdo):
     """
     Text Rendering utility.
