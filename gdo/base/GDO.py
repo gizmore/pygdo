@@ -85,11 +85,11 @@ class GDO(WithName, WithBulk, GDT):
         GDO.GDO_ALIVE -= 1
     #PYPP#END#
 
-    # def __str__(self):
-    #     return f"{self.get_name()}({self.get_id()}): {str(list(self._vals.values()))}"
-    #
-    # def __repr__(self):
-    #     return f"{self.get_name()}({self.get_id()}): {str(list(self._vals.values()))}"
+    def __str__(self):
+        return f"{self.__class__.__name__}({self.get_id()}): {str(list(self._vals.values()))[0:96]}"
+
+    def __repr__(self):
+        return self.__str__()
 
     @classmethod
     def gdo_real_class(cls, vals: dict[str,str]) -> type[GDO]:

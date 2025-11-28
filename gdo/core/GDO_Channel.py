@@ -76,16 +76,16 @@ class GDO_Channel(GDO):
             msg.env_server(server).env_channel(self).result(message)
             await conn.send_to_channel(msg)
 
-    def on_user_joined(self, user: GDO_User):
+    async def on_user_joined(self, user: GDO_User):
         user_name = user.get_name()
         if user_name not in self._users:
             self._users[user_name] = user
-            Application.EVENTS.publish('user_joined_channel', user, self)
+            await Application.EVENTS.publish('user_joined_channel', user, self)
 
-    def on_user_left(self, user: GDO_User):
+    async def on_user_left(self, user: GDO_User):
         user_name = user.get_name()
         del self._users[user_name]
-        Application.EVENTS.publish('user_left_channel', user, self)
+        await Application.EVENTS.publish('user_left_channel', user, self)
 
     def is_online(self) -> bool:
         return self.get_server()._channels.get(self.get_id()) is not None

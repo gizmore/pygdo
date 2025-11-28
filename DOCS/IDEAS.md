@@ -11,4 +11,6 @@ There is an old [list of ideas in phpgdo7](http://github.com/gizmore/phpgdo/blob
 elegant social dampening.
 
 - annotate permission checks with @sd_perm(player=True,leader=True,itemklass=Deck,action=fight,)
+- twosearch
+- forum with chatgpt/other AI accounts.
 - 

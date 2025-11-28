@@ -205,7 +205,7 @@ class GDO_User(GDO):
     ###############
     # Permissions #
     ###############
-    def authenticate(self, session: object, bind_ip: bool = False):
+    async def authenticate(self, session: object, bind_ip: bool = False):
         self._authenticated = True
         Application.set_current_user(self)
         if module_enabled('login'):
@@ -215,10 +215,10 @@ class GDO_User(GDO):
         if bind_ip:
             session.set_val('sess_ip', GDT_IP.current())
         session.save()
-        Application.EVENTS.publish('user_login', self)
+        await Application.EVENTS.publish('user_login', self)
         return self
 
-    def logout(self, session: object):
+    async def logout(self, session: object):
         if self.is_authenticated():
             delattr(self, '_authenticated')
             session._data = {}
@@ -228,7 +228,7 @@ class GDO_User(GDO):
                 'sess_data': None,
             })
             Application.set_current_user(GDO_User.ghost())
-            Application.EVENTS.publish('user_logout', self)
+            await Application.EVENTS.publish('user_logout', self)
         return self
 
     def is_authenticated(self) -> bool:

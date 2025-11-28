@@ -97,7 +97,7 @@ async def process_line(line: str) -> None:
         parser = get_parser()
         message = Message(line, Mode.render_cli)
         message.env_server(server).env_user(user, True)
-        Application.EVENTS.publish('new_message', message)
+        await Application.EVENTS.publish('new_message', message)
         line = message._message
         if line.startswith(trigger):
             method = parser.parse_line(line[1:])
