@@ -30,10 +30,9 @@ class Connector:
     @classmethod
     def register(cls, klass, is_text: bool = True):
         name = klass.__name__.lower()
-        if name not in cls.AVAILABLE:
-            cls.AVAILABLE[name] = klass
-            if is_text:
-                cls.TEXT_CONNECTORS.append(name)
+        cls.AVAILABLE[name] = klass
+        if is_text:
+            cls.TEXT_CONNECTORS.append(name)
 
     @classmethod
     def get_by_name(cls, name: str):

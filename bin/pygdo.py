@@ -7,6 +7,7 @@ import signal
 from asyncio.exceptions import CancelledError
 from threading import Thread
 
+import nest_asyncio
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import PromptSession
@@ -174,4 +175,5 @@ async def launcher(line: str = None):
 
 
 if __name__ == '__main__':
+    nest_asyncio.apply()
     asyncio.run(launcher())
