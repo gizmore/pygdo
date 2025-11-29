@@ -49,7 +49,7 @@ class TcpSession:
                 await self.writer.wait_closed()
             except Exception as ex:
                 Logger.exception(ex, "TCP Connector mainloop")
-            self.connector.disconnect(self, "QUIT")
+            self.connector.disconnect("QUIT")
 
 
 class TCP(Connector):

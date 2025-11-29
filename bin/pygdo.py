@@ -127,7 +127,7 @@ def handle_sigusr1(self, event: str, args: any = None):
     global RUNNING
     from gdo.base.Application import Application
     from gdo.base.IPC import IPC
-    asyncio.run_coroutine_threadsafe(IPC.dog_execute_events(), loop=Application.LOOP)
+    asyncio.create_task(IPC.dog_execute_events(), loop=Application.LOOP)
 
 async def repl():
     from gdo.base.Application import Application
