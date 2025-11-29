@@ -98,7 +98,7 @@ class GDO_Server(GDO):
 
     async def on_user_quit(self, user: 'GDO_User'):
         for name, channel in self._channels.items():
-            channel.on_user_left(user)
+            await channel.on_user_left(user)
         del self._users[user.get_name()]
         await Application.EVENTS.publish('user_quit_server', user)
 

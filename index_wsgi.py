@@ -205,7 +205,7 @@ def pygdo_application(environ, start_response):
                 return
             
             mode = args.get_mode()
-            if Application.is_html():
+            if mode.value < 10:
                 Application.header('Content-Type', 'text/html; Charset=UTF-8')
             elif mode == Mode.render_json:
                 Application.header('Content-Type', 'application/json; Charset=UTF-8')
@@ -221,7 +221,7 @@ def pygdo_application(environ, start_response):
             session.save()
             headers = Application.get_headers()
             response = result.render(mode)
-            if mode != Mode.render_json:
+            if hasattr(response, 'encode'):
                 response = response.encode()
             headers.extend([('Content-Length', str(len(response)))])
             start_response(Application.get_status(), headers)
