@@ -5,8 +5,6 @@ import os
 import subprocess
 import sys
 
-import nest_asyncio
-
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
@@ -18,7 +16,6 @@ from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.method.clear_cache import clear_cache
-from gdo.core.method.launch import launch
 from gdo.install.Config import Config
 from gdo.install.Installer import Installer
 from gdo.mail import module_mail
@@ -446,7 +443,6 @@ class App:
 
 async def run_pygdo_admin():
     try:
-        nest_asyncio.apply()
         Application.LOOP = asyncio.get_running_loop()
         path = os.path.dirname(__file__) + "/"
         parser = argparse.ArgumentParser()

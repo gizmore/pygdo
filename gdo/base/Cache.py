@@ -6,11 +6,14 @@ import msgspec.msgpack
 from redis import Redis
 from functools import lru_cache, wraps
 
-from gdo.base import GDO
 from gdo.base.Application import Application
-from gdo.base.GDT import GDT
 from gdo.base.Util import Files
 from gdo.base.WithSerialization import WithSerialization
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gdo.base.GDT import GDT
+    from gdo.base import GDO
 
 
 class Cache:
@@ -34,18 +37,23 @@ class Cache:
     OHITS = 0 # OCACHE hits
     #PYPP#END#
 
-    TCACHE: dict[str, GDO] = {}             # class_name => GDO.table() mapping
-    CCACHE: dict[str, dict[str, GDT]] = {}  # class_name => GDO.gdo_columns() mapping
-    PCACHE: dict[str, list[GDT]] = {}       # class_name => GDO.gdo_columns() PK mapping
-    OCACHE: dict[str, dict[str, GDO]] = {}  # table_name => dict[id, GDO] mapping
-    RCACHE: Redis = None                    # key => dict[key, WithSerialization] mapping
-    NCACHE: list[str] = []                  # list of non persistent GDO table names
+    TCACHE: dict[str, 'GDO']             # class_name => GDO.table() mapping
+    CCACHE: dict[str, dict[str, 'GDT']]  # class_name => GDO.gdo_columns() mapping
+    PCACHE: dict[str, list['GDT']]       # class_name => GDO.gdo_columns() PK mapping
+    OCACHE: dict[str, dict[str, 'GDO']]  # table_name => dict[id, GDO] mapping
+    RCACHE: Redis = None               # key => dict[key, WithSerialization] mapping
+    NCACHE: list[str]                  # list of non persistent GDO table names
 
     ZLIB_LEVEL: int = -1
 
     @classmethod
     def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0, uds: str='', zlib_level: int=-1):
         if enabled:
+            cls.TCACHE = {}
+            cls.CCACHE = {}
+            cls.PCACHE = {}
+            cls.OCACHE = {}
+            cls.NCACHE = []
             cls.ZLIB_LEVEL = zlib_level
             if uds:
                 cls.RCACHE = Redis(unix_socket_path=uds, decode_responses=False)
@@ -81,7 +89,7 @@ class Cache:
     #############
 
     @classmethod
-    def table_for(cls, gdo_klass: type[GDO]):
+    def table_for(cls, gdo_klass: type['GDO']):
         cn = gdo_klass
         if not (gdo := cls.TCACHE.get(cn)):
             cls.TCACHE[cn] = gdo = gdo_klass.__new__(gdo_klass)
@@ -95,7 +103,7 @@ class Cache:
         return gdo
 
     @classmethod
-    def build_ccache(cls, gdo_klass: type[GDO]) -> dict[str,GDT]:
+    def build_ccache(cls, gdo_klass: type['GDO']) -> dict[str,'GDT']:
         cache = {}
         for column in cls.TCACHE[gdo_klass].gdo_columns():
             cache[column.get_name()] = column
@@ -104,7 +112,7 @@ class Cache:
         return cache
 
     @classmethod
-    def build_pkcache(cls, gdo_klass: type[GDO]) -> list[GDT]:
+    def build_pkcache(cls, gdo_klass: type['GDO']) -> list['GDT']:
         cache = []
         have_designated_pk = False
         for column in cls.CCACHE[gdo_klass].values():
@@ -117,16 +125,16 @@ class Cache:
 
 
     @classmethod
-    def columns_for(cls, gdo_klass: type[GDO]) -> dict[str,GDT]:
+    def columns_for(cls, gdo_klass: type['GDO']) -> dict[str,'GDT']:
         cls.table_for(gdo_klass)
-        return cls.CCACHE.get(gdo_klass, GDT.EMPTY_DICT)
+        return cls.CCACHE.get(gdo_klass, {})
 
     @classmethod
-    def column_for(cls, gdo_klass: type[GDO], key: str) -> GDT|None:
+    def column_for(cls, gdo_klass: type['GDO'], key: str) -> 'GDT'|None:
         return cls.columns_for(gdo_klass).get(key)
 
     @classmethod
-    def pk_columns_for(cls, gdo_klass: type[GDO]) -> list[GDT]:
+    def pk_columns_for(cls, gdo_klass: type['GDO']) -> list['GDT']:
         cls.table_for(gdo_klass)
         return cls.PCACHE[gdo_klass]
 
@@ -135,7 +143,7 @@ class Cache:
     ##########
 
     @classmethod
-    def obj_for(cls, gdo: GDO, rcached: dict[str,str]|None = None, after_write: bool = False) -> GDO:
+    def obj_for(cls, gdo: 'GDO', rcached: dict[str,str]|None = None, after_write: bool = False) -> 'GDO':
         if gdo.gdo_cached():
             gid = gdo.get_id()
             cn = gdo.gdo_table_name()
@@ -165,12 +173,12 @@ class Cache:
         return gdo.all_dirty(False)
 
     @classmethod
-    def update_for(cls, gdo: GDO) -> GDO:
+    def update_for(cls, gdo: 'GDO') -> 'GDO':
         cls.set(gdo.gdo_table_name(), gdo.get_id(), gdo._vals)
         return cls.obj_for(gdo, after_write=True)
 
     @classmethod
-    def obj_search_id(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
+    def obj_search_id(cls, gdo: 'GDO', vals: dict, delete: bool = False) -> 'GDO':
         gid = ":".join(v for v in vals.values())
         if delete:
             cls.obj_search_gid(gdo, gid, delete)
@@ -178,7 +186,7 @@ class Cache:
         return cls.obj_search_gid(gdo, gid, delete)
 
     @classmethod
-    def obj_search_gid(cls, gdo: GDO, gid: str, delete: bool = False) -> GDO:
+    def obj_search_gid(cls, gdo: 'GDO', gid: str, delete: bool = False) -> 'GDO':
         tn = gdo.gdo_table_name()
         if ocached := cls.OCACHE[tn].get(gid):
             cls.OHITS += 1 #PYPP#DELETE#
@@ -195,11 +203,11 @@ class Cache:
         return None
 
     @classmethod
-    def obj_search(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
+    def obj_search(cls, gdo: 'GDO', vals: dict, delete: bool = False) -> 'GDO':
         return cls.obj_search_pygdo(gdo, vals, delete)
 
     @classmethod
-    def obj_search_pygdo(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
+    def obj_search_pygdo(cls, gdo: 'GDO', vals: dict, delete: bool = False) -> 'GDO':
         if gdo.gdo_cached():
             cn = gdo.gdo_table_name()
             for oc in cls.OCACHE[cn].values():
@@ -218,7 +226,7 @@ class Cache:
         return None
 
     @classmethod
-    def obj_search_redis(cls, gdo: GDO, vals: dict, delete: bool = False) -> GDO:
+    def obj_search_redis(cls, gdo: 'GDO', vals: dict, delete: bool = False) -> 'GDO':
         if gdo.gdo_cached():
             cn = gdo.gdo_table_name()
             cursor = 0

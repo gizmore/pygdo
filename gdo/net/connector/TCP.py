@@ -60,7 +60,7 @@ class TCP(Connector):
 
     async def gdo_connect(self) -> bool:
         self._sessions = {}
-        asyncio.run(self.mainloop())
+        asyncio.create_task(self.mainloop())
         self._connected = True
         return True
 

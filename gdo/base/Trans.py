@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 def t(key: str, args: tuple=None):
-    return Trans.t(key, args)
+    return Trans.tiso(Application.STORAGE.lang, key, args)
 
 
 def tusr(user: 'GDO_User', key: str, args: tuple = None):

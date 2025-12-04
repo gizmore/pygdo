@@ -7,7 +7,6 @@ import signal
 from asyncio.exceptions import CancelledError
 from threading import Thread
 
-import nest_asyncio
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import PromptSession
@@ -71,12 +70,12 @@ async def pygdo(line: str = None):
 
 
 @functools.lru_cache
-def get_parser():
+async def get_parser():
     from gdo.base.Parser import Parser
     from gdo.base.Render import Mode
     from gdo.base.Util import CLI
     from gdo.core.GDO_Session import GDO_Session
-    user = CLI.get_current_user()
+    user = await CLI.get_current_user()
     server = user.get_server()
     channel = server.get_or_create_channel(user.gdo_val('user_name'))
     session = GDO_Session.for_user(user)
@@ -93,9 +92,9 @@ async def process_line(line: str) -> None:
     from gdo.core.GDT_Container import GDT_Container
     try:
         server = Bash.get_server()
-        user = CLI.get_current_user()
+        user = await CLI.get_current_user()
         trigger = server.get_trigger()
-        parser = get_parser()
+        parser = await get_parser()
         message = Message(line, Mode.render_cli)
         message.env_server(server).env_user(user, True)
         await Application.EVENTS.publish('new_message', message)
@@ -175,5 +174,4 @@ async def launcher(line: str = None):
 
 
 if __name__ == '__main__':
-    nest_asyncio.apply()
     asyncio.run(launcher())

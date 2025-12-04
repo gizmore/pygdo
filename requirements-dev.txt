@@ -1,2 +1,3 @@
 yappi
 uvicorn
+nest_asyncio

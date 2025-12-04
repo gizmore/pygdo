@@ -1,8 +1,4 @@
 import unittest
-import asyncio
-
-import nest_asyncio
-import yappi
 
 from gdotest.test_admin import AdminTestCase
 from gdotest.test_cli import CLITestCase

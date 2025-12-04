@@ -3,8 +3,6 @@ import gc
 import types
 from datetime import datetime
 
-import nest_asyncio
-
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException
 from gdo.base.GDO_Module import GDO_Module
@@ -54,8 +52,6 @@ class module_core(GDO_Module):
         Connector.register(Bash)
         Connector.register(Web, False)
         self.subscribe('clear_cache', self.on_cc)
-        if not Application.IS_TEST:
-            nest_asyncio.apply(Application.LOOP)
 
     async def on_cc(self):
         if hasattr(GDO_User, 'SYSTEM'):

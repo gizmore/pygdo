@@ -4,7 +4,7 @@ import queue
 import sys
 import threading
 import time
-from asyncio import iscoroutine
+from asyncio import iscoroutine, AbstractEventLoop
 
 import tomlkit
 
@@ -29,7 +29,7 @@ class Application:
     IS_HTTP = False
     IS_DOG = None
     IS_TEST = False
-    LOOP = None
+    LOOP: AbstractEventLoop = None
     TASKS = {}
     ASGI = False
     LOADER: 'ModuleLoader'
@@ -225,13 +225,13 @@ class Application:
     def init_thread(cls, thread):
         from gdo.base.Database import Database
         cls.mode(Mode.render_html)
-        cls.fresh_page()
+        if thread:
+            cls.fresh_page()
         cls.STORAGE.lang = 'en'
         cls.STORAGE.user = None
         cls.TIME = round(time.time(), 6)
-        if not cls.storage('DB'):
-            cfg = cls.CONFIG['db']
-            cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
+        cfg = cls.CONFIG['db']
+        cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
 
     @classmethod
     def db(cls) -> 'Database':

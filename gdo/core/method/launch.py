@@ -90,7 +90,7 @@ class launch(Method):
                 await asyncio.wait(Application.TASKS.values(), timeout=1.42)
                 # asyncio.gather(Application.TASKS.values())
         except KeyboardInterrupt as ex:
-            die().input('message', 'CTRL-C got pressed!').gdo_execute()
+            die().input('message', 'CTRL-C got pressed!').gdo_execute
             time.sleep(1)
         finally:
             Files.remove(self.lock_path())

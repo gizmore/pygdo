@@ -5,7 +5,6 @@ from io import BytesIO
 from urllib.parse import parse_qs, unquote
 
 import better_exceptions
-import nest_asyncio
 from multipart import MultipartParser
 
 from gdo.base.IPC import IPC
@@ -64,18 +63,13 @@ def pygdo_application(environ, start_response):
         if FRESH:
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")
             Application.init(os.path.dirname(__file__))
-            # Application.init_common()
             Application.init_web(environ)
-            if not Application.LOOP:
-                Application.LOOP = asyncio.new_event_loop()
-            if Application.IS_TEST:
-                nest_asyncio.apply()
             loader = ModuleLoader.instance()
             loader.load_modules_db()
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
-            Application.LOOP.run_until_complete(IPC.web_register_ipc())
+            # asyncio.run(IPC.web_register_ipc())
             FRESH = False
         else:
             #PYPP#START#
@@ -94,16 +88,18 @@ def pygdo_application(environ, start_response):
 
         if '_url' in qs:
             url = unquote(Strings.substr_from(qs['_url'][0], '/', qs['_url'][0]))
-            del qs['_url']
+            # del qs['_url']
             if not url:
                 url = 'core.welcome.html'
         elif environ['PATH_INFO'] != '/':
             url = environ['PATH_INFO'].lstrip('/')
 
+        args.add_arg('_url', url)
+
         lang = 'en'
         if '_lang' in qs:
             lang = qs['_lang']
-            del qs['_lang']
+            #del qs['_lang']
 
         path = Application.file_path(url)
 
@@ -129,7 +125,7 @@ def pygdo_application(environ, start_response):
         if Files.is_file(path):
             session = GDO_Session.start(False)
             user = session.get_user()
-            method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session).input('_url', url)
+            method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session)
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
                 gdt = asyncio.run(gdt)
@@ -149,7 +145,7 @@ def pygdo_application(environ, start_response):
                 session = GDO_Session.start(False)
                 user = session.get_user()
                 server = user.get_server()
-                method = dir_server().env_user(user, False).env_session(session).env_server(server).copy_args(args).input('_url', url)
+                method = dir_server().env_user(user, False).env_session(session).env_server(server)
                 method._raw_args = args
             else:
                 session = GDO_Session.start(True)
@@ -163,7 +159,7 @@ def pygdo_application(environ, start_response):
             if Application.config('log.request', '0') == '1':
                 Logger.request(url, str(qs))
             if not method:
-                method = not_found().env_server(server).env_user(session.get_user()).input('_url', url)
+                method = not_found().env_server(server).env_user(session.get_user())
 
             if environ['REQUEST_METHOD'] == 'POST' and environ['CONTENT_TYPE'].startswith('multipart/form-data'):
                     ctype = environ.get('CONTENT_TYPE', '')
@@ -195,7 +191,7 @@ def pygdo_application(environ, start_response):
                 result = GDT_Error.from_exception(ex)
 
             while asyncio.iscoroutine(result):
-                result = Application.LOOP.run_until_complete(result)
+                result = asyncio.run(result)
 
             if type(result) is GDT_FileOut:
                 headers = Application.get_headers()
@@ -243,7 +239,7 @@ def pygdo_application(environ, start_response):
                             4: ("tavg", 8)})
             #PYPP#END#
     except (GDOModuleException, GDOMethodException) as ex:
-        yield error_page(ex, start_response, not_found().input('_url', url), '404 Not Found', False)
+        yield error_page(ex, start_response, not_found(), '404 Not Found', False)
     except GDOParamNameException as ex:
         yield error_page(ex, start_response, client_error().exception(ex), '409 User Error', False)
     except Exception as ex:

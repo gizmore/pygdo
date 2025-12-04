@@ -96,10 +96,11 @@ def module_enabled(module_name: str) -> bool:
 class CLI:
 
     @classmethod
-    def get_current_user(cls):
+    async def get_current_user(cls):
+        from gdo.base.Application import Application
         from gdo.core.connector.Bash import Bash
         name = getpass.getuser()
-        return asyncio.run(Bash.get_server().get_or_create_user(name))
+        return await Bash.get_server().get_or_create_user(name)
 
 class Strings:
 

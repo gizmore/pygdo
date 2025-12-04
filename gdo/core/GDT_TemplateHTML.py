@@ -1,3 +1,4 @@
+from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Util import Strings
 from gdo.core.GDT_Template import GDT_Template
@@ -26,8 +27,10 @@ class GDT_TemplateHTML(GDT):
     def get_html(self) -> str:
         if paths := self.CACHE.get(self._tpl_module):
             if html := paths.get(self._tpl_path):
+                Cache.THITS += 1 #PYPP#DELETE#
                 return html
         else:
+            Cache.MISS += 1 #PYPP#DELETE#
             paths = self.CACHE[self._tpl_module] = {}
         with open(GDT_Template.get_path(self._tpl_module, self._tpl_path)) as fh:
             html = fh.read()

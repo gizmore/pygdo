@@ -7,7 +7,6 @@ psutil
 pytzdata
 tomlkit
 typing_extensions
-nest_asyncio
 html-purifier
 multipart
 python-magic
