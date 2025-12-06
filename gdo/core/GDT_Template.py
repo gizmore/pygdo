@@ -75,9 +75,7 @@ class Templite(object):
     def render(self, **namespace):
 
         stack = StringIO()
-
-        def write(val: str):
-            stack.write(val)
+        write = stack.write
 
         def writeln(line: str):
             stack.write(line)

@@ -1,3 +1,5 @@
+from typing import Any
+
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.WithError import WithError
@@ -11,6 +13,7 @@ from gdo.ui.WithTooltip import WithTooltip
 class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullable, GDT):
     _name: str
     _val: str|None
+    _value: Any
     _prev: str
     _initial: str|None
     _converted: bool

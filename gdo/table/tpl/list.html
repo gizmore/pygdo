@@ -2,10 +2,10 @@
 result = method.get_table_result()
 %>
 <ul class="list">
-    <li>
     <%
     for gdo in result:
+        write('<li>')
         write(gdo.render_list())
+        write('</li>')
     %>
-    </li>
 </ul>
