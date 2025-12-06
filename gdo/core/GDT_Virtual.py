@@ -14,6 +14,7 @@ class GDT_Virtual(WithProxy, WithName, GDT):
     def __init__(self, gdt: GDT):
         super().__init__()
         self.name(gdt.get_name())
+        self._proxy = gdt
         self._query = None
 
     def query(self, query: Query) -> Self:
