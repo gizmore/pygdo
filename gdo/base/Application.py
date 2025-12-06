@@ -6,6 +6,7 @@ import threading
 import time
 from asyncio import iscoroutine, AbstractEventLoop
 
+import msgspec.json
 import tomlkit
 
 from typing import TYPE_CHECKING
@@ -301,12 +302,16 @@ class Application:
         return time.time() - cls.TIME
 
     @classmethod
-    def environ(cls, key: str) -> str:
-        return cls.STORAGE.environ[key]
+    def environ(cls, key: str, default: str = None) -> str:
+        return cls.STORAGE.environ[key] or default
 
     @classmethod
     def current_href(cls) -> str:
-        return cls.environ('REQUEST_URI')
+        if uri := cls.environ("REQUEST_URI"):
+            return uri
+        path = cls.environ("PATH_INFO", "")
+        query = cls.environ("QUERY_STRING", '')
+        return f"{path}?{query}".rstrip('?')
 
     @classmethod
     def set_session(cls, session: 'GDO_Session'):

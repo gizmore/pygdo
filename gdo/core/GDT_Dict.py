@@ -5,9 +5,9 @@ class GDT_Dict(GDT):
 
     _dict: dict[str, any]
 
-    def __init__(self, _dict: dict):
+    def __init__(self, _dict: dict=None):
         super().__init__()
-        self._dict = _dict
+        self._dict = _dict or {}
 
     def gdo_redis_fields(self) -> list[str]:
         return [

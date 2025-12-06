@@ -2,6 +2,7 @@ from enum import Enum
 
 from typing import TYPE_CHECKING
 
+from gdo.base.Application import Application
 from gdo.core.GDT_TemplateHTML import tplhtml
 
 if TYPE_CHECKING:
@@ -32,7 +33,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     def __init__(self, name: str = 'form'):
         super().__init__()
         self.name(name)
-        self._href = '?'
+        self._href = None
         self._actions = GDT_Menu()
         self._slim = False
         self._encoding = Encoding.URLENCODED

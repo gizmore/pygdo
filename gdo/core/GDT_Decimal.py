@@ -17,4 +17,4 @@ class GDT_Decimal(GDT_Float):
 
     def gdo_column_define(self) -> str:
         before = self._digits_before + self._digits_after
-        return f"{self.get_name()} DECIMAL({before,self._digits_after}){self.gdo_column_define_null()}{self.gdo_column_define_default()}"
+        return f"{self.get_name()} DECIMAL({before},{self._digits_after}){self.gdo_column_define_null()}{self.gdo_column_define_default()}"

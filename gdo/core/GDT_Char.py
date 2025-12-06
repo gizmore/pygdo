@@ -15,3 +15,6 @@ class GDT_Char(GDT_String):
         super().maxlen(minlen)
         super().minlen(minlen)
         return self
+
+    def gdo_varchar_define(self) -> str:
+        return 'CHAR'

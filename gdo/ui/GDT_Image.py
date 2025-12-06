@@ -39,7 +39,7 @@ class GDT_Image(WithSize, WithHREF, WithHTMLAttributes, GDT_File):
     def render_html(self) -> str:
         return f'<img{self.html_attrs()} src="{self.render_href()}"{self.html_alternate()} width="{self._width}" height="{self._height}" />'
 
-    def render_form(self) -> str:
-        return self.render_html()
+    # def render_form(self) -> str:
+    #     return self.render_html()
 
 

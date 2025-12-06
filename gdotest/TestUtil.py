@@ -49,6 +49,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         asyncio.set_event_loop(loop)
         nest_asyncio.apply()
         loop.set_debug(False)
+        WebPlug.COOKIES = {}
         all_private_messages()
 
     def _tearDownAsyncioRunner(self):

@@ -51,6 +51,7 @@ deletor = "Deleted by"
 count = "Count"
 directory = "Directory"
 please_choose = "Please choose..."
+permission = "Permisison"
 
 ###########
 # GDT_Int #

@@ -106,8 +106,11 @@ class GDT_String(GDT_Field):
     # DBA #
     #######
 
+    def gdo_varchar_define(self) -> str:
+        return 'VARCHAR'
+
     def gdo_column_define(self) -> str:
-        return (f"{self._name} VARCHAR({self._max_len}) "
+        return (f"{self._name} {self.gdo_varchar_define()}({self._max_len}) "
                 f"CHARSET {self.gdo_column_define_charset()} {self.gdo_column_define_collate()} "
                 f"{self.gdo_column_define_default()} "
                 f"{self.gdo_column_define_null()} ")

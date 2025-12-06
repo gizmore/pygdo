@@ -15,7 +15,7 @@ class GDT_Bar(WithFlow, WithName, GDT_Container):
         # self.name(name or self.generate_name())
 
     def render_html(self, mode: Mode = Mode.render_html):
-        return f'<ul id="{self._name}"class ="gdt-bar {self.render_class()}">{self.render_bar_fields()}</ul>'
+        return f'<ul id="{self._name}" class="gdt-bar {self.render_class()}">{self.render_bar_fields()}</ul>'
         # return tplhtml('ui', 'bar.html', {
         #         'name': self.get_name(),
         #         'html_class': self.render_class(),

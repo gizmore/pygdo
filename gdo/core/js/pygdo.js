@@ -1,4 +1,4 @@
-console.log("Init PyGDO.js v8.0.0");
+console.log("Init PyGDO.js v8.0.2");
 
 window.gdo = {
 

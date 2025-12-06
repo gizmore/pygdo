@@ -13,7 +13,7 @@ from gdo.base.WithSerialization import WithSerialization
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gdo.base.GDT import GDT
-    from gdo.base import GDO
+    from gdo.base.GDO import GDO
 
 
 class Cache:
@@ -130,7 +130,7 @@ class Cache:
         return cls.CCACHE.get(gdo_klass, {})
 
     @classmethod
-    def column_for(cls, gdo_klass: type['GDO'], key: str) -> 'GDT'|None:
+    def column_for(cls, gdo_klass: type['GDO'], key: str) -> 'GDT|None':
         return cls.columns_for(gdo_klass).get(key)
 
     @classmethod

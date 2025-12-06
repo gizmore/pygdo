@@ -1,0 +1,11 @@
+<%
+result = method.get_table_result()
+%>
+<ul class="list">
+    <li>
+    <%
+    for gdo in result:
+        write(gdo.render_list())
+    %>
+    </li>
+</ul>

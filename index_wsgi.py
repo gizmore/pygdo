@@ -39,6 +39,7 @@ def pygdo_application(environ, start_response):
     """
     The PyGDO Rendering core and http  method proxy
     """
+    Application.LOOP = asyncio.new_event_loop()
     url = 'core.welcome.html'
     try:
         global FRESH
@@ -59,8 +60,6 @@ def pygdo_application(environ, start_response):
         Application.EVENT_COUNT = 0
         Logger.LINES_WRITTEN = 0
         #PYPP#END#
-
-        Application.LOOP = asyncio.new_event_loop()
 
         if FRESH:
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")

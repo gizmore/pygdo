@@ -269,9 +269,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     ############
     # Redirect #
     ############
-    def redirect(self, href: str):
+    def redirect(self, href: str, key: str, args: tuple[str|int|float,...] = None):
         from gdo.net.GDT_Redirect import GDT_Redirect
-        redirect = GDT_Redirect().href(href)
+        redirect = GDT_Redirect().href(href).text(key, args)
         Application.get_page()._top_bar.add_field(redirect)
         return self
 
