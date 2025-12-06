@@ -27,6 +27,7 @@ from gdo.core.method.not_found import not_found
 from gdo.file.GDO_SeoFile import GDO_SeoFile
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
+from gdo.base.Cache import Cache
 
 FRESH = True
 SIDEBARS = False
@@ -43,7 +44,6 @@ def pygdo_application(environ, start_response):
         global FRESH
         global SIDEBARS
         SIDEBARS = False
-        from gdo.base.Cache import Cache
         #PYPP#START#
         global REQUEST_COUNT
         REQUEST_COUNT += 1
@@ -60,6 +60,8 @@ def pygdo_application(environ, start_response):
         Logger.LINES_WRITTEN = 0
         #PYPP#END#
 
+        Application.LOOP = asyncio.new_event_loop()
+
         if FRESH:
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")
             Application.init(os.path.dirname(__file__))
@@ -69,7 +71,7 @@ def pygdo_application(environ, start_response):
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
-            # asyncio.run(IPC.web_register_ipc())
+            Application.LOOP.run_until_complete(IPC.web_register_ipc())
             FRESH = False
         else:
             #PYPP#START#

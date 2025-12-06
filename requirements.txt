@@ -1,4 +1,4 @@
-bcrypt
+bcrypt<4.1
 httplib2
 mysql
 mysql-connector

@@ -188,7 +188,7 @@ class GDO_User(GDO):
             }).soft_replace()
             IPC.send('base.ipc_uset', (self.get_id(), key, val))
             coro = Application.EVENTS.publish(f'user_setting_{key}_changed', self, val)
-            asyncio.create_task(coro)
+            Application.LOOP.run_until_complete(coro)
             return Cache.update_for(self)
         return self
 
