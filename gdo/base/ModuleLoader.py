@@ -98,10 +98,14 @@ class ModuleLoader:
             return module
         if installed and not self.module_installed(modulename):
             return None
-        module = self.gdo_import(modulename)
-        if not module:
-            raise GDOException(f"Cannot import module {modulename}")
-        return module
+        try:
+            module = self.gdo_import(modulename)
+            if not module:
+                raise GDOException(f"Cannot import module {modulename}")
+            return module
+        except Exception as ex:
+            Logger.exception(ex, 'import module.')
+            return None
 
     def module_installed(self, modulename: str) -> bool:
         from gdo.base.GDO_Module import GDO_Module

@@ -181,13 +181,14 @@ class App:
         parser.add_argument('modules', nargs='?')
         parser.add_argument('-y', '--yes', action='store_true')
         parser.add_argument('-s', '--ssh', action='store_true')
+        parser.add_argument('-a', '--all', action='store_true')
         args = parser.parse_args(sys.argv[2:])
 
         loader = ModuleLoader.instance()
         on_disk = loader.load_modules_fs()
         providers = self._load_provider_toml()
 
-        if not args.modules:
+        if not args.modules and not args.all:
             print(f"There are {len(providers.keys())} modules known to me:")
             decorated = []
             for name in providers.keys():
@@ -200,7 +201,11 @@ class App:
             print(', '.join(decorated))
             exit(0)
 
-        wanted = args.modules.lower().split(',')
+        if args.all:
+            wanted = providers.keys()
+        else:
+            wanted = args.modules.lower().split(',')
+
         unknown = []
         for name in wanted:
             if name not in providers:
