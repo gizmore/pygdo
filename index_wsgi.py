@@ -192,7 +192,7 @@ def pygdo_application(environ, start_response):
                 result = GDT_Error.from_exception(ex)
 
             while asyncio.iscoroutine(result):
-                result = asyncio.run(result)
+                result = Application.LOOP.run_until_complete(result)
 
             if type(result) is GDT_FileOut:
                 headers = Application.get_headers()

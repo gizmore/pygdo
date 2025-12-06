@@ -191,7 +191,7 @@ class GDO_User(GDO):
             if Application.LOOP.is_running():
                 asyncio.create_task(coro)
             else:
-                Application.LOOP.run_until_complete(coro)
+                asyncio.run(coro)
             return Cache.update_for(self)
         return self
 
