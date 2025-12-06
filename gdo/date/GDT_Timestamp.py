@@ -33,11 +33,17 @@ class GDT_Timestamp(GDT_String):
     ##########
     # Render #
     ##########
+    def render_format(self) -> str:
+        if self._date_format == Time.FMT_AGO:
+            return Time.human_duration(Time.get_time_ago(self.get_val()))
+        else:
+            return Time.display_date(self.get_val(), self._date_format)
+
     def render_html(self):
         date = self.get_val()
-        disp = Time.display_date(date, self._date_format)
+        disp = self.render_format()
         ts = Time.get_time(date)
         return f"<span class=\"gdt-timestamp\" data-ts=\"{ts}\">{disp}</span>"
 
     def render_txt(self):
-        return Time.display_date(self.get_val(), self._date_format)
+        return self.render_format()

@@ -40,6 +40,7 @@ class Time:
     FMT_DAY = 'day'  # Date format FMT_DAY is same as FMT_SHORT.
     FMT_MS = 'ms'
     FMT_DB = 'db'
+    FMT_AGO = 'ago'
 
     # Timezone constants
     UTC = '1'
