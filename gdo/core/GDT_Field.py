@@ -2,6 +2,8 @@ from typing import Any
 
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Render import Render
+from gdo.base.Trans import t
 from gdo.base.WithError import WithError
 from gdo.core.WithGDO import WithGDO
 from gdo.core.WithLabel import WithLabel
@@ -188,3 +190,6 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
 
     def render_json(self):
         return self.get_val()
+
+    def render_card(self) -> str:
+        return "<p>" + self.render_label() + ":"  + (self.render_val() or Render.italic(t('none'))) + '</p>'

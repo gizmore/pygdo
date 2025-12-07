@@ -9,6 +9,7 @@ from gdo.date.GDT_Duration import GDT_Duration
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 from gdo.date.Time import Time
 from gdo.user.GDT_Gender import GDT_Gender
+from gdo.user.GDT_Level import GDT_Level
 
 
 class module_user(GDO_Module):
@@ -39,6 +40,7 @@ class module_user(GDO_Module):
     def gdo_user_config(self) -> list[GDT]:
         return [
             GDT_Timestamp('last_activity'),
+            GDT_Level('level').initial('0'),
         ]
 
     def get_activity_cut_date(self) -> str:

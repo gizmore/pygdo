@@ -36,6 +36,18 @@ class WithProxy:
         self._proxy.val(val)
         return self
 
+    def get_val(self):
+        return self._proxy.get_val()
+
+    def get_value(self):
+        return self._proxy.get_value()
+
+    def to_value(self, val: str):
+        return self._proxy.to_value(val)
+
+    def to_val(self, value):
+        return self._proxy.to_val(value)
+
     def render_html(self):
         self._proxy.render_html()
 

@@ -1,3 +1,4 @@
+from gdo.base.Render import Render
 from gdo.base.Trans import t
 from gdo.base.Util import html
 from gdo.core.GDT_UInt import GDT_UInt
@@ -24,4 +25,6 @@ class GDT_Object(WithObject, GDT_UInt):
         return t('suggest_object')
 
     def render_txt(self) -> str:
-        return f"{self.get_value().render_name()}"
+        if obj := self.get_value():
+            return f"{obj.render_name()}"
+        return Render.italic(t('none'))

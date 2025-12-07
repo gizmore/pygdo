@@ -35,7 +35,7 @@ class GDT_Order(WithHREF, GDT_String):
             return {}
 
     def href_order(self, gdt: GDT, dir: str):
-        url = Application.environ('REQUEST_URI')
+        url = Application.current_href()
         find = f"&{self.get_name()}={gdt.get_name()}"
         repl = f"&{self.get_name()}={gdt.get_name()}%20{dir}"
         if url.find(f"{find}%20{dir}") >= 0:
@@ -47,7 +47,7 @@ class GDT_Order(WithHREF, GDT_String):
         return url
 
     def html_selected(self, gdt: GDT, dir: str):
-        url = Application.environ('REQUEST_URI')
+        url = Application.current_href()
         find = f"&{self.get_name()}={gdt.get_name()}%20{dir}"
         if url.find(find) >= 0:
             return ' class="active"'

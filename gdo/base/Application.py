@@ -307,7 +307,7 @@ class Application:
 
     @classmethod
     def environ(cls, key: str, default: str = None) -> str:
-        return cls.STORAGE.environ[key] or default
+        return cls.STORAGE.environ.get(key, default)
 
     @classmethod
     def current_href(cls) -> str:

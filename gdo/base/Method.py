@@ -173,6 +173,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         """
         return False
 
+    def gdo_needs_level(self) -> int:
+        return 0
+
     def gdo_execute(self) -> GDT:
         raise GDOError('err_stub')
 

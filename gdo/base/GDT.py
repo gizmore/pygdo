@@ -1,14 +1,12 @@
 import binascii
-import functools
 import traceback
 from copy import deepcopy
 from functools import lru_cache
 from typing import Self
 
-from gdo.base.Exceptions import GDOException
 from gdo.base.Trans import Trans, t
 from gdo.base.WithSerialization import WithSerialization
-from gdo.base.Render import Mode
+from gdo.base.Render import Mode, Render
 from gdo.base.Util import Strings
 
 
@@ -301,7 +299,7 @@ class GDT(WithSerialization):
         return self.render_html()
 
     def render_card(self) -> str:
-        return self.render_html()
+        return self.get_name() + ":"  + (self.render_val() or Render.italic(t('none')))
 
     def render_form(self) -> str:
         return self.EMPTY_STR

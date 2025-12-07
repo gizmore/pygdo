@@ -2,16 +2,16 @@
   <div class="row g-0">
     <div class="col-md-4">
         <% if field.has_image():
-            write(field._image.add_class('img-fluid rounded-start').render(Mode.render_html))
+            write(field._image.add_class('img-fluid rounded-start').render(Mode.render_card))
         %>
     </div>
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title"><%=field.get_header().render()%></h5>
           <div class="text">
-              <%=field.get_content().render(Mode.render_html)%>
+              <%=field.get_content().render(Mode.render_card)%>
           </div>
-          <div class="card-footer"><small class="text-muted"><%=field.get_footer().render_html()%></small></div>
+          <div class="card-footer"><small class="text-muted"><%=field.get_footer().render_card()%></small></div>
       </div>
     </div>
   </div>

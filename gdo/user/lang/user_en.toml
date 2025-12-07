@@ -2,3 +2,6 @@ module_user = "User"
 
 gender = "Gender"
 last_activity = "Last Activity"
+
+mt_user_profile = "%s's Profile"
+md_user_profile = "%s's profile on %s."

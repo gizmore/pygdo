@@ -3,7 +3,7 @@ from threading import Thread
 
 class AsyncRunner:
 
-    INSTANCE: AsyncRunner = None
+    INSTANCE: 'AsyncRunner' = None
 
     def __init__(self):
         self.__class__.INSTANCE = self

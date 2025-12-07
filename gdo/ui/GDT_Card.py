@@ -56,8 +56,6 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
         return self
 
     def render(self, mode: Mode = Mode.render_html):
-        if mode.is_html():
-            return self.render_html()
         if mode.is_textual():
             return self.render_text(mode)
         return super().render(mode)

@@ -121,6 +121,9 @@ class GDO_User(GDO):
     def get_name_sid(self):
         return "%s{%s}" % (self.get_name(), self.get_server_id())
 
+    def get_level(self) -> int:
+        return self.get_setting_value('level')
+
     ##########
     # Groups #
     ##########

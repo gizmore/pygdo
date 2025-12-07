@@ -32,6 +32,9 @@ class WithPermissionCheck:
             if type not in types:
                 return False if not display_error else self.err_type(types)
         perm = self.gdo_user_permission()
+        if level := self.gdo_needs_level():
+            if user.get_level() < level:
+                return False if not display_error else self.err_level(level)
         if perm and not GDO_Permission().has_permission(user, perm):
             return False if not display_error else self.err_permission(perm)
         if not self.gdo_in_private() and not self._env_channel:
@@ -127,6 +130,9 @@ class WithPermissionCheck:
     def err_generic_permission(self):
         self.err('err_permissions')
         return False
+
+    def err_level(self, level: int):
+        self.err('err_level', (level,))
 
     ########
     # AUTH #
