@@ -3,7 +3,7 @@ import functools
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Render import Render, Mode
-
+from gdo.base.Trans import t
 
 class WithObject:
     _table: GDO
@@ -116,7 +116,12 @@ class WithObject:
             return gdo.render_name()
 
     def render_cell(self) -> str:
-        return self.get_gdo().render_name()
+        if gdo := self.get_gdo():
+            return gdo.render_name()
+        return Render.italic(t('none'))
+
+    def render_card(self):
+        return f"<p>{self.render_label()}: {self.render_cell()}</p>"
 
     ############
     # Validate #

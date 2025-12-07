@@ -3,6 +3,8 @@ from typing_extensions import Self
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Query import Query
+from gdo.base.Render import Render
+from gdo.base.Trans import t
 from gdo.base.Util import Strings
 from gdo.base.util.href import href
 from gdo.core.GDO_User import GDO_User
@@ -64,7 +66,7 @@ class GDT_User(WithCompletion, GDT_Object):
     # Render #
     ##########
     def render_cell(self) -> str:
-        user = self.get_gdo()
-        name = user.render_name()
-        return GDT_Link().text_raw(name).href(href('user', 'profile', f'&for={name}')).render()
-
+        if user := self.get_gdo():
+            name = user.render_name()
+            return GDT_Link().text_raw(name).href(href('user', 'profile', f'&for={name}')).render()
+        return Render.italic(t('none'))

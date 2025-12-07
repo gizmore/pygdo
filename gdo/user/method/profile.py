@@ -43,6 +43,6 @@ class profile(Method):
         for module in ModuleLoader.instance().enabled():
             for gdt in module.all_user_settings():
                 if gdt := GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current()):
-                    if isinstance(gdt, GDT_Field):
+                    if isinstance(gdt, GDT_Field) and not gdt.is_secret():
                         content.add_field(gdt)
         return card

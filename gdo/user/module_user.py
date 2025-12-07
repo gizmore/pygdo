@@ -5,6 +5,7 @@ from gdo.base.Cache import Cache
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDT_Text import GDT_Text
 from gdo.date.GDT_Duration import GDT_Duration
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 from gdo.date.Time import Time
@@ -35,6 +36,7 @@ class module_user(GDO_Module):
     def gdo_user_settings(self) -> list[GDT]:
         return [
             GDT_Gender('gender'),
+            GDT_Text('about_me'),
         ]
 
     def gdo_user_config(self) -> list[GDT]:

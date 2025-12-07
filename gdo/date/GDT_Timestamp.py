@@ -33,11 +33,14 @@ class GDT_Timestamp(GDT_String):
     ##########
     # Render #
     ##########
-    def render_format(self) -> str:
-        if self._date_format == Time.FMT_AGO:
-            return Time.human_duration(Time.get_time_ago(self.get_val()))
+    def render_format(self, format: str = None) -> str:
+        format = format or self._date_format
+        if (val := self.get_val()) is None:
+            return '---'
+        if format == Time.FMT_AGO:
+            return Time.human_duration(Time.get_time_ago(val))
         else:
-            return Time.display_date(self.get_val(), self._date_format)
+            return Time.display_date(val, format)
 
     def render_html(self):
         date = self.get_val()
@@ -47,3 +50,8 @@ class GDT_Timestamp(GDT_String):
 
     def render_txt(self):
         return self.render_format()
+
+    def render_card(self) -> str:
+        ago = '' if self._date_format == Time.FMT_AGO else self.render_format(Time.FMT_AGO)
+        if ago: ago = f" ({ago})"
+        return f'<p>{self.render_label()}: {self.render_format()}{ago}</p>'

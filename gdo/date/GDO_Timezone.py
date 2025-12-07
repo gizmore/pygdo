@@ -1,6 +1,8 @@
+import time
 from datetime import timedelta
 
 from gdo.base.GDO import GDO
+from gdo.base.Trans import t
 
 
 class GDO_Timezone(GDO):
@@ -42,3 +44,6 @@ class GDO_Timezone(GDO):
     def get_delta(self) -> timedelta:
         return timedelta(seconds=self.get_offset())
 
+    def render_name(self) -> str:
+        from gdo.date.Time import Time
+        return f"{self.gdo_val('tz_name')}({Time.get_date(time.time(), t('df_'+Time.FMT_TIME_ONLY))})"

@@ -23,7 +23,7 @@ class module_mail(GDO_Module):
     def gdo_user_config(self) -> list[GDT]:
         from gdo.date.GDT_DateTime import GDT_DateTime
         return [
-            GDT_Email('email'),
+            GDT_Email('email').obfuscate(),
             GDT_DateTime('email_confirmed'),
             GDT_Link().href(self.href('change_mail')).text('link_change_mail'),
         ]

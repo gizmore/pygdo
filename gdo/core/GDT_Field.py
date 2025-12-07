@@ -23,6 +23,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     _unique: bool
     _writable: bool
     _hidden: bool
+    _secret: bool
     _positional: bool | None
     _position: int
     _multiple: bool
@@ -42,6 +43,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         self._positional = None
         self._position = -1
         self._multiple = False
+        self._secret = False
 
     def get_name(self):
         return self._name
@@ -91,6 +93,13 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
 
     def initial_value(self, value: any):
         return self.initial(self.to_val(value))
+
+    def secret(self, secret: bool = True):
+        self._secret = secret
+        return self
+
+    def is_secret(self) -> bool:
+        return self._secret
 
     def is_primary(self) -> bool:
         return self._primary
@@ -192,4 +201,4 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         return self.get_val()
 
     def render_card(self) -> str:
-        return "<p>" + self.render_label() + ":"  + (self.render_val() or Render.italic(t('none'))) + '</p>'
+        return "<p>" + self.render_label() + ": "  + (self.render_val() or Render.italic(t('none'))) + '</p>'

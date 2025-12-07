@@ -12,6 +12,9 @@ class GDT_Password(GDT_String):
         self._input_type = 'password'
         self.icon('password')
 
+    def is_secret(self) -> bool:
+        return True
+
     @classmethod
     def check(cls, hash_: str, plain: str) -> bool:
         return bcrypt.checkpw(plain.encode(), hash_.encode())

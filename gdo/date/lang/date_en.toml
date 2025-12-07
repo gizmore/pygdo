@@ -10,6 +10,7 @@ df_ms = "%m/%d/%Y %H:%M:%S.%f"
 df_long = "%m/%d/%Y %H:%M:%S"
 df_short = "%m/%d/%Y %H:%M"
 df_day = "%m/%d/%Y"
+df_clock = "%H:%M"
 
 ##############
 # Time Units #
@@ -23,4 +24,3 @@ tu_h = "h"
 tu_d = "d"
 tu_w = "w"
 tu_y = "y"
-

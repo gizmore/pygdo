@@ -41,6 +41,7 @@ class Time:
     FMT_MS = 'ms'
     FMT_DB = 'db'
     FMT_AGO = 'ago'
+    FMT_TIME_ONLY = 'clock'
 
     # Timezone constants
     UTC = '1'
