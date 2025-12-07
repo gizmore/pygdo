@@ -189,7 +189,7 @@ class WebPlug:
         self._status = status
         self._headers = headers
         for name, value in headers:
-            if name == 'Set-Cookie':
+            if name.lower() == 'set-cookie':
                 self.parse_cookie(value)
         return True
 
