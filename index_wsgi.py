@@ -7,6 +7,7 @@ from urllib.parse import parse_qs, unquote
 import better_exceptions
 from multipart import MultipartParser
 
+from gdo.base.AsyncRunner import AsyncRunner
 from gdo.base.IPC import IPC
 from gdo.base.ParseArgs import ParseArgs
 from gdo.base.Application import Application
@@ -33,13 +34,15 @@ FRESH = True
 SIDEBARS = False
 REQUEST_COUNT = 0
 def application(environ, start_response):
+    Application.LOOP = asyncio.new_event_loop()
+    # r = AsyncRunner()
+    # Application.LOOP = r._loop
     return pygdo_application(environ, start_response)
 
 def pygdo_application(environ, start_response):
     """
     The PyGDO Rendering core and http  method proxy
     """
-    Application.LOOP = asyncio.new_event_loop()
     url = 'core.welcome.html'
     try:
         global FRESH
@@ -111,7 +114,7 @@ def pygdo_application(environ, start_response):
             method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_path())
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
-                gdt = asyncio.run(gdt)
+                gdt = Application.LOOP.run_until_complete(gdt)
             if isinstance(gdt, GDT_FileOut):
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
@@ -129,7 +132,7 @@ def pygdo_application(environ, start_response):
             method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session)
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
-                gdt = asyncio.run(gdt)
+                gdt = Application.LOOP.run_until_complete(gdt)
             if isinstance(gdt, GDT_FileOut):
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
@@ -214,6 +217,9 @@ def pygdo_application(environ, start_response):
             if mode == Mode.render_html:
                 page.init_sidebars()
                 SIDEBARS = True
+
+            # asyncio.gather(*Application.TASKS)
+            # Application.TASKS = []
 
             session.save()
             headers = Application.get_headers()

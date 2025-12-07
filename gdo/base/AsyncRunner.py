@@ -1,9 +1,6 @@
 import asyncio
 from threading import Thread
 
-from gdo.base.Application import Application
-
-
 class AsyncRunner:
 
     INSTANCE: AsyncRunner = None
@@ -17,6 +14,7 @@ class AsyncRunner:
 
     def _run_loop(self):
         # Application.STORAGE.__dict__.update(self.environ)
+        from gdo.base.Application import Application
         Application.init_thread(self)
         asyncio.set_event_loop(self._loop)
         self._loop.run_forever()

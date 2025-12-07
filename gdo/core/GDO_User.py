@@ -187,11 +187,7 @@ class GDO_User(GDO):
                 'uset_val': val,
             }).soft_replace()
             IPC.send('base.ipc_uset', (self.get_id(), key, val))
-            coro = Application.EVENTS.publish(f'user_setting_{key}_changed', self, val)
-            if Application.LOOP.is_running():
-                asyncio.create_task(coro)
-            else:
-                asyncio.run(coro)
+            Application.publish_event(f'user_setting_{key}_changed', self, val)
             return Cache.update_for(self)
         return self
 

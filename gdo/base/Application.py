@@ -1,15 +1,18 @@
-import functools
 import os
+import functools
 import queue
 import sys
 import threading
 import time
 from asyncio import iscoroutine, AbstractEventLoop
+import asyncio
 
 import msgspec.json
 import tomlkit
 
 from typing import TYPE_CHECKING
+
+from gdo.base.AsyncRunner import AsyncRunner
 
 if TYPE_CHECKING:
     from gdo.core.GDO_Session import GDO_Session
@@ -31,7 +34,7 @@ class Application:
     IS_DOG = None
     IS_TEST = False
     LOOP: AbstractEventLoop = None
-    TASKS = {}
+    TASKS = []
     ASGI = False
     LOADER: 'ModuleLoader'
     EVENTS: 'Events'
@@ -220,6 +223,7 @@ class Application:
         cls.DB_WRITES = 0 #PP#DELETE#
         cls.STORAGE.user = None
         cls.STORAGE.lang = 'en'
+        cls.TASKS = []
         Logger._user = None
 
     @classmethod
@@ -361,3 +365,16 @@ class Application:
             gdt = msg.execute()
             while iscoroutine(gdt):
                 gdt = await gdt
+
+    @classmethod
+    def publish_event(cls, name: str, *args):
+        coro = Application.EVENTS.publish(name, *args)
+        cls.run_coro(coro, 'publish_event')
+
+    @classmethod
+    def run_coro(cls, coro, name: str):
+        # AsyncRunner.INSTANCE.run(coro)
+        if cls.LOOP.is_running():
+            cls.TASKS.append(asyncio.create_task(coro, name=name))
+        else:
+            cls.LOOP.run_until_complete(coro)

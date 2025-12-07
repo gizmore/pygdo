@@ -28,7 +28,7 @@ from gdo.core.GDO_Session import GDO_Session
 from gdo.core.connector.Web import Web
 from gdo.core.connector.Bash import Bash
 from gdo.install.Installer import Installer
-from index_wsgi import application
+from index_wsgi import application, pygdo_application
 
 better_exceptions.hook()
 
@@ -46,22 +46,17 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         await super().asyncSetUp()
         Application.IS_TEST = True
         Application.LOOP = loop = asyncio.get_running_loop()
-        asyncio.set_event_loop(loop)
         nest_asyncio.apply()
         loop.set_debug(False)
         WebPlug.COOKIES = {}
         all_private_messages()
 
     def _tearDownAsyncioRunner(self):
+        asyncio.gather(*Application.TASKS)
         Application.LOOP.stop()
         Application.LOOP.close()
 
-    # async def asyncTearDown(self):
-    #     Application.LOOP.stop()
-    #     Application.LOOP.close()
-
     async def ticker(self, ticks: int = 1):
-        # gdo_print(f"{ticks} ticks pass buy.")
         for i in range(ticks):
             Application.TIME += 1
             await Application.EVENTS.update_timers(Application.TIME)
@@ -182,7 +177,7 @@ class WebPlug:
             self._environ['wsgi.input'].seek(0)
             self._environ['CONTENT_TYPE'] = 'application/x-www-form-urlencoded'
             self._environ['CONTENT_LENGTH'] = len(post_bytes)
-        result = application(self._environ, self.start_request)
+        result = pygdo_application(self._environ, self.start_request)
         for chunk in result:
             self._out += bytes(chunk)
         try:

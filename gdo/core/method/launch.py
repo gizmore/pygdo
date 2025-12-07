@@ -87,8 +87,7 @@ class launch(Method):
                     self._signaled = False
                     IPC.dog_execute_events()
                 await asyncio.sleep(sleep_ms)
-                await asyncio.wait(Application.TASKS.values(), timeout=1.42)
-                # asyncio.gather(Application.TASKS.values())
+            asyncio.gather(*Application.TASKS)
         except KeyboardInterrupt as ex:
             die().input('message', 'CTRL-C got pressed!').gdo_execute
             time.sleep(1)
@@ -105,4 +104,4 @@ class launch(Method):
         if not server._has_loop:
             Logger.debug(f"step server {server.render_name()}")
             server._has_loop = True
-            Application.TASKS[server.get_name()] = asyncio.create_task(server.loop(), name=server.get_name())
+            Application.TASKS.append(server.loop(), name=server.get_name())
