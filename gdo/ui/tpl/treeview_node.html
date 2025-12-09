@@ -1,0 +1,11 @@
+<li>
+<%= node.render_list() %>
+<% children = field.children(node) %>
+<% if children: %>
+    <ul>
+    <% for child in children: %>
+        <% include('ui', 'treeview_node.html', {'node': child, 'field': field}) %>
+    <% : %>
+    </ul>
+<% : %>
+</li>

@@ -114,7 +114,8 @@ def pygdo_application(environ, start_response):
             method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_path())
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
-                gdt = Application.LOOP.run_until_complete(gdt)
+                if not  Application.LOOP.is_running():
+                    gdt = Application.LOOP.run_until_complete(gdt)
             if isinstance(gdt, GDT_FileOut):
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
@@ -132,7 +133,8 @@ def pygdo_application(environ, start_response):
             method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session)
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
-                gdt = Application.LOOP.run_until_complete(gdt)
+                if not  Application.LOOP.is_running():
+                    gdt = Application.LOOP.run_until_complete(gdt)
             if isinstance(gdt, GDT_FileOut):
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
@@ -195,7 +197,8 @@ def pygdo_application(environ, start_response):
                 result = GDT_Error.from_exception(ex)
 
             while asyncio.iscoroutine(result):
-                result = Application.LOOP.run_until_complete(result)
+                if not  Application.LOOP.is_running():
+                    result = Application.LOOP.run_until_complete(result)
 
             if type(result) is GDT_FileOut:
                 headers = Application.get_headers()

@@ -2,6 +2,7 @@ import functools
 import os
 import re
 from io import StringIO
+from typing import Any
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
@@ -84,25 +85,12 @@ class Templite(object):
         namespace['write'] = write
         namespace['writeln'] = writeln
 
-        # # add include method
-        # def include(file):
-        #     if not os.path.isabs(file):
-        #         if self.file:
-        #             base = os.path.dirname(self.file)
-        #         else:
-        #             base = os.path.dirname(sys.argv[0])
-        #         file = os.path.join(base, file)
-        #     t = Templite(file, self.encoding, self.caching)
-        #     stack.append(t.render(**namespace))
-
-        # def include(file):
-        #     file = os.path.abspath(os.path.join(os.path.dirname(self.file), file))
-        #     t = Templite.cache.get(file) or Templite(file, self.encoding, self.caching)
-        #     stack.append(t.render(**namespace))
+        def include(module: str, file: str, args: dict[str, Any]):
+            return stack.write(GDT_Template().template(module, file, args).render())
 
         from gdo.ui.GDT_Page import GDT_Page
 
-        # namespace['include'] = include
+        namespace['include'] = include
         namespace['GDT_Page'] = GDT_Page
         namespace['t'] = t
         namespace['Mode'] = Mode
@@ -133,6 +121,9 @@ class GDT_Template(GDT):
         return self
 
     def render(self, mode: Mode = Mode.render_html):
+        return self.render_html()
+
+    def render_html(self, mode: Mode = Mode.render_html):
         return self.python(self._t_module, self._t_file, self._t_vals)
 
     @classmethod

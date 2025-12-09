@@ -1,0 +1,7 @@
+<div class="treeview">
+<ul>
+<% for node in field.roots(): %>
+    <% include('ui', 'treeview_node.html', {'node': node, 'field': field}) %>
+<% : %>
+</ul>
+</div>
