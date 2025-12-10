@@ -2,6 +2,10 @@ from gdo.base.Exceptions import GDOValidationException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gdo.ui.GDT_Link import GDT_Link
+
 
 class WithModuleConfig:
     _module_config: dict[str, GDT]
@@ -19,6 +23,9 @@ class WithModuleConfig:
 
     def gdo_user_settings(self) -> list[GDT]:
         return GDO.EMPTY_LIST
+
+    def gdo_admin_links(self) -> list[GDT_Link]:
+        return GDT.EMPTY_LIST
 
     ##########
     # Module #

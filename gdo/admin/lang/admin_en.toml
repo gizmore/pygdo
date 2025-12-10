@@ -23,4 +23,8 @@ md_admin_dashboard = "Admin Dashboard for your PyGDO installation."
 mt_admin_modules = "Modules"
 md_admin_modules = "List pygdo modules."
 
-
+#############
+# Configure #
+#############
+mt_admin_configure = "Configure %s"
+md_admin_configure = "Configure a module."

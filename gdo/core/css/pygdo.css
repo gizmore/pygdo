@@ -26,7 +26,3 @@
 .gdt-divider.gdt-horizontal:BEFORE {
     content: "|";
 }
-
-pre {
-    white-space: normal;
-}
