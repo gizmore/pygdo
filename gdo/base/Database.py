@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from gdo.base.GDO import GDO
 
 import mysql.connector
-from mysql.connector import ProgrammingError, DatabaseError, IntegrityError, FieldFlag
+from mysql.connector import ProgrammingError, DatabaseError, IntegrityError, FieldFlag, FieldType
 from mysql.connector.conversion import MySQLConverter
 
 from gdo.base.Exceptions import GDODBException
@@ -16,13 +16,21 @@ from gdo.base.Result import Result
 
 
 class NopeConverter(MySQLConverter):
-    def row_to_python(self, row_data: tuple[bytearray], desc: list):
+    BINARY_TYPES = {
+        FieldType.BLOB,
+        FieldType.TINY_BLOB,
+        FieldType.MEDIUM_BLOB,
+        FieldType.LONG_BLOB,
+        FieldType.BIT,
+        FieldType.GEOMETRY,
+    }
+    def row_to_python(self, row, desc):
         return tuple(
-            val.decode('utf-8') if val is not None and not (desc[i][7] & FieldFlag.BLOB)
-            else bytes(val) if val is not None else None
-            for i, val in enumerate(row_data)
+            None if v is None else
+            bytes(v) if desc[i][1] in self.BINARY_TYPES else
+            v.decode('utf-8')
+            for i, v in enumerate(row)
         )
-#        return map(lambda val: val.decode('utf-8') if val is not None else val, row_data)
 
 
 class Database(WithPygdo):

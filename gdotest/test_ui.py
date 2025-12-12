@@ -33,7 +33,7 @@ class UITestCase(GDOTestCase):
         sect = GDT_Section().title_raw("Test").render_title(Mode.render_cli)
         self.assertIn(sect, "Test", 'Section does not render in CLI mode.')
 
-    async def test_04_method_errors(self):
+    def test_04_method_errors(self):
         result = web_plug("math.calc.html").post({'submit': '1', 'expression': 'PI * 3'}).exec()
         self.assertIn('<form', result, 'erroneous page does not render fallback')
 

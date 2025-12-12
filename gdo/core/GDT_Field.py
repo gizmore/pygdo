@@ -57,7 +57,16 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
 
     def get_value(self):
         if not self._converted:
-            self._value = self.to_value(self.get_val())
+            if val := self.get_val():
+                if self._multiple:
+                    value = []
+                    for v in val:
+                        value.append(self.to_value(v))
+                else:
+                    value = self.to_value(val)
+            else:
+                value = None
+            self._value = value
             self._converted = True
         return self._value
 

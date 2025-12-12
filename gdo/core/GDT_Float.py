@@ -71,7 +71,7 @@ class GDT_Float(GDT_String):
         elif val is None:
             return True
         else:
-            return self.validate_min_max(self.get_value())
+            return self.validate_min_max(float(val))
 
     def validate_min_max(self, value: float):
         if self._min is not None and value < self._min:

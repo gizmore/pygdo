@@ -112,7 +112,7 @@ class CoreTestCase(GDOTestCase):
         self.assertEqual('test and test2', Arrays.human_join(['test', 'test2']), 'Arrays.human_join() does not work with single item.')
         self.assertEqual('test, test3 and test2', Arrays.human_join(['test', 'test3', 'test2']), 'Arrays.human_join() does not work with single item.')
 
-    async def test_14_welcome(self):
+    def test_14_welcome(self):
         out = web_plug('core.welcome.html').exec()
         self.assertIn('Welcome', out, 'Welcome page does not work')
         web_plug('core.welcome.html').exec()

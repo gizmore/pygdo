@@ -1,3 +1,0 @@
-#!/bin/bash
-h2load -n10000 -c16 --h1 -p HTTP/1.1 "http://localhost:8000"
-#h2load -n1     -c1  --h1 -p HTTP/1.1 "http://localhost:31337?__yappi=1"

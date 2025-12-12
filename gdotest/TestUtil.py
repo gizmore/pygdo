@@ -177,7 +177,7 @@ class WebPlug:
             self._environ['wsgi.input'].seek(0)
             self._environ['CONTENT_TYPE'] = 'application/x-www-form-urlencoded'
             self._environ['CONTENT_LENGTH'] = len(post_bytes)
-        result = pygdo_application(self._environ, self.start_request)
+        result = application(self._environ, self.start_request)
         for chunk in result:
             self._out += bytes(chunk)
         try:

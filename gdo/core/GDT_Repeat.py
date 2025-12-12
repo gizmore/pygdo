@@ -10,20 +10,21 @@ class GDT_Repeat(WithProxy, GDT_UInt):
 
     def __init__(self, proxy: GDT_Field):
         super().__init__(proxy.get_name())
-        self.proxy(proxy)
+        self.proxy(proxy.multiple())
         self._min = 1 if proxy.is_not_null() else 0
         self._max = sys.maxsize
+        self.multiple()
 
     def is_positional(self) -> bool:
         return True
 
-    def is_multiple(self) -> bool:
-        return True
+    # def is_multiple(self) -> bool:
+    #     return True
 
-    def val(self, val: str | list):
-        self._val = val
-        self._converted = False
-        return self
+    # def val(self, val: str | list):
+    #     self._val = val
+    #     self._converted = False
+    #     return self
 
     def to_val(self, values: list):
         if not values:
@@ -45,13 +46,15 @@ class GDT_Repeat(WithProxy, GDT_UInt):
                 values.append(value)
         return values
 
+
+
     def validate(self, vals: str | None) -> bool:
         if vals is None:
             return self.validate_null(vals)
         if not self.validate_min_max(len(vals)):
             return False
         for val in vals:
-            if not self._proxy.val(val).validated():
+            if not self._proxy.validate(val):
                 return self.error(self._proxy._errkey, self._proxy._errargs)
         return True
 

@@ -89,7 +89,7 @@ class InstallTestCase(GDOTestCase):
         subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'admin', "gizmore5", "11111111", "gizmore@gizmore.org"], capture_output=True)
         self.assertTrue(GDO_User.table().get_by_vals({'user_name': 'gizmore5', 'user_server': '1'}).is_admin(), 'Cannot create admin user')
 
-    async def test_09_reinstall_module(self):
+    def test_09_reinstall_module(self):
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
         loader.init_modules(True, True)
