@@ -27,6 +27,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     _positional: bool | None
     _position: int
     _multiple: bool
+    _not_null: bool
 
     def __init__(self, name: str):
         super().__init__()
@@ -151,6 +152,9 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
     def hidden(self, hidden: bool = True):
         self._hidden = hidden
         return self
+
+    def is_not_null(self) -> bool:
+        return self._not_null
 
     def is_hidden(self) -> bool:
         return self._hidden

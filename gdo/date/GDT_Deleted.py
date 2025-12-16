@@ -6,6 +6,8 @@ class GDT_Deleted(GDT_Timestamp):
 
     def __init__(self, name):
         super().__init__(name)
+        self.label('deleted')
+        self.icon('clock')
 
     def gdo_before_delete(self, gdo):
         gdo.set_val(self._name, Time.get_date())

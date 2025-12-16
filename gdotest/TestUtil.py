@@ -1,5 +1,4 @@
 import asyncio
-import better_exceptions
 import logging
 
 import nest_asyncio
@@ -29,8 +28,6 @@ from gdo.core.connector.Web import Web
 from gdo.core.connector.Bash import Bash
 from gdo.install.Installer import Installer
 from index_wsgi import application, pygdo_application
-
-better_exceptions.hook()
 
 
 class GDOTestCase(unittest.IsolatedAsyncioTestCase):

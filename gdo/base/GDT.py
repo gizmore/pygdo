@@ -58,8 +58,8 @@ class GDT(WithSerialization):
             return GDT.NULL_STRING
         if type(val) is bytes:
             return f"UNHEX('{GDT.escape(val)}')"
-        if type(val) is int:
-            return str(val)
+        # if type(val) is int:
+        #     return str(val)
         return f"'{GDT.escape(val)}'"
 
     @classmethod

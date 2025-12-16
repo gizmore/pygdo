@@ -11,6 +11,7 @@ class GDT_Timestamp(GDT_String):
         super().__init__(name)
         self._date_format = Time.FMT_LONG
         self._millis = 3
+        self._input_type = "number"
 
     def date_format(self, date_format: str):
         self._date_format = date_format
@@ -26,9 +27,7 @@ class GDT_Timestamp(GDT_String):
         return Time.get_time(self.get_val())
 
     def to_value(self, val: str):
-        if val is None:
-            return None
-        return Time.parse_datetime_db(val)
+        return Time.parse_datetime_db(val) if val else None
 
     ##########
     # Render #

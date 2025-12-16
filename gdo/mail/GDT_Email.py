@@ -15,6 +15,7 @@ class GDT_Email(GDT_String):
         self.pattern("^[^@\\s]+@[^@\\s]+$")
         self.icon('email')
         self._obfuscate = False
+        self._input_type = "email"
 
     def obfuscate(self, obfuscate: bool = True):
         self._obfuscate = obfuscate

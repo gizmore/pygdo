@@ -1,10 +1,6 @@
-import sys
-
-import better_exceptions
-
 from gdo.base.Logger import Logger
 from gdo.base.Render import Render, Mode
-from gdo.base.Trans import Trans
+from gdo.base.Trans import Trans, sitename
 from gdo.base.Util import html
 from gdo.ui.GDT_Panel import GDT_Panel
 
@@ -45,8 +41,9 @@ class GDT_Error(GDT_Panel):
         return Render.red(self.render_text(Mode.render_telegram), Mode.render_telegram)
 
     @classmethod
-    def from_exception(cls, ex: Exception, title: str = 'PyGDO'):
+    def from_exception(cls, ex: Exception, title: str = '', tb = None):
         Logger.exception(ex)
         text = html(str(ex))
-        trace = html("".join(better_exceptions.format_exception(*sys.exc_info())))
-        return cls().trace().title_raw(title).text_raw(f"<pre>{text}\n{trace}</pre>\n", False)
+        if not tb:
+            tb = Logger.traceback(ex)
+        return cls().trace().title_raw(sitename() + " " + title).text_raw(f"<pre>{text}\n\n{tb}</pre>\n", False)

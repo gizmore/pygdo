@@ -1,13 +1,9 @@
-import asyncio
 import os.path
-import sys
+import asyncio
 from io import BytesIO
 from urllib.parse import parse_qs, unquote
-
-import better_exceptions
 from multipart import MultipartParser
 
-from gdo.base.AsyncRunner import AsyncRunner
 from gdo.base.IPC import IPC
 from gdo.base.ParseArgs import ParseArgs
 from gdo.base.Application import Application
@@ -18,7 +14,7 @@ from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
-from gdo.base.Util import (Strings, Files, bytelen)
+from gdo.base.Util import (Strings, Files, bytelen, html)
 from gdo.base.method.client_error import client_error
 from gdo.base.method.dir_server import dir_server
 from gdo.base.method.file_server import file_server
@@ -193,12 +189,11 @@ def pygdo_application(environ, start_response):
             try:
                 method.raw_args = args
                 result = method.execute()
+                while asyncio.iscoroutine(result):
+                    if not Application.LOOP.is_running():
+                        result = Application.LOOP.run_until_complete(result)
             except Exception as ex:
-                result = GDT_Error.from_exception(ex)
-
-            while asyncio.iscoroutine(result):
-                if not  Application.LOOP.is_running():
-                    result = Application.LOOP.run_until_complete(result)
+                result = GDT_Error.from_exception(ex, method.gdo_module().render_name())
 
             if type(result) is GDT_FileOut:
                 headers = Application.get_headers()
@@ -249,14 +244,15 @@ def pygdo_application(environ, start_response):
                             4: ("tavg", 8)})
             #PYPP#END#
     except (GDOModuleException, GDOMethodException) as ex:
-        yield error_page(ex, start_response, not_found(), '404 Not Found', False)
+        yield error_page(ex, start_response, not_found(), '404 Not Found')
     except GDOParamNameException as ex:
-        yield error_page(ex, start_response, client_error().exception(ex), '409 User Error', False)
+        yield error_page(ex, start_response, client_error().exception(ex), '409 User Error')
     except Exception as ex:
         try:
-            yield error_page(ex, start_response, server_error(), "500 Fatal Error", True)
+            yield error_page(ex, start_response, server_error(), "500 Fatal Error", '1')
         except Exception as ex:
-            msg = str(ex) + "".join(better_exceptions.format_exception(*sys.exc_info()))
+            Logger.exception(ex)
+            msg = str(ex) + Logger.traceback(ex)
             response_headers = [
                 ('Content-Type', 'text/plain; Charset=UTF-8'),
                 ('Content-Length', str(bytelen(msg)))
@@ -266,13 +262,13 @@ def pygdo_application(environ, start_response):
             yield msg.encode('UTF-8')
 
 
-def error_page(ex, start_response, method: Method, status: str, trace: bool = True):
+def error_page(ex, start_response, method: Method, status: str, trace: str = None):
     global SIDEBARS
     loader = ModuleLoader.instance()
     if trace:
-        result = GDT_Error.from_exception(ex)
+        result = GDT_Error.from_exception(ex, method.gdo_module().render_name())
     else:
-        result = GDT_Error().title_raw('PyGDO').text_raw(str(ex))
+        result = GDT_Error().title_raw(method.gdo_module().render_name()).text_raw(str(ex))
     page = Application.get_page()
     if not SIDEBARS:
         for module in loader.enabled():

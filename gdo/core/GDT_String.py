@@ -1,5 +1,5 @@
-import re
 import unicodedata
+import regex
 from enum import Enum
 
 from gdo.base.Application import Application
@@ -91,7 +91,7 @@ class GDT_String(GDT_Field):
     def pattern(self, pattern: str, options: int = 0):
         self._pattern = pattern
         self._re_options = options
-        return self
+        return self.case_i(bool(options & regex.IGNORECASE))
 
     def val(self, val: str | list):
         if type(val) is str and not self._multiple:
@@ -160,8 +160,8 @@ class GDT_String(GDT_Field):
 
     def validate_pattern(self, val: str):
         if self._pattern:
-            if not re.match(self._pattern, val, self._re_options):
-                return self.error('err_str_pattern', (html(self._pattern, Application.get_mode()),))
+            if not regex.match(self._pattern, val, flags=self._re_options):
+                return self.error('err_str_pattern',(html(self._pattern, Application.get_mode()),))
         return True
 
     def validate_length(self, val: str):
@@ -181,6 +181,13 @@ class GDT_String(GDT_Field):
 
     def utf8_normalize(self, val: str) -> str:
         return unicodedata.normalize('NFC', val)
+
+    @staticmethod
+    def utf8_transcribe(s: str) -> str:
+        return ''.join(
+            c for c in unicodedata.normalize('NFKD', s)
+            if not unicodedata.combining(c)
+        )
 
     ##########
     # Render #

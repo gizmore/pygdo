@@ -5,7 +5,6 @@ import sys
 from asyncio import iscoroutine
 from urllib.parse import parse_qs
 
-import better_exceptions
 from multipart import parse_options_header, MultipartParser
 
 from gdo.base.Application import Application
@@ -305,8 +304,8 @@ async def app(scope, receive, send):
                 'type': 'http.response.body',
                 'body': out.encode(),
             })
-        except Exception:
-            trace = "".join(better_exceptions.format_exception(*sys.exc_info()))
+        except Exception as ex4:
+            trace = Logger.traceback(ex4)
             try:
                 await send({
                     'type': 'http.response.start',

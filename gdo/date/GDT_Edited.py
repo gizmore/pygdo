@@ -4,6 +4,10 @@ from gdo.date.Time import Time
 
 class GDT_Edited(GDT_Created):
 
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.label('edited')
+
     def gdo_before_update(self, gdo):
         gdo.set_val(self._name, Time.get_date())
         return self

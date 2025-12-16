@@ -1,0 +1,13 @@
+<% include('core', '', {'field': field})
+<div class="gdt-form-field">
+    <label for="<%=field.get_name()%>"><%=field.render_label(Mode.render_html)%></label>
+    <input id="<%=field.get_name()%>" name="<%=field.get_name()%>" type="<%=field._input_type%>" class="<%=' is-invalid' if field.has_error() else '' %>"
+           <%=field.html_readonly()%>
+           <%=field.html_pattern()%>
+           <%=field.html_required()%>
+           aria-label="<%=field.render_label(Mode.render_html)%>"
+           value="<%=field.html_value()%>"/>
+    <% if field.has_error():
+        write(f'<div class="form-field-error">%s</div>' % field.render_error())
+    %>
+</div>

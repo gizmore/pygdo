@@ -10,7 +10,8 @@ class GDT_Bool(GDT_Select):
         super().__init__(name)
 
     def gdo_column_define(self) -> str:
-        return GDT_UInt(self.get_name()).bytes(1).gdo_column_define()
+        # return f"{self._name} BIT(1) {self.gdo_column_define_null()} {self.gdo_column_define_default()}"
+        return f"{self._name} TINYINT(1) {self.gdo_column_define_null()} {self.gdo_column_define_default()}"
 
     def gdo_choices(self) -> dict:
         return {

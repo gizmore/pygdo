@@ -1,11 +1,11 @@
-import asyncio
 import datetime
 import sys
 
 from typing import TYPE_CHECKING
 
 import aiofiles
-import better_exceptions
+from rich.console import Console
+from rich.traceback import Traceback
 
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
@@ -67,7 +67,7 @@ class Logger:
 
     @classmethod
     def exception(cls, ex: Exception, msg: str = None):
-        stack = "".join(better_exceptions.format_exception(*sys.exc_info()))
+        stack = cls.traceback(ex)
         if msg:
             sys.stderr.write(msg + "\n")
         sys.stderr.write(str(ex)+"\n")
@@ -104,3 +104,10 @@ class Logger:
             async with aiofiles.open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 await fo.write(f"{pre}{content}\n")
                 cls.LINES_WRITTEN += 1  #PYPP#DELETE#
+
+    @classmethod
+    def traceback(cls, ex) -> str:
+        tb = Traceback.from_exception(type(ex), ex, ex.__traceback__, show_locals=True)
+        c = Console(record=True, width=120)
+        c.print(tb)
+        return c.export_text()
