@@ -8,13 +8,12 @@ class GDT_Float(GDT_String):
     _precision: int
     _fill_zeroes: bool
     _no_thousands: bool
-    _min: float
-    _max: float
+    _min: float|None
+    _max: float|None
 
     def __init__(self, name: str):
         super().__init__(name)
-        # self._min = -sys.maxsize - 1
-        # self._max = sys.maxsize
+        self._min = self._max = None
         self._precision = 3
         self._fill_zeroes = False
         self._no_thousands = False
