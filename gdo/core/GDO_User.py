@@ -10,6 +10,7 @@ from gdo.base.IPC import IPC
 from gdo.base.Query import Query
 from gdo.base.Result import Result
 from gdo.base.Util import module_enabled
+from gdo.core.GDT_Index import GDT_Index
 from gdo.core.GDT_UserName import GDT_UserName
 
 if TYPE_CHECKING:
@@ -56,7 +57,7 @@ class GDO_User(GDO):
     #     return f
 
     def __repr__(self):
-        return f"{self.get_val('user_name')}{self.get_server_id()}"
+        return f"{self.gdo_val('user_name')}{self.get_server_id()}"
 
     @classmethod
     def system(cls) -> Self:
@@ -70,7 +71,7 @@ class GDO_User(GDO):
     @classmethod
     @functools.lru_cache
     def ghost(cls):
-        return cls.blank({
+        return GDO_User.blank({
             'user_id': '0',
             'user_server': '2',
             'user_type': GDT_UserType.GHOST,
@@ -90,6 +91,8 @@ class GDO_User(GDO):
             GDT_UserName('user_displayname').not_null(),
             GDT_Server('user_server').not_null().cascade_delete(),
             GDT_Object('user_link').table(GDO_User.table()),
+            GDT_Index('user_idx_name').index_fields('user_name'),
+            GDT_Index('user_idx_serv').index_fields('user_server'),
         ]
 
     def get_lang_iso(self):

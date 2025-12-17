@@ -85,8 +85,11 @@ class App:
         print("All Done!")
 
     async def cc(self):
-        Cache.remove()
-        print("All Done!")
+        loader = ModuleLoader.instance()
+        loader.load_modules_fs()
+        loader.init_modules(False, True)
+        await clear_cache().gdo_execute()
+        print("Caches cleared!")
 
     async def database(self):
         parser = argparse.ArgumentParser(description='Print help for a database setup.')
@@ -334,7 +337,6 @@ class App:
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules(True, True)
-        # launch().execute()
 
         if args.server:
             server = GDO_Server.table().get_by_id(args.server)
@@ -346,18 +348,17 @@ class App:
             return
 
         user = await server.get_or_create_user(args.username)
-        await GDO_UserPermission.grant(user, GDO_Permission.OWNER)
-        await GDO_UserPermission.grant(user, GDO_Permission.ADMIN)
-        await GDO_UserPermission.grant(user, GDO_Permission.STAFF)
-        await GDO_UserPermission.grant(user, GDO_Permission.VOICE)
-        await GDO_UserPermission.grant(user, GDO_Permission.CRONJOB)
+        for perm in GDO_Permission.table().select().exec():
+            await GDO_UserPermission.grant_permission(user, perm)
+
         if module_enabled('login'):
             from gdo.login import module_login
             module_login.instance().set_password_for(user, args.password)
+
         email = args.email
-        if email:
-            if module_enabled('mail'):
-                module_mail.instance().set_email_for(user, email)
+        if email and module_enabled('mail'):
+            module_mail.instance().set_email_for(user, email)
+
         print("All Done!")
 
     async def wipe(self):

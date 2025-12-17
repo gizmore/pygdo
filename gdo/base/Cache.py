@@ -329,7 +329,6 @@ def gdo_cached(cache_key: str):
         return wrapper
     return decorator
 
-
 def gdo_instance_cached():
     def decorator(method):
         @wraps(method)

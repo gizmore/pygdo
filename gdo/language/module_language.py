@@ -12,17 +12,17 @@ class module_language(GDO_Module):
         super().__init__()
         self._priority = 2
 
-    def gdo_classes(self):
-        return [
-            GDO_Language,
-        ]
+    # def gdo_classes(self):
+    #     return [
+    #         GDO_Language,
+    #     ]
 
     async def gdo_install(self):
         InstallLanguage.now()
 
     def gdo_user_settings(self) -> list[GDT]:
         return [
-            GDT_Language('language').not_null().icon('language').initial('en').tooltip('tt_core_language'),
+            GDT_Language('language').not_null().initial('en').tooltip('tt_core_language'),
         ]
 
     def get_language(self, user: GDO_User) -> GDO_Language:

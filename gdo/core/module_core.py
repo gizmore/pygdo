@@ -41,6 +41,8 @@ from gdo.date.GDT_DateTime import GDT_DateTime
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 import msgspec.json
 
+from gdo.language.GDO_Language import GDO_Language
+
 
 class module_core(GDO_Module):
 
@@ -124,6 +126,7 @@ class module_core(GDO_Module):
 
     def gdo_classes(self):
         return [
+            GDO_Language,
             GDO_Server,
             GDO_Channel,
             GDO_User,

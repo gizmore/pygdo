@@ -3,6 +3,7 @@ import functools
 from gdo.admin.GDT_Module import GDT_Module
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.base.Render import Render
 from gdo.base.Trans import t
 from gdo.base.Util import html
@@ -43,9 +44,11 @@ class settings(MethodForm):
         module = self.get_module()
         form.text('md_account_settings', (module.render_name(),))
         for gdt in module.all_user_settings():
-            if isinstance(gdt, GDT_Field):
-                gdt = GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current())
-            form.add_field(gdt)
+            if not gdt.is_secret() or self._env_user.is_staff():
+                if gdt2 := GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current()):
+                    form.add_field(gdt2)
+                else:
+                    form.add_field(gdt)
         form.href(href('account', 'all_settings', f'&module={module.get_name}'))
         form.actions().add_field(GDT_Submit(f'submit_{module.get_name}').calling(self.form_submitted))
 

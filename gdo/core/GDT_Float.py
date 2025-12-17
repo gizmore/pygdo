@@ -13,8 +13,8 @@ class GDT_Float(GDT_String):
 
     def __init__(self, name: str):
         super().__init__(name)
-        self._min = -sys.maxsize - 1
-        self._max = sys.maxsize
+        # self._min = -sys.maxsize - 1
+        # self._max = sys.maxsize
         self._precision = 3
         self._fill_zeroes = False
         self._no_thousands = False

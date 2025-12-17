@@ -4,9 +4,11 @@ import logging
 import nest_asyncio
 from typing_extensions import TYPE_CHECKING
 
+from gdo.base.Cache import Cache
 from gdo.base.Message import Message
 from gdo.base.Util import gdo_print
 from gdo.core.GDO_UserPermission import GDO_UserPermission
+from gdo.core.method.clear_cache import clear_cache
 
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User

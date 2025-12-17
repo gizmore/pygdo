@@ -71,22 +71,26 @@ class Installer:
 
     @classmethod
     def install_module(cls, module: GDO_Module, verbose: bool = False) -> bool:
-        if verbose:
-            print(f"Installing module {module.get_name}")
-        if not module.is_installable():
-            return False
-        classes = module.gdo_classes()
-        for classname in classes:
+        try:
             if verbose:
-                print(f"Installing table {str(classname.__name__).lower()}")
-            cls.install_gdo(classname)
-        for classname in classes:
-            cls.install_gdo_fk(classname)
-        module = cls.install_module_entry(module)
-        ModuleLoader.instance().on_module_installed(module)
-        for classname in classes:
-            cls.install_gdo_table(classname)
-        return True
+                print(f"Installing module {module.get_name}")
+            if not module.is_installable():
+                return False
+            classes = module.gdo_classes()
+            for classname in classes:
+                if verbose:
+                    print(f"Installing table {str(classname.__name__).lower()}")
+                cls.install_gdo(classname)
+            for classname in classes:
+                cls.install_gdo_fk(classname)
+            module = cls.install_module_entry(module)
+            ModuleLoader.instance().on_module_installed(module)
+            for classname in classes:
+                cls.install_gdo_table(classname)
+            return True
+        except Exception as ex:
+            Logger.exception(ex)
+            return False
 
     @classmethod
     def install_module_entry(cls, module: GDO_Module):

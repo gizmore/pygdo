@@ -1,5 +1,6 @@
 import os.path
 import asyncio
+import time
 from io import BytesIO
 from urllib.parse import parse_qs, unquote
 from multipart import MultipartParser
@@ -29,10 +30,17 @@ from gdo.base.Cache import Cache
 FRESH = True
 SIDEBARS = False
 REQUEST_COUNT = 0
+
+def aiorun(coro):
+    while asyncio.iscoroutine(coro):
+        if not Application.LOOP.is_running():
+            coro = Application.LOOP.run_until_complete(coro)
+        else:
+            time.sleep(0.000025)
+    return coro
+
 def application(environ, start_response):
     Application.LOOP = asyncio.new_event_loop()
-    # r = AsyncRunner()
-    # Application.LOOP = r._loop
     return pygdo_application(environ, start_response)
 
 def pygdo_application(environ, start_response):
@@ -69,6 +77,8 @@ def pygdo_application(environ, start_response):
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
+            while Application.LOOP.is_running():
+                time.sleep(0.000025)
             Application.LOOP.run_until_complete(IPC.web_register_ipc())
             FRESH = False
         else:
@@ -109,9 +119,7 @@ def pygdo_application(environ, start_response):
             Application.set_current_user(user)
             method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_path())
             gdt = method.execute()
-            while asyncio.iscoroutine(gdt):
-                if not  Application.LOOP.is_running():
-                    gdt = Application.LOOP.run_until_complete(gdt)
+            gdt = aiorun(gdt)
             if isinstance(gdt, GDT_FileOut):
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
@@ -128,9 +136,7 @@ def pygdo_application(environ, start_response):
             user = session.get_user()
             method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session)
             gdt = method.execute()
-            while asyncio.iscoroutine(gdt):
-                if not  Application.LOOP.is_running():
-                    gdt = Application.LOOP.run_until_complete(gdt)
+            gdt = aiorun(gdt)
             if isinstance(gdt, GDT_FileOut):
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
@@ -189,9 +195,7 @@ def pygdo_application(environ, start_response):
             try:
                 method.raw_args = args
                 result = method.execute()
-                while asyncio.iscoroutine(result):
-                    if not Application.LOOP.is_running():
-                        result = Application.LOOP.run_until_complete(result)
+                result = aiorun(result)
             except Exception as ex:
                 result = GDT_Error.from_exception(ex, method.gdo_module().render_name())
 

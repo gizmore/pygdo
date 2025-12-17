@@ -16,19 +16,11 @@ from gdo.base.Result import Result
 
 
 class NopeConverter(MySQLConverter):
-    BINARY_TYPES = {
-        FieldType.BLOB,
-        FieldType.TINY_BLOB,
-        FieldType.MEDIUM_BLOB,
-        FieldType.LONG_BLOB,
-        FieldType.BIT,
-        FieldType.GEOMETRY,
-    }
     def row_to_python(self, row, desc):
         return tuple(
             None if v is None else
-            bytes(v) if desc[i][1] in self.BINARY_TYPES else
-            v.decode('utf-8')
+            v.decode('charmap') if desc[i][7] & FieldFlag.BINARY
+            else v.decode()
             for i, v in enumerate(row)
         )
 

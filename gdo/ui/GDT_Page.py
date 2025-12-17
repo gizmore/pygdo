@@ -5,7 +5,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
-from gdo.base.Util import jsn
+from gdo.base.UserTemp import UserTemp
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Serialize import GDT_Serialize, SerializeMode
 from gdo.core.GDT_TemplateHTML import tplhtml
@@ -13,6 +13,7 @@ from gdo.ui.GDT_Bar import GDT_Bar
 
 
 class GDT_Page(GDT):
+
     _js: list[str] = []
     _js_inline: str = ''
     _css: list[str] = []
@@ -61,6 +62,7 @@ class GDT_Page(GDT):
         return self._result.render_txt()
 
     def render_html(self):
+        from gdo.core.GDO_User import GDO_User
         return tplhtml('ui', 'page.html', {
             'lang': Application.LANG_ISO,
             'title': self._method.gdo_render_title(),
@@ -71,6 +73,7 @@ class GDT_Page(GDT):
             'js': self.render_js(),
             'js_inline': self._js_inline,
             'title_bar': self._title_bar.render_html(),
+            'flash': UserTemp.get_cached_for_user(GDO_User.current(), 'flash', UserTemp.EMPTY_BAR).render_html(),
             'top_bar': self._top_bar.render_html(),
             'left_bar': self._left_bar.render_html(),
             'right_bar': self._right_bar.render_html(),

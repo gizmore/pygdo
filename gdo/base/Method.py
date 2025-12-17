@@ -7,6 +7,9 @@ from typing import TYPE_CHECKING, Self
 from mysql.connector import OperationalError
 
 from gdo.base.ParseArgs import ParseArgs
+from gdo.base.UserTemp import UserTemp
+from gdo.ui.GDT_Error import GDT_Error
+from gdo.ui.GDT_Success import GDT_Success
 
 if TYPE_CHECKING:
     from gdo.base.ParseArgs import ParseArgs
@@ -269,6 +272,14 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             raise GDOParamError('err_param', (key, gdt.render_error()))
         return None
 
+    def param_vals(self):
+        vals = {}
+        for _gdt in self.parameters().values():
+            for gdt in _gdt.gdo_components():
+                if name := gdt.get_name():
+                    vals[name] = self.param_val(name)
+        return vals
+
     ############
     # Redirect #
     ############
@@ -277,6 +288,14 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         redirect = GDT_Redirect().href(href).text(key, args)
         Application.get_page()._top_bar.add_field(redirect)
         return self
+
+    def redirect_msg(self, href: str, key: str, args: tuple[str | float | int, ...] = None):
+        UserTemp.flash(self._env_user, GDT_Success().text(key, args).title_raw(self.gdo_module().render_name()))
+        return self.redirect(href, key, args)
+
+    def redirect_err(self, href: str, key: str, args: tuple[str | float | int, ...] = None):
+        UserTemp.flash(self._env_user, GDT_Error().text(key, args).title_raw(self.gdo_module().render_name()))
+        return self.redirect(href, key, args)
 
     def href(self, append: str = '', format: str = 'html') -> str:
         return self.gdo_module().href(self.get_name(), append, format)

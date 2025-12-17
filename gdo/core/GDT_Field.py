@@ -87,7 +87,7 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         self._val = self.to_val(value)
         return self
 
-    def gdo(self, gdo: GDO):
+    def  gdo(self, gdo: GDO):
         self._gdo = gdo
         val = gdo._vals.get(self._name)
         self.val(val)

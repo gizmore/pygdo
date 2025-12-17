@@ -1,5 +1,5 @@
-import binascii
 import traceback
+import binascii
 from copy import deepcopy
 from functools import lru_cache
 from typing import Self
@@ -14,6 +14,7 @@ from typing_extensions import TYPE_CHECKING
 if TYPE_CHECKING:
     from gdo.base.Query import Query
     from gdo.base.Method import Method
+    from gdo.base.GDO import GDOs
     from gdo.base.GDO_Module import GDO_Module
     from gdo.form.GDT_Form import GDT_Form
 
@@ -96,6 +97,10 @@ class GDT(WithSerialization):
         mn = Strings.substr_from(cls.__module__, 'gdo.')
         mn = Strings.substr_to(mn, '.')
         return ModuleLoader.instance()._cache[mn]
+
+    @classmethod
+    def column(cls, gdo: 'GDO', column_name: str) -> Self:
+        return gdo.column(column_name)
 
     #############
     ### Hooks ###
@@ -280,6 +285,10 @@ class GDT(WithSerialization):
     ##############
     # Render GDT #
     ##############
+    @classmethod
+    def render_type_list(cls):
+        return cls.__name__
+
     def render(self, mode: Mode = Mode.render_html):
         return self.render_gdt(mode)
 
@@ -355,3 +364,6 @@ class GDT(WithSerialization):
     def copy_as(self, new_name: str = None) -> Self:
         cloned = deepcopy(self)
         return cloned.name(new_name or self.get_name())
+
+    def is_secret(self):
+        return False

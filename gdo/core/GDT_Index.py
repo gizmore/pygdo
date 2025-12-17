@@ -11,7 +11,7 @@ class GDT_Index(WithName, GDT):
         super().__init__()
         self.name(name)
         self._index_type = 'INDEX'
-        self._index_using = ''
+        self._index_using = 'BTREE'
         self._index_fields = ()
 
     ########

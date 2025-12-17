@@ -11,6 +11,7 @@ class GDT_Password(GDT_String):
         self.minlen(4)
         self._input_type = 'password'
         self.icon('password')
+        self.secret()
 
     def is_secret(self) -> bool:
         return True

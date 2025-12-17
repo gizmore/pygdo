@@ -40,6 +40,9 @@ class GDT_File(GDT_Object):
         form.multipart()
         self.upload_path(f"{form._method.gdo_module().get_name}.{form._method.get_name()}.{self._name}")
 
+    def get_file(self) -> list[GDO_File]:
+        return self.get_value()
+
     ###########
     # Options #
     ###########

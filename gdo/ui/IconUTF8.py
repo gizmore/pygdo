@@ -106,6 +106,7 @@ class IconUTF8(IconProvider):
             'reply': '☞',
             'required': '❋',
             'schedule': '☷',
+            'score': 'c',
             'search': '🔍',
             'select': '🎚',
             'settings': '⚙',
