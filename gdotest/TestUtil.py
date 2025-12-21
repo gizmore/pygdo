@@ -251,7 +251,7 @@ def all_private_messages():
         msgs.clear()
     return out.strip()
 
-def cli_plug(user: 'GDO_User', command: str) -> str:
+def cli_plug(user: 'GDO_User|None', command: str) -> str:
     return text_plug(Mode.render_cli, command, user)
 
 def cli_top(mode: Mode = Mode.render_txt):

@@ -57,6 +57,8 @@ class Database(WithPygdo):
             self.link.database = self.db_name
             self.query('SET NAMES utf8mb4')
             self.query("SET time_zone = '+00:00'")
+            self.query("SET interactive_timeout=3600")
+            self.query("SET wait_timeout=3600")
         return self.link
 
     def reconnect(self):

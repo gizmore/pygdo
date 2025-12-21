@@ -7,5 +7,4 @@ class GDT_Score(GDT_Int):
         super().__init__(name)
         self.icon('trophy')
         self.bytes(4)
-        self.not_null()
         self.initial('0')

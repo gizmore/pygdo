@@ -5,7 +5,7 @@ from gdo.core.GDT_TemplateHTML import tplhtml
 from gdo.ui.WithFlow import WithFlow
 
 
-class GDT_Bar(WithFlow, WithName, GDT_Container):
+class GDT_Bar(WithName, GDT_Container):
 
     __slots__ = ('_flow_horz',)
 
