@@ -102,3 +102,6 @@ class ParseArgs(WithPygdo):
         self.args = {}
         self.pargs = []
         self.files = []
+
+    def get_cache_key(self, method: 'Method') -> str:
+        return f"{method.fqcn()}.{self.args}.{self.pargs}"

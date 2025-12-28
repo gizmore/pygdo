@@ -89,6 +89,9 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     ############
     # Abstract #
     ############
+    @classmethod
+    def gdo_cached(cls) -> int:
+        return 0
 
     @classmethod
     def gdo_trigger(cls) -> str:
@@ -331,7 +334,19 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     ########
     # Exec #
     ########
+    METHODCACHE: dict[str, tuple[int, GDT]] = {}
+    @classmethod
+    def get_cached_result(cls, key: str) -> GDT:
+        return cls.METHODCACHE.get(key)
+
+
     async def execute(self):
+        seconds = 0
+        key = ''
+        if seconds := self.gdo_cached():
+            key = self._raw_args.get_cache_key(self)
+            if gdt := self.get_cached_result(key):
+                return gdt
         db = Application.db()
         tr = self.gdo_transactional() and not db.is_in_transaction()
         try:
@@ -340,7 +355,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             self.gdo_before_execute()
             if not self._prepare_nested_permissions(self):
                 return self.empty()
-            return await self._nested_execute(self, True)
+            gdt = await self._nested_execute(self, True)
+            if seconds:
+                self.__class__.METHODCACHE[key] = (seconds, gdt)
+
         except (GDOParamError, GDOError) as ex:
             err_raw(str(ex))
             return self
