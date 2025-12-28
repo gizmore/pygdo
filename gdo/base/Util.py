@@ -4,6 +4,7 @@ import string
 import functools
 
 import asyncio
+from functools import lru_cache
 
 import magic
 
@@ -19,7 +20,7 @@ import urllib.parse
 from collections import OrderedDict
 from html import unescape
 from itertools import product
-from typing import Sequence
+from typing import Sequence, Any
 
 import msgspec.json
 
@@ -84,14 +85,21 @@ def dump(*obj: any):
         Logger.debug(msg)
         err_raw(msg)
 
-
-@functools.cache
-def module_enabled(module_name: str) -> bool:
+@lru_cache(maxsize=None)
+def get_module(module_name: str):
     from gdo.base.ModuleLoader import ModuleLoader
-    if module := ModuleLoader.instance().get_module(module_name):
+    return ModuleLoader.instance().get_module(module_name)
+
+def module_enabled(module_name: str) -> bool:
+    if module := get_module(module_name):
         return module.is_enabled()
     return False
 
+def module_config_var(module_name: str, var_name: str) -> str:
+    return get_module(module_name).get_config_val(var_name)
+
+def module_config_value(module_name: str, var_name: str) -> Any:
+    return get_module(module_name).get_config_value(var_name)
 
 class CLI:
 
@@ -227,7 +235,7 @@ class Files:
         return True
 
     @classmethod
-    async def acreate_dir(cls, dir_name: str):
+    async def acreate_dir(cls, dir_name: str, exist_ok: bool = True) -> bool:
         await asyncio.to_thread(os.makedirs, dir_name, exist_ok=exist_ok, mode=0o700)
         # await aiofiles.os.makedirs(dir_name, mode=0o700, exist_ok=True)
         return True
@@ -522,6 +530,12 @@ class NumericUtil:
 
     DIGITS = string.digits + string.ascii_uppercase + string.ascii_lowercase + "+/"
     DIGITS_BASE64 = string.ascii_uppercase + string.ascii_lowercase + string.digits + "+/"
+
+    @staticmethod
+    def clamp(num, _min=None, _max=None):
+        if _min is not None and num < _min: return _min
+        if _max is not None and num > _max: return _max
+        return num
 
     @staticmethod
     def output_prefix(base: int) -> str:

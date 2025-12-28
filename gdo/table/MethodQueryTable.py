@@ -16,4 +16,8 @@ class MethodQueryTable(MethodTable):
         query = self.gdo_table_query()
         if self.gdo_ordered():
             self.table_order_field().order_query(query)
+        if self.gdo_paginated():
+            self.table_paginate_field().paginate_query(query, self.gdo_paginate_size())
+        if self.gdo_filtered():
+            self.table_filter_field().filter_query(query, self)
         return query.exec()

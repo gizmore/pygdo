@@ -42,6 +42,7 @@ from gdo.date.GDT_Timestamp import GDT_Timestamp
 import msgspec.json
 
 from gdo.language.GDO_Language import GDO_Language
+from gdo.ui.GDT_Score import GDT_Score
 
 
 class module_core(GDO_Module):
@@ -102,6 +103,7 @@ class module_core(GDO_Module):
             GDT_User("creator"),
             GDT_DateTime("deleted"),
             GDT_User("deletor"),
+            GDT_Score('score').initial('0'),
         ]
 
     def gdo_user_settings(self) -> list[GDT]:

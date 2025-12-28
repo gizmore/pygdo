@@ -38,9 +38,9 @@ class Installer:
         if verbose:
             gdo_print("Re-Loading installed modules.")
         loader = ModuleLoader.instance()
-        # Cache.clear()
+        await clear_cache().gdo_execute()
         # loader.reset()
-        modules = loader.load_modules_db()
+        modules = loader.load_modules_fs()
         loader.init_modules(True, True)
 
         if verbose:

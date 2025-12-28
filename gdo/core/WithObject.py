@@ -74,7 +74,7 @@ class WithObject:
         return GDO.EMPTY_LIST
 
     def get_by_name(self, var: str) -> list[GDO] | GDO | None:
-        var = var.lower()
+        # var = var.lower()
         gdos = self.query_gdos(var)
         if self._multiple:
             return gdos

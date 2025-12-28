@@ -7,14 +7,13 @@ from typing import Self
 from gdo.base.Trans import Trans, t
 from gdo.base.WithSerialization import WithSerialization
 from gdo.base.Render import Mode, Render
-from gdo.base.Util import Strings
-
+from gdo.base.Util import Strings, get_module
 
 from typing_extensions import TYPE_CHECKING
 if TYPE_CHECKING:
     from gdo.base.Query import Query
     from gdo.base.Method import Method
-    from gdo.base.GDO import GDOs
+    from gdo.base.GDO import GDO
     from gdo.base.GDO_Module import GDO_Module
     from gdo.form.GDT_Form import GDT_Form
 
@@ -101,6 +100,10 @@ class GDT(WithSerialization):
     @classmethod
     def column(cls, gdo: 'GDO', column_name: str) -> Self:
         return gdo.column(column_name)
+
+    @classmethod
+    def module_config(cls, module_name: str, config_key: str) -> Self:
+        return get_module(module_name).config_column(config_key)
 
     #############
     ### Hooks ###

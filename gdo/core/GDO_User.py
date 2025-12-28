@@ -3,7 +3,7 @@ import functools
 
 from typing_extensions import Self
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from gdo.base.Cache import gdo_cached, Cache
 from gdo.base.IPC import IPC
@@ -171,18 +171,22 @@ class GDO_User(GDO):
     def with_settings(self, settings: list[tuple[str, str, str]]) -> list['GDO_User']:
         return self.with_settings_result(settings).fetch_all()._items
 
+    def get_setting_column(self, key: str) -> GDT:
+        return self.gdo_user_settings().setting_column(key, self)
+
     def get_setting_val(self, key: str) -> str:
         if key in self._vals:
             Cache.VHITS += 1 #PYPP#DELETE#
             return self._vals[key]
-        self._vals[key] = set = self.gdo_user_settings().setting_column(key, self).get_val()
+        set = self.get_setting_column(key).get_val() or ''
+        self._vals[key] = set
         Cache.update_for(self)
         return set
 
-    def get_setting_value(self, key: str) -> any:
+    def get_setting_value(self, key: str) -> Any:
+        gdt = self.gdt_user_settings().KNOWN.get(key)
         var = self.get_setting_val(key)
-        gdt = self.gdo_user_settings().setting_column(key, self)
-        return gdt.get_value()
+        return gdt.to_value(var)
 
     def save_setting(self, key: str, val: str):
         if val != self.get_setting_val(key):
@@ -279,7 +283,9 @@ class GDO_User(GDO):
 
     @functools.cache
     def render_name(self) -> str:
-        return f'{self.gdo_val('user_displayname')}{{{self.gdo_val('user_server')}}}'
+        serv = self.gdo_val('user_server')
+        serv = '' if serv == '2' else f"{{{serv}}}"
+        return f'{self.gdo_val('user_displayname')}{serv}'
 
     #########
     # Hooks #
@@ -305,3 +311,10 @@ class GDO_User(GDO):
 
     def is_dog(self) -> bool:
         return self == self.get_server().get_connector().gdo_get_dog_user()
+
+    @classmethod
+    def join_setting(cls, query: Query, setting_key: str, join_key: str = None, user_table: str = 'gdo_user'):
+        join_key = join_key or setting_key
+        stable = f'setting_{setting_key}'
+        query.select(f"{stable}.uset_val as {join_key}")
+        query.join(f"LEFT JOIN gdo_usersetting {stable} ON {stable}.uset_user={user_table}.user_id AND {stable}.uset_key = '{setting_key}'")

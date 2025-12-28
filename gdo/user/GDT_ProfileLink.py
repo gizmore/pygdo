@@ -1,4 +1,6 @@
+from gdo.avatar.GDT_Avatar import GDT_Avatar
 from gdo.base.Trans import t
+from gdo.base.Util import module_config_value
 from gdo.base.util.href import href
 from gdo.core.GDO_User import GDO_User
 from gdo.ui.GDT_Link import GDT_Link
@@ -33,3 +35,11 @@ class GDT_ProfileLink(GDT_Link):
 
     def render_label(self) -> str:
         return t('profile')
+
+    def render_html(self) -> str:
+        back = ''
+        if self._with_avatar:
+            gdt = self._user.gdt_user_settings().KNOWN.get('avatar_file')
+            return gdt.for_user(self._user).render_html()
+        back += super().render_html()
+        return back

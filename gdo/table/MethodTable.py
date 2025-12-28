@@ -1,4 +1,5 @@
 import functools
+from functools import lru_cache
 from typing import Iterator
 
 from gdo.base.Exceptions import GDOException
@@ -8,6 +9,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Render import Mode, Render
 from gdo.base.Result import Result
 from gdo.base.ResultArray import ResultArray
+from gdo.base.Util import module_enabled, module_config_value
 from gdo.core.WithGDO import WithGDO
 from gdo.form.MethodForm import MethodForm
 from gdo.table.module_table import module_table
@@ -55,7 +57,7 @@ class MethodTable(WithGDO, MethodForm):
     def table_order_field(self) -> GDT_Order:
         return self.parameter(self.gdo_order_name())
 
-    def table_filter_field(self) -> GDT_Order:
+    def table_filter_field(self) -> GDT_Filter:
         return self.parameter(self.gdo_filter_name())
 
     def table_search_field(self) -> GDT_Search:
@@ -77,13 +79,14 @@ class MethodTable(WithGDO, MethodForm):
     def gdo_table_headers(self) -> list[GDT]:
         return list(filter(lambda gdt: not gdt.is_hidden(), self.gdo_table().columns().values()))
 
+    @lru_cache(maxsize=None)
+    def _table_headers(self) -> list[GDT]:
+        return self.gdo_table_headers()
+
     def gdo_table_result(self) -> Result:
         raise GDOException(f"{self.__class__.__name__} does not implement gdo_table_result()")
 
-    def get_num_results(self) -> int:
-        return self.gdo_table_result().get_num_rows()
-
-    ##################
+     ##################
     # Abstract hooks #
     ##################
     def gdo_create_table(self, table: GDT_Table):
@@ -94,7 +97,7 @@ class MethodTable(WithGDO, MethodForm):
     #####################
 
     def gdo_max_results(self) -> int:
-        return 200
+        return module_config_value('table', 'table_ipp')
 
     def gdo_page_positional(self) -> bool:
         return True
@@ -143,6 +146,9 @@ class MethodTable(WithGDO, MethodForm):
     #########
     # Table #
     #########
+    def get_num_results(self) -> int:
+        return self.gdo_table_result().get_num_rows()
+
     @functools.cache
     def get_table(self) -> GDT_Table:
         table = GDT_Table()

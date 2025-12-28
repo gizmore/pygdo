@@ -1,7 +1,9 @@
 from gdo.base.Cache import Cache
+from gdo.base.Exceptions import GDOException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Query import Query
+from gdo.base.Trans import t
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_User import GDT_User
@@ -13,20 +15,15 @@ class GDO_UserSetting(GDO):
         return False
 
     @classmethod
-    def setting_column(cls, key: str, user: GDO_User) -> GDT|None:
+    def setting_column(cls, key: str, user: GDO_User) -> GDT:
         if gdt := GDT_UserSetting.KNOWN.get(key, None):
             if not user.is_persisted():
                 return gdt.val(gdt.get_initial())
             if gdo := cls.get_setting(user, key):
                 return gdt.val(gdo.get_val())
             else:
-                # cls.blank({
-                #     'uset_user': user.get_id(),
-                #     'uset_key': key,
-                #     'uset_val': gdt.get_initial(),
-                # }).insert()
                 return gdt.val(gdt.get_initial())
-        return None
+        raise GDOException(t('err_unknown_setting'))
 
     """
     Store settings for a user.

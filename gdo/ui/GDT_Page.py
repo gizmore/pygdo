@@ -65,6 +65,7 @@ class GDT_Page(GDT):
         from gdo.core.GDO_User import GDO_User
         return tplhtml('ui', 'page.html', {
             'lang': Application.LANG_ISO,
+            'result': self._result.render(Mode.render_html),
             'title': self._method.gdo_render_title(),
             'descr': self._method.gdo_render_descr(),
             'keywords': self._method.gdo_render_keywords(),
@@ -78,7 +79,6 @@ class GDT_Page(GDT):
             'left_bar': self._left_bar.render_html(),
             'right_bar': self._right_bar.render_html(),
             'bottom_bar': self._bottom_bar.render_html(),
-            'result': self._result.render(Mode.render_html),
         })
 
     @classmethod
