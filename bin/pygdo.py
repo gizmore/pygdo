@@ -69,7 +69,6 @@ async def pygdo(line: str = None):
         await repl()
 
 
-@functools.lru_cache
 async def get_parser():
     from gdo.base.Parser import Parser
     from gdo.base.Render import Mode
@@ -139,7 +138,7 @@ async def repl():
     # thread.start()
     if not sys.stdin.isatty():
         print("Terminal is no tty.")
-    user = CLI.get_current_user()
+    user = await CLI.get_current_user()
     IPC.send('base.dogpid_update')
     if RUNNING == 2:
         signal.signal(signal.SIGUSR1, handler=handle_sigusr1)

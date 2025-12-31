@@ -1,12 +1,13 @@
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.base.WithName import WithName
+from gdo.message.WithHTMLAttributes import WithHTMLAttributes
 from gdo.ui.WithHREF import WithHREF
 from gdo.ui.WithText import WithText
 from gdo.ui.WithTitle import WithTitle
 
 
-class GDT_Link(WithHREF, WithTitle, WithText, WithName, GDT):
+class GDT_Link(WithHTMLAttributes, WithHREF, WithTitle, WithText, WithName, GDT):
 
     def __init__(self, name: str=None):
         super().__init__()

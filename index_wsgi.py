@@ -193,7 +193,6 @@ def pygdo_application(environ, start_response):
                 args.add_post_vars(post_variables)
 
             try:
-                method.raw_args = args
                 result = method.execute()
                 result = aiorun(result)
             except Exception as ex:

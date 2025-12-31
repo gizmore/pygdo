@@ -10,7 +10,8 @@ from gdo.base.Application import Application
 from gdo.base.Util import Files
 from gdo.base.WithSerialization import WithSerialization
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
 if TYPE_CHECKING:
     from gdo.base.GDT import GDT
     from gdo.base.GDO import GDO
@@ -41,8 +42,9 @@ class Cache:
     CCACHE: dict[str, dict[str, 'GDT']]  # class_name => GDO.gdo_columns() mapping
     PCACHE: dict[str, list['GDT']]       # class_name => GDO.gdo_columns() PK mapping
     OCACHE: dict[str, dict[str, 'GDO']]  # table_name => dict[id, GDO] mapping
-    RCACHE: Redis = None               # key => dict[key, WithSerialization] mapping
-    NCACHE: list[str]                  # list of non persistent GDO table names
+    RCACHE: Redis = None                 # key => dict[key, WithSerialization] mapping
+    NCACHE: list[str]                    # list of non persistent GDO table names
+    MCACHE: dict[str, tuple[int, Any]]   # Cache with a timeout
 
     ZLIB_LEVEL: int = -1
 
@@ -54,6 +56,7 @@ class Cache:
             cls.PCACHE = {}
             cls.OCACHE = {}
             cls.NCACHE = []
+            cls.MCACHE = {}
             cls.ZLIB_LEVEL = zlib_level
             if uds:
                 cls.RCACHE = Redis(unix_socket_path=uds, decode_responses=False)
@@ -65,6 +68,7 @@ class Cache:
         cls.TCACHE = {}
         cls.CCACHE = {}
         cls.PCACHE = {}
+        cls.MCACHE = {}
         cls.clear_ocache()
         cls.remove()
         Files.empty_dir(Application.file_path('cache/'))
@@ -307,6 +311,22 @@ class Cache:
     @classmethod
     def reload(cls, table_name: str, gid: str):
         cls.OCACHE[table_name][gid].reload()
+
+    ###############
+    # Timed cache #
+    ###############
+    @classmethod
+    def get_timed_cache(cls, key: str) -> Any|None:
+        entry = cls.MCACHE.get(key)
+        if entry and entry[0] > Application.TIME:
+            cls.OHITS += 1  # PYPP#DELETE#
+            return entry[1]
+        return None
+
+    @classmethod
+    def add_timed_cache(cls, key: str, seconds: int, content: Any) -> None:
+        cls.UPDATES += 1  # PYPP#DELETE#
+        cls.MCACHE[key] = (seconds + Application.TIME, content)
 
 
 #############

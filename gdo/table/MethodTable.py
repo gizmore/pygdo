@@ -12,6 +12,8 @@ from gdo.base.ResultArray import ResultArray
 from gdo.base.Util import module_enabled, module_config_value
 from gdo.core.WithGDO import WithGDO
 from gdo.form.MethodForm import MethodForm
+from gdo.message.GDT_HTML import GDT_HTML
+from gdo.table.GDT_PageMenu import GDT_PageMenu
 from gdo.table.module_table import module_table
 from gdo.table.GDT_Filter import GDT_Filter
 from gdo.table.GDT_Order import GDT_Order
@@ -65,6 +67,19 @@ class MethodTable(WithGDO, MethodForm):
 
     def table_paginate_field(self) -> GDT_PageNum:
         return self.parameter(self.gdo_paginate_name())
+
+    #############
+    # Page Menu #
+    #############
+    def get_page_menu(self) -> GDT_PageMenu|GDT_HTML:
+        if self.gdo_paginated():
+            page_menu = GDT_PageMenu(self.get_name() + '_page_menu')
+            page_menu.paginate(self)
+            return page_menu
+        return GDT_HTML()
+
+    def get_page_menu_run_len(self) -> int:
+        return module_table.instance().cfg_page_menu_ipp()
 
     ##################
     # Abstract table #
@@ -164,8 +179,8 @@ class MethodTable(WithGDO, MethodForm):
             result = GDOSorter.filter(result, self.parameter(self.gdo_filter_name()))
         if self.gdo_paginated():
             result = GDOSorter.paginate(result, self.parameter(self.gdo_paginate_name()), self.gdo_paginate_size())
-        elif max := self.gdo_max_results():
-            result = GDOSorter.limit(result, max)
+            if max := self.gdo_max_results():
+                result = GDOSorter.limit(result, max)
         return result
 
     ########

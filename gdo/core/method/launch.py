@@ -104,4 +104,4 @@ class launch(Method):
         if not server._has_loop:
             Logger.debug(f"step server {server.render_name()}")
             server._has_loop = True
-            Application.TASKS.append(server.loop(), name=server.get_name())
+            Application.TASKS.append(asyncio.create_task(server.loop(), name=server.get_name()))

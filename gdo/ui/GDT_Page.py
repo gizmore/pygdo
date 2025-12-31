@@ -1,6 +1,7 @@
 import functools
 
 from gdo.base.Application import Application
+from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
@@ -63,9 +64,16 @@ class GDT_Page(GDT):
 
     def render_html(self):
         from gdo.core.GDO_User import GDO_User
+        result = ''
+        if seconds := self._method.gdo_cached():
+            key = self._method._raw_args.get_cache_key(self._method)
+            if not (result := Cache.get_timed_cache(key)):
+                result = self._result.render(Mode.render_html)
+                Cache.add_timed_cache(key, seconds, result)
+        if not result: result = self._result.render(Mode.render_html)
         return tplhtml('ui', 'page.html', {
             'lang': Application.LANG_ISO,
-            'result': self._result.render(Mode.render_html),
+            'result': result,
             'title': self._method.gdo_render_title(),
             'descr': self._method.gdo_render_descr(),
             'keywords': self._method.gdo_render_keywords(),

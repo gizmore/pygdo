@@ -6,8 +6,10 @@ from typing import TYPE_CHECKING, Self
 
 from mysql.connector import OperationalError
 
+from gdo.base.Cache import Cache
 from gdo.base.ParseArgs import ParseArgs
 from gdo.base.UserTemp import UserTemp
+from gdo.message.GDT_HTML import GDT_HTML
 from gdo.ui.GDT_Error import GDT_Error
 from gdo.ui.GDT_Success import GDT_Success
 
@@ -334,19 +336,13 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     ########
     # Exec #
     ########
-    METHODCACHE: dict[str, tuple[int, GDT]] = {}
-    @classmethod
-    def get_cached_result(cls, key: str) -> GDT:
-        return cls.METHODCACHE.get(key)
-
+    METHOD_CACHE: dict[str, tuple[float, GDT]] = {}
 
     async def execute(self):
-        seconds = 0
-        key = ''
-        if seconds := self.gdo_cached():
+        if self.gdo_cached():
             key = self._raw_args.get_cache_key(self)
-            if gdt := self.get_cached_result(key):
-                return gdt
+            if Cache.get_timed_cache(key):
+                return GDT_HTML()
         db = Application.db()
         tr = self.gdo_transactional() and not db.is_in_transaction()
         try:
@@ -355,10 +351,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             self.gdo_before_execute()
             if not self._prepare_nested_permissions(self):
                 return self.empty()
-            gdt = await self._nested_execute(self, True)
-            if seconds:
-                self.__class__.METHODCACHE[key] = (seconds, gdt)
-
+            return await self._nested_execute(self, True)
         except (GDOParamError, GDOError) as ex:
             err_raw(str(ex))
             return self
