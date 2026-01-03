@@ -19,10 +19,19 @@ class WithHTMLAttributes:
     def html_attrs(self) -> str:
         out = ""
         for key, value in self.get_attrs().items():
-            out += f' {key}="{html(value)}"'
+            out += f' {key}="{html(value.strip())}"'
         return out #.strip()
 
     def add_class(self, klass: str):
         classes = self.get_attrs().get('class', '')
-        classes += f" {klass}"
-        return self.attr('class', classes)
+        classes = classes.split(' ')
+        if klass not in classes:
+            classes.append(klass)
+        return self.attr('class', " ".join(classes))
+
+    def remove_class(self, klass: str):
+        classes = self.get_attrs().get('class', '')
+        classes = classes.split(' ')
+        if klass in classes:
+            classes.remove(klass)
+        return self.attr('class', " ".join(classes))

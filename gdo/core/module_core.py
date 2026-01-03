@@ -42,6 +42,7 @@ from gdo.date.GDT_Timestamp import GDT_Timestamp
 import msgspec.json
 
 from gdo.language.GDO_Language import GDO_Language
+from gdo.ui.GDT_Link import GDT_Link
 from gdo.ui.GDT_Score import GDT_Score
 
 
@@ -104,6 +105,11 @@ class module_core(GDO_Module):
             GDT_DateTime("deleted"),
             GDT_User("deletor"),
             GDT_Score('score').initial('0'),
+        ]
+
+    def gdo_admin_links(self) -> list[GDT_Link]:
+        return [
+            GDT_Link('cc').href(self.href('clear_cache')).text('mt_core_clear_cache'),
         ]
 
     def gdo_user_settings(self) -> list[GDT]:
