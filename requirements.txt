@@ -1,4 +1,5 @@
 aioconsole
+aiofiles
 bcrypt<4.1
 html-purifier
 httplib2
