@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
+from gdo.base.GDT import GDT
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Object import GDT_Object
