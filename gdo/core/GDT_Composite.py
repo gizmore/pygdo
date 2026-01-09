@@ -23,7 +23,8 @@ class GDT_Composite(WithName, WithGDO, WithNullable, GDT):
         vals = {}
         vals.update(super().dirty_vals())
         for gdt in self.gdo_components():
-            vals.update(gdt.dirty_vals())
+            if gdt is not self:
+                vals.update(gdt.dirty_vals())
         return vals
 
     # def gdo_column_define(self) -> str:

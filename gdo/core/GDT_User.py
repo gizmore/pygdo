@@ -65,7 +65,13 @@ class GDT_User(WithCompletion, GDT_Object):
     ##########
     # Render #
     ##########
-    def render_cell(self) -> str:
+    # def render_cell(self) -> str:
+    #     if user := self.get_gdo():
+    #         name = user.render_name()
+    #         return GDT_Link().text_raw(name).href(href('user', 'profile', f'&for={name}')).render()
+    #     return Render.italic(t('none'))
+
+    def render_html(self) -> str:
         if user := self.get_gdo():
             name = user.render_name()
             return GDT_Link().text_raw(name).href(href('user', 'profile', f'&for={name}')).render()

@@ -190,20 +190,21 @@ class Cache:
         return cls.obj_search_gid(gdo, gid, delete)
 
     @classmethod
-    def obj_search_gid(cls, gdo: 'GDO', gid: str, delete: bool = False) -> 'GDO':
-        tn = gdo.gdo_table_name()
-        if ocached := cls.OCACHE[tn].get(gid):
-            cls.OHITS += 1 #PYPP#DELETE#
-            if delete:
-                del cls.OCACHE[tn][gid]
-                cls.remove(tn, gid)
-            else:
-                return ocached
-        if rcached := cls.get(tn, gid):
-            if delete:
-                cls.remove(tn, gid)
-            else:
-                return cls.obj_for(gdo.gdo_real_class(rcached).blank(rcached, False), rcached, False).my_id(gid)
+    def obj_search_gid(cls, gdo: 'GDO', gid: str, delete: bool = False) -> 'GDO|None':
+        if gdo.gdo_cached():
+            tn = gdo.gdo_table_name()
+            if ocached := cls.OCACHE[tn].get(gid):
+                cls.OHITS += 1 #PYPP#DELETE#
+                if delete:
+                    del cls.OCACHE[tn][gid]
+                    cls.remove(tn, gid)
+                else:
+                    return ocached
+            if rcached := cls.get(tn, gid):
+                if delete:
+                    cls.remove(tn, gid)
+                else:
+                    return cls.obj_for(gdo.gdo_real_class(rcached).blank(rcached, False), rcached, False).my_id(gid)
         return None
 
     @classmethod

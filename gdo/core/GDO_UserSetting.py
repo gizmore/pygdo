@@ -15,7 +15,7 @@ class GDO_UserSetting(GDO):
         return False
 
     @classmethod
-    def setting_column(cls, key: str, user: GDO_User) -> GDT:
+    def setting_column(cls, key: str, user: GDO_User) -> GDT | None:
         if gdt := GDT_UserSetting.KNOWN.get(key, None):
             if not user.is_persisted():
                 return gdt.val(gdt.get_initial())
@@ -23,7 +23,7 @@ class GDO_UserSetting(GDO):
                 return gdt.val(gdo.get_val())
             else:
                 return gdt.val(gdt.get_initial())
-        raise GDOException(t('err_unknown_setting'))
+        return None
 
     """
     Store settings for a user.

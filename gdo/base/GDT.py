@@ -99,7 +99,7 @@ class GDT(WithSerialization):
 
     @classmethod
     def column(cls, gdo: 'GDO', column_name: str) -> Self:
-        return gdo.column(column_name)
+        return gdo.column(column_name).gdo(gdo)
 
     @classmethod
     def module_config(cls, module_name: str, config_key: str) -> Self:

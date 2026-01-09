@@ -1,5 +1,6 @@
-from gdo.base.GDT import GDT
+from typing import Any, Callable
 from gdo.base.WithError import WithError
+from gdo.base.GDT import GDT
 from gdo.form.GDT_Form import GDT_Form
 
 
@@ -11,9 +12,9 @@ class GDT_Validator(WithError, GDT):
     """
     _validator_form: GDT_Form|None
     _validator_field: str
-    _validator_func: callable
+    _validator_func: Callable
 
-    def dummy_func(self, form: GDT_Form, field: GDT, value: any) -> bool:
+    def dummy_func(self, form: GDT_Form, field: GDT, value: Any) -> bool:
         return field.error('err_validator_stub')
 
     def __init__(self):
@@ -22,7 +23,7 @@ class GDT_Validator(WithError, GDT):
         self._validator_field = ''
         self._validator_form = None
 
-    def validator(self, form: GDT_Form, field_name: str, validator: callable):
+    def validator(self, form: GDT_Form|None, field_name: str, validator: Callable):
         self._validator_form = form
         self._validator_field = field_name
         self._validator_func = validator

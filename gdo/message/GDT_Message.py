@@ -57,6 +57,9 @@ class GDT_Message(GDT_Composite, GDT_Text):
     def render_form(self):
         return GDT_Template.python('message', 'form_message.html', {"field": self})
 
+    def render_card(self):
+        return self.get_rendered(Mode.render_html)
+
     def get_rendered(self, mode: Mode) -> str:
         gdt = self.get_output_gdt(mode)
         output = gdt.get_val()
