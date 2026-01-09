@@ -24,7 +24,7 @@ class WithModuleConfig:
     def gdo_user_settings(self) -> list[GDT]:
         return GDO.EMPTY_LIST
 
-    def gdo_admin_links(self) -> list[GDT_Link]:
+    def gdo_admin_links(self) -> list['GDT_Link']:
         return GDT.EMPTY_LIST
 
     ##########
