@@ -188,8 +188,9 @@ class GDO(WithName, WithBulk, GDT):
         raise GDOException(f"{self.__class__.__name__} does not provide any columns in gdo_columns().")
 
     def column(self, key: str, pass_gdo: bool = True) -> GDT:
-        gdt = Cache.column_for(self.__class__, key)
-        return gdt.gdo(self) if pass_gdo else gdt
+        if gdt := Cache.column_for(self.__class__, key):
+            return gdt.gdo(self) if pass_gdo else gdt
+        return None
 
     def columns(self) -> dict[str,GDT]:
         return Cache.columns_for(self.__class__)
