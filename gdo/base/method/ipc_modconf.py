@@ -11,6 +11,10 @@ class ipc_modconf(Method):
     Update a module config.
     """
 
+    @classmethod
+    def gdo_trigger(cls) -> str:
+        return ''
+
     def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Module('module').not_null(),
@@ -30,5 +34,5 @@ class ipc_modconf(Method):
         val = self.param_val('value')
         gdt = module._module_config.get(key)
         if gdt.validate(val):
-            gdt.val(val)
+            module.save_config_val(key, val)
         return self.empty()

@@ -9,6 +9,10 @@ class ipc_dogpid(Method):
     Triggered when dog or repl boots.
     """
 
+    @classmethod
+    def gdo_trigger(cls) -> str:
+        return ''
+
     def gdo_execute(self) -> GDT:
         IPC.PID = 0
         return self.empty()

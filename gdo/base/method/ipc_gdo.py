@@ -8,6 +8,10 @@ from gdo.core.GDT_TableName import GDT_TableName
 
 class ipc_gdo(Method):
 
+    @classmethod
+    def gdo_trigger(cls) -> str:
+        return ''
+
     def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_TableName('table').not_null(),

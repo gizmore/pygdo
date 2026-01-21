@@ -9,6 +9,10 @@ from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 class ipc_uset(Method):
 
+    @classmethod
+    def gdo_trigger(cls) -> str:
+        return ''
+
     def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_User('user').not_null(),
