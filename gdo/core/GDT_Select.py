@@ -1,6 +1,6 @@
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t
-from gdo.base.Util import Arrays
+from gdo.base.Util import Arrays, html
 from gdo.core.GDT_ComboBox import GDT_ComboBox
 from gdo.core.GDT_Template import tpl
 
@@ -26,6 +26,8 @@ class GDT_Select(GDT_ComboBox):
         if (value := self.to_value(val)) is not None:
             self.value(value)
             return True
+        if self._errkey:
+            return False
         return self.error_invalid_choice()
 
     def error_invalid_choice(self):
@@ -54,6 +56,8 @@ class GDT_Select(GDT_ComboBox):
             if val in k.lower() or (type(v) == str and val in v.lower()):
                 matches.append(v)
         if len(matches) == 1: return matches[0]
+        if len(matches) > 1:
+            self.error('err_ambiguous_choice', (len(matches), html(val)))
         return None
 
     ##########

@@ -6,7 +6,7 @@ class WithError:
     _errargs: tuple
 
     def has_error(self) -> bool:
-        return hasattr(self, '_errkey')
+        return hasattr(self, '_errkey') and self._errkey
 
     def error_raw(self, error_message: str):
         return self.error('%s', (error_message,))
@@ -20,8 +20,10 @@ class WithError:
         return self
 
     def reset_error(self):
-        delattr(self, '_errkey') if hasattr(self, '_errkey') else None
-        delattr(self, '_errargs') if hasattr(self, '_errargs') else None
+        self._errkey = None
+        self._errargs = None
+        # delattr(self, '_errkey') if hasattr(self, '_errkey') else None
+        # delattr(self, '_errargs') if hasattr(self, '_errargs') else None
         return self
 
 

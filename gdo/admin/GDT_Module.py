@@ -9,7 +9,6 @@ class GDT_Module(GDT_Select):
     def __init__(self, name: str):
         super().__init__(name)
         self._enabled = None
-        # self.init_choices()
 
     def gdo_choices(self):
         choices = {}

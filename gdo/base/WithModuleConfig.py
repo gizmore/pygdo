@@ -41,6 +41,20 @@ class WithModuleConfig:
     def config_column(self, key: str):
         return self.module_config().get(key)
 
+    def config_column_completed(self, key: str) -> list[GDT]:
+        key = key.lower()
+        first = []
+        other = []
+        for name, gdt in self.module_config().items():
+            name = name.lower()
+            if name.startswith(key):
+                first.append(gdt)
+            if name.count(key):
+                other.append(gdt)
+        if len(first) == 1:
+            return first
+        return other
+
     def get_config_val(self, key: str) -> str:
         return self.config_column(key).get_val()
 
@@ -50,18 +64,19 @@ class WithModuleConfig:
     def save_config_val(self, key: str, val: str):
         from gdo.base.GDO_ModuleVal import GDO_ModuleVal
         gdt = self.config_column(key)
+        if val == self.get_config_val(key):
+            return self
         if gdt.validate(val):
-            if val != self.get_config_val(key):
-                GDO_ModuleVal.blank({
-                    'mv_module': self.get_id(),
-                    'mv_key': key,
-                    'mv_val': val,
-                }).soft_replace()
-                from gdo.base.IPC import IPC
-                IPC.send('base.ipc_modconf', (self.get_name, key, val))
-                gdt.val(val)
+            GDO_ModuleVal.blank({
+                'mv_module': self.get_id(),
+                'mv_key': key,
+                'mv_val': val,
+            }).soft_replace()
+            from gdo.base.IPC import IPC
+            IPC.send('base.ipc_modconf', (self.get_name, key, val))
+            gdt.val(val)
         else:
-            raise GDOValidationException(self.get_name, key, val)
+            raise GDOValidationException(self.get_name, key, val, gdt.render_suggestion())
         return self
 
     def increase_config_val(self, key: str, by: int | float):

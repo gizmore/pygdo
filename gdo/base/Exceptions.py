@@ -1,4 +1,5 @@
 from gdo.base.Trans import t
+from gdo.base.Util import html
 
 """
 All GDO Errors and Exceptions
@@ -46,8 +47,8 @@ class GDOMethodException(Exception):
 
 class GDOValidationException(Exception):
 
-    def __init__(self, module_name: str, key: str, val: str):
-        super().__init__(t('err_gdt_validation',  (module_name, key, val)))
+    def __init__(self, module_name: str, key: str, val: str, suggestions: str):
+        super().__init__(t('err_gdt_validation',  (html(key), module_name, html(val), html(suggestions))))
 
 
 class GDOParamNameException(GDOException):

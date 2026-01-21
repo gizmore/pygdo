@@ -3,12 +3,15 @@ module_admin = "Admin"
 ##########
 # Config #
 ##########
-mt_admin_config = "Configure"
-md_admin_config = "Configure and print module variables."
+mt_admin_conf = "Configure"
+md_admin_conf = "Configure and print module variables."
+err_module_config_gdt = "There is no config variable matching %s."
+err_module_config_gdt_ambiguous = "There are multiple matches for %s: %s."
 msg_all_modules_conf = "Config: %s."
 msg_module_conf = "%s: %s."
 msg_module_conf_options = "%s.%s%s is set to %s. Options: %s."
 msg_module_conf_changed = "%s.%s has been changed from %s to %s."
+msg_module_conf_no_change = "The value for %s in module %s is still %s."
 
 #############
 # Dashboard #

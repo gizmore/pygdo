@@ -162,7 +162,7 @@ class GDT(WithSerialization):
     def render_error(self) -> str:
         return self.EMPTY_STR
 
-    def error(self, key: str, args: list[str] = None) -> bool:
+    def error(self, key: str, args: tuple[str|int|float,...] = None) -> bool:
         return False
 
     def reset_error(self):

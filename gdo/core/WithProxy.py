@@ -16,6 +16,9 @@ class WithProxy:
         self._name = gdt.get_name()
         return self
 
+    def render_suggestion(self) -> str:
+        return self._proxy.render_suggestion()
+
     def not_null(self, notnull=True):
         self._proxy.not_null(notnull)
         return super().not_null(notnull)

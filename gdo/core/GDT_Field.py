@@ -45,6 +45,8 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
         self._position = -1
         self._multiple = False
         self._secret = False
+        self._errkey = None
+        self._errargs = None
 
     def get_name(self):
         return self._name

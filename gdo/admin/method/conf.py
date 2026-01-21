@@ -40,13 +40,16 @@ class conf(Method):
         config_name = self.param_val('config_name')
         if not config_name:
             return self.list_module(module)
-        gdt = module.config_column(config_name)
-        if not gdt:
+        gdts = module.config_column_completed(config_name)
+        if not gdts:
             return self.err('err_module_config_gdt', (html(config_name),))
+        if len(gdts) > 1:
+            return self.err('err_module_config_gdt_ambiguous', (html(config_name), ", ".join([gdt.get_name() for gdt in gdts])))
+        gdt = gdts[0]
         value = self.param_val('config_value')
         if not value:
             return self.show_value(module, gdt)
-        value = None if value == "None" else value
+        value = None if value.lower() == "none" else value
         return self.set_value(module, gdt, value)
 
     def list_all(self):
@@ -84,7 +87,10 @@ class conf(Method):
         return self.reply('msg_module_conf_options', (module.render_name(), gdt.get_name(), tt, val, gdt.render_suggestion()))
 
     def set_value(self, module: GDO_Module, gdt: GDT, value: str):
+        val = gdt.to_val(gdt.to_value(value))
         old = Render.italic(gdt.render_val(), self._env_mode)
-        module.save_config_val(gdt.get_name(), value)
-        new = Render.italic(gdt.display_val(value), self._env_mode)
+        module.save_config_val(gdt.get_name(), val)
+        new = Render.italic(gdt.display_val(val), self._env_mode)
+        if old == new:
+            return self.reply('msg_module_conf_no_change', (gdt.get_name(), module.render_name(), old))
         return self.reply('msg_module_conf_changed', (module.render_name(), gdt.get_name(), old, new))

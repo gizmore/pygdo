@@ -288,9 +288,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     ############
     # Redirect #
     ############
-    def redirect(self, href: str, key: str, args: tuple[str|int|float,...] = None):
+    def redirect(self, href: str, key: str = None, args: tuple[str|int|float,...] = None):
         from gdo.net.GDT_Redirect import GDT_Redirect
-        redirect = GDT_Redirect().href(href).text(key, args)
+        redirect = GDT_Redirect().href(href)
+        if key: redirect.text(key, args)
         Application.get_page()._top_bar.add_field(redirect)
         return self
 
@@ -616,7 +617,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             if not gdt.is_positional():
                 optional.append(f"[--{label}=]")
             else:
-                positional.append(f"<{label}>")
+                if gdt.is_not_null():
+                    positional.append(f"<{label}>")
+                else:
+                    positional.append(f"[<{label}>]")
         return f"Usage: {self.gdo_trigger()} {' '.join(optional + positional)}"
 
     ##########
