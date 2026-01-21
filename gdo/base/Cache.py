@@ -57,6 +57,7 @@ class Cache:
         cls.NCACHE = []
         cls.MCACHE = {}
         cls.ZLIB_LEVEL = zlib_level
+        Files.create_dir(Application.file_path('cache/'))
         if enabled:
             if uds:
                 cls.RCACHE = Redis(unix_socket_path=uds, decode_responses=False)
