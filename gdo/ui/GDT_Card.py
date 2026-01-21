@@ -1,8 +1,6 @@
-from gdo.avatar.GDT_Avatar import GDT_Avatar
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.base.Util import module_enabled
-from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_Template import GDT_Template
@@ -52,6 +50,7 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
         created = self._gdo.column_of(GDT_Created)
         self.get_header().add_fields(creator, created)
         if module_enabled('avatar'):
+            from gdo.avatar.GDT_Avatar import GDT_Avatar
             self.get_header().add_field(GDT_Avatar('avatar').for_user(creator.get_value()))
         return self
 
