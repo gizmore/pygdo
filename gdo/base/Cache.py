@@ -50,14 +50,14 @@ class Cache:
 
     @classmethod
     def init(cls, enabled: bool = False, host: str = 'localhost', port: int = 6379, db: int = 0, uds: str='', zlib_level: int=-1):
+        cls.TCACHE = {}
+        cls.CCACHE = {}
+        cls.PCACHE = {}
+        cls.OCACHE = {}
+        cls.NCACHE = []
+        cls.MCACHE = {}
+        cls.ZLIB_LEVEL = zlib_level
         if enabled:
-            cls.TCACHE = {}
-            cls.CCACHE = {}
-            cls.PCACHE = {}
-            cls.OCACHE = {}
-            cls.NCACHE = []
-            cls.MCACHE = {}
-            cls.ZLIB_LEVEL = zlib_level
             if uds:
                 cls.RCACHE = Redis(unix_socket_path=uds, decode_responses=False)
             else:
