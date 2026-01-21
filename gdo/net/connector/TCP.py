@@ -8,7 +8,6 @@ from gdo.base.Render import Mode
 from gdo.core.Connector import Connector
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.GDO_User import GDO_User
-from gdo.perf.GDT_Perf import GDT_Perf
 
 
 class TcpSession:
@@ -27,7 +26,7 @@ class TcpSession:
     async def run(self):
         try:
             Application.set_current_user(self.user)
-            await self.send(GDT_Perf().render(Mode.render_cli))
+            await self.send("HELO")
             while True:
                 data = await self.reader.readline()
                 if not data: break
