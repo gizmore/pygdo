@@ -18,15 +18,21 @@ class GDT_User(WithCompletion, GDT_Object):
     _same_channel: bool
     _authenticated: bool
     _no_guests: bool
+    _myself: bool
 
     def __init__(self, name):
         super().__init__(name)
         from gdo.core.GDO_User import GDO_User
         self.table(GDO_User.table())
+        self._myself = False
         self._no_guests = False
         self._same_server = False
         self._same_channel = False
         self._authenticated = False
+
+    def myself(self, myself: bool = True):
+        self._myself = myself
+        return self
 
     def same_server(self, same_server: bool = True) -> Self:
         self._same_server = same_server

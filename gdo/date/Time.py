@@ -17,7 +17,7 @@ Method namings follow these conventions in signature elements:
  - datetime | a python datetime object
  - tz | a timezone string like Europe/Berlin or UTC
  - tzid | a [GDO_Timezone](../g) object
-@version 8.0.0
+@version 8.0.2
 """
 
 

@@ -1,3 +1,4 @@
+from gdo.base.Application import Application
 from gdo.core.GDT_String import GDT_String
 from gdo.base.Trans import t
 from gdo.date.Time import Time
@@ -25,6 +26,9 @@ class GDT_Timestamp(GDT_String):
 
     def get_timestamp(self) -> float:
         return Time.get_time(self.get_val())
+
+    def get_elapsed(self) -> float:
+        return Application.TIME - self.get_timestamp()
 
     def to_value(self, val: str):
         return Time.parse_datetime_db(val) if val else None
