@@ -62,7 +62,7 @@ class GDO_Event(GDO):
     @classmethod
     def query_for_sink(cls, sink: str, ts_min: float) -> Query:
         cut = Time.get_date(ts_min)
-        return cls.table().select().where(f"event_type='{sink}' AND event_created >= '{cut}'")
+        return cls.table().select().where(f"event_type='{sink}' AND event_created <= '{cut}'")
 
     #######
     # Get #

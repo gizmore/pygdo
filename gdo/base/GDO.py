@@ -410,13 +410,11 @@ class GDO(WithName, WithBulk, GDT):
                 vals.update(gdt.gdo(self).dirty_vals())
         return vals
 
-    IPC = None
     @classmethod
+    @lru_cache
     def ipc(cls):
-        if cls.IPC is None:
-            from gdo.base.IPC import IPC
-            cls.IPC = IPC
-        return cls.IPC
+        from gdo.base.IPC import IPC
+        return IPC
 
     def save(self):
         obj = self

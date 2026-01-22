@@ -101,7 +101,7 @@ class IPC:
         cls.COUNT += 1 #PYPP#DELETE#
         if Application.IS_DOG:
             cls.send_to_web(event, args)
-        else:
+        elif Application.IS_HTTP:
             cls.send_to_dog(event, args)
 
     @classmethod
@@ -111,17 +111,18 @@ class IPC:
         return launch
 
     @classmethod
-    def send_to_dog(cls, event: str, args: any):
+    def send_to_dog(cls, event: str, args: Any):
         GDO_Event.to_dog(event, args)
         if not cls.PID:
-            cls.PID = int(Files.get_contents(cls.method_launch()().lock_path()))
+            cls.PID = int(Files.get_contents(cls.method_launch()().lock_path()) or 0)
         try:
-            os.kill(cls.PID, signal.SIGUSR1)
+            if cls.PID:
+                os.kill(cls.PID, signal.SIGUSR1)
         except ProcessLookupError:
-            pass
+            cls.PID = 0
 
     @classmethod
-    def send_to_web(cls, event: str, args: any):
+    def send_to_web(cls, event: str, args: Any):
         GDO_Event.to_cli(event, args) # bash is like a web server 1
         GDO_Event.to_web(event, args) # send to web server
         Cache.set('ipc', 'ts_web', Application.TIME) # Trigger IPC events for web via redis timestamp.

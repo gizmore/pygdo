@@ -352,7 +352,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             self.gdo_before_execute()
             if not self._prepare_nested_permissions(self):
                 return self.empty()
-            return await self._nested_execute(self, True)
+            result = await self._nested_execute(self, True)
         except (GDOParamError, GDOError) as ex:
             err_raw(str(ex))
             return self
@@ -367,6 +367,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         finally:
             if tr:
                 db.commit()
+        self.gdo_after_execute()
+        return result
 
     async def _nested_execute(self, method: 'Method', return_gdt: bool = False):
         i = 0
