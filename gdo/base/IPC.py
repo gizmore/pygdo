@@ -1,5 +1,7 @@
 import os
 import signal
+from functools import lru_cache
+from typing import Any
 
 import aiofiles
 
@@ -78,7 +80,7 @@ class IPC:
 
 
     @classmethod
-    def web_cleanup_time(cls) -> int:
+    def web_cleanup_time(cls) -> float:
         path = Application.file_path('bin/web.pids')
         n_proc = int(Application.config('core.processes', '1'))
         with open(path) as f:
@@ -95,20 +97,18 @@ class IPC:
     #################
 
     @classmethod
-    def send(cls, event: str, args: any = None):
+    def send(cls, event: str, args: Any = None):
         cls.COUNT += 1 #PYPP#DELETE#
-        if Application.IS_DOG == True:
+        if Application.IS_DOG:
             cls.send_to_web(event, args)
-        elif Application.IS_DOG == False:
+        else:
             cls.send_to_dog(event, args)
 
-    launch = None
     @classmethod
+    @lru_cache
     def method_launch(cls):
-        if not cls.launch:
-            from gdo.core.method.launch import launch
-            cls.launch = launch
-        return cls.launch
+        from gdo.core.method.launch import launch
+        return launch
 
     @classmethod
     def send_to_dog(cls, event: str, args: any):

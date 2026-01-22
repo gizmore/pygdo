@@ -3,6 +3,7 @@ from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Message import Message
 from gdo.base.Method import Method
+from gdo.base.Trans import tiso
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_AutoInc import GDT_AutoInc
@@ -47,6 +48,9 @@ class GDO_Channel(GDO):
     def get_name(self) -> str:
         return self.gdo_val('chan_name')
 
+    def get_render_mode(self):
+        return self.get_server().get_connector().get_render_mode()
+
     def render_name(self):
         return self.gdo_val('chan_displayname')
 
@@ -75,6 +79,12 @@ class GDO_Channel(GDO):
             msg.env_user(GDO_User.system(), True)
             msg.env_server(server).env_channel(self).result(message)
             await conn.send_to_channel(msg)
+
+    async def send_text(self, key: str, args: tuple[str|int|float,...]):
+        await self.send(self.t(key, args))
+
+    def t(self, key: str, args: tuple[str|int|float, ...]) -> str:
+        return tiso(self.get_lang_iso(), key, args)
 
     async def on_user_joined(self, user: GDO_User):
         user_name = user.get_name()

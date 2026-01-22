@@ -117,19 +117,19 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return GDO.EMPTY_LIST
 
     @classmethod
-    def gdo_method_config_bot(cls) -> [GDT]:
+    def gdo_method_config_bot(cls) -> list[GDT]:
         return GDO.EMPTY_LIST
 
     @classmethod
-    def gdo_method_config_server(cls) -> [GDT]:
+    def gdo_method_config_server(cls) -> list[GDT]:
         return GDO.EMPTY_LIST
 
     @classmethod
-    def gdo_method_config_channel(cls) -> [GDT]:
+    def gdo_method_config_channel(cls) -> list[GDT]:
         return GDO.EMPTY_LIST
 
     @classmethod
-    def gdo_method_config_user(cls) -> [GDT]:
+    def gdo_method_config_user(cls) -> list[GDT]:
         return GDO.EMPTY_LIST
 
     def gdo_user_type(self) -> str | None:

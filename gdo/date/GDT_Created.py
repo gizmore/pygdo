@@ -7,6 +7,7 @@ class GDT_Created(GDT_Timestamp):
     def __init__(self, name: str):
         super().__init__(name)
         self.icon('clock')
+        self.label('created')
 
     def gdo_before_create(self, gdo):
         gdo.set_val(self._name, Time.get_date())

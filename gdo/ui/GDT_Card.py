@@ -64,10 +64,10 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
             'field': self,
         })
 
-    def render_text(self, mode: Mode = Mode.render_html):
+    def render_text(self, mode: Mode = Mode.render_html) -> str:
         text = self._header.render(mode)
-        text += ' - '
+        text += ' | '
         text += self._content.render(mode)
-        text += ' - '
+        text += ' | '
         text += self._footer.render(mode)
-        return text.strip(' -')
+        return text.strip(' |')

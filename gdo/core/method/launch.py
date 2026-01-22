@@ -2,6 +2,7 @@ import asyncio
 import os
 import signal
 import time
+from functools import lru_cache
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
@@ -70,6 +71,12 @@ class launch(Method):
     def is_running(self):
         return Files.is_file(self.lock_path())
 
+    @classmethod
+    @lru_cache
+    def IPC(cls) -> IPC:
+        from gdo.base.IPC import IPC
+        return IPC
+
     async def mainloop(self):
         Logger.debug("Launching DOG Bot")
         sleep_ms = self.sleep_ms()
@@ -83,9 +90,8 @@ class launch(Method):
                     await self.mainloop_step_server(server)
                 await Application.execute_queue()
                 if self._signaled:
-                    from gdo.base.IPC import IPC
                     self._signaled = False
-                    IPC.dog_execute_events()
+                    await self.IPC().dog_execute_events()
                 await asyncio.sleep(sleep_ms)
             asyncio.gather(*Application.TASKS)
         except KeyboardInterrupt as ex:

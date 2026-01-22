@@ -26,7 +26,7 @@ from gdo.net.GDT_Url import GDT_Url
 
 
 class GDO_Server(GDO):
-    _connector: Connector
+    _connector: Connector|None
     _channels: dict[str, 'GDO_Channel']
     _users: dict[str, 'GDO_User']
     _has_loop: bool
@@ -86,6 +86,9 @@ class GDO_Server(GDO):
             self._connector = self.gdo_value('serv_connector')()
             self._connector.server(self)
         return self._connector
+
+    def get_render_mode(self):
+        return self.get_connector().get_render_mode()
 
     ##########
     # Events #
@@ -201,5 +204,5 @@ class GDO_Server(GDO):
         from gdo.core.GDO_Channel import GDO_Channel
         return GDO_Channel.table().select().where(f"chan_server={self.get_id()}").exec().fetch_all()
 
-    def is_user_online(self, user: GDO_User):
-        pass
+    # def is_user_online(self, user: GDO_User) -> bool:
+    #     return user in self._users

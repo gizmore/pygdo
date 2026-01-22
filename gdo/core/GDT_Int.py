@@ -35,7 +35,7 @@ class GDT_Int(GDT_String):
 
     def min(self, minval: int = None):
         self._min = minval
-        return self
+        return self.not_null()
 
     def max(self, maxval: int = None):
         self._max = maxval

@@ -230,3 +230,9 @@ md_core_confs = "Configure server settings for a method."
 msg_configs = "Configuration for %s: %s."
 msg_config = "Configuration for %s.%s is %s"
 msg_config_set = "Configuration for %s.%s has been changed from %s to %s."
+
+#########
+# Do as #
+#########
+mt_core_do_as = "Do as / su"
+md_core_do_as = "Execute a command in the name of another user. For debugging purposes."

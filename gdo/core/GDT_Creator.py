@@ -8,6 +8,8 @@ class GDT_Creator(GDT_User):
     def __init__(self, name):
         super().__init__(name)
         self.not_null()
+        self.label('creator')
+        self.icon('user')
 
     def gdo(self, gdo: 'GDO') -> Self:
         self.gdo_before_create(gdo)
