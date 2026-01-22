@@ -1,6 +1,5 @@
-from typing_extensions import Self
-
 from gdo.base.GDO import GDO
+from typing_extensions import Self
 from gdo.base.GDT import GDT
 from gdo.base.Query import Query
 from gdo.base.Render import Render
@@ -12,10 +11,14 @@ from gdo.core.GDT_Object import GDT_Object
 from gdo.core.WithCompletion import WithCompletion
 from gdo.ui.GDT_Link import GDT_Link
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gdo.core.GDO_Channel import GDO_Channel
+
 
 class GDT_User(WithCompletion, GDT_Object):
     _same_server: bool
-    _same_channel: bool
+    _same_channel: 'GDO_Channel|None'
     _authenticated: bool
     _no_guests: bool
     _myself: bool
@@ -27,7 +30,7 @@ class GDT_User(WithCompletion, GDT_Object):
         self._myself = False
         self._no_guests = False
         self._same_server = False
-        self._same_channel = False
+        self._same_channel = None
         self._authenticated = False
 
     def myself(self, myself: bool = True):
@@ -38,8 +41,9 @@ class GDT_User(WithCompletion, GDT_Object):
         self._same_server = same_server
         return self
 
-    def same_channel(self, same_channel: bool = True) -> Self:
+    def same_channel(self, same_channel: 'GDO_Channel') -> Self:
         self._same_channel = same_channel
+        if same_channel: self._same_server = True
         return self
 
     def authenticated(self, authenticated: bool = True) -> Self:
@@ -66,16 +70,15 @@ class GDT_User(WithCompletion, GDT_Object):
                 return [user]
             return []
         query = self._table.select()
-        return self.query_gdos_query(val, query).limit(10).exec().fetch_all()
+        users = self.query_gdos_query(val, query).limit(10).exec().fetch_all()
+        if self._same_channel:
+            allowed = set(self._same_channel._users)
+            return [user for user in users if user in allowed]
+        return users
 
     ##########
     # Render #
     ##########
-    # def render_cell(self) -> str:
-    #     if user := self.get_gdo():
-    #         name = user.render_name()
-    #         return GDT_Link().text_raw(name).href(href('user', 'profile', f'&for={name}')).render()
-    #     return Render.italic(t('none'))
 
     def render_html(self) -> str:
         if user := self.get_gdo():
