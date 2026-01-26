@@ -44,5 +44,5 @@ class WithPygdo:
             cls.Strings = Strings
             cls.msg = msg
             cls.err = err
-            cls.html = html
+            cls.ahtml = html
         return getattr(cls, util)
