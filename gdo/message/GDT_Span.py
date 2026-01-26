@@ -10,8 +10,14 @@ class GDT_Span(WithHTMLAttributes, GDT_Container):
 
     def render(self, mode: Mode = Mode.render_html):
         if mode == Mode.render_html:
-            tag = self.get_tag()
-            attrs = self.html_attrs()
-            attrs = f" {attrs}" if attrs else ''
-            return f"<{tag}{attrs}>{super().render(mode)}</{tag}>"
-        return self.render_gdt(mode)
+            return self._render_html()
+        return super().render(mode)
+
+    def render_html(self):
+        return self._render_html()
+
+    def _render_html(self):
+        tag = self.get_tag()
+        attrs = self.html_attrs()
+        attrs = f" {attrs}" if attrs else ''
+        return f"<{tag}{attrs}>{super().render()}</{tag}>"

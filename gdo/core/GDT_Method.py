@@ -16,5 +16,6 @@ class GDT_Method(GDT_Select):
         back.update(ModuleLoader.instance()._methods)
         return back
 
-    def to_value(self, val: str):
-        return ModuleLoader.instance().get_method_type(val) if val else None
+    # def to_value(self, val: str):
+    #     super().to_value(val)
+    #     return ModuleLoader.instance().get_method_type(val) if val else None

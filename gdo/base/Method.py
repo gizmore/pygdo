@@ -431,6 +431,25 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def gdo_default_enabled_channel(cls) -> bool:
         return True
 
+    @classmethod
+    def _config_for_key(cls, gdts: list[GDT], key: str) -> GDT | None:
+        first = []
+        matches = []
+        k = key.lower()
+        for gdt in gdts:
+            name = gdt.get_name().lower()
+            if k == name:
+                return gdt
+            if name.startswith(k):
+                first.append(gdt)
+            if k in name:
+                matches.append(gdt)
+        if len(first) == 1:
+            return first[0]
+        if len(matches) == 1:
+            return matches[0]
+        return None
+
     #################
     # Config Server #
     #################
@@ -445,6 +464,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         conf.extend(cls.gdo_method_config_server())
         return conf
 
+    @classmethod
+    def _config_server_for(cls, key: str):
+        return cls._config_for_key(cls._config_server(), key)
+
     def save_config_server(self, key: str, val: str):
         return self._save_config_server(key, val, self._env_server)
 
@@ -453,39 +476,42 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         from gdo.core.GDO_MethodValServer import GDO_MethodValServer
         from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
         from gdo.core.GDT_Text import GDT_Text
-        for gdt in self._config_server():
-            if gdt.get_name() == key:
-                table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
-                gdom = GDO_Method.for_method(self)
-                entry = None if known_fresh else table.get_by_id(gdom.get_id(), server.get_id(), key)
-                if entry is None:
-                    table.blank({
-                        'mv_method': gdom.get_id(),
-                        'mv_server': server.get_id(),
-                        'mv_key': key,
-                        'mv_val': gdt.val(val).get_val(),
-                    }).insert()
-                else:
-                    entry.save_val('mv_val', gdt.val(val).get_val())
+        if gdt := self._config_server_for(key):
+            table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
+            gdom = GDO_Method.for_method(self)
+            entry = None if known_fresh else table.get_by_id(gdom.get_id(), server.get_id(), gdt.get_name())
+            if entry is None:
+                table.blank({
+                    'mv_method': gdom.get_id(),
+                    'mv_server': server.get_id(),
+                    'mv_key': gdt.get_name(),
+                    'mv_val': gdt.val(val).get_val(),
+                }).insert()
+            else:
+                entry.save_val('mv_val', gdt.val(val).get_val())
 
     def get_config_server(self, key: str) -> GDT:
         return self._get_config_server(key, self._env_server)
 
-    def _get_config_server(self, key: str, server: 'GDO_Server') -> GDT:
+    def _get_config_server(self, key: str, server: 'GDO_Server') -> GDT|None:
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValServer import GDO_MethodValServer
         from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
         from gdo.core.GDT_Text import GDT_Text
-        for gdt in self._config_server():
-            if gdt.get_name() == key:
-                table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
-                gdom = GDO_Method.for_method(self)
-                entry = table.get_by_id(gdom.get_id(), server.get_id(), key)
-                if entry:
-                    gdt.initial(entry.gdo_val('mv_val'))
-                else:
-                    self._save_config_server(key, gdt._initial, server, True)
-                return gdt
+        if gdt := self._config_server_for(key):
+            table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
+            gdom = GDO_Method.for_method(self)
+            entry = table.get_by_id(gdom.get_id(), server.get_id(), gdt.get_name())
+            if entry:
+                return gdt.val(entry.get_val())
+            table.blank({
+                'mv_method': gdom.get_id(),
+                'mv_server': server.get_id(),
+                'mv_key': gdt.get_name(),
+                'mv_val': gdt.get_initial(),
+            }).insert()
+            return gdt.val(gdt.get_initial())
+        return None
 
 
     def get_config_server_val(self, key: str) -> str:
@@ -498,9 +524,14 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     # Config User #
     ###############
 
+    @classmethod
     @lru_cache
-    def _config_user(self):
-        return self.gdo_method_config_user()
+    def _config_user(cls):
+        return cls.gdo_method_config_user()
+
+    @classmethod
+    def _config_user_for(cls, key: str):
+        return cls._config_for_key(cls._config_user(), key)
 
     def save_config_user(self, key: str, val: str):
         Logger.debug(f"{self.get_name()}.save_config_user({key}, {val})")
@@ -508,33 +539,39 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         from gdo.core.GDO_MethodValUser import GDO_MethodValUser
         from gdo.core.GDO_MethodValUserBlob import GDO_MethodValUserBlob
         from gdo.core.GDT_Text import GDT_Text
-        for gdt in self._config_user():
-            if gdt.get_name() == key:
-                table = GDO_MethodValUserBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValUser.table()
-                gdom = GDO_Method.for_method(self)
-                entry = table.get_by_id(gdom.get_id(), self._env_user.get_id(), key)
-                if entry is None:
-                    table.blank({
-                        'mv_method': gdom.get_id(),
-                        'mv_user': self._env_user.get_id(),
-                        'mv_key': key,
-                        'mv_val': val,
-                    }).insert()
-                else:
-                    entry.save_val('mv_val', val)
+        if gdt := self._config_user_for(key):
+            table = GDO_MethodValUserBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValUser.table()
+            gdom = GDO_Method.for_method(self)
+            entry = table.get_by_id(gdom.get_id(), self._env_user.get_id(), gdt.get_name())
+            if entry is None:
+                table.blank({
+                    'mv_method': gdom.get_id(),
+                    'mv_user': self._env_user.get_id(),
+                    'mv_key': gdt.get_name(),
+                    'mv_val': val,
+                }).insert()
+            else:
+                entry.save_val('mv_val', val)
 
-    def get_config_user(self, key: str) -> GDT:
+    def get_config_user(self, key: str) -> GDT|None:
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValUser import GDO_MethodValUser
         from gdo.core.GDO_MethodValUserBlob import GDO_MethodValUserBlob
         from gdo.core.GDT_Text import GDT_Text
-        for gdt in self._config_user():
-            if gdt.get_name() == key:
-                table = GDO_MethodValUserBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValUser.table()
-                entry = table.get_by_id(GDO_Method.for_method(self).get_id(), self._env_user.get_id(), key)
-                if entry:
-                    gdt.initial(entry.get_val())
-                return gdt
+        if gdt := self._config_user_for(key):
+            table = GDO_MethodValUserBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValUser.table()
+            gdom = GDO_Method.for_method(self)
+            entry = table.get_by_id(gdom.get_id(), self._env_user.get_id(), gdt.get_name())
+            if entry:
+                return gdt.val(entry.get_val())
+            table.blank({
+                'mv_method': gdom.get_id(),
+                'mv_user': self._env_user.get_id(),
+                'mv_key': gdt.get_name(),
+                'mv_val': gdt.get_initial(),
+            }).insert()
+            return gdt.val(gdt.get_initial())
+        return None
 
     def get_config_user_val(self, key: str) -> str:
         return self.get_config_user(key).get_val()
@@ -547,7 +584,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     ##################
 
     @classmethod
-    @functools.lru_cache(None)
+    @functools.lru_cache
     def _config_channel(cls):
         from gdo.core.GDT_Bool import GDT_Bool
         conf = [
@@ -556,42 +593,51 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         conf.extend(cls.gdo_method_config_channel())
         return conf
 
+    @classmethod
+    def _config_channel_for(cls, key: str):
+        return cls._config_for_key(cls._config_channel(), key)
+
     def save_config_channel(self, key: str, val: str):
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
         from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
         from gdo.core.GDT_Text import GDT_Text
-        for gdt in self._config_channel():
-            if gdt.get_name() == key:
-                table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
-                gdom = GDO_Method.for_method(self)
-                entry = table.get_by_id(gdom.get_id(), self._env_channel.get_id(), key)
-                if entry is None:
-                    table.blank({
-                        'mv_method': gdom.get_id(),
-                        'mv_channel': self._env_channel.get_id(),
-                        'mv_key': key,
-                        'mv_val': val,
-                    }).insert()
-                else:
-                    entry.save_val('mv_val', val)
+        if gdt := self._config_channel_for(key):
+            table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
+            gdom = GDO_Method.for_method(self)
+            entry = table.get_by_id(gdom.get_id(), self._env_channel.get_id(), gdt.get_name())
+            if entry is None:
+                table.blank({
+                    'mv_method': gdom.get_id(),
+                    'mv_channel': self._env_channel.get_id(),
+                    'mv_key': gdt.get_name(),
+                    'mv_val': val,
+                }).insert()
+            else:
+                entry.save_val('mv_val', val)
 
     def get_config_channel(self, key: str) -> GDT:
         return self._get_config_channel(key, self._env_channel)
 
-    def _get_config_channel(self, key: str, channel: 'GDO_Channel') -> GDT:
+    def _get_config_channel(self, key: str, channel: 'GDO_Channel') -> GDT|None:
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
         from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
         from gdo.core.GDT_Text import GDT_Text
-        for gdt in self._config_channel():
-            if gdt.get_name() == key:
-                if channel:
-                    table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
-                    entry = table.get_by_id(GDO_Method.for_method(self).get_id(), channel.get_id(), key)
-                    if entry:
-                        gdt.initial(entry.get_val())
-                return gdt
+        if gdt := self._config_channel_for(key):
+            table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
+            gdom = GDO_Method.for_method(self)
+            entry = table.get_by_id(gdom.get_id(), channel.get_id(), gdt.get_name())
+            if entry:
+                return gdt.val(entry.get_val())
+            table.blank({
+                'mv_method': gdom.get_id(),
+                'mv_channel': self._env_channel.get_id(),
+                'mv_key': gdt.get_name(),
+                'mv_val': gdt.get_initial(),
+            }).insert()
+            return gdt.val(gdt.get_initial())
+        return None
 
     def get_config_channel_val(self, key: str) -> str:
         return self.get_config_channel(key).get_val()

@@ -275,13 +275,14 @@ class Files:
         return True
 
     @classmethod
-    def get_contents(cls, path: str):
+    def get_contents(cls, path: str, log_error: bool = True):
         try:
             with open(path, 'r', encoding='UTF-8') as f:
                 return f.read()
         except FileNotFoundError as ex:
-            from gdo.base.Logger import Logger
-            Logger.exception(ex)
+            if log_error:
+                from gdo.base.Logger import Logger
+                Logger.exception(ex)
 
     EXT_TYPES = {'css': 'text/css', 'js': 'application/javascript'}
 

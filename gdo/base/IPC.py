@@ -114,7 +114,7 @@ class IPC:
     def send_to_dog(cls, event: str, args: Any):
         GDO_Event.to_dog(event, args)
         if not cls.PID:
-            cls.PID = int(Files.get_contents(cls.method_launch()().lock_path()) or 0)
+            cls.PID = int(Files.get_contents(cls.method_launch()().lock_path(), False) or 0)
         try:
             if cls.PID:
                 os.kill(cls.PID, signal.SIGUSR1)
