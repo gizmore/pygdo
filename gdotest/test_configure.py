@@ -24,7 +24,7 @@ class ConfigureTestCase(GDOTestCase):
         self.assertNotEqual(date1, date2, "Cannot rewrite config.")
 
     async def test_10_confc(self):
-        cli_plug(None, '$confc echo dis 1')a
+        cli_plug(None, '$confc echo dis 1')
         out = cli_plug(None, '$echo 1')
         self.assertIn('disabled here', out, 'confc does not work.')
         cli_plug(None, '$confc ech dis 0')

@@ -619,24 +619,27 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def get_config_channel(self, key: str) -> GDT:
         return self._get_config_channel(key, self._env_channel)
 
-    def _get_config_channel(self, key: str, channel: 'GDO_Channel') -> GDT|None:
+    def _get_config_channel(self, key: str, channel: 'GDO_Channel|None') -> GDT|None:
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
         from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
         from gdo.core.GDT_Text import GDT_Text
         if gdt := self._config_channel_for(key):
-            table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
-            gdom = GDO_Method.for_method(self)
-            entry = table.get_by_id(gdom.get_id(), channel.get_id(), gdt.get_name())
-            if entry:
-                return gdt.val(entry.get_val())
-            table.blank({
-                'mv_method': gdom.get_id(),
-                'mv_channel': self._env_channel.get_id(),
-                'mv_key': gdt.get_name(),
-                'mv_val': gdt.get_initial(),
-            }).insert()
-            return gdt.val(gdt.get_initial())
+            if not channel:
+                return gdt.val(gdt.get_initial())
+            else:
+                table = GDO_MethodValChannelBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValChannel.table()
+                gdom = GDO_Method.for_method(self)
+                entry = table.get_by_id(gdom.get_id(), channel.get_id(), gdt.get_name())
+                if entry:
+                    return gdt.val(entry.get_val())
+                table.blank({
+                    'mv_method': gdom.get_id(),
+                    'mv_channel': self._env_channel.get_id(),
+                    'mv_key': gdt.get_name(),
+                    'mv_val': gdt.get_initial(),
+                }).insert()
+                return gdt.val(gdt.get_initial())
         return None
 
     def get_config_channel_val(self, key: str) -> str:

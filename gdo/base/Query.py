@@ -103,8 +103,7 @@ class Query:
 
     def gdo(self, gdo):
         self._gdo = gdo
-        self._fetch_as = gdo
-        return self  # .table(gdo.gdo_table_name())
+        return self.fetch_as(gdo)
 
     def fetch_as(self, gdo: 'GDO'):
         self._fetch_as = gdo

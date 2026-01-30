@@ -66,7 +66,7 @@ class GDO_Channel(GDO):
                  .where(f"mv_val={cls.quote(val)}{null}"))
         if server:
             query.where(f'chan_server={server.get_id()}')
-        return query.gdo(GDO_Channel.table()).exec().fetch_all()
+        return query.fetch_as(GDO_Channel.table()).exec().fetch_all()
 
     async def send(self, message: str):
         if Application.IS_HTTP:
