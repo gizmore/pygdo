@@ -208,5 +208,5 @@ class Render(WithPygdo):
         return f"\033[3{color}m{s}\033[0m"
 
     @classmethod
-    def _irc_color(cls, s: str, color: str):
-        return f"\x03{color},99{s}\x03"
+    def _irc_color(cls, s: str, color: str, bg: str = '99'):
+        return f"\x03{color}\x02\x02{s}\x03\x02\x02"
