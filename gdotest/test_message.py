@@ -36,7 +36,7 @@ class MessageTestCase(GDOTestCase):
         gdo = GDO_Foo.blank({
             'foo_msg': '<b><i>hello world!</i></b>',
         })
-        gdt = gdo.column('foo_msg')
+        gdt = GDT_Message.column(gdo, 'foo_msg')
         self.assertIsInstance(gdt, GDT_Message, "Cannot get GDT_Message for GDO_Foo")
         out = gdt.render(Mode.render_markdown)
         self.assertIn('***hello world!***', out, "Message markdown is broken")

@@ -11,7 +11,7 @@ class GDT_Span(WithHTMLAttributes, GDT_Container):
     def render(self, mode: Mode = Mode.render_html):
         if mode == Mode.render_html:
             return self._render_html()
-        return super().render(mode)
+        return self.render_gdt(mode)
 
     def render_html(self):
         return self._render_html()

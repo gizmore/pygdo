@@ -10,7 +10,7 @@ class GDT_RestOfText(GDT_Repeat):
 
     def get_val(self):
         val = super().get_val()
-        return val if val is None else "".join(val)
+        return val if val is None else " ".join(val)
 
     def get_value(self):
         if not self._converted:
@@ -19,7 +19,7 @@ class GDT_RestOfText(GDT_Repeat):
         return self._value
 
     def is_multiple(self) -> bool:
-        return False
+        return True
 
     # def render_form(self) -> str:
     #     return self._proxy.render_form()

@@ -367,7 +367,6 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         finally:
             if tr:
                 db.commit()
-        self.gdo_after_execute()
         return result
 
     async def _nested_execute(self, method: 'Method', return_gdt: bool = False):
