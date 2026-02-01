@@ -28,6 +28,15 @@ class Cache:
     3) REDIS (FCACHE) is the tad slower process shared memory cache.
     (c) 2025 by gizmore@wechall.net and chappy@chappy-bot.net.
     """
+    #PYPP#START#
+    HITS = 0
+    MISS = 0
+    UPDATES = 0
+    REMOVES = 0
+    THITS = 0 # template cache hits
+    VHITS = 0 # gdo_values cache hits
+    OHITS = 0 # OCACHE hits
+    #PYPP#END#
 
     TCACHE: dict[str, 'GDO']             # class_name => GDO.table() mapping
     CCACHE: dict[str, dict[str, 'GDT']]  # class_name => GDO.gdo_columns() mapping
@@ -65,6 +74,12 @@ class Cache:
         cls.remove()
         Files.empty_dir(Application.file_path('cache/'))
 
+    #PYPP#START#
+    @classmethod
+    def clear_stats(cls):
+        cls.UPDATES = cls.MISS  = cls.REMOVES = cls.HITS = 0
+        cls.VHITS   = cls.OHITS = cls.THITS = 0
+    #PYPP#END#
 
     @classmethod
     def clear_ocache(cls):
@@ -180,6 +195,7 @@ class Cache:
         if gdo.gdo_cached():
             tn = gdo.gdo_table_name()
             if ocached := cls.OCACHE[tn].get(gid):
+                cls.OHITS += 1 #PYPP#DELETE#
                 if delete:
                     del cls.OCACHE[tn][gid]
                     cls.remove(tn, gid)
@@ -207,6 +223,7 @@ class Cache:
                         found = False
                         break
                 if found:
+                    cls.OHITS += 1 #PYPP#DELETE#
                     if delete:
                         gid = oc.get_id()
                         cls.remove(gid)
@@ -230,6 +247,7 @@ class Cache:
                                 found = False
                                 break
                         if found:
+                            cls.HITS += 1 #PYPP#DELETE#
                             # gdo.set_vals(rc)
                             gdo.all_dirty(False)
                             if delete:
@@ -241,6 +259,7 @@ class Cache:
                             return cls.obj_for(gdo, rc, False)
                 if cursor == 0:
                     break
+            cls.MISS += 1 #PYPP#DELETE#
         return None
 
     ##########
@@ -252,8 +271,10 @@ class Cache:
         if cls.RCACHE:
             key = f"{key}:{args_key}" if args_key else key
             if packed := cls.RCACHE.get(key):
+                cls.HITS += 1 #PYPP#DELETE#
                 data = zlib.decompress(packed) if cls.ZLIB_LEVEL >= 0 else packed
                 return WithSerialization.gdounpack(data)
+            cls.MISS += 1 #PYPP#DELETE#
         return default
 
     @classmethod
@@ -263,6 +284,7 @@ class Cache:
                 value = value.gdopack()
             else:
                 value = msgspec.msgpack.encode(value)
+            cls.UPDATES += 1 #PYPP#DELETE#
             key = f"{key}:{args_key}" if args_key else key
             data = zlib.compress(value, cls.ZLIB_LEVEL) if cls.ZLIB_LEVEL >= 0 else value
             cls.RCACHE.set(key, data)
@@ -272,16 +294,19 @@ class Cache:
     def remove(cls, key: str = None, args_key: str = None):
         if cls.RCACHE:
             if key is None:
+                cls.REMOVES += 1 #PYPP#DELETE#
                 cls.RCACHE.flushdb()
             elif args_key is None:
                 cursor = 0
                 while True:
                     cursor, keys = cls.RCACHE.scan(cursor, match=f"{key}:*")
                     if keys:
+                        cls.REMOVES += 1 #PYPP#DELETE#
                         cls.RCACHE.delete(*keys)
                     if cursor == 0:
                         break
             else:
+                cls.REMOVES += 1 #PYPP#DELETE#
                 redis_key = f"{key}:{args_key}"
                 cls.RCACHE.delete(redis_key)
 

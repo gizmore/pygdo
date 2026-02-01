@@ -26,6 +26,11 @@ class GDO(WithName, WithBulk, GDT):
     ID_SEPARATOR = ':'  # Multiple primary keys supported
     HASH_LENGTH = 16
     GDT_AutoInc = None
+    #PYPP#START#
+    GDO_COUNT = 0
+    GDO_ALIVE = 0
+    GDO_MAX = 0
+    #PYPP#END#
 
     _vals: dict[str, str|bytes]
     _values: dict[str, any]
@@ -46,6 +51,15 @@ class GDO(WithName, WithBulk, GDT):
 
     def __init__(self):
         super().__init__()
+        #PYPP#START#
+        GDO.GDO_COUNT += 1
+        GDO.GDO_ALIVE += 1
+        GDO.GDO_MAX = max(GDO.GDO_MAX, GDO.GDO_ALIVE)
+        from gdo.base.Application import Application
+        if Application.config('core.gdo_debug') == '2':
+            from gdo.base.Logger import Logger
+            Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
+        #PYPP#END#
         self._vals = {}
         self._values = {}
         self._dirty = []
@@ -66,6 +80,10 @@ class GDO(WithName, WithBulk, GDT):
         gdo._blank = False
         return gdo
 
+    #PYPP#START#
+    def __del__(self):
+        GDO.GDO_ALIVE -= 1
+    #PYPP#END#
 
     def __str__(self):
         return f"{self.__class__.__name__}({self.get_id()}): {str(list(self._vals.values()))[0:96]}"
@@ -195,6 +213,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def gdo_value(self, key: str) -> any:
         if (v := self._values.get(key)) is not None:
+            Cache.VHITS += 1  #PYPP#DELETE#
             return v
         self._values[key] = v = self.column(key).get_value()
         return v

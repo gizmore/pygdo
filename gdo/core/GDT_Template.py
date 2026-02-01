@@ -26,9 +26,11 @@ class Templite(object):
         cache = self.cache
         if caching:
             if key in cache:
+                Cache.THITS += 1  #PYPP#DELETE#
                 self._code = cache[key]
                 return
             else:
+                Cache.MISS += 1  #PYPP#DELETE#
                 pass
         with open(filename) as fh:
             text = fh.read()

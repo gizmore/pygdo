@@ -177,6 +177,7 @@ class GDO_User(GDO):
 
     def get_setting_val(self, key: str) -> str:
         if key in self._vals:
+            Cache.VHITS += 1 #PYPP#DELETE#
             return self._vals[key]
         set = self.get_setting_column(key).get_val() or ''
         self._vals[key] = set

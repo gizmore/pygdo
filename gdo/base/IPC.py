@@ -15,6 +15,7 @@ from gdo.date.Time import Time
 class IPC:
 
     MAX_EVENT_ARG_SIZE = 1024
+    COUNT: int = 0 #PYPP#DELETE#
     PID: int = 0
 
     #######
@@ -97,6 +98,7 @@ class IPC:
 
     @classmethod
     def send(cls, event: str, args: Any = None):
+        cls.COUNT += 1 #PYPP#DELETE#
         if Application.IS_DOG:
             cls.send_to_web(event, args)
         elif Application.IS_HTTP:
