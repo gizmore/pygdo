@@ -23,14 +23,6 @@ class Bash(Connector):
         await self.gdo_send_to_user(msg)
 
     async def gdo_send_to_user(self, msg: Message, notice: bool=False):
-        #PYPP#START#
-        if Application.is_unit_test():
-            from gdotest.TestUtil import GDOTestCase
-            uid = msg._env_user.get_id()
-            if uid not in GDOTestCase.MESSAGES:
-                GDOTestCase.MESSAGES[uid] = []
-            GDOTestCase.MESSAGES[uid].append(msg._result)
-        #PYPP#END#
         gdo_print(msg._result)
 
     def gdo_handle_message(self, message: Message):

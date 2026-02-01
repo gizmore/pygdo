@@ -50,8 +50,6 @@ class Events:
             self._subscribers[event_name] = [sub for sub in self._subscribers[event_name] if sub['callback'] != subscriber]
 
     async def publish(self, event_name, *args, **kwargs):
-        from gdo.base.Application import Application #PYPP#DELETE#
-        Application.EVENT_COUNT += 1 #PYPP#DELETE#
         to_delete = []
         if event_name in self._subscribers:
             for subscriber in self._subscribers[event_name]:

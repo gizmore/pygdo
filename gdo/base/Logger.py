@@ -14,7 +14,6 @@ from gdo.base.Util import Files, gdo_print
 
 
 class Logger:
-    LINES_WRITTEN = 0 #PYPP#DELETE#
 
     _base: str
     _user: 'GDO_User' = None
@@ -82,13 +81,11 @@ class Logger:
             pre += cls._user.get_name() + " - "
         with open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:
             fo.write(f'{pre}{content}\n')
-            cls.LINES_WRITTEN += 1 #PYPP#DELETE#
         if cls._user and user_log:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
             Files.create_dir(dir_name)
             with open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 fo.write(f'{pre}{content}\n')
-            cls.LINES_WRITTEN += 1 #PYPP#DELETE#
 
     @classmethod
     async def awrite(cls, path: str, content: str, user_log: bool = True):
@@ -97,13 +94,11 @@ class Logger:
             pre += cls._user.get_name() + " - "
         async with aiofiles.open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:
             await fo.write(f"{pre}{content}\n")
-            cls.LINES_WRITTEN += 1  #PYPP#DELETE#
         if cls._user and user_log:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
             await Files.acreate_dir(dir_name)
             async with aiofiles.open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 await fo.write(f"{pre}{content}\n")
-                cls.LINES_WRITTEN += 1  #PYPP#DELETE#
 
     @classmethod
     def traceback(cls, ex) -> str:

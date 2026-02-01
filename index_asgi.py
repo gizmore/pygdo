@@ -61,14 +61,6 @@ async def app(scope, receive, send):
             message = await receive()
             if message['type'] == 'lifespan.startup':
                 Application.init(os.path.dirname(__file__))
-                #PYPP#START#
-                if Application.config('core.allocs', '0') == '1':
-                    import tracemalloc
-                    tracemalloc.start()
-                if Application.config('core.profile', '0') == '1':
-                    import yappi
-                    yappi.start()
-                #PYPP#END#
                 ModuleLoader.instance().load_modules_db()
                 ModuleLoader.instance().init_modules(True, True)
                 await IPC.web_register_ipc()
@@ -77,21 +69,6 @@ async def app(scope, receive, send):
                 await send({'type': 'lifespan.shutdown.complete'})
             return
         if scope['type'] == 'http':
-            #PYPP#START#
-            GDT.GDT_MAX = 0
-            GDO.GDO_MAX = 0
-            GDT.GDT_COUNT = 0
-            GDO.GDO_COUNT = 0
-            GDT.GDT_ALIVE = 0
-            GDO.GDO_ALIVE = 0
-            IPC.COUNT = 0
-            Application.EVENT_COUNT = 0
-            Application.DB_TRANSACTIONS = 0
-            Application.DB_READS = 0
-            Application.DB_WRITES = 0
-            Logger.LINES_WRITTEN = 0
-            Cache.clear_stats()
-            #PYPP#END#
 
             Application.init_asgi(scope)
             Application.init_common()
@@ -269,25 +246,6 @@ async def app(scope, receive, send):
                     'body': out,
                 })
 
-                #PYPP#START#
-                if Application.config('core.allocs', '0') == '1':
-                    if qs.get('__yappi', None):
-                        import tracemalloc
-                        with open(Application.file_path('temp/yappi_mem.log'), 'a') as f:
-                            snapshot = tracemalloc.take_snapshot()
-                            display_top_malloc(snapshot, f)
-
-                if Application.config('core.profile', '0') == '1':
-                    if qs.get('__yappi', None):
-                        import yappi
-                        with open(Application.file_path('temp/yappi.log'), 'a') as f:
-                            yappi.get_func_stats().print_all(out=f, columns={
-                                0: ("name", 64),
-                                1: ("ncall", 12),
-                                2: ("tsub", 8),
-                                3: ("ttot", 8),
-                                4: ("tavg", 8)})
-                #PYPP#END#
 
     except Exception as ex:
         try:

@@ -52,21 +52,6 @@ def pygdo_application(environ, start_response):
         global FRESH
         global SIDEBARS
         SIDEBARS = False
-        #PYPP#START#
-        global REQUEST_COUNT
-        REQUEST_COUNT += 1
-        GDT.GDT_MAX = 0
-        GDO.GDO_MAX = 0
-        GDT.GDT_COUNT = 0
-        GDO.GDO_COUNT = 0
-        GDT.GDT_ALIVE = 0
-        GDO.GDO_ALIVE = 0
-        IPC.COUNT = 0
-        Cache.clear_stats()
-        Application.DB_TRANSACTIONS = 0
-        Application.EVENT_COUNT = 0
-        Logger.LINES_WRITTEN = 0
-        #PYPP#END#
 
         if FRESH:
             Logger.init(os.path.dirname(__file__) + "/protected/logs/")
@@ -82,11 +67,6 @@ def pygdo_application(environ, start_response):
             Application.LOOP.run_until_complete(IPC.web_register_ipc())
             FRESH = False
         else:
-            #PYPP#START#
-            if Application.config('core.profile') == '1' and REQUEST_COUNT > 1:
-                import yappi
-                yappi.start()
-            #PYPP#END#
             Application.init_common()
             Application.init_web(environ)
             Application.init_thread(None)
@@ -234,18 +214,6 @@ def pygdo_application(environ, start_response):
             # generator = ChunkedResponse(response)
             # yield from generator.wsgi_generator()
 
-            #PYPP#START#
-            if Application.config('core.profile') == '1':
-                if qs.get('__yappi', None):
-                    with open(Application.file_path('temp/yappi.log'), 'a') as f:
-                        import yappi
-                        yappi.get_func_stats().sort('ncall', 'desc').print_all(out=f, columns={
-                            0: ("name", 64),
-                            1: ("ncall", 12),
-                            2: ("tsub", 8),
-                            3: ("ttot", 8),
-                            4: ("tavg", 8)})
-            #PYPP#END#
     except (GDOModuleException, GDOMethodException) as ex:
         yield error_page(ex, start_response, not_found(), '404 Not Found')
     except GDOParamNameException as ex:

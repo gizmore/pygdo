@@ -11,12 +11,6 @@ class ACache:
     """
     Async Redis cache
     """
-    #PYPP#START#
-    HITS = 0
-    MISS = 0
-    UPDATES = 0
-    REMOVES = 0
-    #PYPP#END#
 
     ACACHE: Redis = None  # key => dict[key, WithSerialization] mapping
 
@@ -51,7 +45,6 @@ class ACache:
                                 found = False
                                 break
                         if found:
-                            cls.HITS += 1 #PYPP#DELETE#
                             if delete:
                                 await cls.remove(key)
                                 gid = rc.get_id()
@@ -61,7 +54,6 @@ class ACache:
                             return Cache.obj_for(rc, after_write=True, is_rc=True)
                 if cursor == 0:
                     break
-            cls.MISS += 1 #PYPP#DELETE#
 
     ##########
     # ACACHE #
@@ -72,9 +64,7 @@ class ACache:
         if cls.ACACHE:
             key = f"{key}:{args_key}" if args_key else key
             if packed := await cls.ACACHE.get(key):
-                cls.HITS += 1 #PYPP#DELETE#
                 return WithSerialization.gdounpack(zlib.decompress(packed))
-            cls.MISS += 1 #PYPP#DELETE#
         return default
 
     @classmethod
@@ -84,7 +74,6 @@ class ACache:
                 value = value.gdopack()
             else:
                 value = msgspec.msgpack.encode(value)
-            cls.UPDATES += 1 #PYPP#DELETE#
             key = f"{key}:{args_key}" if args_key else key
             await cls.ACACHE.set(key, zlib.compress(value))
 
@@ -92,18 +81,15 @@ class ACache:
     async def remove(cls, key: str = None, args_key: str = None):
         if cls.ACACHE:
             if key is None:
-                cls.REMOVES += 1 #PYPP#DELETE#
                 await cls.ACACHE.flushdb()
             elif args_key is None:
                 cursor = 0
                 while True:
                     cursor, keys = await cls.ACACHE.scan(cursor, match=f"{key}:*")
                     if keys:
-                        cls.REMOVES += 1 #PYPP#DELETE#
                         await cls.ACACHE.delete(*keys)
                     if cursor == 0:
                         break
             else:
-                cls.REMOVES += 1 #PYPP#DELETE#
                 redis_key = f"{key}:{args_key}"
                 await cls.ACACHE.delete(redis_key)

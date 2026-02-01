@@ -30,9 +30,6 @@ class GDT(WithSerialization):
 
     NULL_STRING = 'NULL'
 
-    GDT_MAX = 0    #PYPP#DELETE#
-    GDT_COUNT = 0  #PYPP#DELETE#
-    GDT_ALIVE = 0  #PYPP#DELETE#
 
     __slots__ = ()
 
@@ -66,22 +63,6 @@ class GDT(WithSerialization):
     def fqcn(cls) -> str:
         return cls.__module__ + '.' + cls.__name__
 
-    #PYPP#START#
-    def __init__(self):
-        from gdo.base.Application import Application
-        if Application.config('core.gdt_debug') == '1':
-            from gdo.base.Logger import Logger
-            Logger.debug(str(self.__class__))
-        if Application.config('core.gdt_debug') == '2':
-            from gdo.base.Logger import Logger
-            Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
-        GDT.GDT_COUNT += 1
-        GDT.GDT_ALIVE += 1
-        GDT.GDT_MAX = max(GDT.GDT_ALIVE, GDT.GDT_MAX)
-
-    def __del__(self):
-        GDT.GDT_ALIVE -= 1
-    #PYPP#END#
 
     def __str__(self):
         return self.get_name()
