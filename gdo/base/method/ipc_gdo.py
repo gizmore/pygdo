@@ -16,7 +16,7 @@ class ipc_gdo(Method):
         return [
             GDT_TableName('table').not_null(),
             GDT_String('id').not_null(),
-            GDT_Serialize('dirty').mode(SerializeMode.json),
+            GDT_Serialize('dirty').mode(SerializeMode.JSON),
         ]
 
     def gdo_execute(self) -> GDT:
