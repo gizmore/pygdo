@@ -321,13 +321,13 @@ class Cache:
     def get_timed_cache(cls, key: str) -> Any|None:
         entry = cls.MCACHE.get(key)
         if entry and entry[0] > Application.TIME:
-            cls.OHITS += 1  # PYPP#DELETE#
+            cls.OHITS += 1  #PYPP#DELETE#
             return entry[1]
         return None
 
     @classmethod
     def add_timed_cache(cls, key: str, seconds: int, content: Any) -> None:
-        cls.UPDATES += 1  # PYPP#DELETE#
+        cls.UPDATES += 1  #PYPP#DELETE#
         cls.MCACHE[key] = (seconds + Application.TIME, content)
 
 
