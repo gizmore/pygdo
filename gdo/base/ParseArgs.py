@@ -3,6 +3,7 @@ from gdo.base.Exceptions import GDOModuleException
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
+from gdo.base.Trans import Trans
 from gdo.base.Util import Strings
 
 from typing import TYPE_CHECKING, Any, Generator
@@ -104,4 +105,4 @@ class ParseArgs(WithPygdo):
         self.files = []
 
     def get_cache_key(self, method: 'Method') -> str:
-        return f"{method.fqcn()}.{self.args}.{self.pargs}"
+        return f"{method.fqcn()}.{self.args}.{self.pargs}{Application.STORAGE.lang}"
