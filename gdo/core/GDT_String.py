@@ -37,7 +37,7 @@ class GDT_String(GDT_Field):
     #     '_input_type',
     # )
 
-    def __init__(self, name):
+    def __init__(self, name: str = None):
         super().__init__(name)
         self._encoding = Encoding.UTF8
         self._hidden = False
@@ -48,7 +48,8 @@ class GDT_String(GDT_Field):
         self._case_s = False
         self._input_type = 'text'
         self._normalize = False
-        self.label(name)
+        if name:
+            self.label(name)
 
     def is_orderable(self) -> bool:
         return True
@@ -225,3 +226,6 @@ class GDT_String(GDT_Field):
     def render_toml(self) -> str:
         tt = self.render_tooltip() if self.has_tooltip() else ''
         return f"{self.get_name()} = \"{self.get_val() or ''}\" # {tt} {self.render_suggestion()}\n"
+
+    def render_list(self) -> str:
+        return self.render_html()

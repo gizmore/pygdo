@@ -216,16 +216,18 @@ class GDO_User(GDO):
     # Permissions #
     ###############
     async def authenticate(self, session: object, bind_ip: bool = False):
-        self._authenticated = True
-        Application.set_current_user(self)
-        if module_enabled('login'):
-            self.save_setting('last_login_ip', GDT_IP.current())
-            self.save_setting('last_login_datetime', Time.get_date())
-        session.set_val('sess_user', self.get_id())
-        if bind_ip:
-            session.set_val('sess_ip', GDT_IP.current())
-        session.save()
-        await Application.EVENTS.publish('user_login', self)
+        if not self._authenticated:
+            self._authenticated = True
+            Application.set_current_user(self)
+            if module_enabled('login'):
+                self.save_setting('last_login_ip', GDT_IP.current())
+                self.save_setting('last_login_datetime', Time.get_date())
+            if session:
+                session.set_val('sess_user', self.get_id())
+                if bind_ip:
+                    session.set_val('sess_ip', GDT_IP.current())
+                session.save()
+            await Application.EVENTS.publish('user_login', self)
         return self
 
     async def logout(self, session: object):

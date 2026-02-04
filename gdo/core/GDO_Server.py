@@ -109,7 +109,7 @@ class GDO_Server(GDO):
     # User #
     ########
 
-    async def get_or_create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
+    async def get_or_create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER) -> GDO_User:
         user = self.get_user_by_name(username)
         if not user:
             user = await self.create_user(username, displayname or username, user_type)
@@ -117,7 +117,7 @@ class GDO_Server(GDO):
             await self.on_user_joined(user)
         return user
 
-    async def create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER):
+    async def create_user(self, username: str, displayname: str = None, user_type: str = GDT_UserType.MEMBER) -> GDO_User:
         user = GDO_User.blank({
             'user_type': user_type,
             'user_name': username,

@@ -59,6 +59,9 @@ class Connector:
     def get_render_mode(self) -> Mode:
         return Mode.render_txt
 
+    def render_user_connect_help(self) -> str:
+        return self._server.gdo_val('serv_url')
+
     def gdo_has_channels(self) -> bool:
         return False
 

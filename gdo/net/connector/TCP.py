@@ -1,4 +1,5 @@
 import asyncio
+import socket
 from typing import Any
 
 from gdo.base.Application import Application
@@ -56,6 +57,12 @@ class TCP(Connector):
     _sessions: dict[str,TcpSession]
 
     _socket: Any
+
+    def render_user_connect_help(self) -> str:
+        from gdo.net.module_net import module_net
+        m = module_net.instance()
+        ip = socket.gethostbyname(Application.config('core.domain'))
+        return f'netcat {ip} {m.cfg_port()}'
 
     async def gdo_connect(self) -> bool:
         self._sessions = {}

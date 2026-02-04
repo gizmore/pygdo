@@ -5,7 +5,10 @@ result = method.get_table_result()
     <%
     for gdo in result:
         write('<li>')
-        write(gdo.render_list())
+        if hasattr(method, 'render_gdo'):
+            write(method.render_gdo(gdo, Mode.render_list))
+        else:
+            write(gdo.render_list())
         write('</li>')
     %>
 </ul>

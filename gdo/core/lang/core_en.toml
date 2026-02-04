@@ -1,5 +1,7 @@
 "%s" = "%s" # required for hacks do not change!
 module_core = "Core"
+help_web_connector = "Simply use this very website"
+help_bash_connector = "Simply use an SSH terminal. (probably not public)"
 
 ##############
 ### Errors ###

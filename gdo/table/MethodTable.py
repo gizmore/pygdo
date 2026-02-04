@@ -8,8 +8,7 @@ from gdo.base.GDOSorter import GDOSorter
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode, Render
 from gdo.base.Result import Result
-from gdo.base.ResultArray import ResultArray
-from gdo.base.Util import module_enabled, module_config_value
+from gdo.base.Util import module_config_value
 from gdo.core.WithGDO import WithGDO
 from gdo.form.MethodForm import MethodForm
 from gdo.message.GDT_HTML import GDT_HTML

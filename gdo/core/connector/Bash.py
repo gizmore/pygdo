@@ -1,6 +1,7 @@
 from gdo.base.Logger import Logger
 from gdo.base.Message import Message
 from gdo.base.Render import Mode
+from gdo.base.Trans import t
 from gdo.base.Util import gdo_print
 from gdo.core.Connector import Connector
 from gdo.core.GDO_Server import GDO_Server
@@ -8,6 +9,9 @@ from gdo.base.Application import Application
 
 
 class Bash(Connector):
+
+    def render_user_connect_help(self) -> str:
+        return t('help_bash_connector')
 
     def get_render_mode(self) -> Mode:
         return Mode.render_cli

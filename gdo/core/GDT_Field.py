@@ -217,3 +217,6 @@ class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullab
 
     def render_card(self) -> str:
         return "<p>" + self.render_label() + ": "  + (self.render_val() or Render.italic(t('none'))) + '</p>'
+
+    def render_list(self) -> str:
+        return self.render_html()
