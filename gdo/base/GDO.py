@@ -135,7 +135,7 @@ class GDO(WithName, WithBulk, GDT):
     def gdo_hash(self) -> str:
         hash_me = hashlib.sha256()
         for gdt in self.columns().values():
-            val = gdt.get_val()
+            val = gdt.gdo(self).get_val()
             hash_me.update(val.encode() if val is not None else b'')
         return hash_me.hexdigest()[0:self.HASH_LENGTH]
 
