@@ -23,3 +23,7 @@ class GDT_AutoInc(GDT_UInt):
     def gdo_after_delete(self, gdo):
         key = gdo.primary_key_column().get_name()
         gdo.set_val(key, '0', False)
+
+    def render_list(self) -> str:
+        return super().render_list()+') '
+    

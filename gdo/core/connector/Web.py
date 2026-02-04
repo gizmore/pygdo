@@ -13,6 +13,9 @@ class Web(Connector):
     def render_user_connect_help(self) -> str:
         return t('help_web_connector')
 
+    def render_user_command_help(self) -> str:
+        return ''
+
     def get_render_mode(self) -> Mode:
         return Mode.render_html
 

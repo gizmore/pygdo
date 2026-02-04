@@ -62,6 +62,9 @@ class Connector:
     def render_user_connect_help(self) -> str:
         return self._server.gdo_val('serv_url')
 
+    def render_user_command_help(self) -> str:
+        return f'({self._server.gdo_val('serv_trigger')}help)'
+
     def gdo_has_channels(self) -> bool:
         return False
 

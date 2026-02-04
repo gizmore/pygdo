@@ -1,4 +1,5 @@
 from gdo.base.GDT import GDT
+from gdo.base.Render import Mode
 from gdo.core.WithFields import WithFields
 from gdo.ui.WithFlow import WithFlow
 
@@ -16,3 +17,6 @@ class GDT_Container(WithFlow, WithFields, GDT):
 
     def render_html(self) -> str:
         return f'<div class="gdt-container {self.render_class()}">{self.render_fields()}</div>\n'
+
+    def render_list(self) -> str:
+        return self.render_fields(Mode.render_list)
