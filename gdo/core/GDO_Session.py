@@ -46,6 +46,7 @@ class GDO_Session(GDO):
             instance = cls.for_cookie(cookie)
         else:
             instance = cls.blank_error()
+        Application.set_session(instance)
         return instance
 
     @classmethod
