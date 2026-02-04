@@ -131,7 +131,7 @@ class GDO_Session(GDO):
         return f"{self.get_id()}:{self.get_token()}"
 
     def get(self, key: str, default: any = None):
-        return self._data.get(key, default)
+        return self._data.get(key, default) if self._data else default
 
     def set(self, key: str, value):
         self._data[key] = value
