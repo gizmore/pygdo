@@ -35,7 +35,7 @@ class module_base(GDO_Module):
         return [
             GDT_Bool('500_mails').not_null().initial('1'),
             GDT_Bool('serve_dot_files').not_null().initial('0'),
-            GDT_Bool('serve_gdo_assets').not_null().initial('0')
+            GDT_Bool('serve_gdo_assets').not_null().initial('1')
         ]
 
     def cfg_500_mails(self) -> bool:

@@ -7,7 +7,7 @@ class GDT_FileSize(GDT_UInt):
     @staticmethod
     def to_human(bytes_size: int, decimal_places: int = 2) -> str:
         if bytes_size is None:
-            pass
+            return '0 B'
         units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
         index = 0
         while bytes_size >= 1024 and index < len(units) - 1:

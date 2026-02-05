@@ -12,6 +12,8 @@ err_not_in_private = "Diese Methode funktioniert nicht in privaten Nachrichten."
 err_not_in_channel = "Diese Methode funktioniert nicht in Kanälen."
 err_not_authenticated = "Dein Konto ist nicht authentifiziert."
 err_violate_unique = "Ein Eintrag hierfür existiert bereits."
+err_gdo_validate = "GDO Validierung Fehlgeschlagen für %s mit %s: %s"
+err_file_forbidden = "Diese Datei dürfen Sie nicht heruntetrladen."
 
 and = "und"
 decimal_point = '.'

@@ -1,13 +1,14 @@
 import mimetypes
 import os
 import time
+import urllib
 from os import path
 
 from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.base.Util import hdr, Files
+from gdo.base.Util import hdr, Files, msg, module_config_value, Strings
 from gdo.core.GDT_Path import GDT_Path
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.message.GDT_HTML import GDT_HTML
@@ -24,10 +25,35 @@ class file_server(Method):
     def gdo_trigger(cls) -> str:
         return ""
 
+    def get_url(self) -> str:
+        return self.param_val('_url').lstrip('/')
+
     def get_path(self):
-        return Application.file_path(self.param_val('_url').lstrip('/'))
+        return Application.file_path(self.get_url())
 
     def gdo_execute(self) -> GDT:
+        url = self.get_url()
+        dir = Strings.substr_to(url, '/', None)
+        if not dir:
+            Application.status('403 Forbidden')
+            return self.err('err_file_forbidden')
+        if dir in ('bin', 'cache', 'DEV', 'files', 'files_test', 'gdotest', 'protected', 'temp'):
+            Application.status('403 Forbidden')
+            return self.err('err_file_forbidden')
+        if not module_config_value('base', 'serve_gdo_assets'):
+            ext = Strings.rsubstr_from(url, '.', '')
+            if ext in ('js', 'css'):
+                Application.status('403 Forbidden')
+                return self.err('err_file_forbidden')
+        if 'secret' in url:
+            Application.status('403 Forbidden')
+            return self.err('err_file_forbidden')
+        if not module_config_value('base', 'serve_dot_files'):
+            file = Strings.rsubstr_from(url, '/', url)
+            if file.startswith('.'):
+                Application.status('403 Forbidden')
+                return self.err('err_file_forbidden')
+
         file_path = self.get_path()
         mtime = os.path.getmtime(file_path)
         etag = str(mtime) + "." + GDO_Module.CORE_REV

@@ -13,6 +13,7 @@ err_not_in_channel = "This method does not work inside channels."
 err_not_authenticated = "Your account is not authenticated."
 err_violate_unique = "A record for this already exists."
 err_gdo_validate = "GDO validation error for %s with %s: %s"
+err_file_forbidden = "This file is not allowed to be downloaded."
 
 and = "and"
 decimal_point = '.'
