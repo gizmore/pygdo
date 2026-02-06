@@ -134,6 +134,7 @@ class GDO_Session(GDO):
         return self._data.get(key, default) if self._data else default
 
     def set(self, key: str, value):
+        self._data = {} if self._data is None else self._data
         self._data[key] = value
         return self
 
