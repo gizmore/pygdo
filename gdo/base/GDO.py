@@ -175,7 +175,7 @@ class GDO(WithName, WithBulk, GDT):
         return False
 
     def gdo_ipc(self) -> bool:
-        return True
+        return False
 
     ###########
     # Columns #
