@@ -27,8 +27,8 @@ class calc(MethodForm):
         expr = self.param_value('expression').lower().replace('_', self.last_value())
         result = str(eval(expr, self.parameter('expression').get_namespace()))
         self.LAST_RESULT[self._env_user] = result
-        self.msg('%s', (result,))
-        return self.render_page()
+        # self.msg('%s', (result,))
+        return self.empty(str(result))
 
     def last_value(self):
         if self._env_user not in self.LAST_RESULT:
