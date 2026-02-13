@@ -1,7 +1,6 @@
 import asyncio
 import io
 import os
-import sys
 from asyncio import iscoroutine
 from urllib.parse import parse_qs
 
@@ -209,6 +208,8 @@ async def app(scope, receive, send):
 
                 method._raw_args = args
                 method.env_user(user).env_session(session).env_server(user.get_server())
+                for module in ModuleLoader.instance().enabled():
+                    module.gdo_load_scripts(Application.get_page())
                 result = await method.execute()
                 while asyncio.iscoroutine(result):
                     result = await result

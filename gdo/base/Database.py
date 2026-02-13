@@ -52,6 +52,8 @@ class Database(WithPygdo):
                 user=self.username,
                 password=self.password,
                 converter_class=NopeConverter,
+                auth_plugin='mysql_native_password',
+
             )
             self.link.autocommit = True
             self.link.database = self.db_name

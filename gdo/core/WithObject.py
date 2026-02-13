@@ -73,8 +73,8 @@ class WithObject:
             return self._table.select().where(f"{gdt.get_name()} LIKE '%{GDO.escape(val)}%'").exec().fetch_all()
         return GDO.EMPTY_LIST
 
-    def get_by_name(self, var: str) -> list[GDO] | GDO | None:
-        var = var.lower()
+    def get_by_name(self, var: str|int) -> list[GDO] | GDO | None:
+        var = str(var).lower()
         gdos = self.query_gdos(var)
         if self._multiple:
             return gdos
