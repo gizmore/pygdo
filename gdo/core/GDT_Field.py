@@ -8,11 +8,12 @@ from gdo.base.WithError import WithError
 from gdo.core.WithGDO import WithGDO
 from gdo.core.WithLabel import WithLabel
 from gdo.core.WithNullable import WithNullable
+from gdo.core.WithHTMLAttributes import WithHTMLAttributes
 from gdo.ui.WithIcon import WithIcon
 from gdo.ui.WithTooltip import WithTooltip
 
 
-class GDT_Field(WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullable, GDT):
+class GDT_Field(WithHTMLAttributes, WithGDO, WithLabel, WithTooltip, WithIcon, WithError, WithNullable, GDT):
     _name: str
     _val: str|None
     _value: Any

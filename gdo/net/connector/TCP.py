@@ -65,6 +65,9 @@ class TCP(Connector):
         return f'netcat {ip} {m.cfg_port()}'
 
     async def gdo_connect(self) -> bool:
+        from gdo.net.module_net import module_net
+        m = module_net.instance()
+        Logger.debug(f'Waiting for TCP connections on {m.cfg_host()}:{m.cfg_port()}')
         self._sessions = {}
         asyncio.create_task(self.mainloop())
         self._connected = True

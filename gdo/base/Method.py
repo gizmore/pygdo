@@ -558,6 +558,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         from gdo.core.GDO_MethodValUserBlob import GDO_MethodValUserBlob
         from gdo.core.GDT_Text import GDT_Text
         if gdt := self._config_user_for(key):
+            if not self._env_user.is_persisted():
+                return gdt.get_initial()
             table = GDO_MethodValUserBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValUser.table()
             gdom = GDO_Method.for_method(self)
             entry = table.get_by_id(gdom.get_id(), self._env_user.get_id(), gdt.get_name())

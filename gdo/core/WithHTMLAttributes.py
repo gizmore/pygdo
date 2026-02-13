@@ -18,8 +18,9 @@ class WithHTMLAttributes:
 
     def html_attrs(self) -> str:
         out = ""
-        for key, value in self.get_attrs().items():
-            out += f' {key}="{html(value.strip())}"'
+        if hasattr(self, '_attrs'):
+            for key, value in self.get_attrs().items():
+                out += f' {key}="{html(value.strip())}"'
         return out #.strip()
 
     def add_class(self, klass: str):

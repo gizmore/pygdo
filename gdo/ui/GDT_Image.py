@@ -1,11 +1,10 @@
 from gdo.base.Trans import t
 from gdo.file.GDT_File import GDT_File
-from gdo.message.WithHTMLAttributes import WithHTMLAttributes
 from gdo.ui.WithHREF import WithHREF
 from gdo.ui.WithSize import WithSize
 
 
-class GDT_Image(WithSize, WithHREF, WithHTMLAttributes, GDT_File):
+class GDT_Image(WithSize, WithHREF, GDT_File):
     _alt_key: str|None
     _alt_args: tuple|None
 

@@ -28,7 +28,7 @@ class MethodForm(Method):
         return False
 
     def gdo_submit_button(self) -> GDT_Submit:
-        return GDT_Submit().calling(self.form_submitted).default_button()
+        return GDT_Submit().calling(self.form_submitted).attr('id', self.fqn()+'_submit').default_button()
 
     def gdo_create_form(self, form: GDT_Form) -> None:
         self.create_default_form_elements(form)

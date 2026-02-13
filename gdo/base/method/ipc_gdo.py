@@ -14,9 +14,9 @@ class ipc_gdo(Method):
 
     def gdo_parameters(self) -> list[GDT]:
         return [
-            GDT_TableName('table').not_null(),
-            GDT_String('id').not_null(),
-            GDT_Serialize('dirty').mode(SerializeMode.JSON),
+            GDT_TableName('table').not_null().positional(),
+            GDT_String('id').not_null().positional(),
+            GDT_Serialize('dirty').mode(SerializeMode.JSON).positional(),
         ]
 
     def gdo_execute(self) -> GDT:

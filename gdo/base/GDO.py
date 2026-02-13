@@ -152,7 +152,7 @@ class GDO(WithName, WithBulk, GDT):
         return None
 
     def is_persisted(self) -> bool:
-        return not self._blank
+        return bool(self.get_id()) # self._blank
 
     @classmethod
     @functools.cache
@@ -175,7 +175,7 @@ class GDO(WithName, WithBulk, GDT):
         return False
 
     def gdo_ipc(self) -> bool:
-        return False
+        return True
 
     ###########
     # Columns #
@@ -341,8 +341,8 @@ class GDO(WithName, WithBulk, GDT):
         return self
 
     def get_id(self) -> str|None:
-        if self._my_id: return self._my_id
         if self._blank: return ''
+        if self._my_id: return self._my_id
         if not self.__class__.GDT_AutoInc:
             from gdo.core.GDT_AutoInc import GDT_AutoInc
             self.__class__.GDT_AutoInc = GDT_AutoInc

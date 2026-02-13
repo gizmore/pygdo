@@ -1,6 +1,6 @@
 from gdo.base.Render import Mode
 from gdo.core.GDT_Container import GDT_Container
-from gdo.message.WithHTMLAttributes import WithHTMLAttributes
+from gdo.core.WithHTMLAttributes import WithHTMLAttributes
 
 
 class GDT_Span(WithHTMLAttributes, GDT_Container):

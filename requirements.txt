@@ -10,6 +10,8 @@ mysql-connector
 packaging
 prompt_toolkit
 psutil
+pydantic<2
+pypp
 python-magic
 pytzdata
 redis
