@@ -160,7 +160,6 @@ async def app(scope, receive, send):
                     session = GDO_Session.start(False)
                     user = session.get_user()
                     Application.set_current_user(user)
-                    Logger.user(user)
                     method = dir_server().env_server(user.get_server()).env_user(user).input('_url', url)
                 else:
                     session = GDO_Session.start(True)
