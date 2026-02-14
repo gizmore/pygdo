@@ -375,7 +375,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def soft_replace(self) -> Self:
         if old := self.get_by_id(*self.get_ids()):
-            return old.vals(self._vals).all_dirty().save()
+            return old.set_vals(self._vals).save()
         return self.all_dirty().insert()
 
     def insert(self) -> Self:

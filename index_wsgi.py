@@ -26,6 +26,7 @@ from gdo.file.GDO_SeoFile import GDO_SeoFile
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.ui.GDT_Error import GDT_Error
 from gdo.base.Cache import Cache
+from gdo.base.ImportTracker import ImportTracker #PYPP#DELETE#
 
 FRESH = True
 SIDEBARS = False
@@ -86,6 +87,10 @@ def pygdo_application(environ, start_response):
             if Application.config('core.profile') == '1' and REQUEST_COUNT > 1:
                 import yappi
                 yappi.start()
+            #PYPP#END#
+            #PYPP#START#
+            if Application.config('core.imports') == '1':
+                ImportTracker.enable()
             #PYPP#END#
             Application.init_common()
             Application.init_web(environ)
@@ -235,6 +240,10 @@ def pygdo_application(environ, start_response):
             # yield from generator.wsgi_generator()
 
             #PYPP#START#
+            if Application.config('core.imports') == '1':
+                if qs.get('__yappi', None):
+                    ImportTracker.write_to_file(Application.file_path('temp/imports.log'))
+                    ImportTracker.reset()
             if Application.config('core.profile') == '1':
                 if qs.get('__yappi', None):
                     with open(Application.file_path('temp/yappi.log'), 'a') as f:

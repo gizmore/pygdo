@@ -40,6 +40,7 @@ class Config:
             cls.data_int('core.gdo_debug', 0, 'Debug-log GDO allocations. 0-Off, 1-Classnames, 2-WithStacktrace').min(0).max(2),
             cls.data_int('core.profile', 0, 'Enable yappi Profiler?').min(0).max(1),
             cls.data_int('core.allocs', 0, 'Enable memory allocation profiler?').min(0).max(1),
+            cls.data_int('core.imports', 0, 'Enable Lazy Import Tracker?').min(0).max(1),
             GDT_Section().title_raw('File'),
             cls.data_int('file.block_size', 4096, "Blocksize for chunked data.").min(1024).max(2**23),
             cls.data_str('file.directory', 'files/'),

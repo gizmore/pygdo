@@ -367,6 +367,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         finally:
             if tr:
                 db.commit()
+        self.gdo_after_execute()
         return result
 
     async def _nested_execute(self, method: 'Method', return_gdt: bool = False):
@@ -375,20 +376,12 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             for key, arg in method._raw_args.all_vals():
                 if isinstance(arg, Method):
                     cont = method._raw_args.pargs if type(key) is int else method._raw_args.args
-                    cont[key] = await self._nested_execute(arg)
+                    cont[key] = (await arg.execute()).render(Mode.render_txt)
                 i += 1
-        gdt = await method._nested_execute_parse()
+        gdt = method.gdo_execute()
         while iscoroutine(gdt):
             gdt = await gdt
-        if return_gdt:
-            return gdt
-        else:
-            return gdt.render(Mode.render_txt)
-
-    async def _nested_execute_parse(self) -> 'GDT':
-        result = self.gdo_execute()
-        self.gdo_after_execute()
-        return result
+        return gdt
 
     def _prepare_nested_permissions(self, method: 'Method') -> bool:
         if not self._env_user.is_authenticated():

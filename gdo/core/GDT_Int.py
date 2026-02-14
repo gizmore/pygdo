@@ -99,7 +99,7 @@ class GDT_Int(GDT_String):
     def validate(self, val: str|None) -> bool:
         if not super().validate(val):
             return False
-        if (value := self.get_value()) is not None:
+        if (value := self.to_value(val)) is not None:
             return self.validate_min_max(value)
         return True
 

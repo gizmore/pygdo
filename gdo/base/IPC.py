@@ -1,3 +1,4 @@
+import asyncio
 import os
 import signal
 from functools import lru_cache
@@ -7,7 +8,8 @@ import aiofiles
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
-from gdo.base.Util import Files
+from gdo.base.Logger import Logger
+from gdo.base.Util import Files, msg
 from gdo.core.GDO_Event import GDO_Event
 from gdo.date.Time import Time
 
@@ -40,9 +42,12 @@ class IPC:
     async def dog_execute_events(cls):
         ts = Application.TIME
         for event in GDO_Event.query_for_sink('to_dog', ts).exec():
-            await event.execute_dog()
+            try:
+                await event.execute_dog()
+            except Exception as ex:
+                Logger.exception(ex, "IPC to_dog failed")
         cut = Time.get_date(ts)
-        GDO_Event.table().delete_query().where(f"event_type='to_dog' AND event_created <='{cut}'")
+        GDO_Event.table().delete_query().where(f"event_type='to_dog' AND event_created <='{cut}'").exec()
 
     #######
     # Web #
@@ -99,7 +104,14 @@ class IPC:
     @classmethod
     def send(cls, event: str, args: Any = None):
         cls.COUNT += 1 #PYPP#DELETE#
-        if Application.IS_DOG:
+        if Application.is_unit_test():
+            coro = GDO_Event.blank({
+                'event_type': 'to_dog',
+                'event_name': event,
+                'event_args': GDO_Event.table().column('event_args').to_val(args),
+            }).execute_dog()
+            asyncio.run(coro)
+        elif Application.IS_DOG:
             cls.send_to_web(event, args)
         elif Application.IS_HTTP:
             cls.send_to_dog(event, args)
@@ -117,6 +129,7 @@ class IPC:
             cls.PID = int(Files.get_contents(cls.method_launch()().lock_path(), False) or 0)
         try:
             if cls.PID:
+                msg('%d', (cls.PID,))
                 os.kill(cls.PID, signal.SIGUSR1)
         except ProcessLookupError:
             cls.PID = 0

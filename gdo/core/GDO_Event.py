@@ -21,11 +21,13 @@ class GDO_Event(GDO):
     def gdo_cached(self) -> bool:
         return False
 
+    def gdo_table_engine(self) -> str:
+        return 'MEMORY'
+
     def gdo_columns(self) -> list[GDT]:
         from gdo.base.IPC import IPC
         return [
             GDT_AutoInc('event_id'),
-            # No AutoInc!
             GDT_Enum('event_type').choices({'to_web': 'To Web', 'to_cli': 'To CLI', 'to_dog': 'To Dog'}).not_null(),
             GDT_Method('event_name').ascii().case_s().maxlen(64).not_null(),
             GDT_Serialize('event_args').ascii().case_s().maxlen(IPC.MAX_EVENT_ARG_SIZE).mode(SerializeMode.JSON),
@@ -89,12 +91,12 @@ class GDO_Event(GDO):
         method.execute()
 
     async def execute_dog(self):
+        from gdo.core.GDO_User import GDO_User
+        from gdo.core.connector.Bash import Bash
         method = self.get_event_method()
         if args:= self.get_event_args():
             method._raw_args.add_cli_line(args)
-        gdt = method.gdo_execute()
-        while iscoroutine(gdt):
-            gdt = await gdt
+        gdt = await method.env_user(GDO_User.system()).env_server(Bash.get_server()).execute()
         return gdt
 
     async def execute_web(self):
