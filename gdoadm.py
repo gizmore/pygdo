@@ -53,10 +53,11 @@ class App:
         await getattr(self, args.command)()
 
     async def pypp(self):
+        print("Running pypp")
         import pypp.pypp
         pp = pypp.pypp.PyPP()
         pp.preprocess_path(Application.file_path(), True)
-        print('All done!')
+        print('pypp done!')
 
     async def yarn(self):
         self._run_yarn_script()
@@ -409,8 +410,11 @@ class App:
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules(True, True)
-        self._run_yarn_script()
-        clear_cache().gdo_execute()
+        await self._run_yarn_script()
+        await self._run_requirement_scripts()
+        await clear_cache().gdo_execute()
+        if Application.config('core.pypp'):
+            await self.pypp()
         print("All done!")
 
     async def skel(self):
@@ -444,7 +448,10 @@ class App:
         print(result.stderr, file=sys.stderr)
 
     async def _run_requirement_scripts(self):
-        pass
+        print("Running ./gdo_requirements.sh")
+        result = subprocess.run([Application.file_path('gdo_requirements.sh')], capture_output=True, text=True)
+        print(result.stdout)
+        print(result.stderr, file=sys.stderr)
 
 
 async def run_pygdo_admin():
