@@ -28,6 +28,5 @@ find ./gdo -maxdepth 2 -type d -iname '.git' -print0 | xargs $XARGS_OPTIONS bash
 
 cd "$(dirname "$0")"
 
-bash gdo_yarn.sh
-bash gdo_requirements.sh
 bash gdo_adm.sh configure
+bash gdo_adm.sh update
