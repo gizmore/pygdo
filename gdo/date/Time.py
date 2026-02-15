@@ -58,6 +58,8 @@ class Time:
     # Timezone conversion
     TIMEZONE_OBJECTS: Dict[str, timezone] = {}
 
+    HUMAN_DURATION_PATTERN = re.compile(r"\s*([0-9]*\.?[0-9]+)\s*(ns|us|µs|ms|s|m|h|d|w|o|y)\s*")
+
     #############
     # Timezones #
     #############
@@ -347,8 +349,8 @@ class Time:
             return False
         return True
 
-    @staticmethod
-    def human_to_seconds(duration: str) -> float | None:
+    @classmethod
+    def human_to_seconds(cls, duration: str) -> float | None:
         if duration is None:
             return None
         multi = {
@@ -364,7 +366,7 @@ class Time:
             'y': 31536000,
         }
         matches = []
-        for match in re.finditer(r'([.\d]+)\s*([suµnmhdwoy]{0,2})', duration):
+        for match in cls.HUMAN_DURATION_PATTERN.finditer(duration):
             matches.append((float(match.group(1)), match.group(2)))
         back = 0.0
         for match in matches:
