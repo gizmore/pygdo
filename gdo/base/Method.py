@@ -219,7 +219,6 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def _mome(self):
         return f"{self.gdo_module().get_name}.{self.get_name()}"
 
-    @functools.cache
     def _mome_tkey(self, key: str) -> str:
         return f'{key}_{self.gdo_module().get_name}_{self.get_name()}'
 

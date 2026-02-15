@@ -70,7 +70,7 @@ class GDO_Session(GDO):
         return instance
 
     @classmethod
-    def for_cookie(cls, cookie: str):
+    def for_cookie(cls, cookie: str, check_ip: bool = True):
         parts = cookie.split(':')
         if len(parts) != 2:
             return cls.blank_error()
@@ -81,7 +81,7 @@ class GDO_Session(GDO):
         if instance.get_token() != token:
             return cls.blank_error()
         ip = instance.get_ip()
-        if ip and ip != GDT_IP.current():
+        if check_ip and ip and ip != GDT_IP.current():
             return cls.blank_error()
         instance._data = instance.gdo_value('sess_data') or None
         return instance

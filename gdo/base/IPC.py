@@ -129,7 +129,6 @@ class IPC:
             cls.PID = int(Files.get_contents(cls.method_launch()().lock_path(), False) or 0)
         try:
             if cls.PID:
-                msg('%d', (cls.PID,))
                 os.kill(cls.PID, signal.SIGUSR1)
         except ProcessLookupError:
             cls.PID = 0

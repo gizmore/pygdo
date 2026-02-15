@@ -32,6 +32,33 @@ FRESH = True
 SIDEBARS = False
 REQUEST_COUNT = 0
 
+def display_top_malloc(snapshot, f, limit=200, key_type='lineno'):
+    import tracemalloc, linecache
+    # snapshot = snapshot.filter_traces((
+    #     tracemalloc.Filter(False, "<frozen importlib._bootstrap>"),
+    #     tracemalloc.Filter(False, "<unknown>"),
+    # ))
+    top_stats = snapshot.statistics(key_type)
+
+    print("Top %s lines" % limit, file=f)
+    for index, stat in enumerate(top_stats[:limit], 1):
+        frame = stat.traceback[0]
+        filename = os.sep.join(frame.filename.split(os.sep)[-2:])
+        print("#%s: %s:%s: %.1f KiB"
+              % (index, filename, frame.lineno, stat.size / 1024), file=f)
+        line = linecache.getline(frame.filename, frame.lineno).strip()
+        if line:
+            print('    %s' % line, file=f)
+
+    other = top_stats[limit:]
+    if other:
+        size = sum(stat.size for stat in other)
+        print("%s other: %.1f KiB" % (len(other), size / 1024), file=f)
+    total = sum(stat.size for stat in top_stats)
+    print("Total allocated size: %.1f KiB" % (total / 1024), file=f)
+
+
+
 def aiorun(coro):
     while asyncio.iscoroutine(coro):
         if not Application.LOOP.is_running():
@@ -86,8 +113,9 @@ def pygdo_application(environ, start_response):
             if Application.config('core.profile') == '1':
                 import yappi
                 yappi.start()
-            #PYPP#END#
-            #PYPP#START#
+            if Application.config('core.allocs') == '1':
+                import tracemalloc
+                tracemalloc.start()
             if Application.config('core.imports') == '1':
                 ImportTracker.enable()
             #PYPP#END#
@@ -242,9 +270,15 @@ def pygdo_application(environ, start_response):
             # yield from generator.wsgi_generator()
 
             #PYPP#START#
+            if Application.config('core.allocs', '0') == '1':
+                if qs.get('__yappi', None):
+                    import tracemalloc
+                    with open(Application.file_path('temp/yappi_mem.log'), 'a') as f:
+                        snapshot = tracemalloc.take_snapshot()
+                        display_top_malloc(snapshot, f)
             if Application.config('core.imports') == '1':
                 if qs.get('__yappi', None):
-                    ImportTracker.write_to_file(Application.file_path('temp/imports.log'))
+                    ImportTracker.write_to_file(Application.file_path('temp/yappi_imports.log'))
                     ImportTracker.reset()
             if Application.config('core.profile') == '1':
                 if qs.get('__yappi', None):
