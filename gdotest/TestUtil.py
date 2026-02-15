@@ -5,8 +5,9 @@ import nest_asyncio
 from typing_extensions import TYPE_CHECKING
 
 from gdo.base.Cache import Cache
+from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Message import Message
-from gdo.base.Util import gdo_print
+from gdo.base.Util import gdo_print, Files
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.method.clear_cache import clear_cache
 
@@ -49,6 +50,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         loop.set_debug(False)
         WebPlug.COOKIES = {}
         all_private_messages()
+        Files.create_dir(Application.file_path('assets/'+GDO_Module.CORE_REV))
 
     def _tearDownAsyncioRunner(self):
         asyncio.gather(*Application.TASKS)

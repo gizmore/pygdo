@@ -7,6 +7,7 @@ import sys
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
+from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
