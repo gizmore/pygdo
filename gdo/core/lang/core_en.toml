@@ -23,7 +23,6 @@ err_invalid_choice = "Invalid choice. Suggestions: %s."
 err_invalid_choice_no_suggestions = "Invalid choice."
 err_path_not_exists = "The file %s does not exist."
 err_str_pattern = "Invalid input. It has to match r'%s'."
-err_ambiguous_choice = "There are %d matches for %s."
 err_gdt_validation = "Invalid value for %s in module %s: %s. Suggestions: %s."
 suggest_object = "An ID like '123' or maybe a name like 'giz'"
 

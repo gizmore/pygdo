@@ -1,3 +1,4 @@
+from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t
 from gdo.base.Util import Arrays, html
@@ -55,10 +56,19 @@ class GDT_Select(GDT_ComboBox):
         for k, v in self._choices.items():
             if val in k.lower() or (type(v) == str and val in v.lower()):
                 matches.append(v)
+
         if len(matches) == 1: return matches[0]
         if len(matches) > 1:
-            self.error('err_ambiguous_choice', (len(matches), html(val)))
+            shown = ", ".join(self._choice_label(m) for m in matches[:6])
+            self.error('err_module_config_gdt_ambiguous', (len(matches), self.get_name(), shown))
         return None
+
+    def _choice_label(self, x) -> str:
+        if isinstance(x, str):
+            return html(x)
+        if isinstance(x, type):
+            return x.gdo_trigger()
+        return html(x.get_name())
 
     ##########
     # Render #

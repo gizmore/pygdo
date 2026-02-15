@@ -212,7 +212,6 @@ def pygdo_application(environ, start_response):
                     boundary = params.strip().split("=", 1)[1]
                     parser = MultipartParser(BytesIO(body), boundary.encode())
                     fields = {}
-                    files = {}
                     for part in parser:
                         if part.filename:
                             args.add_file(part.name, part.filename, part.raw)

@@ -1,5 +1,6 @@
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
+from gdo.base.Render import Render
 from gdo.base.Util import html
 from gdo.core.GDT_Method import GDT_Method
 from gdo.core.GDT_String import GDT_String
@@ -19,6 +20,9 @@ class MethodConf(Method):
 
     def get_configs(self, method: Method) -> list:
         raise Exception("OOPS, get_configs not implemented.")
+
+    def get_config(self, method: Method, key: str) -> GDT:
+        raise Exception("OOPS, get_config not implemented.")
 
     def get_config_val(self, method: Method, key: str) -> str:
         raise Exception("OOPS, get_config_val not implemented.")
@@ -49,4 +53,5 @@ class MethodConf(Method):
         old = self.get_config_val(method, key)
         self.set_config_val(method, key, val)
         new = self.get_config_val(method, key)
-        return self.reply('msg_config_set', (method.gdo_trigger(), key, html(old), html(new)))
+        conf = self.get_config(method, key)
+        return self.reply('msg_config_set', (method.gdo_trigger(), conf.get_name(), Render.italic(conf.display_val(old)), Render.italic(conf.display_val(new))))

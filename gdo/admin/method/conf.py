@@ -44,7 +44,7 @@ class conf(Method):
         if not gdts:
             return self.err('err_module_config_gdt', (html(config_name),))
         if len(gdts) > 1:
-            return self.err('err_module_config_gdt_ambiguous', (html(config_name), ", ".join([gdt.get_name() for gdt in gdts])))
+            return self.err('err_module_config_gdt_ambiguous', (len(gdts), html(config_name), ", ".join([gdt.get_name() for gdt in gdts[:6]])))
         gdt = gdts[0]
         value = self.param_val('config_value')
         if not value:

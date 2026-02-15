@@ -229,3 +229,6 @@ class GDT_String(GDT_Field):
 
     def render_list(self) -> str:
         return self.render_html()
+
+    def display_val(cls, val: str) -> str:
+        return html(val, Application.get_mode())
