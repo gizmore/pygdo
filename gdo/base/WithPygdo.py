@@ -1,4 +1,5 @@
 from gdo.base import Util
+from gdo.base.LazyImporter import LazyImporter
 
 
 class WithPygdo:
@@ -31,10 +32,7 @@ class WithPygdo:
 
     @classmethod
     def application(cls):
-        if not cls.Application:
-            from gdo.base.Application import Application
-            cls.Application = Application
-        return cls.Application
+        return LazyImporter.import_once('from gdo.base.Application import Application')
 
     @classmethod
     def util(cls, util: str=None):

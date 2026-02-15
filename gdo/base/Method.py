@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Self
 from mysql.connector import OperationalError
 
 from gdo.base.Cache import Cache
+from gdo.base.LazyImporter import LazyImporter
 from gdo.base.ParseArgs import ParseArgs
 from gdo.base.UserTemp import UserTemp
 from gdo.message.GDT_HTML import GDT_HTML
@@ -485,10 +486,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return self._get_config_server(key, self._env_server)
 
     def _get_config_server(self, key: str, server: 'GDO_Server') -> GDT|None:
-        from gdo.core.GDO_Method import GDO_Method
-        from gdo.core.GDO_MethodValServer import GDO_MethodValServer
-        from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
-        from gdo.core.GDT_Text import GDT_Text
+        GDO_Method = LazyImporter.import_once('from gdo.core.GDO_Method import GDO_Method')
+        GDO_MethodValServer = LazyImporter.import_once('from gdo.core.GDO_MethodValServer import GDO_MethodValServer')
+        GDO_MethodValServerBlob = LazyImporter.import_once('from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob')
+        GDT_Text = LazyImporter.import_once('from gdo.core.GDT_Text import GDT_Text')
         if gdt := self._config_server_for(key):
             table = GDO_MethodValServerBlob.table() if isinstance(gdt, GDT_Text) else GDO_MethodValServer.table()
             gdom = GDO_Method.for_method(self)

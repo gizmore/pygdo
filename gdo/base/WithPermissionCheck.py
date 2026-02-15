@@ -4,6 +4,7 @@ import hmac
 from typing import Type
 
 from gdo.base.Application import Application
+from gdo.base.LazyImporter import LazyImporter
 from gdo.base.Logger import Logger
 from gdo.base.Util import module_enabled, Arrays, dump, urlencode
 
@@ -24,7 +25,7 @@ class WithPermissionCheck:
             self.CACHE[self.__class__] = cached = {}
         if cached.get(user):
             return True
-        from gdo.core.GDO_Permission import GDO_Permission
+        GDO_Permission = LazyImporter.import_once('from gdo.core.GDO_Permission import GDO_Permission')
         typestr = self.gdo_user_type()
         if typestr:
             types = typestr.split(',')
