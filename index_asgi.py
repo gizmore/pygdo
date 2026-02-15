@@ -56,6 +56,7 @@ def display_top_malloc(snapshot, f, limit=200, key_type='lineno'):
 async def app(scope, receive, send):
     try:
         Application.LOOP = asyncio.get_running_loop()
+        Application.IS_HTTP = True
         Logger.init(os.path.dirname(__file__)+"/protected/logs/")
         if scope['type'] == 'lifespan':
             message = await receive()
