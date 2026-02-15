@@ -2,17 +2,31 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-echo "This will reset all your changes to main branch. Are you sure? Press Enter"
-read
-
+FORCE=0
 THREADS=15
+
+usage() { echo "Usage: $0 [-y] [threads]"; }
+
+while getopts ":y" opt; do
+  case "$opt" in
+    y) FORCE=1 ;;
+    \?) usage; exit 1 ;;
+  esac
+done
+shift $((OPTIND - 1))
+
 if [ $# -gt 0 ]; then
-  THREADS=$1
-fi;
+  THREADS="$1"
+fi
+
+if [ "$FORCE" -eq 0 ]; then
+  echo "This will reset all your changes to main branch. Are you sure? Press Enter"
+  read -r
+fi
 
 XARGS_OPTIONS="-P $THREADS -0 -I {}"
-if [ "$(uname -s)" == "FreeBSD" ] || [ "$(uname -s)" == "Darwin" ]; then
-        XARGS_OPTIONS="-S 1024 -R 2 $XARGS_OPTIONS"
+if [ "$(uname -s)" = "FreeBSD" ] || [ "$(uname -s)" = "Darwin" ]; then
+  XARGS_OPTIONS="-S 1024 -R 2 $XARGS_OPTIONS"
 fi
 
 mkdir -p temp/git_pull
