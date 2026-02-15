@@ -21,8 +21,8 @@ class GDO_Event(GDO):
     def gdo_cached(self) -> bool:
         return False
 
-    def gdo_table_engine(self) -> str:
-        return 'MEMORY'
+    # def gdo_table_engine(self) -> str:
+    #     return 'MEMORY'
 
     def gdo_columns(self) -> list[GDT]:
         from gdo.base.IPC import IPC
