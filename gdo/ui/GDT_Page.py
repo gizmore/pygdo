@@ -50,6 +50,8 @@ class GDT_Page(GDT):
         self._left_bar = GDT_Bar('left').vertical()
         self._right_bar = GDT_Bar('right').vertical()
         self._bottom_bar = GDT_Container()
+        self.__class__._js_inline = ''
+        self.__class__._css_inline = ''
         return self
 
     def result(self, result: GDT):

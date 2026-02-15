@@ -62,10 +62,13 @@ async def app(scope, receive, send):
             if message['type'] == 'lifespan.startup':
                 Application.init(os.path.dirname(__file__))
                 #PYPP#START#
-                if Application.config('core.allocs', '0') == '1':
+                if Application.config('core.allocs') == '1':
                     import tracemalloc
                     tracemalloc.start()
-                if Application.config('core.profile', '0') == '1':
+                if Application.config('core.imports') == '1':
+                    from gdo.base.ImportTracker import ImportTracker
+                    ImportTracker.enable()
+                if Application.config('core.profile') == '1':
                     import yappi
                     yappi.start()
                 #PYPP#END#
@@ -207,8 +210,6 @@ async def app(scope, receive, send):
 
                 method._raw_args = args
                 method.env_user(user).env_session(session).env_server(user.get_server())
-                for module in ModuleLoader.instance().enabled():
-                    module.gdo_load_scripts(Application.get_page())
                 result = await method.execute()
                 while asyncio.iscoroutine(result):
                     result = await result
@@ -276,6 +277,12 @@ async def app(scope, receive, send):
                         with open(Application.file_path('temp/yappi_mem.log'), 'a') as f:
                             snapshot = tracemalloc.take_snapshot()
                             display_top_malloc(snapshot, f)
+
+                if Application.config('core.imports') == '1':
+                    if qs.get('__yappi', None):
+                        from gdo.base.ImportTracker import ImportTracker
+                        ImportTracker.write_to_file(Application.file_path('temp/yappi_imports.log'))
+                        ImportTracker.reset()
 
                 if Application.config('core.profile', '0') == '1':
                     if qs.get('__yappi', None):
