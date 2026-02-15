@@ -413,7 +413,7 @@ class App:
         await self._run_yarn_script()
         await self._run_requirement_scripts()
         await clear_cache().gdo_execute()
-        if Application.config('core.pypp'):
+        if Application.config('core.pypp') == '1':
             await self.pypp()
         print("All done!")
 
