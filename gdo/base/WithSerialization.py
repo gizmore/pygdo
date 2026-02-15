@@ -79,11 +79,6 @@ class WithSerialization(WithPygdo):
             obj.gdo_wake_up()
             for key, value in dic.items():
                 setattr(obj, key, WithSerialization.gdopinstances(value))
-
-            from gdo.base.GDO import GDO
-            # if isinstance(obj, GDO):
-            #     from gdo.base.Cache import Cache
-            #     return Cache.obj_for(obj)
             return obj
         return dic
         

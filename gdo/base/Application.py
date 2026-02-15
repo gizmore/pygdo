@@ -55,6 +55,7 @@ class Application:
     PATH: str = ''
     CONFIG_PATH: str = ''
     CONFIG: dict[str, str] = {}
+    Cache = None
 
     @classmethod
     def tick(cls):
@@ -209,8 +210,10 @@ class Application:
         cls.init_cookies_asgi(scope)
         cls.STORAGE.ip = scope.get('client')[0]
         cls.PROTOCOL = scope.get('scheme')
-        from gdo.base.Cache import Cache
-        Cache.clear_ocache()
+        if not cls.Cache:
+            from gdo.base.Cache import Cache
+            cls.Cache = Cache
+        cls.Cache.clear_ocache()
 
     @classmethod
     def asgi_headers(cls, scope):
