@@ -341,8 +341,8 @@ class GDO(WithName, WithBulk, GDT):
         return self
 
     def get_id(self) -> str|None:
-        if self._blank: return ''
         if self._my_id: return self._my_id
+        if self._blank: return ''
         if not self.__class__.GDT_AutoInc:
             from gdo.core.GDT_AutoInc import GDT_AutoInc
             self.__class__.GDT_AutoInc = GDT_AutoInc
