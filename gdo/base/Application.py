@@ -250,11 +250,11 @@ class Application:
 
     @classmethod
     def init_cookies_asgi(cls, scope):
-        cls.init_cookies(cls.get_client_header('cookie', ''))
+        cls.init_cookies(scope.get('headers', {}).get('cookie', ''))
 
     @classmethod
     def init_cookies(cls, cookies_str: str):
-        cls.STORAGE.cookies = dict(c.split('=', 1) for c in cookies_str.split(';')) if cookies_str else {}
+        cls.STORAGE.cookies = dict(c.strip().split('=', 1) for c in cookies_str.split(';')) if cookies_str else {}
 
     @classmethod
     def status(cls, status: str):

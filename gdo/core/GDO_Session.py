@@ -1,6 +1,7 @@
 from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Util import msg
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Serialize import GDT_Serialize
@@ -58,7 +59,7 @@ class GDO_Session(GDO):
         http_only = ' HttpOnly;'
         # secure = ' Secure;'
         secure = ''
-        same_site = f' SameSite={Application.config('sess.same_site', 'lax')};'
+        same_site = f" SameSite={Application.config('sess.same_site', 'lax')};"
         Application.header('Set-Cookie', f"{cls.COOKIE_NAME}={cookie}; Path=/;{http_only}{secure}{same_site}")
 
     @classmethod

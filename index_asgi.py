@@ -55,6 +55,7 @@ def display_top_malloc(snapshot, f, limit=200, key_type='lineno'):
 
 async def app(scope, receive, send):
     try:
+        Application.LOOP = asyncio.get_running_loop()
         Logger.init(os.path.dirname(__file__)+"/protected/logs/")
         if scope['type'] == 'lifespan':
             message = await receive()
@@ -91,9 +92,8 @@ async def app(scope, receive, send):
             Logger.LINES_WRITTEN = 0
             Cache.clear_stats()
             #PYPP#END#
-
-            Application.init_asgi(scope)
             Application.init_common()
+            Application.init_asgi(scope)
             Application.tick()
 
             qs = parse_qs(scope['query_string'].decode())
