@@ -3,6 +3,7 @@ import functools
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
+from gdo.base.LazyImporter import LazyImporter
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
@@ -63,7 +64,7 @@ class GDT_Page(GDT):
         return self._result.render_txt()
 
     def render_html(self):
-        from gdo.core.GDO_User import GDO_User
+        GDO_User = LazyImporter.import_once("from gdo.core.GDO_User import GDO_User")
         result = ''
         if seconds := self._method.gdo_cached():
             key = self._method._raw_args.get_cache_key(self._method)

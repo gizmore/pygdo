@@ -82,9 +82,8 @@ def pygdo_application(environ, start_response):
                 time.sleep(0.000025)
             Application.LOOP.run_until_complete(IPC.web_register_ipc())
             FRESH = False
-        else:
             #PYPP#START#
-            if Application.config('core.profile') == '1' and REQUEST_COUNT > 1:
+            if Application.config('core.profile') == '1':
                 import yappi
                 yappi.start()
             #PYPP#END#
@@ -92,9 +91,12 @@ def pygdo_application(environ, start_response):
             if Application.config('core.imports') == '1':
                 ImportTracker.enable()
             #PYPP#END#
+        else:
+            Application.tick()
             Application.init_common()
             Application.init_web(environ)
             Application.init_thread(None)
+            Cache.clear_ocache()
 
         qs = parse_qs(environ['QUERY_STRING'])
 

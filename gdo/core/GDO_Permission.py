@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
 
+from gdo.base.LazyImporter import LazyImporter
+
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
 
@@ -33,7 +35,7 @@ class GDO_Permission(GDO):
 
     @classmethod
     def has_permission(cls, user: 'GDO_User', permission: str):
-        from gdo.core.GDO_UserPermission import GDO_UserPermission
+        GDO_UserPermission = LazyImporter.import_once('from gdo.core.GDO_UserPermission import GDO_UserPermission')
         for perm_name in permission.split(','):
             if perm := cls.get_by_name(perm_name):
                 if GDO_UserPermission.has_permission(user, perm):

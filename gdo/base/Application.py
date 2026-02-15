@@ -13,6 +13,7 @@ import tomlkit
 from typing import TYPE_CHECKING
 
 from gdo.base.AsyncRunner import AsyncRunner
+from gdo.base.LazyImporter import LazyImporter
 
 if TYPE_CHECKING:
     from gdo.core.GDO_Session import GDO_Session
@@ -190,7 +191,7 @@ class Application:
         cls.mode(Mode.render_html)
         cls.STORAGE.lang = 'en'
         cls.STORAGE.user = None
-        from gdo.base.Cache import Cache
+        Cache = LazyImporter.import_once("from gdo.base.Cache import Cache")
         Cache.clear_ocache()
 
     @classmethod

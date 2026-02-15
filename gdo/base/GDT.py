@@ -68,7 +68,7 @@ class GDT(WithSerialization):
 
     #PYPP#START#
     def __init__(self):
-        from gdo.base.Application import Application
+        Application = self.application()
         if Application.config('core.gdt_debug') == '1':
             from gdo.base.Logger import Logger
             Logger.debug(str(self.__class__))

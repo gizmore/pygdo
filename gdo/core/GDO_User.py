@@ -7,9 +7,11 @@ from typing import TYPE_CHECKING, Any
 
 from gdo.base.Cache import gdo_cached, Cache
 from gdo.base.IPC import IPC
+from gdo.base.LazyImporter import LazyImporter
 from gdo.base.Query import Query
 from gdo.base.Result import Result
 from gdo.base.Util import module_enabled
+from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDT_Index import GDT_Index
 from gdo.core.GDT_UserName import GDT_UserName
 
@@ -268,7 +270,7 @@ class GDO_User(GDO):
         return self.is_type(GDT_UserType.MEMBER)
 
     def has_permission(self, permission: str) -> bool:
-        from gdo.core.GDO_Permission import GDO_Permission
+        GDO_Permission = LazyImporter.import_once('from gdo.core.GDO_Permission import GDO_Permission')
         return GDO_Permission.has_permission(self, permission)
 
     def permissions(self) -> list[str]:
