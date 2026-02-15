@@ -57,7 +57,7 @@ class Events:
             for subscriber in self._subscribers[event_name]:
                 await subscriber['callback'](*args, **kwargs)
                 subscriber['count'] -= 1
-                if subscriber['count'] == 0:
+                if subscriber['count'] <= 0:
                     to_delete.append(subscriber['callback'])
         for callback in to_delete:
             self.unsubscribe(event_name, callback)

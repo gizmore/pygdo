@@ -86,7 +86,7 @@ class InstallTestCase(GDOTestCase):
         self.assertIsNotNone(result, "Install all")
 
     async def test_08_install_admin_user(self):
-        subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'admin', "gizmore5", "11111111", "gizmore@gizmore.org"], capture_output=True)
+        result = subprocess.run(["python3", Application.file_path("gdoadm.py"), '-u', 'admin', "gizmore5", "11111111", "gizmore@gizmore.org"], capture_output=True)
         self.assertTrue(GDO_User.table().get_by_vals({'user_name': 'gizmore5', 'user_server': '1'}).is_admin(), 'Cannot create admin user')
 
     def test_09_reinstall_module(self):

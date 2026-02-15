@@ -7,6 +7,7 @@ from typing import Any
 import aiofiles
 
 from gdo.base.Application import Application
+from gdo.base.AsyncRunner import AsyncRunner
 from gdo.base.Cache import Cache
 from gdo.base.Logger import Logger
 from gdo.base.Util import Files, msg
@@ -110,7 +111,7 @@ class IPC:
                 'event_name': event,
                 'event_args': GDO_Event.table().column('event_args').to_val(args),
             }).execute_dog()
-            asyncio.run(coro)
+            Application.run_coro(coro, 'IPC_DOG')
         elif Application.IS_DOG:
             cls.send_to_web(event, args)
         elif Application.IS_HTTP:

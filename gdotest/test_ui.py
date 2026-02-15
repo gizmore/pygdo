@@ -34,7 +34,7 @@ class UITestCase(GDOTestCase):
         self.assertIn(sect, "Test", 'Section does not render in CLI mode.')
 
     def test_04_method_errors(self):
-        result = web_plug("math.calc.html").post({'submit': '1', 'expression': 'PI * 3'}).exec()
+        result = web_plug("math.calc.html").post({'submit': '1', 'expression': 'XI * 3'}).exec()
         self.assertIn('<form', result, 'erroneous page does not render fallback')
 
     async def test_05_human_filesize(self):

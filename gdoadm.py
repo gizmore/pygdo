@@ -354,11 +354,12 @@ class App:
             await GDO_UserPermission.grant_permission(user, perm)
 
         if module_enabled('login'):
-            from gdo.login import module_login
+            from gdo.login.module_login import module_login
             module_login.instance().set_password_for(user, args.password)
 
         email = args.email
         if email and module_enabled('mail'):
+            from gdo.mail.module_mail import module_mail
             module_mail.instance().set_email_for(user, email)
 
         print("All Done!")
