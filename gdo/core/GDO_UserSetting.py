@@ -57,7 +57,7 @@ class GDO_UserSetting(GDO):
         return cls.get_user_with_settings(server_id, [(key, op, val)])
 
     @classmethod
-    def get_user_with_settings(cls, server_id, settings: list[tuple]) -> GDO_User:
+    def get_user_with_settings(cls, server_id, settings: list[tuple[str,str,str]]) -> GDO_User:
         query = cls.get_users_with_settings_query(server_id, settings)
         return query.first().exec().fetch_object()
 

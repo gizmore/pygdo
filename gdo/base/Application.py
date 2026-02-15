@@ -380,6 +380,6 @@ class Application:
     def run_coro(cls, coro, name: str):
         # AsyncRunner.INSTANCE.run(coro)
         if cls.LOOP.is_running():
-            cls.TASKS.append(asyncio.create_task(coro, name=name))
+            cls.TASKS.append(cls.LOOP.create_task(coro, name=name))
         else:
             cls.LOOP.run_until_complete(coro)
