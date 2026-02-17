@@ -81,6 +81,9 @@ class GDO_Server(GDO):
     def get_url(self) -> dict:
         return self.gdo_value('serv_url')
 
+    def get_connector_name(self) -> str:
+        return self.gdo_val('serv_connector')
+
     def get_connector(self) -> Connector:
         if self._connector is None:
             self._connector = self.gdo_value('serv_connector')()

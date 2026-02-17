@@ -55,7 +55,7 @@ class GDT_Select(GDT_ComboBox):
         matches = []
         for k, v in self._choices.items():
             if val in k.lower() or (type(v) == str and val in v.lower()):
-                matches.append(v)
+                matches.append(k if self.gdo_ambiguous_show_keys() else v)
 
         if len(matches) == 1: return matches[0]
         if len(matches) > 1:
@@ -63,11 +63,15 @@ class GDT_Select(GDT_ComboBox):
             self.error('err_module_config_gdt_ambiguous', (len(matches), self.get_name(), shown))
         return None
 
+    def gdo_ambiguous_show_keys(self) -> bool:
+        return False
+
     def _choice_label(self, x) -> str:
         if isinstance(x, str):
             return html(x)
         if isinstance(x, type):
-            return x.gdo_trigger()
+            if hasattr(x, 'gdo_trigger'):
+                return x.gdo_trigger()
         return html(x.get_name())
 
     ##########
