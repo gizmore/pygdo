@@ -4,17 +4,14 @@ import logging
 import nest_asyncio
 from typing_extensions import TYPE_CHECKING
 
-from gdo.base.Cache import Cache
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Message import Message
 from gdo.base.Util import gdo_print, Files
 from gdo.core.GDO_UserPermission import GDO_UserPermission
-from gdo.core.method.clear_cache import clear_cache
 
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
 
-import cProfile
 import io
 import time
 import unittest
@@ -36,7 +33,6 @@ from index_wsgi import application, pygdo_application
 class GDOTestCase(unittest.IsolatedAsyncioTestCase):
     MESSAGES: dict[str, list[str]] = {}
     TICKS: int = 0
-    _profile: cProfile
 
     def __init__(self, name: str):
         super().__init__(name)
@@ -242,8 +238,9 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     out += "\n"
     if result:
         out += result.render(mode)
+    out = out.strip()
     gdo_print(out)
-    return out.strip()
+    return out
 
 def all_private_messages():
     out = ""
