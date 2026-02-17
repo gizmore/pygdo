@@ -12,11 +12,6 @@ class module_language(GDO_Module):
         super().__init__()
         self._priority = 2
 
-    # def gdo_classes(self):
-    #     return [
-    #         GDO_Language,
-    #     ]
-
     async def gdo_install(self):
         InstallLanguage.now()
 

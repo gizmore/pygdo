@@ -2,6 +2,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.date.GDO_Timezone import GDO_Timezone
 from gdo.ui.GDT_Page import GDT_Page
+from gdo.base.GDO import GDO
 
 
 class module_date(GDO_Module):
@@ -10,7 +11,7 @@ class module_date(GDO_Module):
         super().__init__()
         self._priority = 5
 
-    def gdo_classes(self) -> list:
+    def gdo_classes(self) -> list[type[GDO]]:
         return [
             GDO_Timezone,
         ]

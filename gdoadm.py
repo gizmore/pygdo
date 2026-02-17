@@ -427,7 +427,46 @@ class App:
         name = args.modulename
         base = Application.file_path(f'gdo/{name}/')
         Files.append_content(f"{base}__init__.py", f'from gdo.{name}.module_{name} import module_{name}\n')
-        Files.append_content(f"{base}module_{name}.py", f'from gdo.base.GDO_Module import GDO_Module\n\n\nclass module_{name}(GDO_Module):\n    pass\n')
+        Files.append_content(
+            f"{base}module_{name}.py",
+            f"""from __future__ import annotations
+
+        from gdo.base.GDO_Module import GDO_Module
+        from gdo.base.GDO import GDO
+        from gdo.base.GDT import GDT
+
+        from typing import TYPE_CHECKING
+
+        if TYPE_CHECKING:
+            from gdo.ui.GDT_Page import GDT_Page
+
+
+        class module_{name}(GDO_Module):
+
+            def gdo_load_scripts(self, page: 'GDT_Page'):
+                pass
+
+            def gdo_init_sidebar(self, page: 'GDT_Page'):
+                pass
+
+            def gdo_module_config(self) -> list[GDT]:
+                return [
+                ]
+
+            def gdo_user_config(self) -> list[GDT]:
+                return [
+                ]
+
+            def gdo_user_settings(self) -> list[GDT]:
+                return [
+                ]
+
+            def gdo_classes(self) -> list[type[GDO]]:
+                return [
+                ]
+        """
+        )
+
         Files.copy(Application.file_path('LICENSE'), f"{base}LICENSE")
         Files.create_dir(f"{base}lang/")
         Files.append_content(f"{base}lang/{name}_en.toml", f'module_{name} = "{name.title()}"\n')

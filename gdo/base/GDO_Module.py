@@ -25,7 +25,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1301"
+    CORE_REV = "PyGDOv8.0.2-r1302"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -106,7 +106,7 @@ class GDO_Module(WithModuleConfig, GDO):
     def gdo_cached(self) -> bool:
         return False
 
-    def gdo_classes(self):
+    def gdo_classes(self) -> list[type[GDO]]:
         return []
 
     def get_by_name(self, modulename: str, enabled: bool = None):

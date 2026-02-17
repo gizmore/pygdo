@@ -7,6 +7,7 @@ from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOException
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
+from gdo.base.GDO import GDO
 from gdo.base.Logger import Logger
 from gdo.core import GDO_MethodValServerBlob
 from gdo.core.Connector import Connector
@@ -132,7 +133,7 @@ class module_core(GDO_Module):
     def cfg_last_cron(self) -> datetime:
         return self.get_config_value('last_cron')
 
-    def gdo_classes(self):
+    def gdo_classes(self) -> list[type[GDO]]:
         return [
             GDO_Language,
             GDO_Server,

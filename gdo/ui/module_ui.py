@@ -2,6 +2,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.ui.GDT_Font import GDT_Font
 from gdo.ui.IconProvider import IconProvider
 from gdo.ui.IconUTF8 import IconUTF8
+from gdo.base.GDO import GDO
 
 
 class module_ui(GDO_Module):
@@ -11,7 +12,7 @@ class module_ui(GDO_Module):
         self._priority = 8
 
 
-    def gdo_classes(self):
+    def gdo_classes(self) -> list[type[GDO]]:
         return []
 
     def gdo_init(self):

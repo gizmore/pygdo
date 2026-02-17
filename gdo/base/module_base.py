@@ -5,6 +5,7 @@ from gdo.base.GDO_ModuleVal import GDO_ModuleVal
 from gdo.base.GDT import GDT
 from gdo.base.Util import Files
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.base.GDO import GDO
 
 
 class module_base(GDO_Module):
@@ -13,7 +14,7 @@ class module_base(GDO_Module):
         super().__init__()
         self._priority = 0
 
-    def gdo_classes(self):
+    def gdo_classes(self) -> list[type[GDO]]:
         return [
             GDO_GDOTable,
             GDO_Module,

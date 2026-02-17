@@ -6,11 +6,12 @@ from gdo.date.Time import Time
 from gdo.mail.GDO_Mail import GDO_Mail
 from gdo.mail.GDT_Email import GDT_Email
 from gdo.ui.GDT_Link import GDT_Link
+from gdo.base.GDO import GDO
 
 
 class module_mail(GDO_Module):
 
-    def gdo_classes(self):
+    def gdo_classes(self) -> list[type[GDO]]:
         return [
             GDO_Mail,
         ]
