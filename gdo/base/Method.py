@@ -27,7 +27,7 @@ from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
-from gdo.base.Trans import t, thas
+from gdo.base.Trans import t, thas, Trans
 from gdo.base.Util import err_raw
 from gdo.base.WithEnv import WithEnv
 from gdo.base.WithError import WithError
@@ -667,6 +667,12 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                 else:
                     positional.append(f"[<{label}>]")
         return f"Usage: {self.gdo_trigger()} {' '.join(optional + positional)}"
+
+    ########
+    # Lang #
+    ########
+    def t(self, key: str, args: tuple[str|int|float,...]):
+        return Trans.t(key, args)
 
     ##########
     # Render #

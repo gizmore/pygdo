@@ -1,0 +1,7 @@
+<div class="gdt-filter">
+    <select name="<%=field._name%>[<%=gdt._name%>]">
+        <option value="" <%=field.html_selected(gdt, '')%>><%=t('all')%></option>
+        <option value="1" <%=field.html_selected(gdt, '1')%>><%=t('yes')%></option>
+        <option value="0" <%=field.html_selected(gdt, '0')%>><%=t('no')%></option>
+    </select>
+</div>

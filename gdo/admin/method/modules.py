@@ -33,9 +33,10 @@ class modules(MethodTable):
     def gdo_paginated(self) -> bool:
         return False
 
+    def gdo_order_default(self):
+        return 'module_name ASC'
+
     def gdo_execute(self) -> GDT:
-        # Trans.reload()
-        # mods = self.get_modules()
         self._n = 0
         return super().gdo_execute()
 
@@ -60,7 +61,7 @@ class modules(MethodTable):
 
     def render_module_enabled(self, gdt: GDT_Bool, gdo: GDO_Module) -> str:
         if gdt._gdo.is_persisted():
-            return 'Y' if gdt._val == '1' else 'N'
+            return gdt.render_cell()
         return ''
 
     def render_module_name(self, gdt: GDT_Name, gdo: GDO_Module) -> str:

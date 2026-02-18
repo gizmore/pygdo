@@ -19,8 +19,10 @@ class install(MethodForm):
         return self.param_value('module')
 
     def gdo_create_form(self, form: GDT_Form) -> None:
-        form.add_field(GDT_Submit('install').calling(self.install))
-        form.add_field(GDT_Submit('wipe').calling(self.wipe))
+        form.actions().add_fields(
+            GDT_Submit('install').label('install').calling(self.install),
+            GDT_Submit('wipe').label('wipe').calling(self.wipe)
+        )
         form.add_field(GDT_CSRF())
 
     def install(self):

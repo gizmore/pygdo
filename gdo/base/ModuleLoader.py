@@ -92,7 +92,6 @@ class ModuleLoader:
 
     def load_module_fs(self, modulename, installed=False):
         if module := self._cache.get(modulename):
-            module = self._cache[modulename]
             if installed and not module.installed():
                 return None
             return module
@@ -122,8 +121,9 @@ class ModuleLoader:
         self.init_user_settings()
 
     def after_delete(self, module: GDO_Module):
-        if module.get_name in self._cache:
-            del self._cache[module.get_name]
+        pass
+        # if module.get_name in self._cache:
+        #     del self._cache[module.get_name]
 
     def load_modules_db(self, enabled: None | bool = True):
         from gdo.base.GDO_Module import GDO_Module
@@ -158,6 +158,7 @@ class ModuleLoader:
     def init_user_settings(self):
         from gdo.core.GDT_UserSetting import GDT_UserSetting
         from gdo.core.GDT_Field import GDT_Field
+        self.load_modules_fs()
         for module in self._cache.values():
             for gdt in module.gdo_user_config():
                 if isinstance(gdt, GDT_Field):

@@ -144,7 +144,7 @@ class GDT(WithSerialization):
     def gdo_components(self) -> list['GDT']:
         return GDT.EMPTY_LIST
 
-    def gdo_compare(self, gdt: 'GDT') -> int:
+    def gdo_compare(self, a: 'GDO', b:'GDO') -> int:
         return 0
 
     def gdo_filter(self, val: str) -> bool:
@@ -370,3 +370,6 @@ class GDT(WithSerialization):
 
     def is_secret(self):
         return False
+
+    def render_table_filter(self, vals: dict):
+        return ''

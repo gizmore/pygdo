@@ -30,7 +30,7 @@ class GDT_Order(WithHREF, GDT_String):
 
     def get_order_dict(self) -> dict[str, str]:
         if val := self.get_val():
-            return {key: direction for key, direction in (s.split() for s in val)}
+            return {key: direction for key, direction in (s.split(' ') for s in val)}
         else:
             return {}
 
@@ -47,9 +47,7 @@ class GDT_Order(WithHREF, GDT_String):
         return url
 
     def html_selected(self, gdt: GDT, dir: str):
-        url = Application.current_href()
-        find = f"&{self.get_name()}={gdt.get_name()}%20{dir}"
-        if url.find(find) >= 0:
-            return ' class="active"'
+        for order in self.get_val():
+            if order == f"{gdt.get_name()} {dir}":
+                return ' class="active"'
         return ''
-

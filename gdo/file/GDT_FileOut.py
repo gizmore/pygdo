@@ -1,5 +1,4 @@
-import mimetypes
-from os import path
+from typing import Any
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
@@ -10,7 +9,7 @@ class GDT_FileOut(GDT):
     Handle sending files to (http) clients.
     """
     _path: str
-    _handle: any
+    _handle: Any
 
     def path(self, path: str):
         self._path = path
@@ -22,8 +21,7 @@ class GDT_FileOut(GDT):
     def __next__(self):
         if not hasattr(self, '_handle'):
             self._handle = open(self._path, 'rb')
-        chunk = self._handle.read(int(Application.config('file.block_size', "4096")))
-        if chunk:
+        if chunk := self._handle.read(int(Application.config('file.block_size', "4096"))):
             return chunk
         else:
             self._handle.close()

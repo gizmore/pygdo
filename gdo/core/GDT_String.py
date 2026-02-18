@@ -3,13 +3,16 @@ import regex
 from enum import Enum
 
 from gdo.base.Application import Application
-from gdo.base.GDT import GDT
 from gdo.base.Trans import t
 from gdo.base.Util import jsn, dump, html
 from gdo.core.GDT_Field import GDT_Field
-from gdo.core.GDT_Template import GDT_Template
+from gdo.core.GDT_Template import GDT_Template, tpl
 from gdo.form.GDT_Hidden import GDT_Hidden
 
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gdo.base.GDO import GDO
 
 class Encoding(Enum):
     ASCII = 1
@@ -131,15 +134,12 @@ class GDT_String(GDT_Field):
         append = '_bin' if self._case_s else '_general_ci'
         return f" COLLATE {self.gdo_column_define_charset()}{append}"
 
-    def gdo_compare(self, gdt: GDT) -> int:
-        s1, s2 = self.get_value(), gdt.get_value()
-        if s2 is None and s1:
-            return 1
-        if s1 is None and s2:
-            return -1
-        if s1 and s2:
-            return (s1 > s2) - (s1 < s2)
-        return 0
+    def gdo_compare(self, a: 'GDO', b: 'GDO') -> int:
+        av = a.gdo_value(self._name)
+        bv = b.gdo_value(self._name)
+        if av is None or bv is None:
+            return (av is not None) - (bv is not None)
+        return (av > bv) - (av < bv)
 
     def gdo_filter(self, val: str) -> bool:
         return self.get_val().index(val) >= 0
@@ -194,6 +194,9 @@ class GDT_String(GDT_Field):
     # Render #
     ##########
 
+    def render_table_filter(self, vals: dict) -> str:
+        return tpl('table', 'filter_string.html', vals)
+
     def html_readonly(self) -> str:
         if not self.is_writable():
             return ' readonly="readonly"'
@@ -209,6 +212,9 @@ class GDT_String(GDT_Field):
             p = self._pattern.strip('^$')
             return f' pattern="{p}"'
         return ''
+
+    def render_html(self) -> str:
+        return html(str(self.get_value()))
 
     def render_json(self):
         return {

@@ -195,15 +195,16 @@ class Installer:
     def wipe(cls, module: GDO_Module):
         db = Application.db()
         try:
-            db.foreign_keys(False)
+            # db.foreign_keys(False)
             for klass in reversed(module.gdo_classes()):
                 db.drop_table(klass.table().gdo_table_name())
-            db.foreign_keys(True)
+            # db.foreign_keys(True)
+            module.set_val('module_enabled', '0')
             module.delete()
         except Exception as ex:
             Logger.exception(ex)
-        finally:
-            db.foreign_keys(True)
+        # finally:
+        #     db.foreign_keys(True)
 
     @classmethod
     def load_provider_toml(cls):

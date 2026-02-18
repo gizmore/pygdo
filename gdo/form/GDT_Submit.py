@@ -9,7 +9,7 @@ class GDT_Submit(GDT_Button):
     def __init__(self, name: str = 'submit'):
         super().__init__(name)
         self.name(name)
-        self.text('submit')
+        self.label('submit')
         self._default_button = False
 
     def default_button(self, default_button: bool = True):

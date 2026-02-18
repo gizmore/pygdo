@@ -72,10 +72,73 @@ class ParseArgs(WithPygdo):
     def add_post_vars(self, qs: dict[str,list[str]]):
         return self.add_web_args(qs)
 
-    def add_web_args(self, qs: dict[str,list[str]]):
+    def split_bracket_key(self, key: str) -> list[str]:
+        # "f[name][x]" -> ["f","name","x"]
+        parts = []
+        buf = []
+        i = 0
+        n = len(key)
+
+        while i < n:
+            c = key[i]
+            if c == '[':
+                if buf:
+                    parts.append(''.join(buf))
+                    buf.clear()
+                i += 1
+                while i < n and key[i] != ']':
+                    buf.append(key[i])
+                    i += 1
+                parts.append(''.join(buf))  # may be "" for []
+                buf.clear()
+                if i < n and key[i] == ']':
+                    i += 1
+            else:
+                buf.append(c)
+                i += 1
+
+        if buf:
+            parts.append(''.join(buf))
+        return parts
+
+    def insert_nested(self, d: dict, key: str, values: list[str]):
+        parts = self.split_bracket_key(key)
+        if not parts:
+            return
+
+        # key ends with [] -> list stored at the container under the previous part
+        is_list = (parts[-1] == "")
+        if is_list:
+            parts = parts[:-1]  # drop ""
+
+        cur = d
+        for p in parts[:-1]:
+            nxt = cur.get(p)
+            if not isinstance(nxt, dict):
+                nxt = {}
+                cur[p] = nxt
+            cur = nxt
+
+        last = parts[-1]
+        if is_list:
+            lst = cur.get(last)
+            if not isinstance(lst, list):
+                lst = []
+                cur[last] = lst
+            lst.extend(values)
+        else:
+            cur[last] = values
+
+    def add_web_args(self, qs: dict[str, list[str]]):
         for key, vals in qs.items():
-            self.args[key.rstrip('[]')] = vals
+            # val = vals if len(vals) > 1 else vals[0]
+            self.insert_nested(self.args, key, vals)
         return self
+
+    # def add_web_args(self, qs: dict[str,list[str]]):
+    #     for key, vals in qs.items():
+    #         self.args[key.rstrip('[]')] = vals
+    #     return self
 
     def add_file(self, name: str, filename: str, raw_data: bytes):
         self.files.append((name, filename, raw_data))

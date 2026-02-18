@@ -49,7 +49,7 @@ class MethodTable(WithGDO, MethodForm):
         if self.gdo_paginated():
             yield GDT_PageNum(self.gdo_paginate_name()).initial('1').positional(self.gdo_page_positional())
         if self.gdo_ordered():
-            yield GDT_Order(self.gdo_order_name())
+            yield GDT_Order(self.gdo_order_name()).initial([self.gdo_order_default()])
         if self.gdo_filtered():
             yield GDT_Filter(self.gdo_filter_name())
         if self.gdo_searched():

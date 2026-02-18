@@ -291,15 +291,14 @@ class Application:
     @classmethod
     def get_client_header(cls, name: str, default: str = None) -> str | None:
         if cls.ASGI:
-            name = name.lower()
             env = cls.STORAGE.environ['headers']
-            for key, value in env.items():
-                if key.lower() == name:
-                    return value
-            return default
         else:
             env = cls.STORAGE.environ
-            return env[name] if name in env else default
+        name = name.lower()
+        for key, value in env.items():
+            if key.lower() == name:
+                return value
+        return default
 
     @classmethod
     def get_cookie(cls, name: str, default: str = ''):

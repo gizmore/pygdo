@@ -91,5 +91,8 @@ class GDT_Select(GDT_ComboBox):
             examples.append('...')
         return ", ".join(examples)
 
+    def render_table_filter(self, vals: dict) -> str:
+        return tpl('table', 'filter_bool.html', vals)
+
     def render_form(self):
         return tpl('core', 'form_select.html', {"field": self, 'GDT': GDT})

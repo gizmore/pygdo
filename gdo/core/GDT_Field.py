@@ -99,7 +99,7 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithLabel, WithTooltip, WithIcon, W
             self._converted = True
         return self
 
-    def initial(self, val: str):
+    def initial(self, val: str|list[str]):
         self._initial = val
         self._val = val
         return self #.val(val)

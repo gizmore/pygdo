@@ -1,3 +1,4 @@
+from gdo.base.Util import Files
 from gdo.language.GDO_Language import GDO_Language
 
 
@@ -159,6 +160,9 @@ class InstallLanguage:
     def now(cls):
         if GDO_Language.table().count_where() == 0:
             cls.install_languages()
+        for data in cls.LANGUAGES:
+            eng, orig, i3, i2, supp = data
+            Files.append_content('foo', f"l_{i2} = \"{eng}\"\n")
 
     @classmethod
     def install_languages(cls):

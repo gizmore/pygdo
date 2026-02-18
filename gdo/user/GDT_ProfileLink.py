@@ -41,5 +41,6 @@ class GDT_ProfileLink(GDT_Link):
         if self._with_avatar:
             gdt = self._user.gdt_user_settings().KNOWN.get('avatar_file')
             back += gdt.for_user(self._user).render_html()
+        back += "&nbsp;"
         back += super().render_html()
         return back

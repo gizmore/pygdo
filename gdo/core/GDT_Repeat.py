@@ -18,14 +18,6 @@ class GDT_Repeat(WithProxy, GDT_UInt):
     def is_positional(self) -> bool:
         return True
 
-    # def is_multiple(self) -> bool:
-    #     return True
-
-    # def val(self, val: str | list):
-    #     self._val = val
-    #     self._converted = False
-    #     return self
-
     def to_val(self, values: list):
         if not values:
             return None
@@ -45,8 +37,6 @@ class GDT_Repeat(WithProxy, GDT_UInt):
             if value is not None:
                 values.append(value)
         return values
-
-
 
     def validate(self, vals: str | None) -> bool:
         if vals is None:

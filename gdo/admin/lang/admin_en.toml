@@ -19,6 +19,12 @@ msg_module_conf_no_change = "The value for %s in module %s is still %s."
 mt_admin_dashboard = "Admin Dashboard"
 md_admin_dashboard = "Admin Dashboard for your PyGDO installation."
 
+##########
+# Module #
+##########
+mt_admin_module = "%s Configuration"
+md_admin_module = "Configure the %s module on %s."
+
 
 ###########
 # Modules #
@@ -31,3 +37,13 @@ md_admin_modules = "List pygdo modules."
 #############
 mt_admin_configure = "Configure %s"
 md_admin_configure = "Configure a module."
+
+###########
+# Install #
+###########
+mt_admin_install = "Install Module"
+md_admin_install = "Install a Module"
+install = "Install"
+wipe = "Wipe"
+msg_module_installed = "Module got installed."
+msg_module_wiped = "Module got wiped."

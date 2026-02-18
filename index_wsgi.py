@@ -161,7 +161,6 @@ def pygdo_application(environ, start_response):
                 for chunk in gdt:
                     yield chunk
                 return
-            Application.header('Content-Type', 'text/html; Charset=UTF-8')
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
             yield Application.get_page().method(method).result(gdt).render(Mode.render_html).encode()
@@ -178,7 +177,9 @@ def pygdo_application(environ, start_response):
                 for chunk in gdt:
                     yield chunk
                 return
-            Application.header('Content-Type', 'text/html; Charset=UTF-8')
+            else:
+                return # This should b a 304
+            # Application.header('Content-Type', 'text/html; Charset=UTF-8')
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
             yield Application.get_page().method(method).result(gdt).render(Mode.render_html).encode()

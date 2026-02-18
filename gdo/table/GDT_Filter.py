@@ -1,6 +1,7 @@
 from gdo.base.GDT import GDT
 from gdo.base.GDO import GDO
 from gdo.base.Query import Query
+from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Template import tpl
 from typing import TYPE_CHECKING
@@ -16,13 +17,16 @@ class GDT_Filter(GDT_String):
 
     def display_table_filter(self, gdt: GDT) -> str:
         vals = {'field': self, 'gdt': gdt}
-        if isinstance(gdt, GDT_String):
-            return tpl('table', 'filter_string.html', vals)
-        return GDO.EMPTY_STR
+        return gdt.render_table_filter(vals)
 
     def filter_query(self, query: Query, method: 'MethodTable'):
         pass
 
-
     def filter_value(self, gdt: GDT):
-        return ''
+        try:
+            return self.get_val().get(gdt.get_name())[0]
+        except Exception as e:
+            return ''
+
+    def html_selected(self, gdt: GDT, val: str):
+        return ' selected="selected"' if self.filter_value(gdt) == val else ''

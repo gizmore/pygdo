@@ -2,6 +2,7 @@ import mimetypes
 import os
 import time
 import urllib
+from functools import lru_cache
 from os import path
 
 from gdo.base.Application import Application
@@ -31,42 +32,45 @@ class file_server(Method):
     def get_path(self):
         return Application.file_path(self.get_url())
 
-    def gdo_execute(self) -> GDT:
-        url = self.get_url()
+    @staticmethod
+    @lru_cache(maxsize=65535)
+    def is_forbidden(url: str) -> bool:
         dir = Strings.substr_to(url, '/', None)
         if not dir:
-            Application.status('403 Forbidden')
-            return self.err('err_file_forbidden')
+            return True
         if dir in ('bin', 'cache', 'DEV', 'files', 'files_test', 'gdotest', 'protected', 'temp'):
-            Application.status('403 Forbidden')
-            return self.err('err_file_forbidden')
+            return True
         if not module_config_value('base', 'serve_gdo_assets'):
             ext = Strings.rsubstr_from(url, '.', '')
             if ext in ('js', 'css'):
-                Application.status('403 Forbidden')
-                return self.err('err_file_forbidden')
+                return True
         if 'secret' in url:
-            Application.status('403 Forbidden')
-            return self.err('err_file_forbidden')
+            return True
         if not module_config_value('base', 'serve_dot_files'):
             file = Strings.rsubstr_from(url, '/', url)
             if file.startswith('.'):
-                Application.status('403 Forbidden')
-                return self.err('err_file_forbidden')
+                return True
+        return False
 
-        file_path = self.get_path()
+    @staticmethod
+    def check_etag(file_path: str) -> bool:
         mtime = os.path.getmtime(file_path)
         etag = str(mtime) + "." + GDO_Module.CORE_REV
         last_modified = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(mtime))
-        # expires = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(mtime + 30 * 24 * 60 * 60))  # 30 days expiration
-        hdr('Etag', etag)
+        expires = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(mtime + 30 * 24 * 60 * 60))  # 30 days expiration
+        hdr('Etag', f'"{etag}"')
+        hdr('Expires', expires)
         hdr('Last-Modified', last_modified)
-        # hdr('Expires', expires)
+        return Application.get_client_header('HTTP_IF_NONE_MATCH') == etag
 
-        if Application.get_client_header('HTTP_IF_NONE_MATCH') == etag:
+    def gdo_execute(self) -> GDT:
+        if file_server.is_forbidden(self.get_url()):
+            Application.status('403 Forbidden')
+            return self.err('err_file_forbidden')
+        file_path = self.get_path()
+        if self.check_etag(file_path):
             Application.status("304 Not Modified")
-            return GDT_HTML()
-
+            return self.empty()
         mime_type = Files.mime(file_path)
         Application.header('Content-Type', mime_type or 'application/octet-stream')
         Application.header('Content-Length', str(path.getsize(file_path)))

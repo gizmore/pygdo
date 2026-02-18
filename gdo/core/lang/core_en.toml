@@ -55,6 +55,11 @@ count = "Count"
 directory = "Directory"
 please_choose = "Please choose..."
 permission = "Permisison"
+notice_enabled = "Use notice?"
+tt_notice_enabled = "Use NOTICE instead of PRIVMSG on IRC servers."
+from = "From"
+to = "To"
+target = "Target"
 
 ###########
 # GDT_Int #

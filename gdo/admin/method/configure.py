@@ -1,12 +1,12 @@
 from gdo.admin.GDT_Module import GDT_Module
-from gdo.admin.method.install import install
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Trans import t
 from gdo.base.Util import Files
+from gdo.core.GDT_List import GDT_List
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.MethodForm import MethodForm
-from gdo.install.Installer import Installer
+from gdo.language.GDT_Trans import GDT_Trans
 from gdo.message.GDT_HTML import GDT_HTML
 from gdo.message.GDT_PRE import GDT_PRE
 from gdo.ui.GDT_Bar import GDT_Bar
@@ -41,14 +41,15 @@ class configure(MethodForm):
 
     def render_page(self):
         bar = GDT_Bar().vertical()
-        installer = install()
-        installer._raw_args = self._raw_args
+        module = self.get_module()
+        installed = 'installed' if module.is_enabled() else 'not_installed'
         bar.add_fields(
-            GDT_Title('mt').text('mt_admin_configure', (self.get_module().render_name(),)),
+            GDT_Title('mt').text('mt_admin_configure', (module.render_name(),)),
+            GDT_Trans().text(installed),
             GDT_PRE().add_field(GDT_HTML().html(self.get_module_descr())),
-            GDT_Menu().add_fields(*self.get_module().gdo_admin_links()),
+            GDT_Menu().add_fields(GDT_List(module.gdo_admin_links())),
             self.get_form(),
-            installer,
+            # installer,
         )
         return bar
 
