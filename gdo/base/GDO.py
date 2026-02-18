@@ -478,9 +478,9 @@ class GDO(WithName, WithBulk, GDT):
     # Reload #
     ##########
     def reload(self):
-        self._vals = self.select().where(self.pk_where()).exec().fetch_assoc()
-        self._values = {}
-        self._dirty = []
+        self._vals = self.table().get_by_id(*self.get_ids())
+        self._values.clear()
+        self.all_dirty(False)
         self.on_reload()
         return self
 

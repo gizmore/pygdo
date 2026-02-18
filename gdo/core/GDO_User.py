@@ -98,6 +98,9 @@ class GDO_User(GDO):
             GDT_Index('user_idx_serv').index_fields('user_server'),
         ]
 
+    # def gdo_persistent(self) -> bool:
+    #     return True
+
     def get_lang_iso(self):
         return self.get_setting_val('language')
 
@@ -134,11 +137,11 @@ class GDO_User(GDO):
     # Groups #
     ##########
     @classmethod
-    def admins(cls):
+    def admins(cls) -> list[Self]:
         return cls.with_permission('admin')
 
     @classmethod
-    def staff(cls):
+    def staff(cls) -> list[Self]:
         return cls.with_permission('staff')
 
     @classmethod
