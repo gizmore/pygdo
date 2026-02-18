@@ -21,7 +21,7 @@ class preview(MethodFile):
         ]
 
     def get_file(self) -> GDO_File:
-        return self.param_value('file')
+        return self.param_value('file')[0]
 
     def gdo_execute(self) -> GDT:
         file = self.get_file()

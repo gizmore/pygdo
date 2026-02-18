@@ -1,5 +1,7 @@
 module_date = "Date"
 
+timezone = "Timezone"
+
 ################
 # Date Formats #
 ################

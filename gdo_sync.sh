@@ -57,7 +57,7 @@ sleep 1
 
 echo "Syncing module repositories..."
 sleep 1
-find gdo -iname ".git" -type d -exec bash -c '
+find gdo -iname ".git" -type d -exec sh -c '
   CORE="$1"; MSG="$2"; repo_git="$3"
   cd "$CORE"
   cd "$repo_git/.."
