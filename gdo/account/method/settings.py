@@ -61,7 +61,7 @@ class settings(MethodForm):
                 key = gdt.get_name()
                 self.init_parameter(gdt)
                 if gdt.get_val() != gdt._prev:
-                    old = gdt._prev
+                    old = gdt.get_prev()
                     new = gdt.get_val()
                     gdt.val(old)
                     user.save_setting(key, new)

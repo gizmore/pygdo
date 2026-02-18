@@ -5,7 +5,7 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING, Any
 
-from gdo.base.Cache import gdo_cached, Cache
+from gdo.base.Cache import gdo_cached, Cache, gdo_lru_cache
 from gdo.base.IPC import IPC
 from gdo.base.LazyImporter import LazyImporter
 from gdo.base.Query import Query
@@ -142,7 +142,7 @@ class GDO_User(GDO):
         return cls.with_permission('staff')
 
     @classmethod
-    @gdo_cached(cache_key='users_with_permission')
+    @gdo_lru_cache
     def with_permission(cls, perm_name: str):
         from gdo.core.GDO_Permission import GDO_Permission
         return GDO_Permission.get_by_name(perm_name).users()

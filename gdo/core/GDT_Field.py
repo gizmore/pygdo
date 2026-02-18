@@ -17,7 +17,7 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithLabel, WithTooltip, WithIcon, W
     _name: str
     _val: str|None
     _value: Any
-    _prev: str
+    _prev: str|None
     _initial: str|None
     _converted: bool
     _primary: bool
@@ -35,6 +35,7 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithLabel, WithTooltip, WithIcon, W
         self._name = name
         self._not_null = False
         self._val = None
+        self._prev = None
         self._initial = None
         self._primary = False
         self._value = None
@@ -58,6 +59,9 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithLabel, WithTooltip, WithIcon, W
 
     def get_val(self):
         return None if not self._val else self._val
+
+    def get_prev(self) -> str | None:
+        return self._prev
 
     def get_value(self):
         if not self._converted:

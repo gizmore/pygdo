@@ -205,6 +205,9 @@ class GDT(WithSerialization):
     def get_val(self) -> str | None:
         return None
 
+    def get_prev(self) -> str | None:
+        return None
+
     def is_not_null(self) -> bool:
         return False
 

@@ -28,8 +28,6 @@ class Result:
     def __init__(self, result: MySQLCursorDict, gdo: 'GDO' = None):
         self._result = result
         self._table = gdo
-        if gdo is None:
-            pass
         self._iter = ResultType.OBJECT
         self._nocache = False
 
@@ -56,12 +54,12 @@ class Result:
         return self
 
     def __next__(self):
-        if self._iter == ResultType.ROW:
+        if self._iter == ResultType.OBJECT:
+            data = self.fetch_object()
+        elif self._iter == ResultType.ROW:
             data = self.fetch_row()
         elif self._iter == ResultType.ASSOC:
             data = self.fetch_assoc()
-        else:
-            data = self.fetch_object()
         if data is None:
             self.close()
             raise StopIteration
@@ -80,7 +78,6 @@ class Result:
             from gdo.core.GDT_List import GDT_List
             self.__class__.GDT_List = GDT_List
         return self.__class__.GDT_List
-
 
     def fetch_all(self) -> 'GDT_List':
         return self.gdt_list()(*[row for row in self])

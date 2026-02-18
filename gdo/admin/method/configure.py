@@ -1,6 +1,7 @@
 from gdo.admin.GDT_Module import GDT_Module
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
+from gdo.base.Render import Render
 from gdo.base.Trans import t
 from gdo.base.Util import Files
 from gdo.core.GDT_List import GDT_List
@@ -34,6 +35,14 @@ class configure(MethodForm):
         super().gdo_create_form(form)
 
     def form_submitted(self):
+        module = self.get_module()
+        for gdt in module.module_config().values():
+            old = gdt.get_prev()
+            new = gdt.get_val()
+            if old != new:
+                gdt._val = 1
+                module.save_config_val(gdt.get_name(), new)
+                self.msg('msg_module_conf_changed', (module.render_name(), gdt.get_name(), Render.italic(gdt.display_val(old)), Render.italic(gdt.display_val(new))))
         return self.render_page()
 
     def gdo_render_title(self) -> str:

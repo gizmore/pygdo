@@ -181,6 +181,7 @@ class Cache:
     def update_for(cls, gdo: 'GDO') -> 'GDO':
         cls.set(gdo.gdo_table_name(), gdo.get_id(), gdo._vals)
         return cls.obj_for(gdo, after_write=True)
+#        return cls.obj_for(gdo, gdo._vals, after_write=True)
 
     @classmethod
     def obj_search_id(cls, gdo: 'GDO', vals: dict, delete: bool = False) -> 'GDO':
@@ -269,7 +270,7 @@ class Cache:
     @classmethod
     def get(cls, key: str, args_key: str = None, default: any = None) -> any:
         if cls.RCACHE:
-            key = f"{key}:{args_key}" if args_key else key
+            key = f"{key}:{args_key}" if args_key else f"{key}:"
             if packed := cls.RCACHE.get(key):
                 cls.HITS += 1 #PYPP#DELETE#
                 data = zlib.decompress(packed) if cls.ZLIB_LEVEL >= 0 else packed
@@ -285,7 +286,7 @@ class Cache:
             else:
                 value = msgspec.msgpack.encode(value)
             cls.UPDATES += 1 #PYPP#DELETE#
-            key = f"{key}:{args_key}" if args_key else key
+            key = f"{key}:{args_key}" if args_key else f"{key}:"
             data = zlib.compress(value, cls.ZLIB_LEVEL) if cls.ZLIB_LEVEL >= 0 else value
             cls.RCACHE.set(key, data)
         return value
@@ -336,7 +337,7 @@ class Cache:
 #############
 
 def _hash_args(args, kwargs):
-    return hashlib.md5(str((args, frozenset(kwargs.items()))).encode()).hexdigest()
+    return hashlib.md5(str((args, frozenset(kwargs.items()), Application.STORAGE.lang)).encode()).hexdigest()
 
 def gdo_cached(cache_key: str):
     def decorator(func: callable):
@@ -361,3 +362,22 @@ def gdo_instance_cached():
             return getattr(self, cache_name)(*args, **kwargs)
         return wrapper
     return decorator
+
+from functools import lru_cache, wraps
+from gdo.base.Application import Application
+
+def gdo_lru_cache(fn=None, *, maxsize=256, typed=False):
+    def deco(f):
+        @lru_cache(maxsize=maxsize, typed=typed)
+        def _cached(lang: str, self, *args, **kwargs):
+            return f(self, *args, **kwargs)
+
+        @wraps(f)
+        def wrapper(self, *args, **kwargs):
+            return _cached(Application.STORAGE.lang, self, *args, **kwargs)
+
+        wrapper.cache_info = _cached.cache_info
+        wrapper.cache_clear = _cached.cache_clear
+        return wrapper
+
+    return deco(fn) if fn else deco
