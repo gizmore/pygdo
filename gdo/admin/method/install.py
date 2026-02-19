@@ -20,8 +20,8 @@ class install(MethodForm):
 
     def gdo_create_form(self, form: GDT_Form) -> None:
         form.actions().add_fields(
-            GDT_Submit('install').label('install').calling(self.install),
-            GDT_Submit('wipe').label('wipe').calling(self.wipe)
+            GDT_Submit('install').text('install').calling(self.install),
+            GDT_Submit('wipe').text('wipe').calling(self.wipe)
         )
         form.add_field(GDT_CSRF())
 

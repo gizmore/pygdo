@@ -61,7 +61,7 @@ class App:
         print('pypp done!')
 
     async def yarn(self):
-        self._run_yarn_script()
+        await self._run_yarn_script()
         print('All done')
 
     async def configure(self):

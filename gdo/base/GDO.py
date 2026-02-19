@@ -478,10 +478,11 @@ class GDO(WithName, WithBulk, GDT):
     # Reload #
     ##########
     def reload(self):
-        self._vals = self.table().get_by_id(*self.get_ids())
-        self._values.clear()
-        self.all_dirty(False)
-        self.on_reload()
+        if obj := self.table().get_by_id(*self.get_ids()):
+            self._vals = obj._vals
+            self._values.clear()
+            self.all_dirty(False)
+            self.on_reload()
         return self
 
     ##########
