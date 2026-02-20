@@ -1,5 +1,6 @@
 module_ui = "User Interface"
 
-no_alt_text_an_image = "An image"
+bg_color = "Background Color"
+fg_color = "Foreground Color"
 
-message = "Message"
+no_alt_text_an_image = "An image"

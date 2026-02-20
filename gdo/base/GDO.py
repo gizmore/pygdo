@@ -494,7 +494,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def before_select(self, query: Query):
         for gdt in self.columns().values():
-            gdt.gdo(self).gdo_before_select(self, query)
+            gdt.gdo_before_select(self, query)
         self.gdo_before_select(self, query)
 
     def before_create(self):

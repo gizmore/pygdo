@@ -82,21 +82,23 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithLabel, WithTooltip, WithIcon, W
         return {self._name: self._val}
 
     def val(self, val: str | list):
+        val = val[0] if type(val) is list and not self._multiple else val
         self._prev = self._val
-        self._val = val[0] if type(val) is list and not self._multiple else val
+        self._val = val
         self._converted = False
         return self
 
     def value(self, value):
+        val = self.to_val(value)
         self._converted = True
         self._value = value
         self._prev = self._val
-        self._val = self.to_val(value)
+        self._val = val
         return self
 
-    def  gdo(self, gdo: GDO):
+    def gdo(self, gdo: GDO):
         self._gdo = gdo
-        val = gdo._vals.get(self._name)
+        val = gdo._vals.get(self._name, self._val)
         self.val(val)
         if self._name in gdo._values:
             self._value = gdo._values.get(self._name)
@@ -104,9 +106,12 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithLabel, WithTooltip, WithIcon, W
         return self
 
     def initial(self, val: str|list[str]):
-        self._initial = val
-        self._val = val
-        return self #.val(val)
+        if self._initial != val:
+            self._initial = val
+            self._prev = self._val
+            self._val = val
+            self._converted = False
+        return self
 
     def initial_value(self, value: any):
         return self.initial(self.to_val(value))

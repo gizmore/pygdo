@@ -20,6 +20,7 @@ class GDT_Page(GDT):
     _js_inline: str = ''
     _css: list[str] = []
     _css_inline: str = ''
+    _meta: str = ''
 
     _result: GDT
     _method: Method
@@ -36,6 +37,7 @@ class GDT_Page(GDT):
         cls._js_inline = ''
         cls._css = []
         cls._css_inline = ''
+        cls._meta = ''
 
     @classmethod
     def instance(cls):
@@ -52,6 +54,7 @@ class GDT_Page(GDT):
         self._bottom_bar = GDT_Container()
         self.__class__._js_inline = ''
         self.__class__._css_inline = ''
+        self.__class__._meta = ''
         return self
 
     def result(self, result: GDT):
@@ -82,6 +85,7 @@ class GDT_Page(GDT):
             'keywords': self._method.gdo_render_keywords(),
             'css': self.render_css(),
             'css_inline': self._css_inline,
+            'meta': self._meta,
             'js': self.render_js(),
             'js_inline': self._js_inline,
             'title_bar': self._title_bar.render_html(),

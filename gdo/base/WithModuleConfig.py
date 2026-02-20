@@ -1,3 +1,5 @@
+from gdo.base.Application import Application
+from gdo.base.Events import Events
 from gdo.base.Exceptions import GDOValidationException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
@@ -61,20 +63,21 @@ class WithModuleConfig:
     def get_config_value(self, key: str):
         return self.config_column(key).get_value()
 
-    def save_config_val(self, key: str, val: str):
+    def save_config_val(self, key: str, val: str, force: bool = False):
         from gdo.base.GDO_ModuleVal import GDO_ModuleVal
         gdt = self.config_column(key)
-        if val == self.get_config_val(key):
+        if val == self.get_config_val(key) and not force:
             return self
         if gdt.validate(val):
+            gdt.val(val)
             GDO_ModuleVal.blank({
                 'mv_module': self.get_id(),
                 'mv_key': key,
                 'mv_val': val,
             }).soft_replace()
             from gdo.base.IPC import IPC
+            Application.publish_event(f"module_{self.get_name}_{key}_changed", self, gdt)
             IPC.send('base.ipc_modconf', (self.get_name, key, val))
-            gdt.val(val)
         else:
             raise GDOValidationException(self.get_name, key, val, gdt.render_suggestion())
         return self

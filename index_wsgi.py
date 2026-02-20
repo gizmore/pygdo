@@ -152,7 +152,7 @@ def pygdo_application(environ, start_response):
             session = GDO_Session.start(False)
             user = session.get_user()
             Application.set_current_user(user)
-            method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_path())
+            method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_file().get_short_path()).explicitly_allowed()
             gdt = method.execute()
             gdt = aiorun(gdt)
             if isinstance(gdt, GDT_FileOut):

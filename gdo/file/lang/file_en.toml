@@ -4,4 +4,21 @@ module_file = "Files"
 # GDT_File #
 ############
 err_upload_mime = "The file format %s is not supported."
+err_upload_min_size = "The file does not have the min size of %s."
+err_upload_max_size = "The file does exceed the max size of %s."
 confirm_delete = "Really delete this?"
+
+###########
+# Preview #
+###########
+mt_file_preview = "File Preview"
+md_file_preview = "Download a file for preview in forms."
+
+#########
+# Files #
+#########
+mt_files_files = "File Overview"
+md_files_files = "List all files in the database."
+
+mt_files_seofiles = "SEO Files"
+md_files_seofiles = "List all files in the database with a fixed SEO path."

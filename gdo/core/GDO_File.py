@@ -27,6 +27,9 @@ class GDO_File(GDO):
         super().__init__()
         self._no_delete = False
 
+    def gdo_persistent(self) -> bool:
+        return True
+
     def gdo_columns(self) -> list[GDT]:
         return [
             GDT_AutoInc('file_id'),
@@ -66,6 +69,9 @@ class GDO_File(GDO):
     def no_delete(self, no_delete: bool = True):
         self._no_delete = no_delete
         return self
+
+    def get_short_path(self) -> str:
+        return f'{Application.config('file.directory')}/gdo_file/{self.get_id()}'
 
     def get_target_path(self) -> str:
         return Application.files_path(f"gdo_file/{self.get_id()}")
@@ -118,14 +124,13 @@ class GDO_File(GDO):
 
     def gdo_after_create(self, gdo):
         dest = gdo.get_target_path()
-        # Files.create_dir(dest)
-        # dest += "/0"
         if hasattr(gdo, '_temp_path'):
             Files.copy(gdo._temp_path, dest)
         elif hasattr(gdo, '_file_data'):
             Files.put_contents(dest, gdo._file_data)
             gdo.set_val('file_mime', Files.mime(dest))
-        gdo.set_val('file_hash', Files.md5(dest))
+        if not gdo.gdo_val('file_hash'):
+            gdo.set_val('file_hash', Files.md5(dest))
         gdo.save()
         gdo.clear_temp_dir()
 
@@ -136,3 +141,4 @@ class GDO_File(GDO):
         if hasattr(self, '_temp_path'):
             if not self._no_delete:
                 Files.delete_dir(os.path.dirname(self._temp_path))
+            del self._temp_path

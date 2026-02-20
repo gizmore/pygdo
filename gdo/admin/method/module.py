@@ -6,6 +6,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.Trans import sitename
 from gdo.core.GDT_Container import GDT_Container
+from gdo.ui.GDT_Menu import GDT_Menu
 
 
 class module(Method):
@@ -32,5 +33,6 @@ class module(Method):
 
     async def gdo_execute(self) -> GDT:
         return GDT_Container().vertical().add_fields(
+            GDT_Menu().add_fields(*self.get_module().gdo_admin_links()),
             await self.submethod(install),
             await self.submethod(configure))

@@ -369,9 +369,9 @@ class Application:
     async def execute_queue(cls) -> None:
         while not cls.MESSAGES.empty():
             msg = cls.MESSAGES.get()
-            gdt = msg.execute()
-            while iscoroutine(gdt):
-                gdt = await gdt
+            gdt = await msg.execute()
+            # while iscoroutine(gdt):
+            #     gdt = await gdt
 
     @classmethod
     def publish_event(cls, name: str, *args):
@@ -382,6 +382,6 @@ class Application:
     def run_coro(cls, coro, name: str):
         # AsyncRunner.INSTANCE.run(coro)
         if cls.LOOP.is_running():
-            cls.TASKS.append(cls.LOOP.create_task(coro, name=name))
+            cls.TASKS.append(cls.LOOP.create_task(coro, name=name or str(coro)))
         else:
             cls.LOOP.run_until_complete(coro)

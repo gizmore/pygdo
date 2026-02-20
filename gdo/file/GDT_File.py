@@ -1,6 +1,7 @@
 from gdo.base.Application import Application
 from gdo.base.Method import Method
-from gdo.base.Util import Files, urlencode
+from gdo.base.Trans import t
+from gdo.base.Util import Files, urlencode, html
 from gdo.base.util.href import href
 from gdo.core.GDO_File import GDO_File
 from gdo.core.GDT_Object import GDT_Object
@@ -21,9 +22,14 @@ class GDT_File(GDT_Object):
     _no_capture: bool
     _image_file: bool
     _preview: bool
+    _method: Method|None
+    _display_only: bool
 
     def __init__(self, name: str):
         super().__init__(name)
+        self.icon('file')
+        self.label('file')
+        self.table(GDO_File.table())
         self._upload_path = name
         self._mimes = {}
         self._min_len = 0
@@ -34,10 +40,12 @@ class GDT_File(GDT_Object):
         self._no_capture = False
         self._image_file = False
         self._preview = True
-        self.table(GDO_File.table())
+        self._method = None
+        self._display_only = False
 
     def gdo_added_to_form(self, form: 'GDT_Form'):
         form.multipart()
+        self._method = form._method
         self.upload_path(f"{form._method.gdo_module().get_name}.{form._method.get_name()}.{self._name}")
 
     def get_file(self) -> list[GDO_File]:
@@ -46,6 +54,10 @@ class GDT_File(GDT_Object):
     ###########
     # Options #
     ###########
+    def display_only(self, display_only: bool = True):
+        self._display_only = display_only
+        return self
+
     def upload_path(self, path: str):
         self._upload_path = path.strip('/')
         return self
@@ -77,30 +89,28 @@ class GDT_File(GDT_Object):
     #######
     # GDT #
     #######
-    def get_value(self):
-        files = self.get_initial_files()
-        if not files:
-            return super().get_value()
-        return files
 
-    def to_value(self, val: str):
-        value = super().to_value(val)
-        return [value] if value else None
+    def get_value(self):
+        return self.get_initial_files()
+
+    def to_val(self, value) -> str:
+        return None if value is None else value[0].get_id()
 
     def get_initial_files(self):
         if not Application.has_session():
             return []
         dir = self.get_temp_dir()
         if not Files.is_dir(dir):
-            return []
+            return self.get_persisted_files()
         if file := GDO_File.from_dir(dir):
-            return [file]
-        return []
+            return [file] + self.get_persisted_files()
+        return self.get_persisted_files()
 
-    def get_persisted_file(self) -> GDO_File:
-        if files := self.get_value():
-            if files[0].is_persisted():
-                return files[0]
+
+    def get_persisted_files(self) -> list[GDO_File] | None:
+        if files := super().get_value():
+            return [files]
+        return []
 
     ##########
     # Upload #
@@ -120,12 +130,13 @@ class GDT_File(GDT_Object):
         self.deletion(method)
 
     def deletion(self, method: Method):
-        if f"--{self._name}.sess.delete" in method._args:
+        if f"{self._name}.sess.delete" in method._raw_args.args:
             self.cleanup_temp_dir()
-        if f"--{self._name}.file.delete" in method._args:
-            if file := self.get_persisted_file():
-                file.delete()
-                self.val("")
+        if f"{self._name}.file.delete" in method._raw_args.args:
+            if files := self.get_persisted_files():
+                for file in files:
+                    file.delete()
+            self.val(None)
 
     def get_temp_dir(self):
         sessid = Application.get_session().get_id() or '1'
@@ -136,10 +147,28 @@ class GDT_File(GDT_Object):
     # Validate #
     ############
     def validate(self, val: str|None) -> bool:
-        value = self.to_value(val)
-        if not value:
-            return super().validate(val)
-        return self.validate_files(value)
+        # if self._method:
+        #     self.gdo_file_upload(self._method)
+        files = self.get_initial_files() or self.to_value(val)
+        if not files:
+            return super().validate(None)
+        if self._multiple:
+            if not self.validate_files(files):
+                return False
+            # for file in files:
+            #     file.save()
+            #     self.val(file.get_id())
+        else:
+            if not self.validate_file(files[0]):
+                return False
+            files[0].save()
+            self.val(files[0].get_id())
+        self.cleanup_temp_dir()
+        return True
+
+    def gdo(self, gdo):
+        return super().gdo(gdo)
+
 
     def validate_files(self, value: any) -> bool:
         for file in value:
@@ -150,6 +179,10 @@ class GDT_File(GDT_Object):
     def validate_file(self, file: GDO_File):
         if not self.validate_mime(file):
             return self.error_mime(file)
+        if self._min_len and file.get_size() < self._min_len:
+            return self.error_min_size()
+        if self._max_len and file.get_size() > self._max_len:
+            return self.error_max_size()
         return True
 
     def validate_mime(self, file: GDO_File):
@@ -161,6 +194,12 @@ class GDT_File(GDT_Object):
 
     def error_mime(self, file: GDO_File):
         return self.error('err_upload_mime', (file.get_mime(),))
+
+    def error_min_size(self):
+        return self.error('err_upload_min_size', (Files.human_file_size(self._min_len),))
+
+    def error_max_size(self):
+        return self.error('err_upload_max_size', (Files.human_file_size(self._max_len),))
 
     ##########
     # Render #
@@ -177,6 +216,11 @@ class GDT_File(GDT_Object):
 
     def render_form(self) -> str:
         return GDT_Template().template('file', 'test.html', {'field': self}).render()
+
+    def display_val(cls, val: str) -> str:
+        if val and (file := GDO_File.table().get_by_aid(val)):
+            return html(file.get_name())
+        return t('none')
 
     ###########
     # Cleanup #

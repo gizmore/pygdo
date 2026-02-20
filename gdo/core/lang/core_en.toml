@@ -2,6 +2,8 @@
 module_core = "Core"
 help_web_connector = "Simply use this very website"
 help_bash_connector = "Simply use an SSH terminal. (probably not public)"
+sitename = "PyGDO"
+sitedesc = "A default PyGDO chat system website frontend."
 
 ##############
 ### Errors ###
@@ -60,6 +62,7 @@ tt_notice_enabled = "Use NOTICE instead of PRIVMSG on IRC servers."
 from = "From"
 to = "To"
 target = "Target"
+message = "Message"
 
 ###########
 # GDT_Int #

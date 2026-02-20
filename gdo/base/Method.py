@@ -79,15 +79,14 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return self
 
     def args_copy(self, method: 'Method'):
-        self._raw_args.args.update(method._raw_args.args)
-        return self
+        return self.args(method._raw_args)
 
     def args(self, args: ParseArgs):
         self._raw_args = args
         return self
 
     def get_files(self, key: str) -> list[tuple[str, str, bytes]]:
-        return self._raw_args.files[key]
+        return self._raw_args.get_files(key)
 
     ############
     # Abstract #
@@ -200,6 +199,12 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def gdo_render_descr(self) -> str:
         return t(self._mome_tkey('md'))
 
+    def gdo_render_simple_title(self) -> str:
+        return self.gdo_render_title()
+
+    def gdo_render_simple_descr(self) -> str:
+        return self.gdo_render_descr()
+
     def gdo_render_keywords(self) -> str:
         kw = self.site_keywords()
         key = self._mome_tkey('mk')
@@ -224,7 +229,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return f'{key}_{self.gdo_module().get_name}_{self.get_name()}'
 
     def get_method_id(self) -> str:
-        from gdo.core.GDO_Method import GDO_Method
+        GDO_Method = LazyImporter.import_once('from gdo.core.GDO_Method import GDO_Method')
         return GDO_Method.for_method(self).get_id()
 
     ##############
@@ -253,7 +258,11 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                     val = [self._raw_args.pargs[gdt._position - 1]]
                     val = None if not val else val
         if val is None:
-            val = self._raw_args.get_val(gdt.get_name(), gdt.get_val())
+            if hasattr(gdt, 'get_initial_files') and not gdt._display_only:
+                val = gdt.get_val()
+            else:
+                val = self._raw_args.get_val(gdt.get_name(), gdt.get_val())
+
         val = val[0] if type(val) is list and not gdt.is_multiple() else val
         return gdt.val(val)
 

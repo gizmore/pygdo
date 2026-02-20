@@ -225,7 +225,9 @@ class Files:
         return cls.create_dir(path)
 
     @classmethod
-    def delete_dir(cls, path: str) -> bool:
+    def delete_dir(cls, path: str, allow_non_exist=True) -> bool:
+        if not Files.is_dir(path):
+            return allow_non_exist
         shutil.rmtree(path)
         return True
 
@@ -269,6 +271,13 @@ class Files:
         return True
 
     @classmethod
+    def move(cls, src: str, dst: str, create_dir: bool=False) -> bool:
+        if create_dir and '/' in dst:
+            cls.create_dir(Strings.rsubstr_to(dst, '/'))
+        shutil.move(src, dst)
+        return True
+
+    @classmethod
     def put_contents(cls, path: str, contents) -> bool:
         with open(path, 'wb') as f:
             f.write(contents.encode() if isinstance(contents, str) else contents)
@@ -284,7 +293,7 @@ class Files:
                 from gdo.base.Logger import Logger
                 Logger.exception(ex)
 
-    EXT_TYPES = {'css': 'text/css', 'js': 'application/javascript'}
+    EXT_TYPES = {'css': 'text/css', 'js': 'application/javascript', 'ico': 'image/x-icon'}
 
     @staticmethod
     @functools.lru_cache()

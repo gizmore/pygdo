@@ -58,6 +58,9 @@ class MethodForm(Method):
         if key := self._raw_args.args.get('flowField'):
             return form.get_field(key).flow_upload()
 
+        for gdt in self.parameters().values():
+            gdt.gdo_file_upload(self)
+
         clicked = None
         for button in form.actions()._fields:
             if button._default_button and not Application.IS_HTTP:
@@ -70,6 +73,7 @@ class MethodForm(Method):
                 return clicked.call()
             else:
                 return self.form_invalid()
+
         return self.render_page()
 
     def render_page(self) -> GDT:

@@ -17,6 +17,11 @@ from gdo.message.GDT_HTML import GDT_HTML
 
 class file_server(Method):
 
+    def explicitly_allowed(self, explicitly_allowed: bool = True):
+        self._explicitly_allowed = explicitly_allowed
+        return self
+
+
     def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Path('_url').existing_file(),
@@ -64,7 +69,7 @@ class file_server(Method):
         return Application.get_client_header('HTTP_IF_NONE_MATCH') == etag
 
     def gdo_execute(self) -> GDT:
-        if file_server.is_forbidden(self.get_url()):
+        if not hasattr(self, '_explicitly_allowed') and file_server.is_forbidden(self.get_url()):
             Application.status('403 Forbidden')
             return self.err('err_file_forbidden')
         file_path = self.get_path()

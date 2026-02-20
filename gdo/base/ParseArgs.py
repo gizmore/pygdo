@@ -60,6 +60,7 @@ class ParseArgs(WithPygdo):
                     key, val = part.split(self.ARG_SEPARATOR, 1)
                     self.args[key] = [val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)]
         except Exception as ex:
+            Logger.exception(ex, "add_path_vars() failed")
             pass
 
     def add_arg(self, key: str, vals: list[str]|str):
@@ -102,6 +103,7 @@ class ParseArgs(WithPygdo):
         return parts
 
     def insert_nested(self, d: dict, key: str, values: list[str]):
+
         parts = self.split_bracket_key(key)
         if not parts:
             return
@@ -131,14 +133,8 @@ class ParseArgs(WithPygdo):
 
     def add_web_args(self, qs: dict[str, list[str]]):
         for key, vals in qs.items():
-            # val = vals if len(vals) > 1 else vals[0]
             self.insert_nested(self.args, key, vals)
         return self
-
-    # def add_web_args(self, qs: dict[str,list[str]]):
-    #     for key, vals in qs.items():
-    #         self.args[key.rstrip('[]')] = vals
-    #     return self
 
     def add_file(self, name: str, filename: str, raw_data: bytes):
         self.files.append((name, filename, raw_data))
@@ -169,3 +165,10 @@ class ParseArgs(WithPygdo):
 
     def get_cache_key(self, method: 'Method') -> str:
         return f"{method.fqcn()}.{self.args}.{self.pargs}{Application.STORAGE.lang}"
+
+    def get_files(self, key: str) -> list[tuple[str, str, bytes]]:
+        back = []
+        for file_data in self.files:
+            if file_data[0] == key:
+                back.append(file_data)
+        return back

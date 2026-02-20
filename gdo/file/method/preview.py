@@ -16,7 +16,7 @@ class preview(MethodFile):
 
     def gdo_parameters(self) -> list[GDT]:
         return [
-            GDT_File('file').not_null(),
+            GDT_File('file').display_only().not_null(),
             GDT_Token('token').not_null(),
         ]
 
