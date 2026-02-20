@@ -5,6 +5,10 @@ from gdo.core.GDT_Select import GDT_Select
 
 class GDT_Bool(GDT_Select):
 
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.icon('thumbs_up')
+
     def gdo_column_define(self) -> str:
         return f"{self._name} TINYINT(1) {self.gdo_column_define_null()} {self.gdo_column_define_default()}"
 

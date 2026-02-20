@@ -78,7 +78,12 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         self._raw_args.add_get_vars({key: [val]})
         return self
 
-    def args_copy(self, method: 'Method'):
+    def args_copy(self, method: 'Method', clone: bool=False):
+        if clone:
+            self._raw_args.args.update(method._raw_args.args)
+            self._raw_args.pargs.extend(method._raw_args.pargs)
+            self._raw_args.files.extend(method._raw_args.files)
+            return self
         return self.args(method._raw_args)
 
     def args(self, args: ParseArgs):

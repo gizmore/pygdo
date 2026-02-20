@@ -1,5 +1,7 @@
 module_ui = "User Interface"
 
+link = "Link"
+
 bg_color = "Background Color"
 fg_color = "Foreground Color"
 

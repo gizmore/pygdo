@@ -49,19 +49,26 @@ class ParseArgs(WithPygdo):
 
     def add_path_vars(self, url: str):
         try:
-            if url:
-                url = url.lstrip('/').replace(self.ESCAPED_SEPARATOR, self.TEMP_MARKER)
-                parts = url.split(self.ENTRY_SEPARATOR)
-                self.mode = Strings.rsubstr_from(parts[-1], '.', 'html')
-                parts[-1] = Strings.rsubstr_to(parts[-1], '.', parts[-1])
-                if parts[0].index('.'):
-                    self.module, self.method = parts[0].split('.', 1)
-                for part in parts[1:]:
-                    key, val = part.split(self.ARG_SEPARATOR, 1)
-                    self.args[key] = [val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)]
+            if not url:
+                return
+            url = url.lstrip('/').replace(self.ESCAPED_SEPARATOR, self.TEMP_MARKER)
+            parts = url.split(self.ENTRY_SEPARATOR)
+            last = parts[-1]
+            self.mode = Strings.rsubstr_from(last, '.', 'html')
+            parts[-1] = Strings.rsubstr_to(last, '.', last)
+            head = parts[0]
+            if '.' in head:
+                self.module, self.method = head.split('.', 1)
+            else:
+                self.module, self.method = head, ''  # or keep previous, or default method
+            for part in parts[1:]:
+                if self.ARG_SEPARATOR not in part:
+                    continue  # or treat as flag
+                key, val = part.split(self.ARG_SEPARATOR, 1)
+                val = val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)
+                self.args.setdefault(key, []).append(val)
         except Exception as ex:
             Logger.exception(ex, "add_path_vars() failed")
-            pass
 
     def add_arg(self, key: str, vals: list[str]|str):
         self.args[key] = vals

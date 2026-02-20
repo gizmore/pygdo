@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 bash gdo_adm.sh wipe -a
 bash gdo_adm.sh install irc,chatgpt4o,telegram,pm,markdown,blackjack,account,admin,contact,perf,math,login,register,bootstrap5,avatar,shadowdogs,vote,poll,chess,quote,scum,slapwarz,gogol,websocket,telegram,discord,wechall,poll,connect

@@ -2,6 +2,19 @@ console.log("Init PyGDO.js v8.0.2");
 
 window.gdo = {
 
+    init: function() {
+        console.log('Inited PyGDO JS Engine v8.0.2');
+        document.addEventListener('DOMContentLoaded', () => {
+            for(mod of window.gdo) {
+                if(mod.gdo_init) {
+                    mod.gdo_init();
+                }
+            }
+            document.body.classList.remove('no-js');
+            document.body.classList.add('has-js');
+        });
+    },
+
     autofocus: function() {
     },
 

@@ -107,7 +107,7 @@ class GDO_File(GDO):
     def from_sgi_upload(cls, file: tuple[str, str, bytes]):
         file = cls.blank({
             'file_name': file[0],
-            'file_size': len(file[2]),
+            'file_size': str(len(file[2])),
             'file_mime': Files.mime(file[1]),
         }).insert()
         Files.move(file[1], file.get_path())

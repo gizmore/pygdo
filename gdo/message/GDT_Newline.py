@@ -6,7 +6,7 @@ class GDT_Newline(GDT):
 
     def render(self, mode: Mode = Mode.render_html):
         if mode == Mode.render_html:
-            return "<br/>"
+            return "<br>"
         return "\n"
 
     def render_markdown(self):

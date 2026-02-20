@@ -10,6 +10,7 @@ from gdo.base.Render import Mode
 from gdo.base.UserTemp import UserTemp
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Serialize import GDT_Serialize, SerializeMode
+from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_TemplateHTML import tplhtml
 from gdo.ui.GDT_Bar import GDT_Bar
 
@@ -17,10 +18,7 @@ from gdo.ui.GDT_Bar import GDT_Bar
 class GDT_Page(GDT):
 
     _js: list[str] = []
-    _js_inline: str = ''
     _css: list[str] = []
-    _css_inline: str = ''
-    _meta: str = ''
 
     _result: GDT
     _method: Method
@@ -34,10 +32,8 @@ class GDT_Page(GDT):
     @classmethod
     def clear_assets(cls):
         cls._js = []
-        cls._js_inline = ''
         cls._css = []
-        cls._css_inline = ''
-        cls._meta = ''
+        Application.clear_assets()
 
     @classmethod
     def instance(cls):
@@ -52,9 +48,7 @@ class GDT_Page(GDT):
         self._left_bar = GDT_Bar('left').vertical()
         self._right_bar = GDT_Bar('right').vertical()
         self._bottom_bar = GDT_Container()
-        self.__class__._js_inline = ''
-        self.__class__._css_inline = ''
-        self.__class__._meta = ''
+        Application.clear_assets()
         return self
 
     def result(self, result: GDT):
@@ -77,24 +71,36 @@ class GDT_Page(GDT):
                 result = self._result.render(Mode.render_html)
                 Cache.add_timed_cache(key, seconds, result)
         if not result: result = self._result.render(Mode.render_html)
-        return tplhtml('ui', 'page.html', {
+        html = tplhtml('ui', 'page.html', {
             'lang': Application.LANG_ISO,
             'result': result,
             'title': self._method.gdo_render_title(),
             'descr': self._method.gdo_render_descr(),
             'keywords': self._method.gdo_render_keywords(),
             'css': self.render_css(),
-            'css_inline': self._css_inline,
-            'meta': self._meta,
+            'css_inline': self.render_css_inline(),
+            'link': self.application().STORAGE.link_inline,
+            'meta': self.application().STORAGE.meta_inline,
             'js': self.render_js(),
-            'js_inline': self._js_inline,
-            'title_bar': self._title_bar.render_html(),
+            'js_inline': self.render_js_inline(),
             'flash': UserTemp.get_cached_for_user(GDO_User.current(), 'flash', UserTemp.EMPTY_BAR).render_html(),
             'top_bar': self._top_bar.render_html(),
             'left_bar': self._left_bar.render_html(),
             'right_bar': self._right_bar.render_html(),
+            'title_bar': self._title_bar.render_html(),
             'bottom_bar': self._bottom_bar.render_html(),
         })
+        s = GDT_String('html').val(html)
+        Application.publish_event('render_html', s)
+        return s.get_val()
+
+    def render_js_inline(self) -> str:
+        js = self.application().STORAGE.js_inline
+        return f'<script>\n{js}\n</script>' if js else ''
+
+    def render_css_inline(self) -> str:
+        css = self.application().STORAGE.css_inline
+        return f'<script>\n{css}\n</script>' if css else ''
 
     @classmethod
     @functools.cache
@@ -104,7 +110,7 @@ class GDT_Page(GDT):
     @classmethod
     @functools.cache
     def render_css(cls) -> str:
-        return "\n".join([f'<link rel="stylesheet" href="{url}" />' for url in cls._css])
+        return "\n".join([f'<link rel="stylesheet" href="{url}">' for url in cls._css])
 
     def render_json(self):
         json = {

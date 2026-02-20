@@ -1,11 +1,13 @@
 import functools
 import os
 import re
+import traceback
 from io import StringIO
 from typing import Any
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
+from gdo.base.Exceptions import GDOException
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
@@ -23,6 +25,7 @@ class Templite(object):
         self.file = key = filename
         self.encoding = encoding
         self.caching = caching
+        self.tokens = None
         cache = self.cache
         if caching:
             if key in cache:
@@ -71,6 +74,7 @@ class Templite(object):
             tokens.append(part)
         if offset:
             raise SyntaxError('%i block statement(s) not terminated' % offset)
+        self.tokens = tokens
         return compile('\n'.join(tokens), self.file, 'exec')
 
     def render(self, **namespace):
@@ -96,9 +100,27 @@ class Templite(object):
         namespace['Mode'] = Mode
         namespace['html'] = html
 
-        exec(self._code, namespace)
+        try:
+            exec(self._code, namespace)
+        except Exception as ex:
+            self.log_template_exception(ex)
+
         return stack.getvalue()
 
+    def log_template_exception(self, ex: Exception):
+        frames = traceback.extract_tb(ex.__traceback__)
+        if frames[-1].filename != self.file:
+            raise ex
+        line_no = frames[-1].lineno
+        out = f'{str(ex)}\n'
+        n = 0
+        for lines in self.tokens:
+            for line in lines.split("\n"):
+                n += 1
+                if n == line_no:
+                    out += "<b>!!!>>></b> "
+                out += f"{n} {html(line)}\n"
+        raise GDOException(out)
 
 class GDT_Template(GDT):
 

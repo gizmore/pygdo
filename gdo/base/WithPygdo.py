@@ -1,5 +1,4 @@
 from gdo.base import Util
-from gdo.base.LazyImporter import LazyImporter
 
 
 class WithPygdo:
@@ -14,36 +13,52 @@ class WithPygdo:
     err = None
     html = None
     GDT_String = None
+    GDO_User = None
+    GDT_Page = None
     ModuleLoader = None
 
-    @classmethod
-    def loader(cls):
-        if not cls.ModuleLoader:
+    @staticmethod
+    def loader():
+        if not WithPygdo.ModuleLoader:
             from gdo.base.ModuleLoader import ModuleLoader
-            cls.ModuleLoader = ModuleLoader
-        return cls.ModuleLoader.instance()
+            WithPygdo.ModuleLoader = ModuleLoader.instance()
+        return WithPygdo.ModuleLoader
 
-    @classmethod
-    def gdt_string(cls):
-        if not cls.GDT_String:
+    @staticmethod
+    def gdt_string():
+        if not WithPygdo.GDT_String:
             from gdo.core.GDT_String import GDT_String
-            cls.GDT_String = GDT_String
-        return cls.GDT_String
+            WithPygdo.GDT_String = GDT_String
+        return WithPygdo.GDT_String
 
-    @classmethod
-    def application(cls):
-        if not cls.Application:
+    @staticmethod
+    def gdo_user():
+        if not WithPygdo.GDO_User:
+            from gdo.core.GDO_User import GDO_User
+            WithPygdo.GDO_User = GDO_User
+        return WithPygdo.GDO_User
+
+    @staticmethod
+    def application():
+        if not WithPygdo.Application:
             from gdo.base.Application import Application
-            cls.Application = Application
-        return cls.Application
+            WithPygdo.Application = Application
+        return WithPygdo.Application
 
-    @classmethod
-    def util(cls, util: str=None):
-        if not cls.Util:
+    @staticmethod
+    def gdt_page():
+        if not WithPygdo.GDT_Page:
+            from gdo.ui.GDT_Page import GDT_Page
+            WithPygdo.GDT_Page = GDT_Page
+        return WithPygdo.GDT_Page
+
+    @staticmethod
+    def util(util: str=None):
+        if not WithPygdo.Util:
             from gdo.base.Util import Strings, msg, html, err
-            cls.Util = Util
-            cls.Strings = Strings
-            cls.msg = msg
-            cls.err = err
-            cls.ahtml = html
-        return getattr(cls, util)
+            WithPygdo.Util = Util
+            WithPygdo.Strings = Strings
+            WithPygdo.msg = msg
+            WithPygdo.err = err
+            WithPygdo.ahtml = html
+        return getattr(WithPygdo, util)

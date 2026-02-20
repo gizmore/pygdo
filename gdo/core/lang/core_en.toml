@@ -63,6 +63,7 @@ from = "From"
 to = "To"
 target = "Target"
 message = "Message"
+an_icon = "%s Icon"
 
 ###########
 # GDT_Int #

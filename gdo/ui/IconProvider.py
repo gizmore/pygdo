@@ -1,4 +1,8 @@
+from functools import lru_cache
+
+from gdo.base.LazyImporter import LazyImporter
 from gdo.base.Render import Mode
+from gdo.base.Trans import t
 
 
 class IconProvider:
@@ -21,16 +25,15 @@ class IconProvider:
     # Render #
     ##########
     @classmethod
-    def display_icon(cls, name: str, mode: Mode, alt: str, color: str = None, size: str = None) -> str:
-        from gdo.ui.IconUTF8 import IconUTF8
-        if mode.value < 10:  # HTML mode?
+    @lru_cache(maxsize=None)
+    def display_icon(cls, name: str, mode: Mode, alt_key: str = None, alt_args: tuple[str|int|float,...] = None, color: str = None, size: str = None) -> str:
+        if mode.is_html():  # HTML mode?
             for provider in reversed(IconProvider.PROVIDERS):
                 if provider.has_icon(name):
-                    return provider.display_icon_html(name, alt, color, size)
-        return IconUTF8.MAP()[name]
+                    return provider.display_icon_html(name, mode, alt_key, alt_args, color, size)
+        IconUTF8 = LazyImporter.import_once("from gdo.ui.IconUTF8 import IconUTF8")
+        return IconUTF8.MAP().get(name, name)
 
     @classmethod
-    def display_icon_html(cls, name: str, mode: Mode, alt: str, color: str = None, size: str = None) -> str:
-        return name
-
-
+    def display_icon_html(cls, name: str, mode: Mode, alt_key: str=None, alt_args: tuple[str|int|float,...]=None, color: str = None, size: str = None) -> str:
+        return t(alt_key, alt_args) if alt_key else name

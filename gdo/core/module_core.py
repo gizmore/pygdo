@@ -9,6 +9,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.GDO import GDO
 from gdo.base.Logger import Logger
+from gdo.base.Util import Files
 from gdo.core import GDO_MethodValServerBlob
 from gdo.core.Connector import Connector
 from gdo.core.GDO_Channel import GDO_Channel
@@ -56,6 +57,10 @@ class module_core(GDO_Module):
     def gdo_init(self):
         Connector.register(Bash)
         Connector.register(Web, False)
+        Files.create_dir(self.assets_path())
+
+
+    def gdo_subscribe_events(self):
         self.subscribe('clear_cache', self.on_cc)
 
     async def on_cc(self):
@@ -95,7 +100,7 @@ class module_core(GDO_Module):
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
             GDT_Bool('allow_gdo_assets').initial('0'),
-            GDT_UInt('asset_version').initial('1'),
+            GDT_UInt('av').initial('1').label('asset_version'),
             GDT_Timestamp('last_cron').initial(Time.get_date()),
         ]
 
@@ -133,6 +138,9 @@ class module_core(GDO_Module):
     def cfg_last_cron(self) -> datetime:
         return self.get_config_value('last_cron')
 
+    def cfg_asset_version(self) -> str:
+        return self.get_config_val('av')
+
     def gdo_classes(self) -> list[type[GDO]]:
         return [
             GDO_Language,
@@ -163,7 +171,7 @@ class module_core(GDO_Module):
         self.add_css('css/pygdo.css')
 
     def gdo_init_sidebar(self, page: 'GDT_Page'):
-        self.add_js_inline("window.gdo.config = "+msgspec.json.encode(self.get_core_js()).decode('utf8')+";")
+        self.add_js_inline("window.gdo.config = " + msgspec.json.encode(self.get_core_js()).decode('utf8') + ";")
 
     def get_core_js(self):
         return {

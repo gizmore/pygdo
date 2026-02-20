@@ -1,6 +1,7 @@
 import functools
 
 from gdo.base.Render import Mode
+from gdo.base.Trans import t
 from gdo.base.Util import html
 from gdo.ui.IconProvider import IconProvider
 
@@ -138,9 +139,10 @@ class IconUTF8(IconProvider):
         }
 
     @classmethod
-    def display_icon_html(cls, name: str, mode: Mode, alt: str, color: str = None, size: str = None) -> str:
+    def display_icon_html(cls, name: str, mode: Mode, alt_key: str = 'an_icon', alt_args: tuple[str|int|float,...]=None, color: str = None, size: str = None) -> str:
         c = cls.MAP()[name]
         color = f" color: {color};" if color else ""
         size = f" font-size: {size};" if size else ""
-        style = f' style="{color} {size}"' if color or size else ""
-        return f'<span role="icon" aria-label="{html(alt)}"{style} class="gdt-icon">{c}</span>'
+        style = (color + size).strip()
+        style = f' style="{style}"' if style else ""
+        return f'<span role="img" aria-label="{t(alt_key, alt_args)}"{style} class="gdt-icon">{c}</span>'

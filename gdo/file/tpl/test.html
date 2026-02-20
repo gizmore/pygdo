@@ -3,11 +3,11 @@
 <%
 for gdo_file in field.get_value() or []:
 	if gdo_file.is_persisted():
-		delete_button = '' if field._no_delete else '<input type="submit" name="%s.file.delete" value="Remove File" onclick="return confirm(\'%s\')"/>' % (field.get_name(), t('confirm_delete'))
+		delete_button = '' if field._no_delete else '<input type="submit" name="%s.file.delete" value="Remove File" onclick="return confirm(\'%s\')">' % (field.get_name(), t('confirm_delete'))
 	else:
-		delete_button = '' if field._no_delete else '<input type="submit" name="%s.sess.delete" value="Remove File" onclick="return confirm(\'%s\')"/>' % (field.get_name(), t('confirm_delete'))
+		delete_button = '' if field._no_delete else '<input type="submit" name="%s.sess.delete" value="Remove File" onclick="return confirm(\'%s\')">' % (field.get_name(), t('confirm_delete'))
 	if field._preview:
-		write('<div class="gdo-file-preview"><img src="%s" />%s (%s)</div>' % (field.href_preview(gdo_file), delete_button, html(gdo_file.get_name())))
+		write('<div class="gdo-file-preview"><img src="%s">1%s (%s)</div>' % (field.href_preview(gdo_file), delete_button, html(gdo_file.get_name())))
 	else:
 		write(delete_button)
 %>
@@ -22,7 +22,7 @@ if field._image_file:
 %>
 id="<%=field.get_name()%>"
 name="<%=field.get_name()%>"
-class="gdo-flow-file" />
+class="gdo-flow-file">
 <span id="gdo-file-input-<%=field.get_name()%>"></span>
 <%
 if field.has_error():

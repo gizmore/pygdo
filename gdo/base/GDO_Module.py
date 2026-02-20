@@ -18,14 +18,14 @@ from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.ModuleLoader import ModuleLoader
-from gdo.base.Trans import t
-from gdo.base.Util import Files, err, msg, Strings
+from gdo.base.Trans import t, Trans
+from gdo.base.Util import Files, err, msg, Strings, module_config_var
 from gdo.base.WithModuleConfig import WithModuleConfig
 
 
 class GDO_Module(WithModuleConfig, GDO):
-    CORE_VERSION = Version("8.0.2")
-    CORE_REV = "PyGDOv8.0.2-r1305"
+    CORE_VERSION = Version("8.0.3")
+    CORE_REV = "PyGDOv8.0.3-r1337"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -134,6 +134,9 @@ class GDO_Module(WithModuleConfig, GDO):
     def file_path(self, append=''):
         return Application.file_path(f"gdo/{self.get_name}/{append}")
 
+    def assets_path(self, append=''):
+        return Application.file_path(f"assets/{self.cache_key()}/{append}")
+
     def www_path(self, filename: str) -> str:
         return f"{Application.config('core.web_root')}gdo/{self.get_name}/{filename}"
 
@@ -176,6 +179,9 @@ class GDO_Module(WithModuleConfig, GDO):
     ##########
     # Errors #
     ##########
+    def t(self, key: str, args: tuple[str|int|float,...] = None):
+        return Trans.tiso(Application.STORAGE.lang, key, args)
+
     def err(self, key: str, args: list[str] = None):
         err(key, args, self.render_name())
         return self
@@ -187,23 +193,21 @@ class GDO_Module(WithModuleConfig, GDO):
     ##########
     # Assets #
     ##########
-    GDT_Page = None
-    def gdt_page(self):
-        if not self.__class__.GDT_Page:
-            from gdo.ui.GDT_Page import GDT_Page
-            self.__class__.GDT_Page = GDT_Page
-        return self.__class__.GDT_Page
 
     def add_css(self, filename: str):
-        path = f"{self.www_path(filename)}?v={self.CORE_REV}"
+        path = f"{self.www_path(filename)}?v={self.cache_key()}"
         self.gdt_page()._css.append(path)
         return self
 
     def add_bower_css(self, filename: str):
         return self.add_css(f'node_modules/{filename}')
 
+    def add_css_inline(self, style: str):
+        self.application().STORAGE.css_inline += f"{style}\n"
+        return self
+
     def add_js(self, filename: str):
-        path = f"{self.www_path(filename)}?v={self.CORE_REV}"
+        path = f"{self.www_path(filename)}?v={self.cache_key()}"
         self.gdt_page()._js.append(path)
         return self
 
@@ -211,8 +215,28 @@ class GDO_Module(WithModuleConfig, GDO):
         return self.add_js(f'node_modules/{filename}')
 
     def add_js_inline(self, code: str):
-        self.gdt_page()._js_inline += f"<script>\n{code}\n</script>\n"
+        self.application().STORAGE.js_inline += f"{code}\n"
         return self
+
+    def add_meta(self, meta: str):
+        self.application().STORAGE.meta_inline += f"{meta}\n"
+        return self
+
+    def add_link(self, link: str):
+        self.application().STORAGE.link_inline += f"{link}\n"
+        return self
+
+    @staticmethod
+    @lru_cache
+    def cache_key():
+        return f'{GDO_Module.CORE_REV}-av{GDO_Module.cache_av()}'
+
+    @staticmethod
+    def cache_av() -> str:
+        """"
+        This method is dedicated to AV from LQ... asset version man! thxalotl :*
+        """
+        return module_config_var("core", "av")
 
     ##########
     # Events #

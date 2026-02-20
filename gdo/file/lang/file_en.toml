@@ -1,5 +1,8 @@
 module_file = "Files"
 
+file_name = "Filename"
+file_size = "Filesize"
+
 ############
 # GDT_File #
 ############

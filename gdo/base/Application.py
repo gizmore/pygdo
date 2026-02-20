@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 from gdo.base.Events import Events
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
-from gdo.base.Util import Arrays
+from gdo.base.Util import Arrays, module_config_var
 
 
 class Application:
@@ -131,7 +131,7 @@ class Application:
     @classmethod
     def fresh_page(cls):
         if not hasattr(cls.STORAGE, 'page'):
-            from gdo.ui.GDT_Page import GDT_Page
+            GDT_Page = LazyImporter.import_once('from gdo.ui.GDT_Page import GDT_Page')
             cls.STORAGE.page = GDT_Page()
         return cls.STORAGE.page.init()
 
@@ -370,8 +370,6 @@ class Application:
         while not cls.MESSAGES.empty():
             msg = cls.MESSAGES.get()
             gdt = await msg.execute()
-            # while iscoroutine(gdt):
-            #     gdt = await gdt
 
     @classmethod
     def publish_event(cls, name: str, *args):
@@ -380,8 +378,15 @@ class Application:
 
     @classmethod
     def run_coro(cls, coro, name: str):
-        # AsyncRunner.INSTANCE.run(coro)
         if cls.LOOP.is_running():
-            cls.TASKS.append(cls.LOOP.create_task(coro, name=name or str(coro)))
+            task = cls.LOOP.create_task(coro, name=name or str(coro))
+            cls.TASKS.append(task)
         else:
             cls.LOOP.run_until_complete(coro)
+
+    @classmethod
+    def clear_assets(cls):
+        cls.STORAGE.js_inline = ''
+        cls.STORAGE.css_inline = ''
+        cls.STORAGE.meta_inline = ''
+        cls.STORAGE.link_inline = ''

@@ -43,6 +43,7 @@ class Time:
     FMT_AGO = 'ago'
     FMT_TIME_ONLY = 'clock'
 
+
     # Timezone constants
     UTC = '1'
     TIMEZONE = 'UTC'

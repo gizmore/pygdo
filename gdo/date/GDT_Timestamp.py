@@ -1,6 +1,5 @@
 from gdo.base.Application import Application
 from gdo.core.GDT_String import GDT_String
-from gdo.base.Trans import t
 from gdo.date.Time import Time
 
 
@@ -10,7 +9,8 @@ class GDT_Timestamp(GDT_String):
 
     def __init__(self, name):
         super().__init__(name)
-        self._date_format = Time.FMT_LONG
+        self.icon('calendar')
+        self._date_format = Time.FMT_AGO
         self._millis = 3
         self._input_type = "number"
 
@@ -41,6 +41,8 @@ class GDT_Timestamp(GDT_String):
         if (val := self.get_val()) is None:
             return '---'
         if format == Time.FMT_AGO:
+            self.attr('title', Time.display_date(val))
+            self.attr('gdo-ts', str(Time.get_time(val)))
             return Time.human_duration(Time.get_time_ago(val))
         else:
             return Time.display_date(val, format)

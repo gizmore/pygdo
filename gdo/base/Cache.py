@@ -270,7 +270,7 @@ class Cache:
     @classmethod
     def get(cls, key: str, args_key: str = None, default: any = None) -> any:
         if cls.RCACHE:
-            key = f"{key}:{args_key}" if args_key else f"{key}:"
+            key = f"{key}:" if args_key is None else f"{key}:{args_key}"
             if packed := cls.RCACHE.get(key):
                 cls.HITS += 1 #PYPP#DELETE#
                 data = zlib.decompress(packed) if cls.ZLIB_LEVEL >= 0 else packed
@@ -286,7 +286,7 @@ class Cache:
             else:
                 value = msgspec.msgpack.encode(value)
             cls.UPDATES += 1 #PYPP#DELETE#
-            key = f"{key}:{args_key}" if args_key else f"{key}:"
+            key = f"{key}:" if args_key is None else f"{key}:{args_key}"
             data = zlib.compress(value, cls.ZLIB_LEVEL) if cls.ZLIB_LEVEL >= 0 else value
             cls.RCACHE.set(key, data)
         return value

@@ -284,14 +284,14 @@ class Files:
         return True
 
     @classmethod
-    def get_contents(cls, path: str, log_error: bool = True):
+    def get_contents(cls, path: str, throw: bool = True):
         try:
             with open(path, 'r', encoding='UTF-8') as f:
                 return f.read()
         except FileNotFoundError as ex:
-            if log_error:
-                from gdo.base.Logger import Logger
-                Logger.exception(ex)
+            if throw:
+                raise ex
+            return ''
 
     EXT_TYPES = {'css': 'text/css', 'js': 'application/javascript', 'ico': 'image/x-icon'}
 
@@ -336,6 +336,11 @@ class Files:
     @classmethod
     def move(cls, src: str, dest: str) -> bool:
         os.rename(src, dest)
+        return True
+
+    @classmethod
+    def copy_dir(cls, src: str, dest: str):
+        shutil.copytree(src, dest, dirs_exist_ok=True)
         return True
 
 

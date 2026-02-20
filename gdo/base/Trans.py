@@ -111,7 +111,7 @@ class Trans:
                 return format % args if args else format
         except:
             pass
-        return key + str(args) if args else key
+        return key + str(args) if args else key or ''
 
     @staticmethod
     def has(key: str) -> bool:

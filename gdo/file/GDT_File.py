@@ -96,6 +96,11 @@ class GDT_File(GDT_Object):
     def to_val(self, value) -> str:
         return None if value is None else value[0].get_id()
 
+    def to_value(self, val: str):
+        if value := super().to_value(val):
+            return [value]
+        return None
+
     def get_initial_files(self):
         if not Application.has_session():
             return []
@@ -108,9 +113,7 @@ class GDT_File(GDT_Object):
 
 
     def get_persisted_files(self) -> list[GDO_File] | None:
-        if files := super().get_value():
-            return [files]
-        return []
+        return super().get_value() or []
 
     ##########
     # Upload #
@@ -139,7 +142,7 @@ class GDT_File(GDT_Object):
             self.val(None)
 
     def get_temp_dir(self):
-        sessid = Application.get_session().get_id() or '1'
+        sessid = Application.get_session().get_id() if Application.has_session() else '0'
         files_dir = Application.config('file.directory')
         return Application.temp_path(f"{files_dir}{self._upload_path}/{sessid}/")
 
@@ -165,10 +168,6 @@ class GDT_File(GDT_Object):
             self.val(files[0].get_id())
         self.cleanup_temp_dir()
         return True
-
-    def gdo(self, gdo):
-        return super().gdo(gdo)
-
 
     def validate_files(self, value: any) -> bool:
         for file in value:

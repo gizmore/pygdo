@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from gdo.base.Cache import gdo_lru_cache
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Util import Strings
@@ -23,6 +24,7 @@ class GDO_SeoFile(GDO):
         return self.gdo_value('sf_file')[0]
 
     @classmethod
+    @gdo_lru_cache
     def get_by_url(cls, url: str) -> 'GDO_SeoFile':
         url = url.lstrip('/')
         url = Strings.substr_to(url, '?', url).rstrip('/')
