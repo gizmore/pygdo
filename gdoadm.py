@@ -421,19 +421,28 @@ class App:
 
     async def skel(self):
         parser = argparse.ArgumentParser(
-            description='Create a module skeleton because we are lazy. Example: ./gdo_adm.sh skel module_name. The folder gdo/module_name has to exist.')
+            description='Create a module skeleton because we are lazy. Example: ./gdo_adm.sh skel module_name. The folder gdo/module_name has to exist. Usually you clone your repo manually and then run skel on the almost empty folder.')
         parser.add_argument('modulename')
         args = parser.parse_args(sys.argv[2:])
         name = args.modulename
         base = Application.file_path(f'gdo/{name}/')
-        Files.append_content(f"{base}__init__.py", f'from gdo.{name}.module_{name} import module_{name}\n')
-        Files.append_content(
+
+        if not Files.is_dir(base):
+            print(f"Module folder {base} doesn't exist.")
+            return
+
+        print(f"Creating basic module_{name} structure in {base}")
+        input("This will overwrite files, ok?")
+
+        Files.put_contents(f"{base}__init__.py", f'from gdo.{name}.module_{name} import module_{name}\n')
+        Files.put_contents(
             f"{base}module_{name}.py",
             f"""from __future__ import annotations
 
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.ui.GDT_Link import GDT_Link
 
 from typing import TYPE_CHECKING
 
@@ -441,46 +450,118 @@ if TYPE_CHECKING:
     from gdo.ui.GDT_Page import GDT_Page
 
 
-class module_{name}(GDO_Module):
+class module_clock(GDO_Module):
 
-    def gdo_load_scripts(self, page: 'GDT_Page'):
-        pass
+    def gdo_classes(self) -> list[type[GDO]]:
+        return []
 
-    def gdo_init_sidebar(self, page: 'GDT_Page'):
+    async def gdo_install(self):
         pass
 
     def gdo_module_config(self) -> list[GDT]:
-        return [
-        ]
+        return []
 
     def gdo_user_config(self) -> list[GDT]:
-        return [
-        ]
+        return []
 
     def gdo_user_settings(self) -> list[GDT]:
-        return [
-        ]
+        return []
 
-    def gdo_classes(self) -> list[type[GDO]]:
-        return [
-        ]
-"""
-        )
+    def gdo_init(self):
+        pass
+
+    def gdo_load_scripts(self, page: 'GDT_Page'):
+        self.add_js('js/pygdo-{name}.js')
+        self.add_css('css/pygdo-{name}.css')
+
+    def gdo_init_sidebar(self, page: 'GDT_Page'):
+        page._left_bar.add_field(GDT_Link().href(self.href('overview')).text('module_{name}'))
+""")
 
         Files.copy(Application.file_path('LICENSE'), f"{base}LICENSE")
+        Files.create_dir(f"{base}js/")
+        Files.put_contents(f"{base}js/pygdo-{name}.js", f'"use strict";\nwindow.gdo.{name} = {{\n    gdo_init: function() {{\n    }},\n}};\n')
+        Files.create_dir(f"{base}css/")
+        Files.put_contents(f"{base}css/pygdo-{name}.css", f'/* AUTO GENERATED */\n')
         Files.create_dir(f"{base}lang/")
-        Files.append_content(f"{base}lang/{name}_en.toml", f'module_{name} = "{name.title()}"\n')
+        Files.put_contents(f"{base}lang/{name}_en.toml", f'module_{name} = "{name.title()}"\n\nmt_{name}_overview = "{name}s"\nmd_{name}_overview = "Overview of {name}"\n')
         Files.create_dir(f"{base}method/")
-        Files.append_content(f"{base}method/__init__.py", '\n')
+        Files.put_contents(f"{base}method/__init__.py", '\n')
+        Files.put_contents(f"{base}method/overview.py", f"""from gdo.base.GDT import GDT
+from gdo.form.GDT_Form import GDT_Form
+from gdo.form.MethodForm import MethodForm
+
+
+class overview(MethodForm):
+    def gdo_parameters(self) -> list[GDT]:
+        return []
+
+    def gdo_create_form(self, form: GDT_Form) -> None:
+        super().gdo_create_form(form)
+
+    def form_submitted(self):
+        return self.msg('%s', 'Yeah!')
+    
+""")
         ignore = [
             '__pycache__/',
             '*.pclprof',
             'node_modules/',
             'yarn.lock',
+            '*secret*',
         ]
-        Files.append_content(f"{base}.gitignore", "\n".join(ignore) + '\n')
+        Files.put_contents(f"{base}.gitignore", "\n".join(ignore) + '\n')
+        Files.create_dir(f"{base}tpl/")
         Files.touch(f"{base}requirements.txt", True)
-        print("All done!")
+        Files.put_contents(f"{base}package.json", """{
+  "dependencies": {
+    "js_dependency": "^1.33.7"
+  }
+}
+""")
+        Files.create_dir(f"{base}test/")
+        Files.put_contents(f"{base}test/test_{name}.py", f"""import os
+import unittest
+
+from gdo.base.Application import Application
+from gdo.base.ModuleLoader import ModuleLoader
+from gdo.{name}.module_{name} import module_{name}
+from gdotest.TestUtil import cli_plug, reinstall_module, cli_gizmore, GDOTestCase, WebPlug, install_module, web_plug
+
+
+class module_{name}_Test(GDOTestCase):
+
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
+        Application.init(os.path.dirname(__file__ + "/../../../../"))
+        loader = ModuleLoader.instance()
+        install_module('{name}')
+        loader.load_modules_db(True)
+        WebPlug.COOKIES = {{}}
+        Application.init_cli()
+        loader.init_modules(True, True)
+        loader.init_cli()
+
+    def test_00_reinstall(self):
+        reinstall_module('{name}')
+        self.assertIs(type(module_{name}.instance()), module_{name}, "Cannot re-install module {name}.")
+
+    def test_03_overview_cli(self):
+        giz =  cli_gizmore()
+        out = cli_plug(giz, "${name}.overview")
+        self.assertIsNotNone(out, '${name}.overview does not work.')
+
+    def test_02_overview_web(self):
+        giz =  cli_gizmore()
+        out = web_plug("{name}.overview.html")
+        self.assertIsNotNone(out, '{name}.overview.html does not work.')
+
+
+if __name__ == '__main__':
+    unittest.main()
+""")
+
+        print(f"Skeleton for module_{name} has been (re)written.")
 
     async def _run_yarn_script(self):
         print("Running ./gdo_yarn.sh")
