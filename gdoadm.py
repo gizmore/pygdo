@@ -450,7 +450,7 @@ if TYPE_CHECKING:
     from gdo.ui.GDT_Page import GDT_Page
 
 
-class module_clock(GDO_Module):
+class module_{name}(GDO_Module):
 
     def gdo_classes(self) -> list[type[GDO]]:
         return []
