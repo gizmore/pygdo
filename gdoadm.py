@@ -88,6 +88,7 @@ class App:
 
     async def cc(self):
         loader = ModuleLoader.instance()
+        loader.load_modules_db()
         loader.load_modules_fs()
         loader.init_modules(True, True)
         await clear_cache().gdo_execute()
