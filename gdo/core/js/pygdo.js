@@ -1,18 +1,20 @@
-console.log("Init PyGDO.js v8.0.2");
-
+"use strict";
 window.gdo = {
 
     init: function() {
-        console.log('Inited PyGDO JS Engine v8.0.2');
+        window.onerror = window.gdo.error_js
         document.addEventListener('DOMContentLoaded', () => {
-            for(mod of window.gdo) {
-                if(mod.gdo_init) {
-                    mod.gdo_init();
-                }
-            }
             document.body.classList.remove('no-js');
             document.body.classList.add('has-js');
+            for (const key in window.gdo) {
+                const mod = window.gdo[key];
+                mod && mod.gdo_init && mod.gdo_init();
+            }
         });
+    },
+
+    gdo_init: function() {
+        console.log('Inited PyGDO JS Engine v8.0.3-r1337+');
     },
 
     autofocus: function() {
@@ -35,6 +37,5 @@ window.gdo = {
         const url = window.gdo.config.webroot + module + "." + method + ".json";
         return window.fetch(url).catch(window.gdo.error_fetch);
     }
-}
-
-window.onerror = window.gdo.error_js
+};
+window.gdo.init();

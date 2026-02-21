@@ -152,7 +152,7 @@ class GDO(WithName, WithBulk, GDT):
         return None
 
     def is_persisted(self) -> bool:
-        return bool(self.get_id()) # self._blank
+        return not self._blank
 
     @classmethod
     @functools.cache
@@ -566,5 +566,6 @@ class GDO(WithName, WithBulk, GDT):
     def render_json(self):
         back = {}
         for gdt in self.columns().values():
-            back[gdt.get_name()] = self.gdo_val(gdt.get_name())
+            if not gdt.is_hidden():
+                back[gdt.get_name()] = self.gdo_val(gdt.get_name())
         return back

@@ -70,7 +70,8 @@ class Cache:
         cls.CCACHE = {}
         cls.PCACHE = {}
         cls.MCACHE = {}
-        cls.clear_ocache()
+        cls.OCACHE = {}
+        # cls.clear_ocache()
         cls.remove()
         Files.empty_dir(Application.file_path('cache/'))
 
@@ -339,7 +340,7 @@ class Cache:
 def _hash_args(args, kwargs):
     return hashlib.md5(str((args, frozenset(kwargs.items()), Application.STORAGE.lang)).encode()).hexdigest()
 
-def gdo_cached(cache_key: str):
+def gdo_redis_cached(cache_key: str):
     def decorator(func: callable):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):

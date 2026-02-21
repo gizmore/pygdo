@@ -17,8 +17,11 @@ from gdo.ui.GDT_Bar import GDT_Bar
 
 class GDT_Page(GDT):
 
+    # These are fixed and only filled in init mode of a server run.
     _js: list[str] = []
     _css: list[str] = []
+    _link: str = ''
+    _meta: str = ''
 
     _result: GDT
     _method: Method
@@ -33,14 +36,13 @@ class GDT_Page(GDT):
     def clear_assets(cls):
         cls._js = []
         cls._css = []
-        Application.clear_assets()
+        cls._link = ''
+        cls._meta = ''
+        # Application.clear_assets()
 
     @classmethod
     def instance(cls):
         return Application.get_page()
-
-    def __init__(self):
-        super().__init__()
 
     def init(self):
         self._title_bar = GDT_Bar('title').horizontal()
@@ -66,7 +68,7 @@ class GDT_Page(GDT):
         GDO_User = LazyImporter.import_once("from gdo.core.GDO_User import GDO_User")
         result = ''
         if seconds := self._method.gdo_cached():
-            key = self._method._raw_args.get_cache_key(self._method)
+            key = self._method._raw_args.get_args_cache_key(self._method)
             if not (result := Cache.get_timed_cache(key)):
                 result = self._result.render(Mode.render_html)
                 Cache.add_timed_cache(key, seconds, result)
@@ -79,8 +81,10 @@ class GDT_Page(GDT):
             'keywords': self._method.gdo_render_keywords(),
             'css': self.render_css(),
             'css_inline': self.render_css_inline(),
-            'link': self.application().STORAGE.link_inline,
-            'meta': self.application().STORAGE.meta_inline,
+            'link': self._link,
+            'link_inline': self.application().STORAGE.link_inline,
+            'meta': self._meta,
+            'meta_inline': self.application().STORAGE.meta_inline,
             'js': self.render_js(),
             'js_inline': self.render_js_inline(),
             'flash': UserTemp.get_cached_for_user(GDO_User.current(), 'flash', UserTemp.EMPTY_BAR).render_html(),

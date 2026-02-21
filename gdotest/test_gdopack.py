@@ -21,7 +21,7 @@ class GDOPackTestCase(GDOTestCase):
         await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
         loader = ModuleLoader.instance()
-        Cache.clear()
+        # Cache.clear()
         loader.reset()
         loader.load_modules_db(True)
         loader.init_modules(True, True)
@@ -59,7 +59,7 @@ class GDOPackTestCase(GDOTestCase):
         self.assertEqual(gdo3, gdo2, 'GDO OCache not working #2')
 
     async def test_05_gdo_serial(self):
-        Cache.clear()
+        # Cache.clear()
         bash = GDO_Server.table().get_by_id('1')
         packed = bash.gdopack()
         unpack = WithSerialization.gdounpack(packed)

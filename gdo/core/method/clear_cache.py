@@ -17,8 +17,9 @@ class clear_cache(Method):
         return "cc"
 
     async def gdo_execute(self) -> GDT:
+        if mc := module_core.instance():
+            if mc.is_persisted():
+                mc.save_config_val('av', str(int(mc.cfg_asset_version()) + 1))
         Cache.clear()
         await Application.EVENTS.publish('clear_cache')
-        mc = module_core.instance()
-        mc.save_config_val('av', str(int(mc.cfg_asset_version())+1))
-        return self.reply('msg_cache_cleared')
+        return self.empty('msg_cache_cleared')

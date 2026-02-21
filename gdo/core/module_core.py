@@ -59,7 +59,6 @@ class module_core(GDO_Module):
         Connector.register(Web, False)
         Files.create_dir(self.assets_path())
 
-
     def gdo_subscribe_events(self):
         self.subscribe('clear_cache', self.on_cc)
 
@@ -72,12 +71,9 @@ class module_core(GDO_Module):
 
     def clear_all_lru_caches(self):
         for obj in gc.get_objects():
-            try:
-                if isinstance(obj, types.FunctionType):
-                    if hasattr(obj, 'cache_clear') and callable(obj.cache_clear):
-                        obj.cache_clear()
-            except Exception as ex:
-                Logger.exception(ex, f"cache_clear failed for {obj}")
+            if isinstance(obj, types.FunctionType):
+                if hasattr(obj, 'cache_clear'):
+                    obj.cache_clear()
 
     def gdo_dependencies(self) -> list:
         return [
@@ -164,11 +160,14 @@ class module_core(GDO_Module):
         ]
 
     async def gdo_install(self):
+        for path in ('assets/', 'cache/', 'files/', 'temp/'):
+            Files.create_dir(Application.file_path(path))
         InstallCore.now()
 
     def gdo_load_scripts(self, page):
         self.add_js('js/pygdo.js')
         self.add_css('css/pygdo.css')
+        self.add_css('css/pygdo-colors.css')
 
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         self.add_js_inline("window.gdo.config = " + msgspec.json.encode(self.get_core_js()).decode('utf8') + ";")

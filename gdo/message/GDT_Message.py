@@ -9,15 +9,23 @@ from gdo.message.editor.Editor import Editor
 from gdo.message.editor.GDT_Editor import GDT_Editor
 
 
-class GDT_Message(GDT_Composite, GDT_Text):
+class GDT_Message(GDT_Composite):
 
     def __init__(self, name: str):
         super().__init__(name)
-        self.label(name)
+
+    def maxlen(self, maxlen: int):
+        self.component(self._name).maxlen(maxlen)
+        return self
+
+    def minlen(self, minlen: int):
+        self.component(self._name).minlen(minlen)
+        return self
 
     @lru_cache
     def gdo_components(self) -> list['GDT']:
         components = [
+            GDT_Text(f'{self._name}').not_null(),
             GDT_Editor(f"{self._name}_editor").not_null(),
         ]
         for mode in Mode.explicit():
@@ -38,6 +46,9 @@ class GDT_Message(GDT_Composite, GDT_Text):
 
     def get_output_gdt_key(self, mode: Mode) -> str:
         return f"{self._name}_{mode.name.lower()}"
+
+    def validate(self, val: str|None) -> bool:
+        return self.component(self._name).validate(val)
 
     # #######
     # # GDT #

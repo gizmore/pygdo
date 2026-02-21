@@ -1,11 +1,12 @@
-import importlib
 from functools import lru_cache, cached_property
+import importlib
 from glob import glob
 
 from typing_extensions import Self
 
 from typing import TYPE_CHECKING, Type, Iterator
 
+from gdo.base.Cache import gdo_redis_cached
 from gdo.base.util.href import href
 
 if TYPE_CHECKING:
@@ -25,7 +26,7 @@ from gdo.base.WithModuleConfig import WithModuleConfig
 
 class GDO_Module(WithModuleConfig, GDO):
     CORE_VERSION = Version("8.0.3")
-    CORE_REV = "PyGDOv8.0.3-r1337"
+    CORE_REV = "PyGDOv8.0.3-r1338"
 
     METHOD_CACHE: dict[str,Type['Method']] = {}
 
@@ -135,7 +136,7 @@ class GDO_Module(WithModuleConfig, GDO):
         return Application.file_path(f"gdo/{self.get_name}/{append}")
 
     def assets_path(self, append=''):
-        return Application.file_path(f"assets/{self.cache_key()}/{append}")
+        return Application.file_path(f"assets/{append}")
 
     def www_path(self, filename: str) -> str:
         return f"{Application.config('core.web_root')}gdo/{self.get_name}/{filename}"
@@ -195,7 +196,7 @@ class GDO_Module(WithModuleConfig, GDO):
     ##########
 
     def add_css(self, filename: str):
-        path = f"{self.www_path(filename)}?v={self.cache_key()}"
+        path = f"{self.www_path(filename)}?v={self.av_cache_key()}"
         self.gdt_page()._css.append(path)
         return self
 
@@ -207,7 +208,7 @@ class GDO_Module(WithModuleConfig, GDO):
         return self
 
     def add_js(self, filename: str):
-        path = f"{self.www_path(filename)}?v={self.cache_key()}"
+        path = f"{self.www_path(filename)}?v={self.av_cache_key()}"
         self.gdt_page()._js.append(path)
         return self
 
@@ -227,8 +228,8 @@ class GDO_Module(WithModuleConfig, GDO):
         return self
 
     @staticmethod
-    @lru_cache
-    def cache_key():
+    @gdo_redis_cached(cache_key='av_cache_key')
+    def av_cache_key():
         return f'{GDO_Module.CORE_REV}-av{GDO_Module.cache_av()}'
 
     @staticmethod

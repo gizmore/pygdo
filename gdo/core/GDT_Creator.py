@@ -1,6 +1,7 @@
 from typing import Self
 
 from gdo.base.GDO import GDO
+from gdo.base.WithPygdo import WithPygdo
 from gdo.core.GDT_User import GDT_User
 
 
@@ -12,11 +13,12 @@ class GDT_Creator(GDT_User):
         self.icon('user')
 
     def gdo(self, gdo: 'GDO') -> Self:
+        super().gdo(gdo)
         self.gdo_before_create(gdo)
-        return super().gdo(gdo)
+        return self
 
     def gdo_before_create(self, gdo):
-        from gdo.core.GDO_User import GDO_User
+        GDO_User = WithPygdo.gdo_user()
         user = GDO_User.current()
         user = GDO_User.system() if user.is_ghost() else user
         gdo.set_val(self.get_name(), user.get_id())

@@ -324,7 +324,7 @@ class App:
             print("No modules found!", file=sys.stderr)
             exit(-1)
         await Installer.install_modules(modules, True)
-        Cache.clear()
+        await self.cc()
         print("All Done!")
 
     async def admin(self):
@@ -373,6 +373,7 @@ class App:
         if args.all:
             Application.db().query(f"DROP DATABASE IF EXISTS {Application.db().db_name}")
             Application.db().query(f"CREATE DATABASE {Application.db().db_name}")
+            print("Wiping all modules...")
         elif args.module:
             modules = ModuleLoader.instance().load_modules_fs(args.module, False)
             modules = list(modules.values())
@@ -384,6 +385,7 @@ class App:
                     print(f"Module is not installed.")
         else:
             parser.print_help()
+        await clear_cache().gdo_execute()
         print("All Done!")
 
     async def migrate(self):
@@ -416,6 +418,8 @@ class App:
         await self._run_yarn_script()
         await self._run_requirement_scripts()
         await clear_cache().gdo_execute()
+        for module in loader.enabled():
+            await module.gdo_install()
         if Application.config('core.pypp') == '1':
             await self.pypp()
         print("All done!")
@@ -597,7 +601,6 @@ async def run_pygdo_admin():
             Application.init_cli()
         except Exception as ex:
             Logger.exception(ex)
-        Cache.clear()
         await App().argparser()
         if out := Application.get_page()._top_bar.render(Mode.render_cli):
             print(out)

@@ -386,6 +386,9 @@ class Application:
 
     @classmethod
     def clear_assets(cls):
+        """
+        Clear the dynamically generated assets
+        """
         cls.STORAGE.js_inline = ''
         cls.STORAGE.css_inline = ''
         cls.STORAGE.meta_inline = ''

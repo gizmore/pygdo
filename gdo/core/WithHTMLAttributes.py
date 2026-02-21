@@ -1,3 +1,5 @@
+from typing import Self
+
 from gdo.base.Util import html
 
 
@@ -10,7 +12,7 @@ class WithHTMLAttributes:
             self._attrs = {}
         return self._attrs
 
-    def attr(self, key: str, value: str = None):
+    def attr(self, key: str, value: str = None) -> Self:
         if value is None:
             return self.get_attrs()[key]
         self.get_attrs()[key] = value

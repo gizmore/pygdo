@@ -1,0 +1,25 @@
+:root {
+    --pygdo-red: #FF2D55;
+    --pygdo-green: #4CFF7A;
+    --pygdo-blue: #0A5BFF;
+}
+
+.green {
+    color: var(--pygdo-green);
+}
+
+.red {
+    color: var(--pygdo-red);
+}
+
+.blue {
+    color: var(--pygdo-blue);
+}
+
+.pygdo-gradient {
+    background: linear-gradient(
+        90deg,
+        var(--pygdo-blue),
+        var(--pygdo-green)
+    );
+}

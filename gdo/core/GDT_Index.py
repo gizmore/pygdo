@@ -14,6 +14,9 @@ class GDT_Index(WithName, GDT):
         self._index_using = 'BTREE'
         self._index_fields = ()
 
+    def is_hidden(self) -> bool:
+        return True
+
     ########
     # Attr #
     ########
@@ -59,4 +62,6 @@ class GDT_Index(WithName, GDT):
 
     def is_hidden(self) -> bool:
         return True
-    
+
+    def render_json(self):
+        return None

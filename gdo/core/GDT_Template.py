@@ -151,13 +151,12 @@ class GDT_Template(GDT):
     @classmethod
     def render_template(cls, path: str, vals: dict[str, any]):
         data = {
-            # "modules": ModuleLoader.instance()._cache,
             "Mode": Mode,
             "Application": Application,
         }
-        data.update(vals)
-        lite = Templite(path)
-        return lite.render(**data)
+        if vals:
+            data.update(vals)
+        return Templite(path).render(**data)
 
     @classmethod
     def python(cls, modulename: str, filename: str, vals: dict[str, any]):

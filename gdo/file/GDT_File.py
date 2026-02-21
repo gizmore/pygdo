@@ -102,14 +102,15 @@ class GDT_File(GDT_Object):
         return None
 
     def get_initial_files(self):
+        files = self.get_persisted_files()
         if not Application.has_session():
-            return []
+            return files
         dir = self.get_temp_dir()
         if not Files.is_dir(dir):
-            return self.get_persisted_files()
+            return files
         if file := GDO_File.from_dir(dir):
-            return [file] + self.get_persisted_files()
-        return self.get_persisted_files()
+            return [file] + files
+        return files
 
 
     def get_persisted_files(self) -> list[GDO_File] | None:

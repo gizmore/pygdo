@@ -46,7 +46,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         loop.set_debug(False)
         WebPlug.COOKIES = {}
         all_private_messages()
-        Files.create_dir(Application.file_path('assets/'+GDO_Module.CORE_REV))
+        # Files.create_dir(Application.file_path('assets/'+GDO_Module.CORE_REV))
 
     def _tearDownAsyncioRunner(self):
         asyncio.gather(*Application.TASKS)

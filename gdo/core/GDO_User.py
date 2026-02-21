@@ -5,7 +5,7 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING, Any
 
-from gdo.base.Cache import gdo_cached, Cache, gdo_lru_cache
+from gdo.base.Cache import gdo_redis_cached, Cache, gdo_lru_cache
 from gdo.base.IPC import IPC
 from gdo.base.LazyImporter import LazyImporter
 from gdo.base.Query import Query
@@ -75,7 +75,7 @@ class GDO_User(GDO):
     @functools.lru_cache
     def ghost(cls):
         return GDO_User.blank({
-            'user_id': '',
+            'user_id': '0',
             'user_server': '2',
             'user_type': GDT_UserType.GHOST,
             'user_displayname': 'Guest',

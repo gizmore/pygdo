@@ -7,14 +7,6 @@
     box-sizing: content-box;
 }
 
-.green {
-    color: green;
-}
-
-.red {
-    color: red;
-}
-
 .gdt-exception pre {
     white-space: pre;
 }
