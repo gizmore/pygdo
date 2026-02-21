@@ -1,6 +1,7 @@
 import os.path
 
 from gdo.base.Application import Application
+from gdo.base.Exceptions import GDOException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
@@ -71,7 +72,7 @@ class GDO_File(GDO):
         return self
 
     def get_short_path(self) -> str:
-        return f'{Application.config('dir.files')}/gdo_file/{self.get_id()}'
+        return f"{Application.config('dir.files')}/gdo_file/{self.get_id()}"
 
     def get_target_path(self) -> str:
         return Application.files_path(f"gdo_file/{self.get_id()}")
@@ -129,7 +130,7 @@ class GDO_File(GDO):
         elif hasattr(gdo, '_file_data'):
             Files.put_contents(dest, gdo._file_data)
             gdo.set_val('file_mime', Files.mime(dest))
-        if not gdo.gdo_val('file_hash'):
+        if not gdo.gdo_val('file_hash') and Files.is_file(dest):
             gdo.set_val('file_hash', Files.md5(dest))
         gdo.save()
         gdo.clear_temp_dir()

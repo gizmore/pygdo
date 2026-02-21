@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from gdo.base.Application import Application
+from gdo.base.LazyImporter import LazyImporter
 from gdo.base.WithPygdo import WithPygdo
 
 if TYPE_CHECKING:
@@ -97,12 +98,12 @@ class Database(WithPygdo):
 
     #PYPP#START#
     def debug_query(self, query: str, debug: bool = False):
-        level = Application.config('db.debug')
+        level = Application.config('debug.db')
         if level != '0' or debug:
             self.util('msg')('%s', (query,), no_log=True)
             Logger.debug("#" + str(Application.DB_READS + Application.DB_WRITES) + ": " + query)
             if level == '2':
-                import traceback
+                traceback = LazyImporter.import_once('import traceback')
                 Logger.debug("".join(traceback.format_stack()))
     #PYPP#END#
 

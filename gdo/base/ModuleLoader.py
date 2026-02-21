@@ -43,13 +43,13 @@ class ModuleLoader:
     def gdo_import(self, name: str) -> 'GDO_Module':
         mn = importlib.import_module(f"gdo.{name}")
         if klass := mn.__dict__.get(f"module_{name}"):
-            # if name not in self._cache:
-            self._cache[name] = module = klass.blank({
-                'module_name': name,
-                'module_enabled': '0',
-            })
-            # else:
-            #     module = self._cache[name]
+            if name not in self._cache:
+                self._cache[name] = module = klass.blank({
+                    'module_name': name,
+                    'module_enabled': '0',
+                })
+            else:
+               module = self._cache[name]
             return module
         raise GDOException(t('err_module', (html(name),)))
 
@@ -74,6 +74,10 @@ class ModuleLoader:
         self._cache = {k: v for k, v in cc}
         return self
 
+    def sort_module_dict(self, modules: dict[str,GDO_Module]):
+        cc = sorted(modules.items(), key=lambda mod: mod[1]._priority)
+        return {k: v for k, v in cc}
+
     def load_modules_fs(self, pattern='*', installed=False):
         loaded = {}
         patterns = pattern.lower().split(',')
@@ -88,7 +92,7 @@ class ModuleLoader:
                         if module := self.load_module_fs(dirname, installed):
                             loaded[dirname] = module
         self.sort_cache()
-        return loaded
+        return self.sort_module_dict(loaded)
 
     def load_module_fs(self, modulename, installed=False):
         if module := self._cache.get(modulename):
@@ -118,7 +122,7 @@ class ModuleLoader:
     def on_module_installed(self, module: 'GDO_Module'):
         self._cache[module.get_name] = module
         module.init()
-        self.init_user_settings()
+        # self.init_user_settings()
 
     def after_delete(self, module: GDO_Module):
         pass
@@ -150,15 +154,14 @@ class ModuleLoader:
             fs.vals(db._vals)
         else:
             return None
-        if enabled:
-            if not fs.is_enabled():
-                return None
+        if enabled and not fs.is_enabled():
+            return None
         return fs
 
     def init_user_settings(self):
         from gdo.core.GDT_UserSetting import GDT_UserSetting
         from gdo.core.GDT_Field import GDT_Field
-        self.load_modules_fs()
+        # self.load_modules_fs()
         for module in self._cache.values():
             for gdt in module.gdo_user_config():
                 if isinstance(gdt, GDT_Field):
@@ -178,8 +181,6 @@ class ModuleLoader:
                 continue
             if module.is_persisted():
                 module.init()
-            if Application.IS_HTTP:
-                module.gdo_load_scripts(page)
 
     def reload_modules(self):
         self.init_modules(True, True)

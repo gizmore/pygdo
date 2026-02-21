@@ -8,6 +8,10 @@ if TYPE_CHECKING:
     from gdo.ui.GDT_Page import GDT_Page
 
 class module_file(GDO_Module):
+    
+    def __init__(self):
+        super().__init__()
+        self._priority = 19
 
     def gdo_classes(self) -> list[type[GDO]]:
         from gdo.core.GDO_File import GDO_File

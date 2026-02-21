@@ -23,8 +23,7 @@ class GDO_SeoFile(GDO):
         return self.gdo_value('sf_file')[0]
 
     @classmethod
-    @lru_cache(maxsize=1024)
+    # @lru_cache(maxsize=1024)
     def get_by_url(cls, url: str) -> 'GDO_SeoFile':
-        url = url.lstrip('/')
-        url = Strings.substr_to(url, '?', url).rstrip('/')
+        url = Strings.substr_to(url, '?', url).strip('/')
         return cls.table().get_by_aid(url)

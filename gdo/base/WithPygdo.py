@@ -9,6 +9,7 @@ class WithPygdo:
     msg = None
     err = None
     html = None
+    gdo_print = None
     GDT_String = None
     GDO_User = None
     GDT_Page = None
@@ -68,11 +69,12 @@ class WithPygdo:
     @staticmethod
     def util(util: str=None):
         if not WithPygdo.Util:
-            from gdo.base.Util import Strings, msg, html, err, Files
+            from gdo.base.Util import Strings, msg, html, err, Files, gdo_print as _gdo_print
             WithPygdo.Util = True
             WithPygdo.Files = Files
             WithPygdo.Strings = Strings
             WithPygdo.msg = msg
             WithPygdo.err = err
             WithPygdo.html = html
+            WithPygdo.gdo_print = _gdo_print
         return getattr(WithPygdo, util)

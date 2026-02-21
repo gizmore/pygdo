@@ -1,4 +1,3 @@
-import asyncio
 import functools
 
 from typing_extensions import Self
@@ -10,8 +9,8 @@ from gdo.base.IPC import IPC
 from gdo.base.LazyImporter import LazyImporter
 from gdo.base.Query import Query
 from gdo.base.Result import Result
+from gdo.base.Trans import t
 from gdo.base.Util import module_enabled
-from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDT_Index import GDT_Index
 from gdo.core.GDT_UserName import GDT_UserName
 
@@ -72,14 +71,14 @@ class GDO_User(GDO):
         return cls.SYSTEM
 
     @classmethod
-    @functools.lru_cache
+    @gdo_lru_cache()
     def ghost(cls):
         return GDO_User.blank({
             'user_id': '0',
             'user_server': '2',
             'user_type': GDT_UserType.GHOST,
-            'user_displayname': 'Guest',
-            'user_name': 'Guest',
+            'user_displayname': t('guest'),
+            'user_name': 'guest',
         })
 
     @classmethod
@@ -293,7 +292,7 @@ class GDO_User(GDO):
     def render_name(self) -> str:
         serv = self.gdo_val('user_server')
         serv = '' if serv == '2' else f"{{{serv}}}"
-        return f'{self.gdo_val('user_displayname')}{serv}'
+        return f"{self.gdo_val('user_displayname')}{serv}"
 
     #########
     # Hooks #

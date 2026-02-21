@@ -1,14 +1,11 @@
-import asyncio
 import gc
 import types
 from datetime import datetime
 
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOException
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.GDO import GDO
-from gdo.base.Logger import Logger
 from gdo.base.Util import Files
 from gdo.core import GDO_MethodValServerBlob
 from gdo.core.Connector import Connector
@@ -30,8 +27,7 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
-from gdo.core.GDT_Serialize import GDT_Serialize
-from gdo.core.GDT_Template import GDT_Template, Templite
+from gdo.core.GDT_Template import Templite
 from gdo.core.GDT_TemplateHTML import GDT_TemplateHTML
 from gdo.core.GDT_UInt import GDT_UInt
 from gdo.core.GDT_User import GDT_User
@@ -173,5 +169,5 @@ class module_core(GDO_Module):
     def get_core_js(self):
         return {
             'user': GDO_User.current().render_json(),
-            'webroot': Application.config('core.web_root'),
+            'webroot': str(Application.config('core.web_root')),
         }

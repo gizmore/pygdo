@@ -73,8 +73,9 @@ async def app(scope, receive, send):
                     import yappi
                     yappi.start()
                 #PYPP#END#
+                # ModuleLoader.instance().load_modules_fs()
                 ModuleLoader.instance().load_modules_db()
-                ModuleLoader.instance().init_modules(True, True)
+                ModuleLoader.instance().init_modules(load_vals=True)
                 await IPC.web_register_ipc()
                 await send({'type': 'lifespan.startup.complete'})
             elif message['type'] == 'lifespan.shutdown':
@@ -235,8 +236,7 @@ async def app(scope, receive, send):
                 page = Application.get_page()
                 if Application.get_mode() == Mode.render_html:
                     Application.header('Content-Type', 'text/html; charset=UTF-8')
-                    for module in ModuleLoader.instance().enabled():
-                        module.gdo_init_sidebar(page)
+                    page.init_sidebars()
                     result = page.result(result).method(method).render_html()
                 elif mode.is_html():
                     result = page.result(result).method(method).render_html()

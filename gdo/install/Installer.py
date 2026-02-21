@@ -7,6 +7,7 @@ from gdo.base.GDO_GDOTable import GDO_GDOTable
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Render import Render
 from gdo.base.Result import ResultType
 from gdo.base.Util import Arrays, msg, Files, gdo_print
 from gdo.core.GDO_UserSetting import GDO_UserSetting
@@ -27,6 +28,18 @@ class Installer:
             cls.install_module(module, verbose)
 
         if verbose:
+            gdo_print("Re-Loading installed modules.")
+        loader = ModuleLoader.instance()
+        # await clear_cache().gdo_execute()
+        # loader.load_modules_db()
+        # loader.load_modules_fs()
+        loader.init_modules(True, True)
+
+        # if verbose:
+        #     gdo_print("Migrating core for user settings.")
+        # Installer.migrate_gdo(GDO_UserSetting.table())
+
+        if verbose:
             gdo_print("Calling module install hooks")
         for module in modules:
             try:
@@ -34,18 +47,6 @@ class Installer:
             except Exception as ex:
                 Logger.exception(ex)
                 return False
-
-        if verbose:
-            gdo_print("Re-Loading installed modules.")
-        loader = ModuleLoader.instance()
-        await clear_cache().gdo_execute()
-        # loader.reset()
-        modules = loader.load_modules_fs()
-        loader.init_modules(True, True)
-
-        if verbose:
-            gdo_print("Migrating core for user settings.")
-        Installer.migrate_gdo(GDO_UserSetting.table())
 
         # clear_cache().gdo_execute()
         return True
@@ -72,14 +73,14 @@ class Installer:
     @classmethod
     def install_module(cls, module: GDO_Module, verbose: bool = False) -> bool:
         try:
-            if verbose:
-                print(f"Installing module {module.get_name}")
             if not module.is_installable():
                 return False
+            if verbose:
+                print(f"Installing module {Render.bold(module.get_name)}")
             classes = module.gdo_classes()
             for classname in classes:
                 if verbose:
-                    print(f"Installing table {str(classname.__name__).lower()}")
+                    print(f"[+] Installing table {classname.__name__.lower()}")
                 cls.install_gdo(classname)
             for classname in classes:
                 cls.install_gdo_fk(classname)

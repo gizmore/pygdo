@@ -36,7 +36,7 @@ async def pygdo(line: str = None):
 
     Application.IS_DOG = True
     Logger.init(os.path.dirname(__file__)+"/../protected/logs/")
-    Application.init(__file__ + "/../", args.config)
+    Application.init(os.path.dirname(__file__) + "/../", args.config)
     Application.init_common()
     loader = ModuleLoader.instance()
     loader.load_modules_db()

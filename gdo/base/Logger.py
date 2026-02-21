@@ -79,7 +79,7 @@ class Logger:
         if cls._user and user_log:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
             WithPygdo.util('Files').create_dir(dir_name)
-            with open(f"{dir_name}{path}", 'ab', encoding='utf8') as fo:
+            with open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
 

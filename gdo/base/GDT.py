@@ -5,6 +5,7 @@ from functools import lru_cache
 from typing import Self
 
 from gdo.base.Trans import Trans, t
+from gdo.base.WithPygdo import WithPygdo
 from gdo.base.WithSerialization import WithSerialization
 from gdo.base.Render import Mode, Render
 from gdo.base.Util import Strings, get_module
@@ -92,10 +93,9 @@ class GDT(WithSerialization):
     @classmethod
     @lru_cache
     def gdo_module(cls) -> 'GDO_Module':
-        from gdo.base.ModuleLoader import ModuleLoader
         mn = Strings.substr_from(cls.__module__, 'gdo.')
         mn = Strings.substr_to(mn, '.')
-        return ModuleLoader.instance()._cache[mn]
+        return WithPygdo.loader()._cache[mn]
 
     @classmethod
     def column(cls, gdo: 'GDO', column_name: str) -> Self:

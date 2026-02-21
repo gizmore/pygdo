@@ -69,7 +69,9 @@ class Cache:
         cls.CCACHE = {}
         cls.PCACHE = {}
         cls.MCACHE = {}
-        cls.OCACHE = {}
+        for d in cls.OCACHE.values():
+            d.clear()
+        # cls.OCACHE = {}
         # cls.clear_ocache()
         cls.remove()
         Files.empty_dir(Application.file_path('cache/'))
@@ -87,7 +89,7 @@ class Cache:
         Clear request OCACHE for non persistent GDO
         """
         for tn in cls.NCACHE:
-            cls.OCACHE[tn] = {}
+            cls.OCACHE[tn].clear()
 
     #############
     # T/C/Cache #

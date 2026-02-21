@@ -236,12 +236,12 @@ class Files:
 
     @classmethod
     def create_dir(cls, path: str, mode: int=0) -> bool:
-        os.makedirs(path, mode=mode or int(WithPygdo.application().config('files.mode.dir', 0o700)), exist_ok=True)
+        os.makedirs(path, mode=mode or int(WithPygdo.application().config('file.mode.dir', "0o0700"), 0), exist_ok=True)
         return True
 
     @classmethod
     async def acreate_dir(cls, dir_name: str, exist_ok: bool = True) -> bool:
-        await asyncio.to_thread(os.makedirs, dir_name, exist_ok=exist_ok, mode=int(WithPygdo.application().config('files.mode.dir', 0o700)))
+        await asyncio.to_thread(os.makedirs, dir_name, exist_ok=exist_ok, mode=int(WithPygdo.application().config('files.mode.dir', 0o700), 0))
         return True
 
     @classmethod
@@ -278,7 +278,7 @@ class Files:
         os.makedirs(os.path.dirname(path), exist_ok=True)
         old_umask = os.umask(0)
         try:
-            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode or int(WithPygdo.application().config('files.mode.file', 0o600)))
+            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode or int(WithPygdo.application().config('file.mode.file', 0o600), 0))
         finally:
             os.umask(old_umask)
         with os.fdopen(fd, 'wb') as f:

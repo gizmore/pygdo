@@ -323,9 +323,13 @@ class App:
         if not modules:
             print("No modules found!", file=sys.stderr)
             exit(-1)
+
+        # await self._run_requirement_scripts()
+        # await self._run_yarn_script()
+        # loader.init_user_settings()
+        loader.load_modules_fs()
+        loader.init_user_settings()
         await Installer.install_modules(modules, True)
-        loader.load_modules_db()
-        loader.init_modules()
         await self.cc()
         print("All Done!")
 
@@ -341,7 +345,7 @@ class App:
 
         loader = ModuleLoader.instance()
         loader.load_modules_db()
-        loader.init_modules(True, True)
+        loader.init_modules(False, True)
 
         if args.server:
             server = GDO_Server.table().get_by_id(args.server)

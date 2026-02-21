@@ -342,7 +342,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def get_id(self) -> str|None:
         if self._my_id: return self._my_id
-        if self._blank: return ''
+        if self._blank: return '0'
         if not self.__class__.GDT_AutoInc:
             from gdo.core.GDT_AutoInc import GDT_AutoInc
             self.__class__.GDT_AutoInc = GDT_AutoInc
@@ -388,7 +388,7 @@ class GDO(WithName, WithBulk, GDT):
         if self.gdo_can_persist():
             self.before_create()
             query = self.query().type(type_).set_vals(self.insert_vals())
-            self._last_id = query.exec().lastrowid
+            self._last_id = str(query.exec().lastrowid)
             self._blank = False
             self.all_dirty(False)
             self.after_create()
@@ -489,7 +489,6 @@ class GDO(WithName, WithBulk, GDT):
     # Events #
     ##########
     def on_reload(self):
-        # Cache.reload(self.gdo_table_name(), self.get_id())
         return self
 
     def before_select(self, query: Query):
@@ -499,7 +498,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def before_create(self):
         for gdt in self.columns().values():
-            gdt.gdo(self).gdo_before_create(self)
+            gdt.gdo_before_create(self)
         self.gdo_before_create(self)
 
     def after_create(self):
@@ -509,7 +508,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def before_update(self):
         for gdt in self.columns().values():
-            gdt.gdo(self).gdo_before_update(self)
+            gdt.gdo_before_update(self)
         self.gdo_before_update(self)
 
     def after_update(self):
@@ -519,7 +518,7 @@ class GDO(WithName, WithBulk, GDT):
 
     def before_delete(self):
         for gdt in self.columns().values():
-            gdt.gdo(self).gdo_before_delete(self)
+            gdt.gdo_before_delete(self)
         self.gdo_before_delete(self)
 
     def after_delete(self):
