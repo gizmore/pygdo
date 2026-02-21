@@ -65,7 +65,6 @@ class GDT_Page(GDT):
         return self._result.render_txt()
 
     def render_html(self):
-        GDO_User = LazyImporter.import_once("from gdo.core.GDO_User import GDO_User")
         result = ''
         if seconds := self._method.gdo_cached():
             key = self._method._raw_args.get_args_cache_key(self._method)
@@ -87,7 +86,7 @@ class GDT_Page(GDT):
             'meta_inline': self.application().STORAGE.meta_inline,
             'js': self.render_js(),
             'js_inline': self.render_js_inline(),
-            'flash': UserTemp.get_cached_for_user(GDO_User.current(), 'flash', UserTemp.EMPTY_BAR).render_html(),
+            'flash': UserTemp.get_cached_for_user(self.gdo_user().current(), 'flash', UserTemp.EMPTY_BAR).render_html(),
             'top_bar': self._top_bar.render_html(),
             'left_bar': self._left_bar.render_html(),
             'right_bar': self._right_bar.render_html(),

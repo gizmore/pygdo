@@ -9,5 +9,5 @@ class MethodPage(Method):
     def gdo_page_vars(self) -> dict[str, Any]:
         return self.EMPTY_DICT
 
-    def execute(self):
+    def gdo_execute(self):
         return GDT_Template().template(self.gdo_module().get_name, f'{self.__class__.__name__}.html', self.gdo_page_vars())
