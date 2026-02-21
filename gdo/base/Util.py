@@ -24,18 +24,21 @@ from typing import Sequence, Any
 
 import msgspec.json
 
+from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 
 from prompt_toolkit.shortcuts import print_formatted_text as pt_print
 from prompt_toolkit.formatted_text import ANSI
+
+from gdo.base.WithPygdo import WithPygdo
+
 
 def gdo_print(s: str, end="\n"):
     pt_print(ANSI(s), end=end)
 
 
 def hdr(name: str, value: str):
-    from gdo.base.Application import Application
-    Application.header(name, value)
+    WithPygdo.application().header(name, value)
 
 
 def html(s: str, mode: Mode = Mode.render_html):
@@ -61,10 +64,8 @@ def bytelen(s: str, encoding: str = 'utf-8') -> int:
 
 
 def err(key: str, args: tuple = None, title: str = 'PyGDO'):
-    from gdo.base.Application import Application
-    from gdo.ui.GDT_Error import GDT_Error
-    error = GDT_Error().text(key, args).title_raw(title)
-    Application.get_page()._top_bar.add_field(error)
+    error = WithPygdo.gdt_error()().text(key, args).title_raw(title)
+    WithPygdo.application().get_page()._top_bar.add_field(error)
 
 
 def err_raw(message: str, title: str = 'PyGDO'):
@@ -72,10 +73,9 @@ def err_raw(message: str, title: str = 'PyGDO'):
 
 
 def msg(key: str, args: tuple = None, title: str = 'PyGDO', no_log: bool = False):
-    from gdo.base.Application import Application
     from gdo.ui.GDT_Success import GDT_Success
-    message = GDT_Success().text(key, args).title_raw(title).no_log(no_log)
-    Application.get_page()._top_bar.add_field(message)
+    message = WithPygdo.gdt_success()().text(key, args).title_raw(title).no_log(no_log)
+    WithPygdo.application().get_page()._top_bar.add_field(message)
 
 
 def dump(*obj: any):
@@ -103,9 +103,8 @@ def module_config_value(module_name: str, var_name: str) -> Any:
 
 class CLI:
 
-    @classmethod
-    async def get_current_user(cls):
-        from gdo.base.Application import Application
+    @staticmethod
+    async def get_current_user():
         from gdo.core.connector.Bash import Bash
         name = getpass.getuser()
         return await Bash.get_server().get_or_create_user(name)
@@ -150,16 +149,20 @@ class Strings:
             return s.translate(Strings.HTML_ESCAPE_TABLE)
         return s or ''
 
+    PATTERN_HTML2TEXT_A = re.compile(r'<a\s*href="([^"]+)">([^"]+)</a>', re.IGNORECASE)
+    PATTERN_HTML2TEXT_T = re.compile(r'<[^>]+>')
+    PATTERN_BR2NL = re.compile(r'<\s*br\s*/?\s*>', re.IGNORECASE)
+
     @classmethod
     def html_to_text(cls, html: str):
-        html = re.sub(r'<a\s*href="([^"]+)">([^"]+)</a>', r'\1 (\2)', html)
+        html = cls.PATTERN_HTML2TEXT_A.sub(r'\1 (\2)', html)
         html = cls.br2nl(html)
-        html = re.sub(r'<[^>]*>', '', html)
+        html = cls.PATTERN_HTML2TEXT_T.sub('', html)
         return unescape(html)
 
     @classmethod
-    def br2nl(cls, s):
-        return re.sub(r'<\s*br\s*/?\s*>', '\n', s)
+    def br2nl(cls, s: str):
+        return cls.PATTERN_BR2NL.sub('\n', s)
 
     @classmethod
     def split_boundary(cls, text: str, chunk_size: int):
@@ -232,14 +235,13 @@ class Files:
         return True
 
     @classmethod
-    def create_dir(cls, path: str) -> bool:
-        os.makedirs(path, mode=0o700, exist_ok=True)
+    def create_dir(cls, path: str, mode: int=0) -> bool:
+        os.makedirs(path, mode=mode or int(WithPygdo.application().config('files.mode.dir', 0o700)), exist_ok=True)
         return True
 
     @classmethod
     async def acreate_dir(cls, dir_name: str, exist_ok: bool = True) -> bool:
-        await asyncio.to_thread(os.makedirs, dir_name, exist_ok=exist_ok, mode=0o700)
-        # await aiofiles.os.makedirs(dir_name, mode=0o700, exist_ok=True)
+        await asyncio.to_thread(os.makedirs, dir_name, exist_ok=exist_ok, mode=int(WithPygdo.application().config('files.mode.dir', 0o700)))
         return True
 
     @classmethod
@@ -250,19 +252,12 @@ class Files:
         return False
 
     @classmethod
-    def touch(cls, path: str, create: bool = False) -> bool:
+    def touch(cls, path: str, mode: int=0, create: bool = True) -> bool:
         if create and not os.path.isfile(path):
-            with open(path, "w"):
-                return True
-        from gdo.base.Application import Application
-        time = Application.TIME
+            cls.put_contents(path, '', mode)
+            return True
+        time = WithPygdo.application().TIME
         os.utime(path, (time, time))
-        return True
-
-    @classmethod
-    def append_content(cls, path: str, content: str, create: bool = False) -> bool:
-        with open(path, "a") as f:
-            f.write(content)
         return True
 
     @classmethod
@@ -278,13 +273,28 @@ class Files:
         return True
 
     @classmethod
-    def put_contents(cls, path: str, contents) -> bool:
-        with open(path, 'wb') as f:
-            f.write(contents.encode() if isinstance(contents, str) else contents)
+    def put_contents(cls, path: str, contents: str|bytes, mode: int = 0) -> bool:
+        data = contents.encode() if isinstance(contents, str) else contents
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        old_umask = os.umask(0)
+        try:
+            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode or int(WithPygdo.application().config('files.mode.file', 0o600)))
+        finally:
+            os.umask(old_umask)
+        with os.fdopen(fd, 'wb') as f:
+            f.write(data)
         return True
 
     @classmethod
-    def get_contents(cls, path: str, throw: bool = True):
+    def append_content(cls, path: str, contents: str|bytes) -> bool:
+        contents = contents.encode() if isinstance(contents, str) else contents
+        with open(path, "ab") as f:
+            f.write(contents)
+        return True
+
+
+    @staticmethod
+    def get_contents(path: str, throw: bool = True):
         try:
             with open(path, 'r', encoding='UTF-8') as f:
                 return f.read()
@@ -308,22 +318,21 @@ class Files:
     @classmethod
     def dir_size_recursive(cls, dir_name: str) -> int:
         total_size = 0
-        try:
-            with os.scandir(dir_name) as entries:
-                for entry in entries:
+        with os.scandir(dir_name) as entries:
+            for entry in entries:
+                try:
                     if entry.is_file(follow_symlinks=False):
                         total_size += entry.stat().st_size
                     elif entry.is_dir(follow_symlinks=False):
                         total_size += cls.dir_size_recursive(entry.path)
-        except PermissionError as ex:
-            pass
+                except PermissionError as ex:
+                    Logger.exception(ex, 'PermissionError for '+entry.path)
         return total_size
 
     @classmethod
     def md5(cls, path: str) -> str:
-        from gdo.base.Application import Application
         hash_md5 = hashlib.md5()
-        block_size = int(Application.config('file.block_size', "4096"))
+        block_size = int(WithPygdo.application().config('file.block_size', "4096"))
         with open(path, "rb") as f:
             for chunk in iter(lambda: f.read(block_size), b""):
                 hash_md5.update(chunk)
@@ -348,7 +357,6 @@ class Arrays:
     """
     List and Dictionary utilities.
     """
-
     @classmethod
     def walk(cls, dictionary: dict, path: str):
         """

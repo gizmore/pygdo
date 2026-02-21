@@ -160,8 +160,6 @@ class module_core(GDO_Module):
         ]
 
     async def gdo_install(self):
-        for path in ('assets/', 'cache/', 'files/', 'temp/'):
-            Files.create_dir(Application.file_path(path))
         InstallCore.now()
 
     def gdo_load_scripts(self, page):
@@ -170,7 +168,7 @@ class module_core(GDO_Module):
         self.add_css('css/pygdo-colors.css')
 
     def gdo_init_sidebar(self, page: 'GDT_Page'):
-        self.add_js_inline("window.gdo.config = " + msgspec.json.encode(self.get_core_js()).decode('utf8') + ";")
+        self.add_js_inline("window.gdo.config = " + msgspec.json.encode(self.get_core_js()).decode() + ";")
 
     def get_core_js(self):
         return {

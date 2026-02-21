@@ -56,7 +56,7 @@ class GDO(WithName, WithBulk, GDT):
         GDO.GDO_ALIVE += 1
         GDO.GDO_MAX = max(GDO.GDO_MAX, GDO.GDO_ALIVE)
         Application = self.application()
-        if Application.config('core.gdo_debug') == '2':
+        if Application.config('debug.gdo') == '2':
             from gdo.base.Logger import Logger
             Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
         #PYPP#END#

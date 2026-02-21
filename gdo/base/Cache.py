@@ -5,8 +5,8 @@ import zlib
 import msgspec.msgpack
 from redis import Redis
 from functools import lru_cache, wraps
-
 from gdo.base.Application import Application
+
 from gdo.base.Util import Files
 from gdo.base.WithSerialization import WithSerialization
 
@@ -43,7 +43,7 @@ class Cache:
     PCACHE: dict[str, list['GDT']]       # class_name => GDO.gdo_columns() PK mapping
     OCACHE: dict[str, dict[str, 'GDO']]  # table_name => dict[id, GDO] mapping
     RCACHE: Redis = None                 # key => dict[key, WithSerialization] mapping
-    NCACHE: list[str]                    # list of non persistent GDO table names
+    NCACHE: list[str]                    # list of Non persistent GDO table names
     MCACHE: dict[str, tuple[int, Any]]   # Cache with a timeout
 
     ZLIB_LEVEL: int = -1
@@ -57,7 +57,6 @@ class Cache:
         cls.NCACHE = []
         cls.MCACHE = {}
         cls.ZLIB_LEVEL = zlib_level
-        Files.create_dir(Application.file_path('cache/'))
         if enabled:
             if uds:
                 cls.RCACHE = Redis(unix_socket_path=uds, decode_responses=False)
@@ -355,17 +354,23 @@ def gdo_redis_cached(cache_key: str):
 
 def gdo_instance_cached():
     def decorator(method):
+        cache_name = f"_{method.__name__}_cache"
+
         @wraps(method)
         def wrapper(self, *args, **kwargs):
-            cache_name = f"_{method.__name__}_cache"
             if not hasattr(self, cache_name):
                 setattr(self, cache_name, lru_cache(None)(method.__get__(self, type(self))))
             return getattr(self, cache_name)(*args, **kwargs)
+
+        def cache_clear(self):
+            # remove cached callable (most robust; recreates on next call)
+            if hasattr(self, cache_name):
+                delattr(self, cache_name)
+
+        wrapper.cache_clear = cache_clear
         return wrapper
     return decorator
 
-from functools import lru_cache, wraps
-from gdo.base.Application import Application
 
 def gdo_lru_cache(fn=None, *, maxsize=256, typed=False):
     def deco(f):

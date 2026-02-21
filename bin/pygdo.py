@@ -35,8 +35,8 @@ async def pygdo(line: str = None):
     args, rest = parser.parse_known_args(sys.argv[1:])
 
     Application.IS_DOG = True
-    Logger.init(os.path.dirname(__file__)+"/../../protected/logs/")
-    Application.init(__file__ + "/../../", args.config)
+    Logger.init(os.path.dirname(__file__)+"/../protected/logs/")
+    Application.init(__file__ + "/../", args.config)
     Application.init_common()
     loader = ModuleLoader.instance()
     loader.load_modules_db()
@@ -45,12 +45,12 @@ async def pygdo(line: str = None):
     loader.init_cli()
     Files.create_dir(Application.files_path('repl/'))
 
-    if args.dogmode:
-        global RUNNING
-        from gdo.core.method.launch import launch
-        print("Dogmode!")
-        Files.put_contents(launch.lock_path(), str(os.getpid()))
-        RUNNING = 2
+    # if args.dogmode:
+    #     global RUNNING
+    #     from gdo.core.method.launch import launch
+    #     print("Dogmode!")
+    #     Files.put_contents(launch.lock_path(), str(os.getpid()))
+    #     RUNNING = 2
 
     if line:
         if line == 'repl':

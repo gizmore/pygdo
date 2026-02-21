@@ -10,14 +10,14 @@ __pycache__/
 /node_modules/
 /**/node_modules/
 /yarn.lock
-*.py-E
 *.pclprof
 test.py
 /assets/
-/cache/
-/cache_test/
+/assets_test/
 /files/
 /files_test/
+/temp/
+/temp_test/
 /protected/
 /.htaccess
 /gdo/*

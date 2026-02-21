@@ -22,11 +22,8 @@ class module_base(GDO_Module):
         ]
 
     async def gdo_install(self):
-        Files.create_dir(Application.file_path('assets'))
-        Files.create_dir(Application.file_path('cache'))
-        Files.create_dir(Application.file_path('temp'))
-        Files.create_dir(Application.file_path('files'))
-        Files.create_dir(Application.file_path('files_test'))
+        for path in (Application.config('dir').values()):
+            Files.create_dir(path)
 
     ##########
     # Config #

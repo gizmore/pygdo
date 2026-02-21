@@ -71,7 +71,7 @@ class GDO_File(GDO):
         return self
 
     def get_short_path(self) -> str:
-        return f'{Application.config('file.directory')}/gdo_file/{self.get_id()}'
+        return f'{Application.config('dir.files')}/gdo_file/{self.get_id()}'
 
     def get_target_path(self) -> str:
         return Application.files_path(f"gdo_file/{self.get_id()}")

@@ -107,7 +107,7 @@ class Application:
 
     @classmethod
     def files_path(cls, path: str = ''):
-        return cls.file_path(Application.config('file.directory') + path)
+        return cls.file_path(Application.config('dir.files') + path)
 
     @classmethod
     def temp_path(cls, path: str = ''):
@@ -161,10 +161,10 @@ class Application:
 
     @classmethod
     @functools.cache
-    def config(cls, path: str, default: str = '') -> str:
+    def config(cls, path: str, default: str = '') -> str|dict[str, str]:
         if val := Arrays.walk(cls.CONFIG, path):
-            return str(val)
-        return str(default)
+            return val
+        return default
 
     @classmethod
     def storage(cls, key: str, default: any = None) -> any:
@@ -233,15 +233,15 @@ class Application:
     @classmethod
     def init_thread(cls, thread):
         if not hasattr(cls.STORAGE, 'DB'):
-            from gdo.base.Database import Database
             cls.mode(Mode.render_html)
             if thread:
                 cls.fresh_page()
             cls.STORAGE.lang = 'en'
             cls.STORAGE.user = None
             cls.TIME = round(time.time(), 6)
-            cfg = cls.CONFIG['db']
-            cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
+            if cfg := cls.CONFIG.get('db'):
+                Database = LazyImporter.import_once('from gdo.base.Database import Database')
+                cls.STORAGE.DB = Database(cfg['host'], cfg['name'], cfg['user'], cfg['pass'])
 
     @classmethod
     def db(cls) -> 'Database':

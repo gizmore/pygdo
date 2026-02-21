@@ -63,13 +63,13 @@ async def app(scope, receive, send):
             if message['type'] == 'lifespan.startup':
                 Application.init(os.path.dirname(__file__))
                 #PYPP#START#
-                if Application.config('core.allocs') == '1':
+                if Application.config('debug.memory') == '1':
                     import tracemalloc
                     tracemalloc.start()
-                if Application.config('core.imports') == '1':
+                if Application.config('debug.imports') == '1':
                     from gdo.base.ImportTracker import ImportTracker
                     ImportTracker.enable()
-                if Application.config('core.profile') == '1':
+                if Application.config('debug.profiler') == '1':
                     import yappi
                     yappi.start()
                 #PYPP#END#
@@ -272,20 +272,20 @@ async def app(scope, receive, send):
                 })
 
                 #PYPP#START#
-                if Application.config('core.allocs', '0') == '1':
+                if Application.config('debug.memory', '0') == '1':
                     if qs.get('__yappi', None):
                         import tracemalloc
                         with open(Application.file_path('temp/yappi_mem.log'), 'a') as f:
                             snapshot = tracemalloc.take_snapshot()
                             display_top_malloc(snapshot, f)
 
-                if Application.config('core.imports') == '1':
+                if Application.config('debug.imports') == '1':
                     if qs.get('__yappi', None):
                         from gdo.base.ImportTracker import ImportTracker
                         ImportTracker.write_to_file(Application.file_path('temp/yappi_imports.log'))
                         ImportTracker.reset()
 
-                if Application.config('core.profile', '0') == '1':
+                if Application.config('debug.profiler', '0') == '1':
                     if qs.get('__yappi', None):
                         import yappi
                         with open(Application.file_path('temp/yappi.log'), 'a') as f:

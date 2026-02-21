@@ -324,6 +324,8 @@ class App:
             print("No modules found!", file=sys.stderr)
             exit(-1)
         await Installer.install_modules(modules, True)
+        loader.load_modules_db()
+        loader.init_modules()
         await self.cc()
         print("All Done!")
 

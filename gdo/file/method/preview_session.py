@@ -20,7 +20,7 @@ class preview_session(preview):
 
     def get_temp_dir(self):
         sessid = self._env_session.get_id()
-        files_dir = Application.config('file.directory')
+        files_dir = Application.config('dir.files')
         return Application.temp_path(f"{files_dir}{self.get_path()}/{sessid}/")
 
     def get_file(self) -> GDO_File:

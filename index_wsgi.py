@@ -110,13 +110,13 @@ def pygdo_application(environ, start_response):
             Application.LOOP.run_until_complete(IPC.web_register_ipc())
             FRESH = False
             #PYPP#START#
-            if Application.config('core.profile') == '1':
+            if Application.config('debug.profiler') == '1':
                 import yappi
                 yappi.start()
-            if Application.config('core.allocs') == '1':
+            if Application.config('debug.memory') == '1':
                 import tracemalloc
                 tracemalloc.start()
-            if Application.config('core.imports') == '1':
+            if Application.config('debug.imports') == '1':
                 ImportTracker.enable()
             #PYPP#END#
         else:
@@ -270,17 +270,17 @@ def pygdo_application(environ, start_response):
             # yield from generator.wsgi_generator()
 
             #PYPP#START#
-            if Application.config('core.allocs', '0') == '1':
+            if Application.config('debug.memory', '0') == '1':
                 if qs.get('__yappi', None):
                     import tracemalloc
                     with open(Application.file_path('temp/yappi_mem.log'), 'a') as f:
                         snapshot = tracemalloc.take_snapshot()
                         display_top_malloc(snapshot, f)
-            if Application.config('core.imports') == '1':
+            if Application.config('debug.imports') == '1':
                 if qs.get('__yappi', None):
                     ImportTracker.write_to_file(Application.file_path('temp/yappi_imports.log'))
                     ImportTracker.reset()
-            if Application.config('core.profile') == '1':
+            if Application.config('debug.profiler') == '1':
                 if qs.get('__yappi', None):
                     with open(Application.file_path('temp/yappi.log'), 'a') as f:
                         import yappi

@@ -49,6 +49,7 @@ class GDO_Module(WithModuleConfig, GDO):
         self._priority = 50
         self._inited = False
         self._license = 'PyGDOv8'
+        self._blank = True
 
     def __repr__(self):
         return self.__class__.__name__
@@ -120,7 +121,7 @@ class GDO_Module(WithModuleConfig, GDO):
         return self.is_persisted()
 
     def is_enabled(self):
-        return self.gdo_val('module_enabled') == '1'
+        return self.gdo_val('module_enabled') == '1' and self.is_persisted()
 
     def is_installable(self) -> bool:
         return True

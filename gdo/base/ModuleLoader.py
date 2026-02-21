@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Iterator
 
 from gdo.base.Logger import Logger
 from gdo.base.Trans import t
+from gdo.base.WithPygdo import WithPygdo
 
 if TYPE_CHECKING:
     from gdo.base.Method import Method
@@ -42,14 +43,13 @@ class ModuleLoader:
     def gdo_import(self, name: str) -> 'GDO_Module':
         mn = importlib.import_module(f"gdo.{name}")
         if klass := mn.__dict__.get(f"module_{name}"):
-            if name not in self._cache:
-                self._cache[name] = module = klass.blank({
-                    'module_name': name,
-                    'module_enabled': '0',
-                })
-                module._blank = False
-            else:
-                module = self._cache[name]
+            # if name not in self._cache:
+            self._cache[name] = module = klass.blank({
+                'module_name': name,
+                'module_enabled': '0',
+            })
+            # else:
+            #     module = self._cache[name]
             return module
         raise GDOException(t('err_module', (html(name),)))
 
@@ -135,7 +135,7 @@ class ModuleLoader:
         for db in result:
             try:
                 fs = self.gdo_import(db.gdo_val('module_name'))
-                fs._vals = db._vals
+                fs.vals(db._vals)
                 back.append(fs.all_dirty(False))
             except Exception as ex:
                 Logger.exception(ex)
@@ -171,14 +171,15 @@ class ModuleLoader:
         if load_vals:
             self.load_module_vars()
             self.init_user_settings()
-        from gdo.ui.GDT_Page import GDT_Page
-        GDT_Page.clear_assets()
+        page = Application.get_page()
+        page.clear_assets()
         for module in self._cache.values():
             if enabled and not module.is_enabled():
                 continue
-            module.init()
+            if module.is_persisted():
+                module.init()
             if Application.IS_HTTP:
-                module.gdo_load_scripts(Application.get_page())
+                module.gdo_load_scripts(page)
 
     def reload_modules(self):
         self.init_modules(True, True)

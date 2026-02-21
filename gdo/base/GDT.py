@@ -69,10 +69,10 @@ class GDT(WithSerialization):
     #PYPP#START#
     def __init__(self):
         Application = self.application()
-        if Application.config('core.gdt_debug') == '1':
+        if Application.config('debug.gdt') == '1':
             from gdo.base.Logger import Logger
             Logger.debug(str(self.__class__))
-        if Application.config('core.gdt_debug') == '2':
+        if Application.config('debug.gdt') == '2':
             from gdo.base.Logger import Logger
             Logger.debug(str(self.__class__) + "".join(traceback.format_stack()))
         GDT.GDT_COUNT += 1

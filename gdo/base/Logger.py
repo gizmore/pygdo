@@ -1,33 +1,30 @@
-import datetime
 import sys
-
-from typing import TYPE_CHECKING
+import datetime
 
 import aiofiles
 from rich.console import Console
 from rich.traceback import Traceback
 
+from gdo.base.WithPygdo import WithPygdo
+
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
 
-from gdo.base.Util import Files, gdo_print
+
 
 
 class Logger:
     LINES_WRITTEN = 0 #PYPP#DELETE#
 
     _base: str
-    _user: 'GDO_User' = None
+    _user: 'GDO_User|None' = None
 
     @classmethod
     def init(cls, base: str = None):
-        if base:
-            cls._base = base
-        else:
-            from gdo.base.Application import Application
-            cls._base = Application.file_path('protected/logs/')
+        cls._base = base
         cls._user = None
-        Files.create_dir(cls._base)
+        WithPygdo.util('Files').create_dir(cls._base)
 
     @classmethod
     def user(cls, user: 'GDO_User'):
@@ -35,34 +32,30 @@ class Logger:
 
     @classmethod
     def request(cls, url: str, qs: str):
-        from gdo.base.Application import Application
-        content = f"{Application.get_request_method()} - {url}{qs}"
+        content = f"{WithPygdo.application().get_request_method()} - {url}{qs}"
         cls.write('message.log', content)
 
     @classmethod
     async def arequest(cls, url: str, qs: str):
-        from gdo.base.Application import Application
-        content = f"{Application.get_request_method()} - {url}{qs}"
+        content = f"{WithPygdo.application().get_request_method()} - {url}{qs}"
         await cls.awrite('message.log', content)
 
     @classmethod
     def debug(cls, content: str):
-        gdo_print(content)
+        WithPygdo.util('gdo_print')(content)
         cls.write('debug.log', content, False)
 
     @classmethod
     def error(cls, content: str):
-        # print(content)
         cls.write('message.log', content)
 
     @classmethod
     def message(cls, content: str):
-#        print(content)
         cls.write('message.log', content)
 
     @classmethod
     def cron(cls, content: str):
-        gdo_print(content)
+        WithPygdo.util('gdo_print')(content)
         cls.write('cron.log', content)
 
     @classmethod
@@ -85,8 +78,8 @@ class Logger:
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
         if cls._user and user_log:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
-            Files.create_dir(dir_name)
-            with open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
+            WithPygdo.util('Files').create_dir(dir_name)
+            with open(f"{dir_name}{path}", 'ab', encoding='utf8') as fo:
                 fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
 
@@ -100,7 +93,7 @@ class Logger:
             cls.LINES_WRITTEN += 1  #PYPP#DELETE#
         if cls._user and user_log:
             dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
-            await Files.acreate_dir(dir_name)
+            await WithPygdo.util('Files').acreate_dir(dir_name)
             async with aiofiles.open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 await fo.write(f"{pre}{content}\n")
                 cls.LINES_WRITTEN += 1  #PYPP#DELETE#

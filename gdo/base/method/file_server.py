@@ -43,8 +43,9 @@ class file_server(Method):
         dir = Strings.substr_to(url, '/', None)
         if not dir:
             return True
-        if dir in ('bin', 'cache', 'DEV', 'files', 'files_test', 'gdotest', 'protected', 'temp'):
-            return True
+        for dir in Application.config('dir'):
+            if url.startswith(dir):
+                return True
         if not module_config_value('base', 'serve_gdo_assets'):
             ext = Strings.rsubstr_from(url, '.', '')
             if ext in ('js', 'css'):

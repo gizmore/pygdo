@@ -1,12 +1,9 @@
-from gdo.base import Util
-
-
 class WithPygdo:
     """
     Lazy global imports
     """
-
     Application = None
+    Files = None
     Util = None
     Strings = None
     msg = None
@@ -15,6 +12,8 @@ class WithPygdo:
     GDT_String = None
     GDO_User = None
     GDT_Page = None
+    GDT_Error = None
+    GDT_Success = None
     ModuleLoader = None
 
     @staticmethod
@@ -53,12 +52,27 @@ class WithPygdo:
         return WithPygdo.GDT_Page
 
     @staticmethod
+    def gdt_error():
+        if not WithPygdo.GDT_Error:
+            from gdo.ui.GDT_Error import GDT_Error
+            WithPygdo.GDT_Error = GDT_Error
+        return WithPygdo.GDT_Error
+
+    @staticmethod
+    def gdt_success():
+        if not WithPygdo.GDT_Success:
+            from gdo.ui.GDT_Success import GDT_Success
+            WithPygdo.GDT_Success = GDT_Success
+        return WithPygdo.GDT_Success
+
+    @staticmethod
     def util(util: str=None):
         if not WithPygdo.Util:
-            from gdo.base.Util import Strings, msg, html, err
-            WithPygdo.Util = Util
+            from gdo.base.Util import Strings, msg, html, err, Files
+            WithPygdo.Util = True
+            WithPygdo.Files = Files
             WithPygdo.Strings = Strings
             WithPygdo.msg = msg
             WithPygdo.err = err
-            WithPygdo.ahtml = html
+            WithPygdo.html = html
         return getattr(WithPygdo, util)
