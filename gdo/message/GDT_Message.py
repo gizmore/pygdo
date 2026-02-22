@@ -13,30 +13,35 @@ class GDT_Message(GDT_Composite):
 
     def __init__(self, name: str):
         super().__init__(name)
+        self.icon('message')
 
     def maxlen(self, maxlen: int):
-        self.component(self._name).maxlen(maxlen)
+        self.component(self._name+'_input').maxlen(maxlen)
         return self
 
     def minlen(self, minlen: int):
-        self.component(self._name).minlen(minlen)
+        self.component(self._name+'_input').minlen(minlen)
         return self
 
     @lru_cache
     def gdo_components(self) -> list['GDT']:
         components = [
-            GDT_Text(f'{self._name}').not_null(),
+            self,
+            GDT_Text(f'{self._name}_input').not_null(),
             GDT_Editor(f"{self._name}_editor").not_null(),
         ]
         for mode in Mode.explicit():
             components.append(GDT_Text(f"{self._name}_{mode.name.lower()}"))
         return components
 
+    def get_input_column(self) -> GDT_Text | GDT:
+        return self.component(f'{self._name}_input')
+
     def get_editor(self) -> type['Editor']:
         return GDT_Editor.EDITORS[self._gdo.gdo_val(f"{self._name}_editor")]
 
     def get_input(self) -> str:
-        return self._gdo.gdo_val(f"{self._name}")
+        return self._gdo.gdo_val(f"{self._name}_input")
 
     def converted_html(self) -> str:
         return self.get_editor().to_html(self.get_input())
@@ -63,10 +68,10 @@ class GDT_Message(GDT_Composite):
     def render(self, mode: Mode = Mode.render_html):
         if mode in Mode.explicit():
             return self.get_rendered(mode)
-        return super().render(mode)
+        return self.render_gdt(mode)
 
     def render_form(self):
-        return GDT_Template.python('message', 'form_message.html', {"field": self})
+        return GDT_Template.python('message', 'form_message.html', {"field": self, "input": self.get_input_column()})
 
     def render_card(self):
         return self.get_rendered(Mode.render_html)

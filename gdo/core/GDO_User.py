@@ -59,16 +59,16 @@ class GDO_User(GDO):
     #     return f
 
     def __repr__(self):
-        return f"{self.gdo_val('user_name')}{self.get_server_id()}"
+        return f"{self.gdo_val('user_name')}{{{self.get_server_id()}}}"
 
-    @classmethod
-    def system(cls) -> Self:
-        if not hasattr(cls, 'SYSTEM'):
-            cls.SYSTEM = GDO_User.table().get_by_aid('1')
-            if cls.SYSTEM is None:
-                delattr(cls, 'SYSTEM')
-                return cls.ghost()
-        return cls.SYSTEM
+    @staticmethod
+    def system() -> Self:
+        if not hasattr(GDO_User, 'SYSTEM'):
+            GDO_User.SYSTEM = GDO_User.table().get_by_aid('1')
+            if GDO_User.SYSTEM is None:
+                delattr(GDO_User, 'SYSTEM')
+                return GDO_User.ghost()
+        return GDO_User.SYSTEM
 
     @classmethod
     @gdo_lru_cache()

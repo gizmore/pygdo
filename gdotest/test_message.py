@@ -7,6 +7,7 @@ from gdo.base.GDT import GDT
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.core.GDT_AutoInc import GDT_AutoInc
+from gdo.core.GDT_Text import GDT_Text
 from gdo.install.Installer import Installer
 from gdo.message.GDT_Message import GDT_Message
 from gdotest.TestUtil import GDOTestCase
@@ -34,7 +35,7 @@ class MessageTestCase(GDOTestCase):
 
     async def test_01_composition(self):
         gdo = GDO_Foo.blank({
-            'foo_msg': '<b><i>hello world!</i></b>',
+            'foo_msg_input': '<b><i>hello world!</i></b>',
         })
         gdt = GDT_Message.column(gdo, 'foo_msg')
         self.assertIsInstance(gdt, GDT_Message, "Cannot get GDT_Message for GDO_Foo")

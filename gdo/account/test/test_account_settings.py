@@ -3,23 +3,26 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
-from gdotest.TestUtil import cli_plug, reinstall_module, cli_gizmore, web_plug, GDOTestCase
+from gdotest.TestUtil import cli_plug, reinstall_module, cli_gizmore, web_plug, GDOTestCase, install_module
 
 
 class AccountTest(GDOTestCase):
 
-    def setUp(self):
-        super().setUp()
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         Application.init(os.path.dirname(__file__ + "/../../../../"))
-        Application.init_cli()
-        reinstall_module('account')
         ModuleLoader.instance().load_modules_db()
+        install_module('account')
+        Application.init_cli()
         ModuleLoader.instance().init_modules(True, True)
         ModuleLoader.instance().init_cli()
 
+    def test_00_reinstall(self):
+        reinstall_module('account')
+
     def test_01_settings(self):
         result = cli_plug(None, '$settings')
-        self.assertIn('language(en)', result, "settings cmd does not work")
+        self.assertIn('language(English)', result, "settings cmd does not work")
 
     def test_02_print_setting(self):
         result = cli_plug(None, '$set language')

@@ -1,14 +1,12 @@
-import functools
-
 from gdo.base.Exceptions import GDOException
 from gdo.base.GDT import GDT
 from gdo.base.WithName import WithName
 from gdo.core.WithGDO import WithGDO
-from gdo.core.WithLabel import WithLabel
 from gdo.core.WithNullable import WithNullable
+from gdo.ui.WithIcon import WithIcon
 
 
-class GDT_Composite(WithName, WithLabel, WithGDO, WithNullable, GDT):
+class GDT_Composite(WithName, WithIcon, WithGDO, WithNullable, GDT):
     """
     A composite GDT for multiple database columns.
     """
@@ -36,7 +34,7 @@ class GDT_Composite(WithName, WithLabel, WithGDO, WithNullable, GDT):
     #     return ",\n".join(back)
 
     def component(self, name: str) -> GDT:
-        for gdt in self.gdo_components():
+        for gdt in self.gdo_components()[1:]:
             if gdt.get_name() == name:
                 return gdt
 

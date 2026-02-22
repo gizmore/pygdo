@@ -355,7 +355,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
 
     async def execute(self):
         if self.gdo_cached():
-            key = self._raw_args.get_cache_key(self)
+            key = self._raw_args.get_args_cache_key(self)
             if Cache.get_timed_cache(key):
                 return GDT_HTML()
         db = Application.db()
