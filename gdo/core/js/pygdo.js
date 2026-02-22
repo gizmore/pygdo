@@ -1,8 +1,11 @@
 "use strict";
 window.gdo = {
 
+    lang: {},
+
     init: function() {
-        window.onerror = window.gdo.error_js
+        window.onerror = window.gdo.error_js;
+        window.gdo.loadLanguage();
         document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('no-js');
             document.body.classList.add('has-js');
@@ -26,16 +29,28 @@ window.gdo = {
 
     error_fetch: function(a, b, c, d, e, f) {
        window.gdo.error(a)
-       debugger;
     },
 
     error_js: function(a, b, c, d, e) {
         window.gdo.error(a)
     },
 
-    fetch: function(module, method, data) {
-        const url = window.gdo.config.webroot + module + "." + method + ".json";
-        return window.fetch(url).catch(window.gdo.error_fetch);
-    }
+    fetch: async function(url, data) {
+//        const url = window.gdo.config.webroot + module + "." + method + ".json";
+        return await window.fetch(url).catch(window.gdo.error_fetch);
+    },
+
+    t: function(key, args) {
+        args ||= []
+        return sprintf(window.gdo.lang[key], ...args)
+    },
+
+    loadLanguage: async function() {
+        window.gdo.fetch('/core.language.json').then(async function(result) {
+            let text = await result.text();
+            window.gdo.lang = JSON.parse(text).data;
+        });
+    },
 };
+
 window.gdo.init();

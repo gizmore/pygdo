@@ -159,6 +159,7 @@ class module_core(GDO_Module):
         InstallCore.now()
 
     def gdo_load_scripts(self, page):
+        self.add_js('js/sprintf.js')
         self.add_js('js/pygdo.js')
         self.add_css('css/pygdo.css')
         self.add_css('css/pygdo-colors.css')

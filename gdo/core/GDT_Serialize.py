@@ -52,3 +52,6 @@ class GDT_Serialize(GDT_Text):
 
     def validate(self, val: str|None) -> bool:
         return super().validate(val) if val is None else True
+
+    def render_json(self):
+        return self.get_val()

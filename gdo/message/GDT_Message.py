@@ -52,9 +52,6 @@ class GDT_Message(GDT_Composite):
     def get_output_gdt_key(self, mode: Mode) -> str:
         return f"{self._name}_{mode.name.lower()}"
 
-    def validate(self, val: str|None) -> bool:
-        return self.component(self._name).validate(val)
-
     # #######
     # # GDT #
     # #######

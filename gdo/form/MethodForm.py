@@ -102,7 +102,8 @@ class MethodForm(Method):
             return self._parameters
         params = super().parameters(reset)
         for gdt in self.form_parameters():
-            self.init_parameter(gdt)
+            for gdt2 in gdt.gdo_components():
+                self.init_parameter(gdt2)
         return params
 
     def form_parameters(self) -> Iterator[GDT]:

@@ -51,7 +51,7 @@ class GDT_Timestamp(GDT_String):
         date = self.get_val()
         disp = self.render_format()
         ts = Time.get_time(date)
-        return f"<span class=\"gdt-timestamp\" data-ts=\"{ts}\">{disp}</span>"
+        return f"<span class=\"gdt-timestamp {self._date_format}\"{self.html_attrs()} data-ts=\"{ts}\">{disp}</span>"
 
     def render_txt(self):
         return self.render_format()

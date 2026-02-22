@@ -30,4 +30,4 @@ class module_date(GDO_Module):
         self.add_bower_js('moment/moment.js')
         self.add_bower_js('moment/locale/de.js')
         self.add_bower_js('moment/locale/en-gb.js')
-        self.add_js('js/gdo8-date.js')
+        self.add_js('js/pygdo-date.js')

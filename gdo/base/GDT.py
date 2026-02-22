@@ -142,7 +142,11 @@ class GDT(WithSerialization):
         pass
 
     def gdo_components(self) -> list['GDT']:
-        return GDT.EMPTY_LIST
+        return [self]
+
+    @lru_cache(maxsize=1)
+    def components(self):
+        return self.gdo_components()
 
     def gdo_compare(self, a: 'GDO', b:'GDO') -> int:
         return 0
