@@ -3,6 +3,7 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.net.GDT_IP import GDT_IP
 from gdo.net.GDT_Url import GDT_Url
 from gdotest.TestUtil import cli_plug, GDOTestCase
 
@@ -38,6 +39,20 @@ class NetTestCase(GDOTestCase):
     async def test_04_wget(self):
         out = cli_plug(None, "$wget https://www.wechall.net/")
         self.assertIn('Inferno', out, "WGET does not work")
+
+    async def test_05_ip_binary(self):
+        gdt = GDT_IP('bin').binary()
+        ip4 = '192.168.0.1'
+        gdt.value(ip4)
+        bin = b'\xc0\xa8\x00\x01'
+        self.assertEqual(bin, gdt.get_val(), 'IP4 binary no work.')
+        ip6 = 'FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF'
+        gdt.value(ip6)
+        bin =  b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+        self.assertEqual(bin, gdt.get_val(), 'IP6 binary no work.')
+
+
+
 
 
 if __name__ == '__main__':

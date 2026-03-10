@@ -7,6 +7,7 @@ from gdo.base.Trans import t
 from gdo.base.Util import html
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template, tpl
+from gdo.core.WithCompletion import WithCompletion
 from gdo.form.GDT_Hidden import GDT_Hidden
 
 

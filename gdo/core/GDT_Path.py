@@ -1,10 +1,9 @@
 from gdo.base.Application import Application
 from gdo.base.Util import Files, html, dump
 from gdo.core.GDT_String import GDT_String
-from gdo.core.WithCompletion import WithCompletion
 
 
-class GDT_Path(WithCompletion, GDT_String):
+class GDT_Path(GDT_String):
     _path_existing: bool
     _path_is_dir: bool
     _path_is_file: bool

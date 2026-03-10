@@ -4,4 +4,4 @@ from bin.pygdo import launcher
 
 if __name__ == '__main__':
 
-    asyncio.run(launcher("$admin.install favicon"))
+    asyncio.run(launcher("$cities.install"))

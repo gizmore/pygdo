@@ -10,7 +10,9 @@ from gdo.core.GDT_RestOfText import GDT_RestOfText
 
 
 class die(Method):
-
+    """
+    Make a bot die.
+    """
     @classmethod
     def gdo_trigger(cls) -> str:
         return 'die'
@@ -50,4 +52,3 @@ class die(Method):
         conn = server.get_connector()
         if conn._connected:
             await conn.disconnect(quit_message)
-

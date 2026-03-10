@@ -1,4 +1,6 @@
 from __future__ import annotations
+import csv, gzip
+from typing import Optional, List, IO
 
 import string
 import functools
@@ -591,3 +593,17 @@ class NumericUtil:
                 raise ValueError(f"Invalid character {char} for NumericUtil encoding")
             num = num * base + charset.index(char)
         return num * neg
+
+
+class CSV:
+
+    @staticmethod
+    def gzopen(path: str, encoding: str = 'utf-8') -> IO[str]:
+        return gzip.open(path, 'rt', encoding=encoding, newline='')
+
+    @staticmethod
+    def parseGZLine(fp: IO[str]) -> Optional[List[str]]:
+        try:
+            return next(csv.reader(fp))
+        except StopIteration:
+            return None

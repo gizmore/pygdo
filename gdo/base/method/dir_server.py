@@ -21,6 +21,9 @@ class dir_server(MethodTable):
     def gdo_trigger(cls) -> str:
         return ''
 
+    def gdo_page_positional(self) -> bool:
+        return False
+
     def gdo_table(self) -> GDO:
         return GDO_File.table()
 

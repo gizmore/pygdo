@@ -9,9 +9,11 @@ from gdo.base.Result import Result
 from gdo.base.ResultArray import ResultArray
 from gdo.base.util.href import href
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Name import GDT_Name
 from gdo.table.MethodTable import MethodTable
 from gdo.ui.GDT_Link import GDT_Link
+from gdo.ui.GDT_Menu import GDT_Menu
 
 
 class modules(MethodTable):
@@ -38,7 +40,16 @@ class modules(MethodTable):
 
     def gdo_execute(self) -> GDT:
         self._n = 0
-        return super().gdo_execute()
+        return GDT_Container().vertical().add_fields(
+            GDT_Menu().add_fields(*self.admin_links()),
+            super().gdo_execute(),
+        )
+
+    def admin_links(self) -> list[GDT_Link]:
+        back = []
+        for module in ModuleLoader.instance()._cache.values():
+            back.extend(module.gdo_admin_links())
+        return back
 
     @functools.cache
     def get_modules(self) -> list[GDO_Module]:

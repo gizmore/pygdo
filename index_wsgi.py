@@ -190,6 +190,8 @@ def pygdo_application(environ, start_response):
                 user = session.get_user()
                 server = user.get_server()
                 method = dir_server().env_user(user, False).env_session(session).env_server(server)
+                # qs['_url'] = Strings.substr_from(''
+                args.add_get_vars(qs)
                 method._raw_args = args
             else:
                 session = GDO_Session.start(True)

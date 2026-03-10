@@ -11,3 +11,7 @@ class module_admin(GDO_Module):
         if user.is_admin():
             page._right_bar.add_field(GDT_Link().href(self.href('modules')).text('module_admin'))
 
+    def gdo_admin_links(self) -> list['GDT_Link']:
+        return [
+            GDT_Link().href(self.href('users')).text('mt_admin_users'),
+        ]

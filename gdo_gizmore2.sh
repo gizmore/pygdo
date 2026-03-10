@@ -2,7 +2,7 @@
 set -euo pipefail
 clear
 bash gdo_adm.sh wipe -a
-bash gdo_adm.sh install account,admin,avatar,blackjack,bootstrap5,chess,chatgpt4o,clock,connect,contact,favicon,gogol,icon_fa,irc,login,maps,markdown,math,online,perf,pm,poll,quote,register,scum,shadowdogs,slapwarz,vote,websocket,wechall
+bash gdo_adm.sh install account,admin,avatar,blackjack,bootstrap5,chess,chatgpt4o,cities,clock,connect,contact,favicon,gogol,icon_fa,ip2geo,irc,login,maps,markdown,math,online,perf,pm,poll,quote,register,scum,shadowdogs,slapwarz,usertitle,vote,websocket,wechall
 bash gdo_adm.sh admin gizmore 11111111 giz@wechall.net
 bash gdo_adm.sh admin christianbusch 11111111 cb@wechall.net
 bash gdo_adm.sh admin --server 2 gizmore 11111111 gizmore@wechall.net

@@ -5,5 +5,6 @@ class WithCompletion:
         self._completion_href = href
         return self
 
-    def has_completion(self) -> bool:
-        return hasattr(self, '_completion_href')
+    def html_autocomplete(self) -> str:
+        if not self.has_completion(): return ''
+        return ''

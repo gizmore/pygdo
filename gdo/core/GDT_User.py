@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from gdo.core.GDO_Channel import GDO_Channel
 
 
-class GDT_User(WithCompletion, GDT_Object):
+class GDT_User(GDT_Object):
     _same_server: bool
     _same_channel: 'GDO_Channel|None'
     _authenticated: bool
