@@ -6,5 +6,4 @@ class WithCompletion:
         return self
 
     def html_autocomplete(self) -> str:
-        if not self.has_completion(): return ''
-        return ''
+        return f' gdo-autocomplete="{self._completion_href}"'
