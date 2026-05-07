@@ -87,7 +87,7 @@ class launch(Method):
         from gdo.base.IPC import IPC
         Logger.debug("Launching DOG Bot")
         sleep_ms = self.sleep_ms()
-        Application.EVENTS.add_timer_async(Time.ONE_HOUR * 1000 * 6, self.ping_db(), 3_999_999_999)
+        Application.EVENTS.add_timer_async(Time.ONE_HOUR * 999, self.ping_db(), 3_999_999_999)
         try:
             self.SERVERS = GDO_Server.table().all('serv_enabled')
             while Application.RUNNING:
