@@ -5,6 +5,7 @@ import time
 from functools import lru_cache
 
 from gdo.base.Application import Application
+from gdo.base.Database import Database
 from gdo.base.GDT import GDT
 from gdo.base.IPC import IPC
 from gdo.base.Logger import Logger
@@ -15,6 +16,7 @@ from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.method.die import die
 from gdo.date.GDT_Duration import GDT_Duration
+from gdo.date.Time import Time
 
 
 class launch(Method):
@@ -78,10 +80,14 @@ class launch(Method):
             cls._ipc = _ipc
         return cls._ipc
 
+    async def ping_db(self):
+        Application.db().query('SELECT 1 FROM DUAL')
+
     async def mainloop(self):
         from gdo.base.IPC import IPC
         Logger.debug("Launching DOG Bot")
         sleep_ms = self.sleep_ms()
+        Application.EVENTS.add_timer_async(Time.ONE_HOUR * 1000 * 6, self.ping_db(), 3_999_999_999)
         try:
             self.SERVERS = GDO_Server.table().all('serv_enabled')
             while Application.RUNNING:
