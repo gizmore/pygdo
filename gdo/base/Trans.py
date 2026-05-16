@@ -72,10 +72,9 @@ class Trans:
 
     @staticmethod
     def _load():
-        pattern = os.path.join(Application.file_path('gdo/'), "*", "lang", "**", "*.toml")
+        pattern = os.path.join(Application.file_path('gdo/'), "**", "lang", "**", "*.toml")
         for lang_file in glob.glob(pattern, recursive=True):
             Trans._load_file(lang_file)
-        # Trans.EN = Trans.CACHE.get('en')
 
     @staticmethod
     def _load_file(lang_file: str):
