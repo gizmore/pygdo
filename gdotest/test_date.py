@@ -1,6 +1,7 @@
 import os.path
 import unittest
 from datetime import datetime
+from time import time
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
@@ -93,6 +94,16 @@ class DateTestCase(GDOTestCase):
         self.assertEqual('1m 6s', h, 'Microseconds do not work #3.')
         h = GDT_Duration('d').units(2, True).value(66.000499).render()
         self.assertEqual('1m 6s', h, 'Microseconds do not work in GDT_Duration #3.')
+
+    async def test_timezone(self):
+        tz1 =  GDO_Timezone.get_by_name('UTC')
+        tz2 =  GDO_Timezone.get_by_name('Europe/Berlin')
+        self.assertNotEqual(tz1, tz2, 'Single Identity cache for TZ broken')
+        ts = time()
+        out1 = Time.display_timestamp(ts, Time.FMT_LONG, '---', tz1.gdo_val('tz_name'))
+        out2 = Time.display_timestamp(ts, Time.FMT_LONG, '---', tz2.gdo_val('tz_name'))
+        self.assertNotEqual(out1, out2, 'Timezones are not respected')
+
 
 
 if __name__ == '__main__':

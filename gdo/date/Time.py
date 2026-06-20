@@ -215,9 +215,9 @@ class Time:
     def display_datetime_format(datetime_obj: datetime = None, fmt: str = 'Y-m-d H:i:s.v', default: str = '---', tz: str = None) -> str:
         if not datetime_obj:
             return default
-        tz = Time.get_timezone_object(tz or Time.TIMEZONE)
-        dt = datetime.fromtimestamp(datetime_obj.timestamp()).replace(tzinfo=tz)
-        return dt.strftime(fmt)
+        # tz = Time.get_timezone_object(tz or Time.TIMEZONE)
+        # dt = datetime.fromtimestamp(datetime_obj.timestamp()) #.replace(tzinfo=tz)
+        return datetime_obj.strftime(fmt)
 
     @staticmethod
     def display_date(date: str = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:

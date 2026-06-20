@@ -12,7 +12,7 @@ class GDO_Timezone(GDO):
     ##########
 
     @classmethod
-    def get_by_name(cls, timezone_name):
+    def get_by_name(cls, timezone_name: str):
         return cls.table().get_by('tz_name', timezone_name)
 
     #######
@@ -46,4 +46,7 @@ class GDO_Timezone(GDO):
 
     def render_name(self) -> str:
         from gdo.date.Time import Time
-        return f"{self.gdo_val('tz_name')}({Time.get_date(time.time(), t('df_'+Time.FMT_TIME_ONLY))})"
+        return f"{self.gdo_val('tz_name')}({Time.display_timestamp(time.time(), Time.FMT_LONG, '---', self.gdo_val('tz_name'))})"
+
+    # def render_list(self):
+    #     return self.render_name()
