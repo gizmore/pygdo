@@ -54,6 +54,7 @@ where (h) is the height difference.
 
 However, our final proposed setup does not rely on a large height difference. The experiment may be very small. The important point is not large distance, but controlled modulation of proper time.
 
+
 ## 3. Difference from Gravitational-Wave Interferometers
 
 Gravitational-wave interferometers such as LIGO measure extremely small changes in spatial arm length caused by passing gravitational waves.
@@ -71,6 +72,7 @@ measures changing space.
 compares changing time.
 
 More precisely, it compares the phase/frequency drift of laser references whose proper-time rates are modulated by a gravitational potential difference.
+
 
 ## 4. Tiny Modulated Experiment
 
@@ -105,6 +107,7 @@ Therefore, the experiment should not depend on a static femtometer height differ
 In other words:
 
 **Rattle time, then listen for grain.**
+
 
 ## 5. Orbiting Around a Satellite or Test Mass
 
@@ -177,6 +180,7 @@ Standard physics predicts a smooth sinusoidal response. A possible non-smooth sp
 
 The important observable is primarily **phase**, with frequency drift as the related clock-rate measurement. Amplitude is secondary, because amplitude is more easily affected by ordinary optical imperfections.
 
+
 ## 7. Why a Space or Lagrange-Point Environment?
 
 A quiet space environment may reduce some Earth-based noise sources such as seismic vibration, atmospheric turbulence, thermal gradients, and human-made mechanical disturbances.
@@ -186,6 +190,7 @@ A Lagrange-point spacecraft, drag-free satellite, or quiet orbital platform coul
 However, a Lagrange point does not mean “no gravity.” It means gravitational and orbital effects balance in a useful way. The relevant quantity is still the gravitational potential and its gradient across the experiment.
 
 The advantage of space is not necessarily a stronger signal. The advantage is control, quietness, and long-duration measurement.
+
 
 ## 8. Expected Difficulty
 
@@ -225,7 +230,19 @@ Therefore, the experiment should not be presented as a simple direct measurement
 4. Subtract all known effects.
 5. Search the residual for non-smooth behavior.
 
-## 9. Experimental Requirements
+
+## 9. Synchronization of Lazer Beams.
+
+As we have two beams instead of one, we have to synchronize the lazers.
+
+This is a rather unsolved problem.
+
+synchronizing every position would require quite a lot positions.
+
+For that we prefer to rattle the time, to reduce sync time.
+
+
+## 10. Experimental Requirements
 
 A practical version would require:
 
@@ -244,7 +261,8 @@ The experiment must distinguish true proper-time effects from ordinary optical p
 
 This is crucial. If the optical path length changes, the detector may simply measure geometry. The goal is to keep optical paths as short, symmetric, and well-modeled as possible, while modulating the clock-rate environment.
 
-## 10. Hypothesis
+
+## 11. Hypothesis
 
 The standard prediction is:
 
@@ -262,7 +280,8 @@ This could appear as:
 
 The residual would be the object of interest.
 
-## 11. Conclusion
+
+## 12. Conclusion
 
 The Gizmore–Chappy Proper-Time Interferometer is a conceptual proposal for a precision experiment that focuses on time-rate modulation rather than spatial arm-length measurement.
 
