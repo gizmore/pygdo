@@ -8,7 +8,6 @@ from gdo.base.Util import Strings
 from gdo.base.util.href import href
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Object import GDT_Object
-from gdo.core.WithCompletion import WithCompletion
 from gdo.ui.GDT_Link import GDT_Link
 
 from typing import TYPE_CHECKING

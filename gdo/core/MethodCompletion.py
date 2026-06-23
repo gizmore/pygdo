@@ -19,3 +19,6 @@ class MethodCompletion(Method):
             GDT_Search('q').not_null(),
         ]
 
+    def get_query(self) -> str | None:
+        return self.param_val('q')
+

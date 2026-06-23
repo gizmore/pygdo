@@ -38,3 +38,6 @@ class GDT_List(GDT):
 
     def reverse(self) -> list[any]:
         return self._items.reverse()
+
+    def render_json(self):
+        return self._items

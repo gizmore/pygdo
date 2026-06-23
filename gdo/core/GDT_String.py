@@ -21,7 +21,7 @@ class Encoding(Enum):
     BINARY = 3
 
 
-class GDT_String(GDT_Field):
+class GDT_String(WithCompletion, GDT_Field):
     _encoding: Encoding
     _case_s: bool
     _min_len: int

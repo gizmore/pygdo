@@ -6,6 +6,8 @@ from gdo.base.GDT import GDT
 from gdo.base.Util import Files
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.base.GDO import GDO
+from gdo.ui import GDT_Link
+from gdo.ui.GDT_Link import GDT_Link
 
 
 class module_base(GDO_Module):
@@ -28,6 +30,11 @@ class module_base(GDO_Module):
     ##########
     # Config #
     ##########
+
+    def gdo_admin_links(self) -> list['GDT_Link']:
+        return [
+            GDT_Link().href(self.href('backup')),
+        ]
 
     def gdo_module_config(self) -> list[GDT]:
         return [

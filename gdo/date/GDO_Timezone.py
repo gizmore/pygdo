@@ -46,7 +46,4 @@ class GDO_Timezone(GDO):
 
     def render_name(self) -> str:
         from gdo.date.Time import Time
-        return f"{self.gdo_val('tz_name')}({Time.display_timestamp(time.time(), Time.FMT_LONG, '---', self.gdo_val('tz_name'))})"
-
-    # def render_list(self):
-    #     return self.render_name()
+        return f"{self.gdo_val('tz_name')}({Time.display_timestamp(time.time(), Time.FMT_TIME_ONLY, '---', self.gdo_val('tz_name'))})"

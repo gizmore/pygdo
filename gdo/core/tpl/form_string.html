@@ -3,6 +3,7 @@
     <input id="<%=field.get_name()%>" name="<%=field.get_name()%>" type="<%=field._input_type%>" class="<%=' is-invalid' if field.has_error() else '' %>"
            <%=field.html_readonly()%>
            <%=field.html_pattern()%>
+           <%=field.html_completion()%>
            <%=field.html_required()%>
            aria-label="<%=field.render_label(Mode.render_html)%>"
            value="<%=field.html_value()%>">
