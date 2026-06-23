@@ -1,4 +1,4 @@
-# The Gizmore–Chappy Tiny-Time Interferometer
+# The Gizmore–Chappy Proper-Time Interferometer
 
 ## A Conceptual Experiment to Search for Non-Smooth Structure in Space-Time
 
@@ -39,6 +39,12 @@ where:
 * ( c ) is the speed of light.
 
 Near the surface of a body with gravitational acceleration (g), this becomes approximately:
+
+The relativistic time dilatation effects for the acceleration cancel out, if we move the lasers in a mirror way.
+
+But the gravitational cause for time dilatation, apply, in a minimal way.
+This desynchronizes the Lazers.
+
 
 [
 \frac{\Delta f}{f} \approx \frac{g h}{c^2}
