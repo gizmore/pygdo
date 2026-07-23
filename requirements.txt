@@ -28,3 +28,4 @@ rich
 tomlkit
 typing_extensions
 websocket-server
+yappi
