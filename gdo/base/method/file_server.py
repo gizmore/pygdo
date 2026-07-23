@@ -45,6 +45,8 @@ class file_server(Method):
             return True
         for dir in Application.config('dir'):
             if url.startswith(dir):
+                if dir == 'assets' and module_config_value('base', 'serve_gdo_assets'):
+                    continue
                 return True
         if not module_config_value('base', 'serve_gdo_assets'):
             ext = Strings.rsubstr_from(url, '.', '')
