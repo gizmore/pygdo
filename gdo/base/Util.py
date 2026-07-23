@@ -108,7 +108,7 @@ class CLI:
     @staticmethod
     async def get_current_user():
         from gdo.core.connector.Bash import Bash
-        name = getpass.getuser()
+        name = os.environ.get('PYGDO_USER') or getpass.getuser()
         return await Bash.get_server().get_or_create_user(name)
 
 class Strings:
