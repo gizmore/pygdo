@@ -21,7 +21,7 @@ class GDT_TreeView(WithName, GDT):
         self._roots = None
         self._children = None
 
-    def query(self, query: Query) -> GDT_TreeView:
+    def query(self, query: Query) -> 'GDT_TreeView':
         self._query = query
         return self
 

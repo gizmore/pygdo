@@ -17,13 +17,13 @@ class GDT_PageMenu(WithLabel, GDT_Bar):
     _num_items: int
     _page_num: int
     _ipp: int
-    _method: MethodTable
+    _method: 'MethodTable'
 
     def __init__(self, name: str) -> None:
         super().__init__(name)
         self.label('page_menu')
 
-    def paginate(self, method: MethodTable):
+    def paginate(self, method: 'MethodTable'):
         self._num_items = max(0, int(method.get_num_results()))
         self._page_num = max(1, int(method.get_page_num()))
         self._ipp = max(1, int(method.gdo_paginate_size()))
