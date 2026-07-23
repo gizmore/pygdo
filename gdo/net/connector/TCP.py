@@ -49,7 +49,7 @@ class TcpSession:
                 await self.writer.wait_closed()
             except Exception as ex:
                 Logger.exception(ex, "TCP Connector mainloop")
-            self.connector.disconnect("QUIT")
+            await self.connector.close_session(self)
 
 
 class TCP(Connector):
@@ -87,6 +87,44 @@ class TCP(Connector):
         session = TcpSession(reader, writer, self, user)
         self._sessions[user.get_id()] = session
         asyncio.create_task(session.run())
+
+    async def authenticate_session(self, session: TcpSession, user: GDO_User) -> bool:
+        """Turn an anonymous TCP connection into an authenticated user session."""
+        old_user = session.user
+        old_uid = old_user.get_id()
+        user_uid = user.get_id()
+        other = self._sessions.get(user_uid)
+        if other is not None and other is not session:
+            return False
+        if old_uid == user_uid:
+            return True
+
+        self._sessions.pop(old_uid, None)
+        if old_user.get_name() in self._server._users:
+            await self._server.on_user_quit(old_user)
+        if user.get_name() not in self._server._users:
+            await self._server.on_user_joined(user)
+
+        session.user = user
+        session.session = GDO_Session.for_user(user)
+        session.channel = self._server.get_or_create_channel(user.get_name())
+        self._sessions[user_uid] = session
+        await user.authenticate(session.session)
+        return True
+
+    async def authenticate_user(self, old_user: GDO_User, user: GDO_User) -> bool:
+        session = self._sessions.get(old_user.get_id())
+        return session is not None and await self.authenticate_session(session, user)
+
+    async def close_session(self, session: TcpSession):
+        """Remove only the disconnected client, never the shared TCP listener."""
+        user = session.user
+        uid = user.get_id()
+        if self._sessions.get(uid) is not session:
+            return
+        del self._sessions[uid]
+        if user.get_name() in self._server._users:
+            await self._server.on_user_quit(user)
 
     async def send_to_user(self, msg: Message, with_events: bool=True, notice: bool=False):
         uid = msg._env_user.get_id()

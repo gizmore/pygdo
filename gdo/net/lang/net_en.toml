@@ -8,6 +8,9 @@ err_http_url_available = "This URL is not reachable: %s. Code %s."
 err_url_pattern = "This URL looks invalid."
 err_url_no_internals = "URLs targetting this server are not allowed"
 err_url_no_externals = "URLs targetting third party servers are not allowed"
+err_tcpauth_in_use = "This TCP user is already connected."
+msg_tcpauth_registered = "TCP user %s has been registered and authenticated."
+msg_tcpauth_success = "TCP authentication successful as %s."
 
 ########
 # WGet #
