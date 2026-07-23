@@ -50,4 +50,4 @@ class db_raw(Method):
             return self.reply('%s', ("\n".join(out),))
         else:
             result = db.query(query)
-            return self.reply('msg_db_raw_write', (result['info_msg'],))
+            return self.reply('msg_db_raw_write', (f'{result.rowcount} row(s) affected',))
