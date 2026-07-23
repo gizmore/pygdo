@@ -99,7 +99,6 @@ class TCP(Connector):
         if old_uid == user_uid:
             return True
 
-        self._sessions.pop(old_uid, None)
         if old_user.get_name() in self._server._users:
             await self._server.on_user_quit(old_user)
         if user.get_name() not in self._server._users:
@@ -108,6 +107,7 @@ class TCP(Connector):
         session.user = user
         session.session = GDO_Session.for_user(user)
         session.channel = self._server.get_or_create_channel(user.get_name())
+        self._sessions[old_uid] = session
         self._sessions[user_uid] = session
         await user.authenticate(session.session)
         return True
@@ -118,11 +118,13 @@ class TCP(Connector):
 
     async def close_session(self, session: TcpSession):
         """Remove only the disconnected client, never the shared TCP listener."""
-        user = session.user
-        uid = user.get_id()
-        if self._sessions.get(uid) is not session:
+        if self._sessions.get(session.user.get_id()) is not session:
             return
-        del self._sessions[uid]
+        self._sessions = {
+            uid: active for uid, active in self._sessions.items()
+            if active is not session
+        }
+        user = session.user
         if user.get_name() in self._server._users:
             await self._server.on_user_quit(user)
 
