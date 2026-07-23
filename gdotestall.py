@@ -1,3 +1,4 @@
+import asyncio
 import cProfile
 import os.path
 import unittest
@@ -68,6 +69,7 @@ def finisher():
 
 
 def run_tests():
+    Application.IS_TEST = True
     Application.init(os.path.dirname(__file__) + '/')
 
     # Core
@@ -82,11 +84,18 @@ def run_tests():
     # Extensions
     loader = ModuleLoader.instance()
     modules = list(loader.load_modules_fs().values())
-    Installer.install_modules(modules)
+    loop = asyncio.new_event_loop()
+    try:
+        asyncio.set_event_loop(loop)
+        Application.LOOP = loop
+        loop.run_until_complete(Installer.install_modules(modules))
+    finally:
+        loop.close()
+        asyncio.set_event_loop(None)
     for module in modules:
         test_directory = module.file_path('test/')
         if Files.exists(test_directory):
-            Logger.debug(f"Running tests for {module.get_name()}")
+            Logger.debug(f"Running tests for {module.get_name}")
             test_loader = unittest.TestLoader()
             test_suite = test_loader.discover(test_directory, pattern='test_*.py')
             test_runner = unittest.TextTestRunner()
