@@ -38,7 +38,7 @@ class TcpSession:
                 line = data.decode("utf-8", "ignore").rstrip("\r\n")
                 if line in ("exit", "quit"): break
                 msg = Message(line, Mode.render_cli)
-                msg.env_user(self.user).env_server(self.connector._server).env_mode(Mode.render_cli).env_session(self.session)
+                msg.env_user(self.user).env_server(self.connector._server).env_channel(self.channel).env_mode(Mode.render_cli).env_session(self.session)
                 try:
                     await msg.execute()
                 except Exception as ex:
