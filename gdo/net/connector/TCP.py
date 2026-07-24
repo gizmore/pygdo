@@ -133,7 +133,7 @@ class TCP(Connector):
         if session := self._sessions.get(uid):
             await session.send(msg._result)
         else:
-            Logger.warning(f"Cannot deliver TCP message to offline user {uid}")
+            Logger.error(f"Cannot deliver TCP message to offline user {uid}")
 
     async def send_to_channel(self, msg: Message, with_events: bool=True):
         channel = msg._env_channel
@@ -141,4 +141,4 @@ class TCP(Connector):
         if user and (session := self._sessions.get(user.get_id())):
             await session.send(msg._result)
         else:
-            Logger.warning(f"Cannot deliver TCP channel message to {channel.get_name()}")
+            Logger.error(f"Cannot deliver TCP channel message to {channel.get_name()}")

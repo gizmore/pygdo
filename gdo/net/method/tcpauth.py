@@ -52,6 +52,7 @@ class tcpauth(form):
         if not await connector.authenticate_user(self._env_user, user):
             return self.err('err_tcpauth_in_use')
         self._message.env_user(user)
+        self._message.env_channel(connector._sessions[user.get_id()].channel)
         key = 'msg_tcpauth_registered' if registered else 'msg_tcpauth_success'
         return self.reply(key, (user.render_name(),))
 
