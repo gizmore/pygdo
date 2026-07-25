@@ -7,5 +7,6 @@ Welcome to the PyGDO documentation.
 - [01 - Installation](./01_INSTALLATION.md)
 - [Methods](./METHODS.md)
 - [Write a Module](./WRITE_A_MODULE.md)
+- [Mira](./MIRA.md)
 - [TODO](./TODO.md)
 - [Ideas](./IDEAS.md)
