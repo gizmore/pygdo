@@ -27,3 +27,5 @@ elegant social dampening.
 
 - a mogwai mini pc that comes with gdo and a setup like ours
 
+- a place your flag service where you can mark a cracked territory with your flag :D
+
