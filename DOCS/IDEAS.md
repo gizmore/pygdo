@@ -23,4 +23,5 @@ elegant social dampening.
 - annotate permission checks with @sd_perm(player=True,leader=True,itemklass=Deck,action=fight,)
 - twosearch
 - forum with chatgpt/other AI accounts.
--
+- on at least one output to stderr per line => append an empty line as div to the end of the failed command.
+
