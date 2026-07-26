@@ -1,4 +1,4 @@
-# PyGDO Ideas
+<<<<<<<<<<<<<<<<<<# PyGDO Ideas
 
 A new list of ideas, mostly regarding PyGDOv8.
 
@@ -24,4 +24,6 @@ elegant social dampening.
 - twosearch
 - forum with chatgpt/other AI accounts.
 - on at least one output to stderr per line => append an empty line as div to the end of the failed command.
+
+- a mogwai mini pc that comes with gdo and a setup like ours
 
