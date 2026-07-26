@@ -1,38 +1,59 @@
 # PyGDO Caches
 
-PyGDO has three levels for caching - not only - [GDOs](../gdo/base/GDO.py)
+PyGDO uses several caches with different lifetimes and scopes. The main
+implementation is [`gdo/base/Cache.py`](../gdo/base/Cache.py).
 
+## Process-local caches
 
+`Cache` keeps metadata and objects in the current Python process:
 
-## 1) PyGDO Process Cache
+- `TCACHE` stores one table object per GDO class.
+- `CCACHE` stores the GDT columns and components for a GDO class.
+- `PCACHE` stores the primary-key GDTs used to build object identities.
+- `OCACHE` stores cached GDO instances by table name and ID. This is the
+  single-identity cache: a persistent row should resolve to one in-memory GDO
+  instance per process.
+- `MCACHE` stores timed values until their `Application.TIME` deadline.
 
-Many computed data survives accepting a new request.
+GDO classes opt into object caching through `gdo_cached()`. Non-persistent GDO
+tables are tracked separately so their object cache can be cleared between
+requests when required.
 
-For example the modules loaded in the [ModuleLoader](../gdo/base/ModuleLoader.py)
-are only loaded when the web worker process starts.
+Modules and other Python `lru_cache`/`functools.cache` users also retain state
+for the lifetime of the worker process. A web or ASGI request clears the
+non-persistent object cache through `Cache.clear_ocache()`; it does not rebuild
+the whole process.
 
-The class [Cache](../gdo/base/Cache.py) is worth a look.
-There, GDO related caches are stored.
+## Optional Redis cache
 
-The process cache is the Cache.OCache / ObjectCache.
+Redis is configured through `redis.enabled`, `redis.host`, `redis.port`,
+`redis.db`, `redis.uds`, and `redis.zlib_level`. When enabled, `Cache.RCACHE`
+stores serialized values under namespaced keys of the form:
 
+```text
+<key>:<args_key>
+```
 
-## 2) Redis Cache
+`Cache.get()` and `Cache.set()` are no-ops apart from returning defaults or the
+given value when Redis is disabled. The `gdo_redis_cached()` decorator hashes
+arguments (including the current language) and uses this shared cache.
 
-When possible, GDO data is read from redis instead of mysql.
-All GDO have a pk like `colA:colB:colC`,
-where-as GDT_AutoInc() driven tables are a slightly special easier case: `colA`. 
+Redis is shared by processes, unlike `TCACHE`, `CCACHE`, `PCACHE`, `OCACHE`, and
+`MCACHE`. It is also used by IPC timestamps and other explicitly Redis-backed
+features; do not assume that every Redis key contains a GDO row.
 
-The redis cache is also used to store other cache-worthy material.
+## Cache clearing
 
+- `Cache.clear_ocache()` clears only non-persistent object instances. This is
+  the normal request-boundary operation.
+- `Cache.clear()` resets process-local cache structures, removes all Redis keys
+  through `Cache.remove()`, and empties the application `cache/` directory.
+  Treat it as a broad maintenance operation.
+- `Cache.remove(key, args_key)` removes one Redis value, all values below a key
+  prefix, or the complete Redis database when called without a key. The
+  no-argument form is destructive to every cache user in the configured Redis
+  database.
 
-## 3) MySQL Backend, but single identity
-
-Every GDO read from MySQL is filtered through the Processes ObjectCache.
-
-This ensures every row is only loaded once into memory,
-and GDOs can be updated easily across the software we write.
-
-
-## Cache Cleaning
-
+After changing code that affects cached module metadata or assets, restart the
+relevant worker or use the project’s cache-clear tooling. Inspect the target
+configuration before clearing shared Redis storage.
