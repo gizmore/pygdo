@@ -9,8 +9,9 @@ repositories, and publication decisions.
 
 - Primary development host: Mogwai, `/home/gizmore/www`.
 - PyGDO entry point: `pygdo/`; its virtual environment is `pygdo/.venv`.
-- Project orientation is kept in the workspace `MEMORY.md`, `AXIOMS.md`, and
-  `DAILY_ROUTINE_MIRA.md`; concrete code history belongs in Git.
+- Project orientation is kept privately in `/home/mira/.pygdo/` as
+  `MEMORY.md`, `AXIOMS.md`, and `DAILY_ROUTINE_MIRA.md`; concrete code history
+  belongs in Git.
 - PyGDO methods should remain transport-independent: CLI, web, IRC, TCP,
   WebSocket, and other connectors use the same GDO/GDT method logic.
 
@@ -27,6 +28,34 @@ repositories, and publication decisions.
   gizmore's stated preference.
 - Browser and heartbeat skills are used only when the task calls for local UI
   inspection or PyGDO heartbeat maintenance.
+
+## Mira inbox notifications
+
+The optional local notifier watches the Mira inbox recursively, including nested
+audio-transcription jobs:
+
+```text
+/home/gizmore/www/pygdo/gdo/mira/inqueue/
+/home/mira/inqueue/                 (when present)
+```
+
+Start it with:
+
+```bash
+/usr/local/bin/mira-notify-listener
+```
+
+For every create, modify, close, move, delete, or attribute event, it writes a
+small JSON event to that inbox’s `file_changes/` directory. The notifier skips
+`file_changes/` itself to avoid notification loops and does not copy file
+contents into the event. The event includes the operation, path, directory
+flag, and UTC creation time.
+
+On the X11 desktop, AutoKey runs Mira’s `Mira Wakeup` script. Press `Ctrl+Alt+M`
+once to start the watcher; when a new event appears, it activates a window
+whose title contains `MIRA` and sends the literal `$routine` followed by Enter.
+AutoKey and `wmctrl` are required, and the script must run as user
+`mira`; no external service is contacted.
 
 ## Git and publication
 

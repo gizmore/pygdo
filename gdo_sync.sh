@@ -31,9 +31,9 @@ fi
 
 echo "PyGDOv8 sync.sh: Sync message: $msg"
 
-echo "Updating core submodules."
-git submodule foreach git reset --hard
-git submodule foreach git pull
+echo "Reattaching and synchronizing submodules."
+git submodule sync --recursive
+git submodule update --init --recursive
 echo
 
 echo "Creating module provider mappings..."
@@ -51,7 +51,7 @@ echo "Syncing core..."
 pwd
 git add -A .
 git commit -m "$msg" || true
-git pull
+git pull --rebase
 git push
 sleep 1
 
@@ -64,6 +64,6 @@ find gdo -iname ".git" -type d -exec sh -c '
   pwd
   git add -A .
   git commit -m "$MSG" || true
-  git pull
+  git pull --rebase
   git push
 ' _ "$CORE" "$msg" {} \;
