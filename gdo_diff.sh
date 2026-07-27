@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
-cd "$(dirname "$0")"
+set -euo pipefail
 
-CORE="$(dirname "$0")"
+core_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+cd -- "$core_dir"
 
-clear
+command -v git >/dev/null 2>&1 || {
+    printf 'ERROR: git was not found\n' >&2
+    exit 127
+}
 
-find . -iname ".git" -type d -exec sh -c "cd $CORE && cd {} && cd .. && LANG=en_GB LC_ALL=en_GB git --no-pager diff" \;
+# Scan nested repositories without changing into their .git directories.
+# The scoped safe.directory setting supports the shared gizmore/mira checkout
+# without modifying either user's global Git configuration.
+while IFS= read -r -d '' git_dir; do
+    repo_dir=$(cd -- "${git_dir%/.git}" && pwd)
+    printf '\n=== %s ===\n' "$repo_dir"
+    LANG=en_GB LC_ALL=en_GB git \
+        -c "safe.directory=$repo_dir" \
+        -C "$repo_dir" --no-pager diff
+done < <(find . -type d -name .git -prune -print0)
