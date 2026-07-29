@@ -8,5 +8,6 @@ Welcome to the PyGDO documentation.
 - [Methods](./METHODS.md)
 - [Write a Module](./WRITE_A_MODULE.md)
 - [Mira](./MIRA.md)
+- [IBDES v0.1](./IBDES.md)
 - [TODO](./TODO.md)
 - [Ideas](./IDEAS.md)
