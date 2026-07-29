@@ -350,8 +350,18 @@ class Files:
         return True
 
     @classmethod
-    def copy_dir(cls, src: str, dest: str):
-        shutil.copytree(src, dest, dirs_exist_ok=True)
+    def copy_dir(cls, src: str, dest: str, copy_function=shutil.copy2):
+        if copy_function is shutil.copy2:
+            shutil.copytree(src, dest, dirs_exist_ok=True)
+        else:
+            for root, _dirs, files in os.walk(src):
+                target_dir = os.path.join(dest, os.path.relpath(root, src))
+                os.makedirs(target_dir, exist_ok=True)
+                for filename in files:
+                    copy_function(
+                        os.path.join(root, filename),
+                        os.path.join(target_dir, filename),
+                    )
         return True
 
 
