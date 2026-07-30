@@ -9,6 +9,9 @@ command -v git >/dev/null 2>&1 || {
     exit 127
 }
 
+clear
+echo "Starting gdo_diff.sh"
+
 # Scan nested repositories without changing into their .git directories.
 # The scoped safe.directory setting supports the shared gizmore/mira checkout
 # without modifying either user's global Git configuration.
