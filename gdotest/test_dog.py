@@ -2,10 +2,13 @@ import os
 import unittest
 
 from gdo.base.Application import Application
+from gdo.base.Render import Mode, Render
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.connector.Web import Web
+from gdo.core.connector.Bash import Bash
+from gdo.core.method.servers import servers
 from gdotest.TestUtil import cli_gizmore, cli_plug, GDOTestCase
 
 
@@ -41,6 +44,12 @@ class DogTestCase(GDOTestCase):
         web = Web.get_server()
         out = cli_plug(cli_gizmore(), f"$server {web.get_id()} status")
         self.assertIn(f"{web.get_name()}: up", out, "Cannot query a server's runtime status")
+
+    async def test_05_servers_render_stable_ids(self):
+        server = Bash.get_server()
+        rendered = servers().render_gdo(server, Mode.render_irc)
+        self.assertIn(Render.bold(server.get_id(), Mode.render_irc), rendered)
+        self.assertIn(server.get_name(), rendered)
 
 
 if __name__ == '__main__':

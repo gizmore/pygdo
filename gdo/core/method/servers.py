@@ -1,6 +1,9 @@
 from gdo.base.GDO import GDO
 from gdo.base.Render import Mode
 from gdo.core.GDO_Server import GDO_Server
+from gdo.message.GDT_Bold import GDT_Bold
+from gdo.message.GDT_Colored import GDT_Colored
+from gdo.message.GDT_Glyph import GDT_Glyph
 from gdo.table.MethodQueryTable import MethodQueryTable
 
 
@@ -22,5 +25,8 @@ class servers(MethodQueryTable):
         return f"{server.render_name()}"
 
     def render_gdo(self, gdo: GDO_Server, mode: Mode) -> str:
-        """Servers already render with their stable database ID."""
-        return gdo.render_name()
+        """Render the stable ID and the connector's current connection state."""
+        server_id = GDT_Bold().add_field(GDT_Glyph(gdo.get_id())).render(mode)
+        color = 'green' if gdo.get_connector().is_connected() else 'red'
+        name = GDT_Colored(color).add_field(GDT_Glyph(gdo.get_name())).render(mode)
+        return f'{server_id}-{name}'
