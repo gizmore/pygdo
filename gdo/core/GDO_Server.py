@@ -163,6 +163,7 @@ class GDO_Server(GDO):
                 'chan_name': name,
                 'chan_displayname': display_name or name,
                 'chan_server': self.get_id(),
+                'chan_trigger': self.get_trigger(),
             }).insert()
         return channel
 
