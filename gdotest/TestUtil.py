@@ -239,7 +239,9 @@ def text_plug(mode: Mode, line: str, user: 'GDO_User' = None) -> str:
     if result:
         out += result.render(mode)
     out = out.strip()
+    Application.fresh_page()
     gdo_print(out)
+
     return out
 
 def all_private_messages():

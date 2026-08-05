@@ -216,3 +216,10 @@ class Installer:
     @classmethod
     def get_repo_info(cls, module: GDO_Module):
         return cls.load_provider_toml()[module.get_name]
+
+    @classmethod
+    def wipe_all(cls, database: str = None):
+        database = Application.config('db.name') if database is None else database
+        Application.db().query(f"DROP DATABASE {database}")
+        Application.db().query(f"CREATE DATABASE {database}")
+        Application.db().query(f"USE {database}")

@@ -13,6 +13,7 @@ class DateInstall:
 
     @classmethod
     def now(cls, module: module_date):
+        cls.BULK = []
         cls.load_timezones()
         cls.install_timezone('UTC', 0)
         cls.install_timezone('USRT', 0)
@@ -40,6 +41,7 @@ class DateInstall:
                 gdo_tz.insert()
             else:
                 cls.BULK.append(gdo_tz)
+            cls.HAVE.append(tz_name)
 
     @classmethod
     def get_timezone_offset(cls, timezone_name) -> int:

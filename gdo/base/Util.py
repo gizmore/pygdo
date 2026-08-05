@@ -244,7 +244,7 @@ class Files:
         while not os.path.exists(parent):
             created.append(parent)
             new_parent = os.path.dirname(parent)
-            if new_parent == parent:
+            if not new_parent or new_parent == parent:
                 break
             parent = new_parent
         old_umask = os.umask(0)
