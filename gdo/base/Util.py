@@ -238,7 +238,22 @@ class Files:
 
     @classmethod
     def create_dir(cls, path: str, mode: int=0) -> bool:
-        os.makedirs(path, mode=mode or int(WithPygdo.application().config('file.mode.dir', "0o0700"), 0), exist_ok=True)
+        chmod = mode or int(WithPygdo.application().config('file.mode.dir', "0o0700"), 0)
+        created = []
+        parent = os.path.normpath(path)
+        while not os.path.exists(parent):
+            created.append(parent)
+            new_parent = os.path.dirname(parent)
+            if new_parent == parent:
+                break
+            parent = new_parent
+        old_umask = os.umask(0)
+        try:
+            os.makedirs(path, mode=chmod, exist_ok=True)
+        finally:
+            os.umask(old_umask)
+        for dir_name in reversed(created):
+            os.chmod(dir_name, chmod)
         return True
 
     @classmethod

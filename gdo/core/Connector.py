@@ -150,11 +150,14 @@ class Connector:
 
     async def send_to_channel(self, msg: Message, with_events: bool=True):
         await self.gdo_send_to_channel(msg)
+        msg._env_user = self.gdo_get_dog_user()
         if with_events:
             await Application.EVENTS.publish('msg_sent', msg)
 
     async def send_to_user(self, msg: Message, with_events: bool=True, notice: bool=False):
+        msg._env_target_user = msg._env_user
         await self.gdo_send_to_user(msg, notice)
+        msg._env_user = self.gdo_get_dog_user()
         if with_events:
             await Application.EVENTS.publish('msg_sent', msg)
 

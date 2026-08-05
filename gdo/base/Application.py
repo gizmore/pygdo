@@ -92,6 +92,7 @@ class Application:
         else:
             from gdo.install.Config import Config
             cls.CONFIG = Config.defaults()
+        cls.config.cache_clear()
         from gdo.base.Cache import Cache
         Cache.init(int(cls.config('redis.enabled', '0')),
                    cls.config('redis.host', 'localhost'),

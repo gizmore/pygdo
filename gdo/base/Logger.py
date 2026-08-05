@@ -77,7 +77,7 @@ class Logger:
             fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
         if cls._user and user_log:
-            dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
+            dir_name = f"{cls._base}{cls._user.get_server().get_name()}/{cls._user.get_name()}/"
             WithPygdo.util('Files').create_dir(dir_name)
             with open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 fo.write(f'{pre}{content}\n')
@@ -92,7 +92,7 @@ class Logger:
             await fo.write(f"{pre}{content}\n")
             cls.LINES_WRITTEN += 1  #PYPP#DELETE#
         if cls._user and user_log:
-            dir_name = f"{cls._base}{cls._user.get_server_id()}/{cls._user.get_name()}/"
+            dir_name = f"{cls._base}{cls._user.get_server().get_name()}/{cls._user.get_name()}/"
             await WithPygdo.util('Files').acreate_dir(dir_name)
             async with aiofiles.open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 await fo.write(f"{pre}{content}\n")

@@ -54,11 +54,17 @@ class GDT_User(GDT_Object):
         return self.authenticated(online)
 
     def query_gdos_query(self, val: str, query: Query) -> Query:
-        val_serv = Strings.regex_first(r'{(\d+)}$', val)
+        val_serv = Strings.regex_first(r'{([^{}]+)}$', val)
         val = Strings.substr_to(val, '{', val)
         query.where(f"user_displayname LIKE '%{GDT.escape(val)}%'")
         if val_serv:
-            query.where(f"user_server={val_serv}")
+            from gdo.core.GDO_Server import GDO_Server
+            if server := GDO_Server.table().get_by_vals({'serv_name': val_serv}):
+                query.where(f"user_server={server.get_id()}")
+            elif val_serv.isdecimal():
+                query.where(f"user_server={val_serv}")
+            else:
+                query.where('1=0')
         if self._same_server:
             user = GDO_User.current()
             query.where(f'user_server={user.get_server_id()}')

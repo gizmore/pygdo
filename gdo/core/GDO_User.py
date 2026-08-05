@@ -59,7 +59,7 @@ class GDO_User(GDO):
     #     return f
 
     def __repr__(self):
-        return f"{self.gdo_val('user_name')}{{{self.get_server_id()}}}"
+        return self.get_name_sid()
 
     @staticmethod
     def system() -> Self:
@@ -127,7 +127,7 @@ class GDO_User(GDO):
         return self.gdo_val('user_displayname')
 
     def get_name_sid(self):
-        return "%s{%s}" % (self.get_name(), self.get_server_id())
+        return "%s{%s}" % (self.get_name(), self.get_server().get_name())
 
     def get_level(self) -> int:
         return self.get_setting_value('level')
@@ -290,8 +290,8 @@ class GDO_User(GDO):
 
     @functools.cache
     def render_name(self) -> str:
-        serv = self.gdo_val('user_server')
-        serv = '' if serv == '2' else f"{{{serv}}}"
+        server = self.get_server()
+        serv = '' if server.get_id() == '2' else f"{{{server.get_name()}}}"
         return f"{self.gdo_val('user_displayname')}{serv}"
 
     #########

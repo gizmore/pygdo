@@ -42,6 +42,7 @@ class tcpauth(form):
         registered = user is None
         if registered:
             user = await self._env_server.get_or_create_user(login)
+        if registered or not user.get_setting_val('password'):
             from gdo.login.module_login import module_login
             module_login.instance().set_password_for(user, password)
         elif not self.check_password(user, password):

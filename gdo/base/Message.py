@@ -7,7 +7,6 @@ from gdo.core.GDT_Container import GDT_Container
 if TYPE_CHECKING:
     from gdo.core.Connector import Connector
     from gdo.core.GDO_User import GDO_User
-    from gdo.core.GDO_Channel import GDO_Channel
 
 from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOParamError, GDOModuleException
@@ -48,7 +47,7 @@ class Message(WithEnv):
         return self._env_server.get_connector()
 
     def message_copy(self) -> 'Message':
-        return Message(self._message, self._env_mode).env_copy(self).result(self._result).comrade(self._thread_user)
+        return Message(self._message, self._env_mode).env_copy(self).result(self._result).result_gdt(self._gdt_result).comrade(self._thread_user)
 
     def message(self, text: str):
         self._message = text
@@ -56,6 +55,11 @@ class Message(WithEnv):
 
     def result(self, result: str):
         self._result = result
+        self._delivered = False
+        return self
+
+    def result_gdt(self, result: GDT):
+        self._gdt_result = result
         self._delivered = False
         return self
 
@@ -106,6 +110,7 @@ class Message(WithEnv):
         result = self._method.execute()
         while asyncio.iscoroutine(result):
             result = await result
+        self._gdt_result = result
         txt2 = result.render(self._env_mode)
         if txt1 := Application.get_page()._top_bar.render(self._env_mode):
             txt += txt1 + " "
@@ -125,12 +130,15 @@ class Message(WithEnv):
             # if with_prefix:
                 # reply_to = self._env_reply_to or self._env_user.render_name()
                 # text = f"{reply_to}: {text}"
-                # self._result = text
+            if self._gdt_result:
+                self._result = self._gdt_result.render(self._env_server.get_render_mode()) or text
             await self._env_server.get_connector().send_to_channel(self, with_events)
         else:
+            if self._gdt_result:
+                text = self._gdt_result.render(self._env_server.get_render_mode()) or text
             if self._env_reply_to:
                 text = f"{self._env_reply_to}: {text}"
-                self._result = text
+            self._result = text
             u = self._thread_user if self._thread_user else self._env_user
             o = self._env_user
             if self._thread_user:
