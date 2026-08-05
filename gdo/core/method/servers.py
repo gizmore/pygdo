@@ -1,4 +1,5 @@
 from gdo.base.GDO import GDO
+from gdo.base.Render import Mode
 from gdo.core.GDO_Server import GDO_Server
 from gdo.table.MethodQueryTable import MethodQueryTable
 
@@ -19,3 +20,7 @@ class servers(MethodQueryTable):
     def render_irc(self) -> str:
         server = self._gdo
         return f"{server.render_name()}"
+
+    def render_gdo(self, gdo: GDO_Server, mode: Mode) -> str:
+        """Servers already render with their stable database ID."""
+        return gdo.render_name()
