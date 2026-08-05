@@ -1,5 +1,6 @@
 from gdo.base.Render import Mode
-from gdo.base.Trans import t
+from gdo.base.Application import Application
+from gdo.base.Trans import Trans
 from gdo.base.Util import Strings
 
 class WithText:
@@ -23,5 +24,6 @@ class WithText:
         return hasattr(self, '_text_key')
 
     def render_text(self, mode: Mode = Mode.render_html) -> str:
-        out = t(self._text_key, self._text_args)
+        out = Trans.tiso2(Application.STORAGE.lang, self._text_key, self._text_args)
+        out = Trans.replace_output(out, mode)
         return Strings.html(out, mode) if self._text_escaped else out

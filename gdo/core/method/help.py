@@ -9,6 +9,11 @@ from gdo.base.Util import html
 from gdo.core.Connector import Connector
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_String import GDT_String
+from gdo.language.GDT_Trans import GDT_Trans
+from gdo.message.GDT_Bold import GDT_Bold
+from gdo.message.GDT_Colored import GDT_Colored
+from gdo.message.GDT_Glyph import GDT_Glyph
+from gdo.message.GDT_Span import GDT_Span
 
 
 class help(Method):
@@ -52,7 +57,6 @@ class help(Method):
     def show_all_commands(self):
         loader = ModuleLoader.instance()
         grouped = {}
-        mode = self._env_mode
         meths = loader._meths if self.param_value('short') else loader._methods
         for klass in meths.values():
             method = klass()
@@ -63,18 +67,21 @@ class help(Method):
                 if module_name not in grouped:
                     grouped[module_name] = []
                 if method.has_permission(self._env_user, False):
-                    trigger_colored = Render.green(trigger, mode)
+                    trigger_colored = 'green'
                 else:
-                    trigger_colored = Render.red(trigger, mode)
+                    trigger_colored = 'red'
                 grouped[module_name].append([trigger, trigger_colored])
 
         grouped_sorted = {module: sorted(triggers, key=lambda x: x[0]) for module, triggers in sorted(grouped.items())}
 
-        group_part_one = {}
-        for module, triggers in grouped_sorted.items():
-            module_bold = Render.bold(module, mode)
-            group_part_one[module_bold] = ", ".join(trigger_colored for _, trigger_colored in triggers)
-
-        group_rendered = ", ".join(f"{module}: {triggers}" for module, triggers in group_part_one.items())
-
-        return GDT_String('help').text('msg_help_all_commands', (group_rendered,))
+        output = GDT_Span().add_field(GDT_Trans().text('msg_help_commands_prefix'))
+        for group_index, (module, triggers) in enumerate(grouped_sorted.items()):
+            if group_index:
+                output.add_field(GDT_Glyph(', '))
+            output.add_field(GDT_Bold().add_field(GDT_Glyph(module)))
+            output.add_field(GDT_Glyph(': '))
+            for trigger_index, (trigger, color) in enumerate(triggers):
+                if trigger_index:
+                    output.add_field(GDT_Glyph(', '))
+                output.add_field(GDT_Colored(color).add_field(GDT_Glyph(trigger)))
+        return output.add_field(GDT_Trans().text('msg_help_commands_suffix'))

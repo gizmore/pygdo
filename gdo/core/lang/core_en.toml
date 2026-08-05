@@ -121,6 +121,8 @@ msg_version = "Python %s - GDOv%s"
 mt_core_help = "Command Overview"
 md_core_help = "List all available commands for this PyGDO installation."
 msg_help_all_commands = "Commands: %s."
+msg_help_commands_prefix = "Commands: "
+msg_help_commands_suffix = "."
 msg_help_for = "%s: %s %s"
 
 ##############

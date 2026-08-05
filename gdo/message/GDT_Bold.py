@@ -12,3 +12,9 @@ class GDT_Bold(GDT_Span):
 
     def render_cli(self):
         return Render.bold(super().render_fields(Mode.render_cli), Mode.render_cli)
+
+    def render_irc(self):
+        return Render.bold(super().render_fields(Mode.render_irc), Mode.render_irc)
+
+    def render_telegram(self):
+        return Render.bold(super().render_fields(Mode.render_telegram), Mode.render_telegram)

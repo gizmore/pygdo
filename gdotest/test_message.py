@@ -10,6 +10,10 @@ from gdo.core.GDT_AutoInc import GDT_AutoInc
 from gdo.core.GDT_Text import GDT_Text
 from gdo.install.Installer import Installer
 from gdo.message.GDT_Message import GDT_Message
+from gdo.message.GDT_Bold import GDT_Bold
+from gdo.message.GDT_Colored import GDT_Colored
+from gdo.message.GDT_Glyph import GDT_Glyph
+from gdo.message.GDT_Italic import GDT_Italic
 from gdotest.TestUtil import GDOTestCase
 
 
@@ -45,6 +49,17 @@ class MessageTestCase(GDOTestCase):
         self.assertIn('\x1b[1m\x1b[3mhello world!\x1b[0m\x1b[0m', out, "Message cli is broken")
         out = gdt.render(Mode.render_form)
         self.assertIn('<textarea', out, "Message form is broken")
+
+    async def test_02_inline_rendering(self):
+        bold = GDT_Bold().add_field(GDT_Glyph('Wechall'))
+        italic = GDT_Italic().add_field(GDT_Glyph('test'))
+        self.assertEqual('**Wechall**', bold.render(Mode.render_markdown))
+        self.assertEqual('\x02Wechall\x02', bold.render(Mode.render_irc))
+        self.assertEqual('*test*', italic.render(Mode.render_markdown))
+        self.assertEqual('\x1dtest\x1d', italic.render(Mode.render_irc))
+        green = GDT_Colored('green').add_field(GDT_Glyph('allowed'))
+        self.assertEqual('allowed', green.render(Mode.render_markdown))
+        self.assertEqual('<span class="green">allowed</span>', green.render(Mode.render_html))
 
 if __name__ == '__main__':
     unittest.main()

@@ -6,7 +6,7 @@ import msgspec.json
 import tomlkit
 
 from gdo.base.Application import Application
-from gdo.base.Render import Render
+from gdo.base.Render import Mode, Render
 from gdo.base.Util import Strings, dump
 
 from typing import TYPE_CHECKING
@@ -100,8 +100,9 @@ class Trans:
         return Trans.replace_output(Trans.tiso2(iso, key, args))
 
     @staticmethod
-    def replace_output(text: str) -> str:
-        return Trans.REGEX_BOLD.sub(lambda m: Render.bold(m.group(1), Application.get_mode()), text)
+    def replace_output(text: str, mode: Mode = None) -> str:
+        mode = mode or Application.get_mode()
+        return Trans.REGEX_BOLD.sub(lambda m: Render.bold(m.group(1), mode), text)
 
     @staticmethod
     def tiso2(iso: str, key: str, args: tuple = None):

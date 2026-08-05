@@ -5,6 +5,7 @@ from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.Database import Database
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Render import Mode
 from gdo.base.Util import Permutations, Arrays
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Float import GDT_Float
@@ -15,6 +16,7 @@ from gdo.core.connector.Bash import Bash
 from gdo.core.connector.Web import Web
 from gdo.core.method.reload import reload
 from gdo.core.method.welcome import welcome
+from gdo.core.method.help import help
 from gdotest.TestUtil import cli_plug, web_gizmore, cli_gizmore, GDOTestCase, web_plug
 
 
@@ -101,6 +103,13 @@ class CoreTestCase(GDOTestCase):
         petra = await Bash.get_server().get_or_create_user('Petra')
         out = cli_plug(petra, "$help")
         self.assertIn("31mreload", out, "Reload should be red")
+        result = help().env_server(Bash.get_server()).env_user(petra, True).gdo_execute()
+        markdown = result.render(Mode.render_markdown)
+        self.assertIn('**Core**', markdown, 'Help module names should render bold in Markdown')
+        self.assertNotIn('\x02', markdown, 'Markdown help must not contain IRC bold controls')
+        self.assertNotIn('\x03', markdown, 'Markdown help must not contain IRC colour controls')
+        detail = help().env_server(Bash.get_server()).env_user(petra, True).input('trigger', 'help').gdo_execute()
+        self.assertIn('help', detail.render(Mode.render_markdown), 'Detailed help should still render')
 
     async def test_12_whoami(self):
         out = cli_plug(cli_gizmore(), "$WHOAMI")
