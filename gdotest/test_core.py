@@ -10,6 +10,7 @@ from gdo.base.Util import Permutations, Arrays
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_MD5 import GDT_MD5
+from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Path import GDT_Path
 from gdo.core.GDT_User import GDT_User
 from gdo.core.connector.Bash import Bash
@@ -54,6 +55,12 @@ class CoreTestCase(GDOTestCase):
         self.assertEqual(gdt.render_txt(), "31,337.142", "Float renders not nice Tryout #1")
         self.assertEqual(gdt.precision(6).render_txt(), "31,337.141569", "Float renders not nice Tryout #1")
         self.assertEqual(gdt.no_thousands().render_txt(), "31337.141569", "Float renders not nice Tryout #1")
+
+    async def test_04b_name_pattern(self):
+        for value in ('a1', '1_', 'A-Z_9'):
+            self.assertIsNotNone(GDT_Name('name').val(value).validated(), f'Name should be valid: {value}')
+        for value in ('_name', '-name', '.name', 'name.dot', 'a/', 'a'):
+            self.assertIsNone(GDT_Name('name').val(value).validated(), f'Name should be invalid: {value}')
 
     async def test_05_clear_cache(self):
         cli_plug(None, "$cc")
@@ -113,7 +120,7 @@ class CoreTestCase(GDOTestCase):
 
     async def test_12_whoami(self):
         out = cli_plug(cli_gizmore(), "$WHOAMI")
-        self.assertIn('gizmore{1}', out, '$WHOAMI does not work')
+        self.assertIn('gizmore{bash}', out, '$WHOAMI does not work')
 
     async def test_13_human_join(self):
         self.assertEqual('', Arrays.human_join([]), 'Arrays.human_join() does not work with empty arg.')

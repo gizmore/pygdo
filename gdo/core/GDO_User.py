@@ -127,7 +127,7 @@ class GDO_User(GDO):
         return self.gdo_val('user_displayname')
 
     def get_name_sid(self):
-        return "%s{%s}" % (self.get_name(), self.get_server().get_name())
+        return "%s{%s}" % (self.get_name(), self.get_server().get_name().lower())
 
     def get_level(self) -> int:
         return self.get_setting_value('level')
@@ -268,7 +268,7 @@ class GDO_User(GDO):
     def is_staff(self) -> bool:
         return self.has_permission('staff')
 
-    def is_human(self) -> bool:
+    def is_member(self) -> bool:
         return self.is_type(GDT_UserType.MEMBER)
 
     def has_permission(self, permission: str) -> bool:
@@ -291,7 +291,7 @@ class GDO_User(GDO):
     @functools.cache
     def render_name(self) -> str:
         server = self.get_server()
-        serv = '' if server.get_id() == '2' else f"{{{server.get_name()}}}"
+        serv = '' if server.get_id() == '2' else f"{{{server.get_name().lower()}}}"
         return f"{self.gdo_val('user_displayname')}{serv}"
 
     #########
