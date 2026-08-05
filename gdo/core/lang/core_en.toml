@@ -210,7 +210,7 @@ info_who_am_i = "Your username is %s (%s) with the following permissions: %s."
 #########
 mt_core_super = "Super"
 md_core_super = "Get granted all priviledges on a server."
-msg_super_granted = "You got granted all permissions on this server."
+msg_super_granted = "You got granted staff permissions on this server."
 err_wrong_superword = "The password is wrong."
 
 ########

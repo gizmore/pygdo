@@ -1,5 +1,7 @@
+from gdo.base import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
+from gdo.base.WithRateLimit import WithRateLimit
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
@@ -7,7 +9,7 @@ from gdo.core.GDT_Password import GDT_Password
 from gdo.core.GDT_Secret import GDT_Secret
 
 
-class super(Method):
+class super(Method, WithRateLimit()):
 
     @classmethod
     def gdo_trigger(cls) -> str:
@@ -20,10 +22,12 @@ class super(Method):
 
     @classmethod
     def gdo_method_config_server(cls) -> list[GDT]:
+        """"""
         return [
-            GDT_Password('superkey').initial('super'),
+            GDT_Password('superkey').initial(Application.config('core.secret')[0:16]),
         ]
 
+    @WithRateLimit()
     async def gdo_execute(self) -> GDT:
         key = self.get_config_server_val('superkey')
         if GDT_Password.check(key, self.param_value('pass')):
@@ -32,5 +36,8 @@ class super(Method):
         return self.err('err_wrong_superword')
 
     async def grant(self, user: GDO_User, server: GDO_Server):
-        for perm in ('voice', 'staff', 'admin'):
-            await GDO_UserPermission.grant(user, perm)
+        await GDO_UserPermission.grant(user, 'cronjob')
+        await GDO_UserPermission.grant(user, 'voice')
+        await GDO_UserPermission.grant(user, 'staff')
+        await GDO_UserPermission.grant(user, 'admin')
+

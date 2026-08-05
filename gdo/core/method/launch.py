@@ -34,7 +34,7 @@ class launch(Method):
         return 'launch'
 
     def gdo_user_permission(self) -> str | None:
-        return GDO_Permission.ADMIN
+        return GDO_Permission.OWNER
 
     def gdo_connectors(self) -> str:
         return 'bash'

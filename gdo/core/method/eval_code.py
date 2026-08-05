@@ -9,7 +9,7 @@ class eval_code(MethodForm):
         return 'eval'
 
     def gdo_user_permission(self) -> str | None:
-        return 'admin'
+        return 'owner'
 
     def gdo_create_form(self, form: GDT_Form) -> None:
         form.add_field(GDT_RestOfText('expression').not_null())
