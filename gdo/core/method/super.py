@@ -9,7 +9,7 @@ from gdo.core.GDT_Password import GDT_Password
 from gdo.core.GDT_Secret import GDT_Secret
 
 
-class super(Method, WithRateLimit()):
+class super(Method):
 
     @classmethod
     def gdo_trigger(cls) -> str:
@@ -27,7 +27,7 @@ class super(Method, WithRateLimit()):
             GDT_Password('superkey').initial(Application.config('core.superword')),
         ]
 
-    @WithRateLimit()
+    @WithRateLimit(max_calls=3, within=137)
     async def gdo_execute(self) -> GDT:
         key = self.get_config_server_val('superkey')
         if GDT_Password.check(key, self.param_value('pass')):
@@ -40,4 +40,3 @@ class super(Method, WithRateLimit()):
         await GDO_UserPermission.grant(user, 'voice')
         await GDO_UserPermission.grant(user, 'staff')
         await GDO_UserPermission.grant(user, 'admin')
-

@@ -37,7 +37,7 @@ git submodule update --init --recursive
 echo
 
 echo "Creating module provider mappings..."
-python3 gdoproviders.py
+./.venv/bin/python gdoproviders.py
 
 echo "Are you sure? Press Enter!"
 read

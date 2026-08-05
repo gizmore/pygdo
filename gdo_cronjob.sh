@@ -1,5 +1,4 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-python3 gdocronjob.py "$@"
-
+./.venv/bin/python gdocronjob.py "$@"
