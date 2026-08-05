@@ -30,18 +30,21 @@ class GDO_Server(GDO):
     _channels: dict[str, 'GDO_Channel']
     _users: dict[str, 'GDO_User']
     _has_loop: bool
+    _loop_task: asyncio.Task|None
 
     __slots__ = (
         '_connector',
         '_channels',
         '_users',
         '_has_loop',
+        '_loop_task',
     )
 
     def __init__(self):
         super().__init__()
         self._users = {}
         self._has_loop = False
+        self._loop_task = None
         self._channels = {}
         self._connector = None
 
@@ -49,6 +52,7 @@ class GDO_Server(GDO):
         super().gdo_wake_up()
         self._users = {}
         self._has_loop = False
+        self._loop_task = None
         self._channels = {}
         self._connector = None
 
@@ -181,12 +185,33 @@ class GDO_Server(GDO):
     ########
     async def loop(self):
         conn = self.get_connector()
-        while Application.RUNNING:
-            if not conn.is_connected():
-                if not conn.is_connecting():
-                    if conn.should_connect_now():
-                        await conn.connect()
-            await asyncio.sleep(2)
+        try:
+            while Application.RUNNING:
+                if not conn.is_connected():
+                    if not conn.is_connecting():
+                        if conn.should_connect_now():
+                            await conn.connect()
+                await asyncio.sleep(2)
+        finally:
+            self._has_loop = False
+            self._loop_task = None
+
+    async def stop_loop(self):
+        """Stop this server's runtime loop and disconnect its connector."""
+        task = self._loop_task
+        if task and not task.done():
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+        if task in Application.TASKS:
+            Application.TASKS.remove(task)
+        self._loop_task = None
+        self._has_loop = False
+        conn = self.get_connector()
+        if conn.is_connected() or conn.is_connecting():
+            await conn.disconnect('Server disabled')
 
     ###########
     # Message #

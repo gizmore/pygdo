@@ -6,7 +6,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Connector import GDT_Connector
 from gdo.core.connector.Web import Web
-from gdotest.TestUtil import cli_plug, GDOTestCase
+from gdotest.TestUtil import cli_gizmore, cli_plug, GDOTestCase
 
 
 class DogTestCase(GDOTestCase):
@@ -36,6 +36,11 @@ class DogTestCase(GDOTestCase):
     async def test_03_get_all_servers(self):
         servers = GDO_Server.table().all()
         self.assertGreater(len(servers), 1, "Cannot get servers.")
+
+    async def test_04_server_status(self):
+        web = Web.get_server()
+        out = cli_plug(cli_gizmore(), f"$server {web.get_id()} status")
+        self.assertIn(f"{web.get_name()}: up", out, "Cannot query a server's runtime status")
 
 
 if __name__ == '__main__':

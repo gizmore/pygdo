@@ -89,13 +89,13 @@ class launch(Method):
         sleep_ms = self.sleep_ms()
         Application.EVENTS.add_timer_async(Time.ONE_HOUR * 787, self.ping_db, 3_999_999_999)
         try:
-            self.SERVERS = GDO_Server.table().all('serv_enabled')
+            type(self).SERVERS = GDO_Server.table().all('serv_enabled')
             while Application.RUNNING:
                 Application.tick()
                 if self.tried_connecting():
                     await Application.EVENTS.update_timers(Application.TIME)
-                for server in self.SERVERS:
-                    await self.mainloop_step_server(server)
+                for server in type(self).SERVERS:
+                    await type(self).mainloop_step_server(server)
                 await Application.execute_queue()
                 if self._signaled:
                     self._signaled = False
@@ -114,8 +114,23 @@ class launch(Method):
     def tried_connecting(self):
         return Application.runtime() > 30
 
-    async def mainloop_step_server(self, server: GDO_Server):
+    @classmethod
+    async def mainloop_step_server(cls, server: GDO_Server):
         if not server._has_loop:
             Logger.debug(f"step server {server.render_name()}")
             server._has_loop = True
-            Application.TASKS.append(asyncio.create_task(server.loop(), name=server.get_name()))
+            server._loop_task = asyncio.create_task(server.loop(), name=server.get_name())
+            Application.TASKS.append(server._loop_task)
+
+    @classmethod
+    async def enable_server(cls, server: GDO_Server):
+        server.save_val('serv_enabled', '1')
+        if server not in cls.SERVERS:
+            cls.SERVERS.append(server)
+        await cls.mainloop_step_server(server)
+
+    @classmethod
+    async def disable_server(cls, server: GDO_Server):
+        server.save_val('serv_enabled', '0')
+        cls.SERVERS[:] = [known for known in cls.SERVERS if known.get_id() != server.get_id()]
+        await server.stop_loop()
