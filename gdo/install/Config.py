@@ -30,6 +30,7 @@ class Config:
             cls.data_str('core.web_root', '/', 'Needs to end with a slash, E.g.: "/" or "/www/".'),
             cls.data_str('core.domain', 'localhost', "full domain for full urls in mails."),
             cls.data_str('core.secret', GDT_Token.random(32), "Secret used in token calculations."),
+            cls.data_str('core.superword', GDT_Token.random(16), "Secret used in super permission grants."),
             cls.data_int('core.port', 80, 'Plaintext HTTP port.').min(0).max(65535),
             cls.data_int('core.port_tls', 443, "Encrypted HTTPS port.").min(0).max(65535),
             cls.data_int('core.force_tls', 0, "Redirect every HTTP to HTTPS? 0/1").min(0).max(1),

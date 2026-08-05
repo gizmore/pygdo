@@ -10,8 +10,6 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render
 from gdo.base.Result import ResultType
 from gdo.base.Util import Arrays, msg, Files, gdo_print
-from gdo.core.GDO_UserSetting import GDO_UserSetting
-from gdo.core.method.clear_cache import clear_cache
 
 
 class Installer:
@@ -30,9 +28,6 @@ class Installer:
         if verbose:
             gdo_print("Re-Loading installed modules.")
         loader = ModuleLoader.instance()
-        # await clear_cache().gdo_execute()
-        # loader.load_modules_db()
-        # loader.load_modules_fs()
         loader.init_modules(True, True)
 
         # if verbose:
@@ -47,8 +42,6 @@ class Installer:
             except Exception as ex:
                 Logger.exception(ex)
                 return False
-
-        # clear_cache().gdo_execute()
         return True
 
     @classmethod
