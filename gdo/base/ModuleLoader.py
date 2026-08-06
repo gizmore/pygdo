@@ -67,7 +67,9 @@ class ModuleLoader:
         return self._methods.get(trig, self._meths.get(trig))
 
     def get_method(self, method_trigger: str) -> Method | None:
-        return self.get_method_type(method_trigger)()
+        if klass := self.get_method_type(method_trigger):
+            return klass()
+        return None
 
     def sort_cache(self):
         cc = sorted(self._cache.items(), key=lambda mod: mod[1]._priority)
@@ -215,4 +217,3 @@ class ModuleLoader:
 
     def get_module_method(self, module_name: str, method_name: str) -> Method:
         return self.get_module(module_name).get_method(method_name)
-
