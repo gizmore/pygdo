@@ -27,6 +27,7 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.core.GDT_Enum import GDT_Enum
 from gdo.core.GDT_Template import Templite
 from gdo.core.GDT_TemplateHTML import GDT_TemplateHTML
 from gdo.core.GDT_UInt import GDT_UInt
@@ -92,6 +93,10 @@ class module_core(GDO_Module):
             GDT_Bool('send_403_mails').initial('1'),
             GDT_Bool('send_404_mails').initial('1'),
             GDT_Bool('allow_gdo_assets').initial('0'),
+            GDT_Enum('ipc_dog_mode').choices({
+                'redis': 'Redis queue',
+                'signal': 'Unix signal',
+            }).not_null().initial('redis'),
             GDT_UInt('av').initial('1').label('asset_version'),
             GDT_Timestamp('last_cron').initial(Time.get_date()),
         ]
@@ -127,6 +132,9 @@ class module_core(GDO_Module):
 
     def cfg_allow_gdo_assets(self) -> bool:
         return self.get_config_value('allow_gdo_assets')
+
+    def cfg_ipc_dog_mode(self) -> str:
+        return self.get_config_val('ipc_dog_mode')
 
     def cfg_last_cron(self) -> datetime:
         return self.get_config_value('last_cron')

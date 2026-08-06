@@ -97,6 +97,7 @@ class launch(Method):
                 for server in type(self).SERVERS:
                     await type(self).mainloop_step_server(server)
                 await Application.execute_queue()
+                await IPC.dog_check_for_ipc()
                 if self._signaled:
                     self._signaled = False
                     await IPC.dog_execute_events()

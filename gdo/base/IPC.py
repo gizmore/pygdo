@@ -5,6 +5,8 @@ from functools import lru_cache
 from typing import Any
 
 import aiofiles
+import msgspec.json
+from redis.exceptions import RedisError
 
 from gdo.base.Application import Application
 from gdo.base.AsyncRunner import AsyncRunner
@@ -20,6 +22,9 @@ class IPC:
     MAX_EVENT_ARG_SIZE = 1024
     COUNT: int = 0 #PYPP#DELETE#
     PID: int = 0
+    REDIS_QUEUE = 'ipc:dog:queue'
+    DOG_POLL_INTERVAL = 1.0
+    DOG_NEXT_CHECK = 0.0
 
     #######
     # CLI #
@@ -49,6 +54,31 @@ class IPC:
                 Logger.exception(ex, "IPC to_dog failed")
         cut = Time.get_date(ts)
         GDO_Event.table().delete_query().where(f"event_type='to_dog' AND event_created <='{cut}'").exec()
+
+    @classmethod
+    async def execute_dog_event(cls, event_name: str, args: Any = None):
+        from gdo.base.ModuleLoader import ModuleLoader
+        from gdo.core.GDO_User import GDO_User
+        from gdo.core.connector.Bash import Bash
+        module_name, method_name = event_name.split('.', 1)
+        method = ModuleLoader.instance().get_module_method(module_name, method_name)
+        if args:
+            method._raw_args.add_cli_line(args)
+        return await method.env_user(GDO_User.system()).env_server(Bash.get_server()).execute()
+
+    @classmethod
+    async def dog_check_for_ipc(cls):
+        if cls.cfg_dog_mode() != 'redis' or Application.TIME < cls.DOG_NEXT_CHECK:
+            return
+        cls.DOG_NEXT_CHECK = Application.TIME + cls.DOG_POLL_INTERVAL
+        if not Cache.RCACHE:
+            return
+        while payload := Cache.RCACHE.lpop(cls.REDIS_QUEUE):
+            try:
+                event = msgspec.json.decode(payload)
+                await cls.execute_dog_event(event['name'], event.get('args'))
+            except Exception as ex:
+                Logger.exception(ex, 'IPC Redis event failed')
 
     #######
     # Web #
@@ -125,6 +155,8 @@ class IPC:
 
     @classmethod
     def send_to_dog(cls, event: str, args: Any):
+        if cls.cfg_dog_mode() == 'redis' and cls.send_to_dog_redis(event, args):
+            return
         GDO_Event.to_dog(event, args)
         if not cls.PID:
             cls.PID = int(Files.get_contents(cls.method_launch()().lock_path(), False) or 0)
@@ -133,6 +165,22 @@ class IPC:
                 os.kill(cls.PID, signal.SIGUSR1)
         except ProcessLookupError:
             cls.PID = 0
+
+    @classmethod
+    def send_to_dog_redis(cls, event: str, args: Any) -> bool:
+        if not Cache.RCACHE:
+            return False
+        try:
+            Cache.RCACHE.rpush(cls.REDIS_QUEUE, msgspec.json.encode({'name': event, 'args': args}))
+            return True
+        except RedisError as ex:
+            Logger.exception(ex, 'Cannot enqueue IPC Redis event')
+            return False
+
+    @classmethod
+    def cfg_dog_mode(cls) -> str:
+        from gdo.core.module_core import module_core
+        return module_core.instance().cfg_ipc_dog_mode()
 
     @classmethod
     def send_to_web(cls, event: str, args: Any):
