@@ -1,5 +1,8 @@
 import pickle
 import smtplib
+from pathlib import Path
+from email import encoders
+from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -22,7 +25,7 @@ class Mail:
     _lazy: bool
     _subject: str
     _body: str
-    _attachments: dict[str, str]
+    _attachments: list[tuple[Path, str]]
 
     @classmethod
     def _cfg(cls, key: str) -> str:
@@ -39,6 +42,7 @@ class Mail:
     def __init__(self):
         self._lazy = False
         self._recipients = []
+        self._attachments = []
 
     def lazy(self, lazy: bool = True):
         self._lazy = lazy
@@ -79,6 +83,13 @@ class Mail:
         self._body = body
         return self
 
+    def attachment(self, path: str | Path, name: str = None):
+        path = Path(path)
+        if not path.is_file():
+            raise FileNotFoundError(path)
+        self._attachments.append((path, name or path.name))
+        return self
+
     def send_to_user(self, user: GDO_User) -> bool:
         self.recipient(user.get_mail(), user.get_displayname())
         return self.send()
@@ -115,6 +126,21 @@ class Mail:
     def _body_text(self) -> str:
         return Strings.html_to_text(self._body)
 
+    def build_message(self):
+        message = MIMEMultipart()
+        message["From"] = self._sender
+        message["To"] = ",".join(self._recipients)
+        message["Subject"] = self._subject
+        message.attach(MIMEText(self._body_html(), "html"))
+        message.attach(MIMEText(self._body_text(), "plain"))
+        for path, name in self._attachments:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(path.read_bytes())
+            encoders.encode_base64(part)
+            part.add_header("Content-Disposition", "attachment", filename=name)
+            message.attach(part)
+        return message
+
     def really_send_mail(self):
         port = int(Application.config('mail.port'))
         smtp_server = Application.config('mail.host')
@@ -123,30 +149,7 @@ class Mail:
 
         sender_email = self._sender
         receiver_email = self._recipients
-
-        message = MIMEMultipart()
-        message["From"] = self._sender
-        message["To"] = ",".join(self._recipients)
-        message["Subject"] = self._subject
-        message.attach(MIMEText(self._body_html(), "html"))
-        message.attach(MIMEText(self._body_text(), "plain"))
-
-        # # Specify the attachment file path
-        # filename = "path/to/your/file.pdf"  # Change this to the correct path
-        #
-        # # Open the file in binary mode
-        # with open(filename, "rb") as attachment:
-        #     part = MIMEBase("application", "octet-stream")
-        #     part.set_payload(attachment.read())
-        #
-        # # Encode file in ASCII characters to send by email
-        # encoders.encode_base64(part)
-
-        # Add header as key/value pair to attachment part
-        # part.add_header("Content-Disposition", f"attachment; filename= {filename}")
-
-        # Add attachment to message
-        # message.attach(part)
+        message = self.build_message()
 
         # Send the email
         with smtplib.SMTP(smtp_server, port) as server:
