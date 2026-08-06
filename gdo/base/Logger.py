@@ -71,6 +71,7 @@ class Logger:
     @classmethod
     def write(cls, path: str, content: str, user_log: bool = True):
         pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
+        path = datetime.datetime.now().strftime('%Y-%m-%d') + '_' + path
         if cls._user:
             pre += cls._user.get_name() + " - "
         with open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:
@@ -86,6 +87,7 @@ class Logger:
     @classmethod
     async def awrite(cls, path: str, content: str, user_log: bool = True):
         pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
+        path = datetime.datetime.now().strftime('%Y-%m-%d') + '_' + path
         if cls._user:
             pre += cls._user.get_name() + " - "
         async with aiofiles.open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:

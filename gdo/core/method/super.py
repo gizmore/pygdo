@@ -1,4 +1,4 @@
-from gdo.base import Application
+from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.WithRateLimit import WithRateLimit

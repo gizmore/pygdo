@@ -6,14 +6,10 @@ cd "$(dirname "$0")"
 # Dev Helper shell script to reload apache when files are changed
 #
 log_dir="protected/logs"
-error_logs=(
-    "$log_dir/apache-error.log"
-    "$log_dir/exception.log"
-)
 
 show_and_clear_errors() {
     local log
-    for log in "${error_logs[@]}"; do
+    for log in "$log_dir/apache-error.log" "$log_dir/exception.log" "$log_dir"/*_exception.log; do
         [ -f "$log" ] || continue
         printf '\n--- %s ---\n' "$log"
         cat -- "$log"
