@@ -1,18 +1,14 @@
 import os
 import functools
 import queue
-import sys
 import threading
 import time
-from asyncio import iscoroutine, AbstractEventLoop
-import asyncio
+from asyncio import AbstractEventLoop
 
-import msgspec.json
 import tomlkit
 
 from typing import TYPE_CHECKING
 
-from gdo.base.AsyncRunner import AsyncRunner
 from gdo.base.LazyImporter import LazyImporter
 
 if TYPE_CHECKING:
@@ -24,7 +20,7 @@ if TYPE_CHECKING:
 from gdo.base.Events import Events
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
-from gdo.base.Util import Arrays, module_config_var
+from gdo.base.Util import Arrays
 
 
 class Application:
