@@ -9,8 +9,8 @@ class GDT_Color(GDT_Char):
         super().__init__(name)
         self.label('color')
         self.icon('color')
-        self.minlen(7)
-        self.pattern(r'^#[0-9a-f]{6}$', re.IGNORECASE)
+        self.minlen(9)
+        self.pattern(r'^#[0-9a-f]{8}$', re.IGNORECASE)
         self.ascii()
         self.case_i()
         self._input_type = "color"

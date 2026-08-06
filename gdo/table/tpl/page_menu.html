@@ -5,7 +5,7 @@
       for page_num, active, href in field.page_items():
           active = " active" if active else ''
           if page_num < 1:
-              write('…')
+              write('...')
           else:
               write(f'<li class="page-item{active}"><a class="page-link" href="{href}">{page_num}</a></li>')
       %>
