@@ -41,6 +41,7 @@ class GDT_Url(GDT_String):
 
     def __init__(self, name):
         super().__init__(name)
+        self.ascii().maxlen(1024)
         self._url_schemes = ['http', 'https']
         self._url_reachable = False
         self._url_internal = False
