@@ -7,3 +7,6 @@ level = "Level"
 
 mt_user_profile = "%s's Profile"
 md_user_profile = "%s's profile on %s."
+
+mt_user_ranking = "Users"
+md_user_ranking = "User search and ranking."

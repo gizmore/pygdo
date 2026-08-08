@@ -203,7 +203,7 @@ class Query:
         elif isinstance(gdt, WithObject):
             table = gdt._table
             a_tbl = self._gdo.gdo_table_name()
-            f_tbl = f"{key}_t"
+            f_tbl = f"{a_tbl}_{key}_t"
             join = f"{join} {table.gdo_table_name()} AS {f_tbl} ON {f_tbl}.{table.primary_key_column().get_name()}={a_tbl}.{gdt.get_name()}"
         else:
             raise GDODBException(f"Cannot join object {key}", self.build_query())

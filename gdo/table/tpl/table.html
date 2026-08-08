@@ -30,7 +30,7 @@ if searched:
         write(gdt.render_label())
         if ordered:
             write(order_field.display_table_order(gdt))
-        if filtered:
+        if filtered and gdt.is_filterable():
             write(filter_field.display_table_filter(gdt))
         write('</th>')
     %>

@@ -20,7 +20,10 @@ class GDT_Filter(GDT_String):
         return gdt.render_table_filter(vals)
 
     def filter_query(self, query: Query, method: 'MethodTable'):
-        pass
+        for gdt in method.gdo_table_headers():
+            if gdt.is_filterable():
+                if val := self.filter_value(gdt):
+                    gdt.val(val).gdo_filter_query(method.gdo_table(), query)
 
     def filter_value(self, gdt: GDT):
         try:

@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from gdo.base.Method import Method
     from gdo.base.GDO import GDO
     from gdo.base.GDO_Module import GDO_Module
+    from gdo.core.GDO_User import GDO_User
     from gdo.form.GDT_Form import GDT_Form
 
 
@@ -156,6 +157,12 @@ class GDT(WithSerialization):
         Return true when val matches this gdt and the row should be kept.
         """
         return True
+
+    def gdo_filter_query(self, gdo: 'GDO', query: 'Query'):
+        pass
+
+    def is_filterable(self) -> bool:
+        return False
 
     ##########
     # Errors #

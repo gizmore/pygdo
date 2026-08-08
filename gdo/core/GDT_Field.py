@@ -115,6 +115,9 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithTooltip, WithIcon, WithError, W
     def initial_value(self, value: any):
         return self.initial(self.to_val(value))
 
+    def is_filterable(self) -> bool:
+        return True
+
     def secret(self, secret: bool = True):
         self._secret = secret
         return self

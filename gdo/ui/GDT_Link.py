@@ -22,6 +22,12 @@ class GDT_Link(WithHTMLAttributes, WithIcon, WithHREF, WithTitle, WithText, With
     def render_html(self) -> str:
         return f'<a class="gdt-link" href="{self.render_href()}"><span>{self.render_icon(Mode.render_html)}{self.render_text()}</span></a>'
 
+    def render_cell(self) -> str:
+        return self.render_html()
+
+    def render_card(self) -> str:
+        return self.render_html()
+
     def render_txt(self) -> str:
         return self.render_text(Mode.render_txt)
 

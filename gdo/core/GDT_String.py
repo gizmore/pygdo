@@ -3,6 +3,7 @@ import regex
 from enum import Enum
 
 from gdo.base.Application import Application
+from gdo.base.Query import Query
 from gdo.base.Trans import t
 from gdo.base.Util import html
 from gdo.core.GDT_Field import GDT_Field
@@ -144,6 +145,10 @@ class GDT_String(WithCompletion, GDT_Field):
 
     def gdo_filter(self, val: str) -> bool:
         return self.get_val().index(val) >= 0
+
+    def gdo_filter_query(self, gdo: 'GDO', query: 'Query'):
+        if val := self.get_val():
+            query.where(f"{self.get_name()} LIKE '%{self.escape_search(val)}%'")
 
     ############
     # Validate #

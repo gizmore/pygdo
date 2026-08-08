@@ -28,3 +28,14 @@ class GDT_Object(WithObject, GDT_UInt):
         if obj := self.get_value():
             return f"{obj.render_name()}"
         return Render.italic(t('none'))
+
+    def gdo_filter_query(self, gdo: 'GDO', query: 'Query'):
+        """Filter an object reference through its joined, human-readable name."""
+        if not self.get_val():
+            return
+        query.join_object(self.get_name())
+        if name_column := self._table.name_column():
+            alias = f'{gdo.gdo_table_name()}_{self.get_name()}_t'
+            name_column.copy_as(f'{alias}.{name_column.get_name()}').val(self.get_val()).gdo_filter_query(self._table, query)
+        else:
+            super().gdo_filter_query(gdo, query)

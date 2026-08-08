@@ -5,10 +5,13 @@ from gdo.base.Cache import Cache
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Text import GDT_Text
 from gdo.date.GDT_Duration import GDT_Duration
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 from gdo.date.Time import Time
+from gdo.ui.GDT_Link import GDT_Link
+from gdo.ui.GDT_Page import GDT_Page
 from gdo.user.GDT_Gender import GDT_Gender
 from gdo.user.GDT_Level import GDT_Level
 
@@ -22,6 +25,7 @@ class module_user(GDO_Module):
     def gdo_module_config(self) -> list[GDT]:
         return [
             GDT_Duration('activity_accuracy').not_null().units(2, False).initial('5m'),
+            GDT_Bool('show_userlist').not_null().initial('1'),
         ]
 
     def cfg_activity_accuracy(self) -> int:
@@ -53,3 +57,7 @@ class module_user(GDO_Module):
     def set_last_activity(self, user: GDO_User):
         if self.cfg_activity_accuracy() and user.is_persisted():
             user.save_setting('last_activity', self.get_activity_cut_date())
+
+    def gdo_init_sidebar(self, page: 'GDT_Page'):
+        if self.get_config_value('show_userlist'):
+            page._left_bar.add_field(GDT_Link().href(self.href('ranking')).text('mt_user_ranking'))

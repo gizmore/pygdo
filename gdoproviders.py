@@ -14,10 +14,13 @@ MULTI_PROVIDERS = {
 
 
 def git_remote_url(url: str, ssh: bool):
+    if url.startswith('git@'):
+        host, path = url[4:].split(':', 1)
+        url = f'https://{host}/{path}'
     if ssh:
-        return url.replace('https://', 'ssh://git@')
+        return url.removesuffix('.git').replace('https://', 'ssh://git@')
     else:
-        return url.replace('ssh://git@', 'https://')
+        return url.removesuffix('.git').replace('ssh://git@', 'https://')
 
 
 def get_git_remote(path, ssh: bool = False):
@@ -39,11 +42,14 @@ def create_providers():
     data = {}
     for module in modules.values():
         if module.is_installable():
-            data[module.get_name] = [
-                [get_git_remote(module.file_path())],
-                module.gdo_dependencies(),
-                module.gdo_is_site_module(),
-            ]
+            if remote := get_git_remote(module.file_path()):
+                data[module.get_name] = [
+                    [remote],
+                    module.gdo_dependencies(),
+                    module.gdo_is_site_module(),
+                ]
+            else:
+                print(f"Skipping {module.get_name}: no git origin configured.")
     # Overwrite with multi providers.
     for name, value in MULTI_PROVIDERS.items():
         data[name] = [value[0], value[1], value[2]]

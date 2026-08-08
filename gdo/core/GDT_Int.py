@@ -1,5 +1,7 @@
+import re
 import sys
 
+from gdo.base.Query import Query
 from gdo.base.Trans import t
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_String import GDT_String
@@ -66,6 +68,29 @@ class GDT_Int(GDT_String):
 
     def gdo_filter(self, val: str) -> bool:
         return self.get_val() == val
+
+    def gdo_filter_query(self, gdo: 'GDO', query: 'Query'):
+        """Filter exact values and inclusive integer ranges.
+
+        ``10-`` means at least ten, ``-10`` at most ten, and ``5-9`` the
+        inclusive range from five through nine.
+        """
+        value = self.get_val()
+        if not value:
+            return
+        match = re.fullmatch(r'\s*(?:(-?\d+)\s*-\s*(-?\d+)?|-\s*(\d+)|(-?\d+))\s*', value)
+        if not match:
+            return
+        lower, upper, at_most, exact = match.groups()
+        field = self.get_name()
+        if exact is not None:
+            query.where(f'{field}={int(exact)}')
+        elif at_most is not None:
+            query.where(f'{field}<={int(at_most)}')
+        elif upper is None:
+            query.where(f'{field}>={int(lower)}')
+        else:
+            query.where(f'{field} BETWEEN {int(lower)} AND {int(upper)}')
 
     def to_value(self, val: str):
         if val is None:

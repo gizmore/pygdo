@@ -41,8 +41,11 @@ class profile(Method):
         card.title('whose_profile', (user.render_name(),))
         content = card.get_content()
         for module in ModuleLoader.instance().enabled():
+            for gdt in module.gdo_profile_links(user):
+                content.add_field(gdt)
+        for module in ModuleLoader.instance().enabled():
             for gdt in module.all_user_settings():
-                if gdt := GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current()):
+                if gdt := GDO_UserSetting.setting_column(gdt.get_name(), user):
                     if isinstance(gdt, GDT_Field) and not gdt.is_secret() and not gdt.is_hidden():
                         content.add_field(gdt)
         return card

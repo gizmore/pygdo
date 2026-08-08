@@ -7,11 +7,13 @@ from typing_extensions import Self
 from typing import TYPE_CHECKING, Type, Iterator
 
 from gdo.base.Cache import gdo_redis_cached
+from gdo.base.GDT import GDT
 from gdo.base.util.href import href
 
 if TYPE_CHECKING:
     from gdo.ui.GDT_Page import GDT_Page
     from gdo.base.Method import Method
+    from gdo.core.GDO_User import GDO_User
 
 from packaging.version import Version
 
@@ -109,6 +111,9 @@ class GDO_Module(WithModuleConfig, GDO):
         return False
 
     def gdo_classes(self) -> list[type[GDO]]:
+        return []
+
+    def gdo_profile_links(self, user: 'GDO_User') -> list[GDT]:
         return []
 
     def get_by_name(self, modulename: str, enabled: bool = None):
