@@ -59,7 +59,10 @@ class GDO_Channel(GDO):
     def with_setting(cls, method: Method, key: str, val: str, default: str = '', server: GDO_Server = None) -> list['GDO_Channel']:
         m = GDO_Method.for_method(method)
         null = ' OR mv_val IS NULL' if default == val else ''
-        query = cls.table().select().join(f'LEFT JOIN gdo_methodvalchannel ON mv_key={cls.quote(key)} AND mv_method={m.get_id()}')
+        query = cls.table().select().join(
+            f'LEFT JOIN gdo_methodvalchannel ON mv_channel=chan_id '
+            f'AND mv_key={cls.quote(key)} AND mv_method={m.get_id()}'
+        )
         query.where(f"mv_val={cls.quote(val)}{null}")
         if server:
             query.where(f'chan_server={server.get_id()}')
