@@ -103,6 +103,7 @@ class GDO(WithName, WithBulk, GDT):
         return [
             '_vals',
             '_my_id',
+            '_blank',
         ]
 
     def gdo_wake_up(self) -> Self:
@@ -311,7 +312,7 @@ class GDO(WithName, WithBulk, GDT):
     def get_by(self, key: str, val: str) -> Self:
         return self.get_by_vals({key: val})
 
-    def get_by_aid(self, id_: str) -> Self:
+    def get_by_aid(self, id_: str) -> Self | None:
         """
         Get a row by auto inc id.
         """

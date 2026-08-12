@@ -55,7 +55,9 @@ class module_user(GDO_Module):
         return Time.get_date(Application.TIME)
 
     def set_last_activity(self, user: GDO_User):
-        if self.cfg_activity_accuracy() and user.is_persisted():
+        # TCP uses Ghost until tcpauth completes. A Ghost may carry the
+        # synthetic id 0, but it must never create a user-setting row.
+        if self.cfg_activity_accuracy() and not user.is_ghost() and user.is_persisted():
             user.save_setting('last_activity', self.get_activity_cut_date())
 
     def gdo_init_sidebar(self, page: 'GDT_Page'):

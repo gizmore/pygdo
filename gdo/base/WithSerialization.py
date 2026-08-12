@@ -81,4 +81,3 @@ class WithSerialization(WithPygdo):
                 setattr(obj, key, WithSerialization.gdopinstances(value))
             return obj
         return dic
-        

@@ -1,9 +1,12 @@
 import os
 import unittest
+from unittest.mock import patch
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_Session import GDO_Session
+from gdo.core.GDO_User import GDO_User
+from gdo.user.module_user import module_user
 from gdotest.TestUtil import GDOTestCase, install_module, web_gizmore, web_plug
 
 
@@ -34,6 +37,11 @@ class UserRankingTest(GDOTestCase):
         out = web_plug('user.ranking.html?f[user_server]=netcat').exec()
         self.assertIn('netcat', out)
         self.assertNotIn('>9-wechall</td>', out)
+
+    def test_ghost_never_gets_a_last_activity_setting(self):
+        with patch.object(GDO_User, 'save_setting') as save_setting:
+            module_user.instance().set_last_activity(GDO_User.ghost())
+        save_setting.assert_not_called()
 
 
 if __name__ == '__main__':
