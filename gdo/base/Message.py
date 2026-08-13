@@ -89,7 +89,9 @@ class Message(WithEnv):
             pass
         except GDOParamError as ex:
             self._result = str(ex)
-            self._result += " " + str(self._method.get_arg_parser(True).format_usage())
+            # Methods render their own CLI syntax.  The old call targeted an
+            # obsolete argparse API and hid the original parameter error.
+            self._result += " " + self._method.render_cli_usage()
             try:
                 await self.deliver()
             except Exception as ex:

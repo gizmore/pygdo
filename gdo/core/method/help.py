@@ -1,6 +1,7 @@
 import re
 
 from gdo.base.Application import Application
+from gdo.base.Exceptions import GDOParamError
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
@@ -66,7 +67,15 @@ class help(Method):
                 trigger = method.gdo_trigger()
                 if module_name not in grouped:
                     grouped[module_name] = []
-                if method.has_permission(self._env_user, False):
+                # Some commands decide permissions from a required argument
+                # (for example Logs/UserMethod).  `$help` has no argument to
+                # supply here, so list those commands as unavailable instead
+                # of aborting the complete command list.
+                try:
+                    allowed = method.has_permission(self._env_user, False)
+                except GDOParamError:
+                    allowed = False
+                if allowed:
                     trigger_colored = 'green'
                 else:
                     trigger_colored = 'red'
