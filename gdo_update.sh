@@ -45,7 +45,7 @@ echo "Updating the main phpgdo repository and its submodules."
 update_repo "./.git"
 
 echo "Updating all extension modules and submodules in $THREADS parallel threads."
-find ./GDO \
+find ./gdo \
 	-mindepth 2 \
 	-maxdepth 2 \
 	-type d \
