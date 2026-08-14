@@ -76,18 +76,44 @@ sync_repo() {
 }
 
 pids=()
+repos=()
+logs=()
 failed=0
+LOG_DIR="$(mktemp -d "${TMPDIR:-/tmp}/pygdo-sync.XXXXXX")"
+trap 'rm -rf "$LOG_DIR"' EXIT
+
 wait_for_worker() {
   local pid="${pids[0]}"
+  local repo="${repos[0]}"
+  local log="${logs[0]}"
+  local status=0
+
+  # Each repository keeps its own transcript while it runs.  Printing it
+  # only once the worker ends preserves readable, non-interleaved output.
   if ! wait "$pid"; then
+    status=1
     failed=1
   fi
+  printf '\n===== Sync: %s =====\n' "$repo"
+  cat "$log"
+  if ((status)); then
+    printf '===== FAILED: %s =====\n' "$repo" >&2
+  fi
+  rm -f "$log"
   pids=("${pids[@]:1}")
+  repos=("${repos[@]:1}")
+  logs=("${logs[@]:1}")
 }
 
+repo_num=0
 while IFS= read -r -d '' repo_git; do
-  sync_repo "$CORE/$repo_git/.." &
+  repo="$CORE/$repo_git/.."
+  log="$LOG_DIR/$repo_num.log"
+  sync_repo "$repo" >"$log" 2>&1 &
   pids+=("$!")
+  repos+=("$repo")
+  logs+=("$log")
+  repo_num=$((repo_num + 1))
   if ((${#pids[@]} >= THREADS)); then
     wait_for_worker
   fi
