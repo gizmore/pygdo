@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 
 from gdo.base.Logger import Logger
 
@@ -59,6 +60,19 @@ class Events:
                 subscriber['count'] -= 1
                 if subscriber['count'] <= 0:
                     to_delete.append(subscriber['callback'])
+        for callback in to_delete:
+            self.unsubscribe(event_name, callback)
+
+    def publish_sync(self, event_name, *args, **kwargs):
+        """Publish an event that must finish before its caller continues."""
+        to_delete = []
+        for subscriber in self._subscribers.get(event_name, []):
+            result = subscriber['callback'](*args, **kwargs)
+            if inspect.isawaitable(result):
+                raise RuntimeError(f"Async subscriber on synchronous event: {event_name}")
+            subscriber['count'] -= 1
+            if subscriber['count'] <= 0:
+                to_delete.append(subscriber['callback'])
         for callback in to_delete:
             self.unsubscribe(event_name, callback)
 

@@ -35,11 +35,13 @@ class GDO_Module(WithModuleConfig, GDO):
     _priority: int
     _inited: bool
     _license: str
+    _events: object | None
 
     __slots__ = (
         '_priority',
         '_inited',
         '_license',
+        '_events',
     )
 
     @classmethod
@@ -51,6 +53,7 @@ class GDO_Module(WithModuleConfig, GDO):
         self._priority = 50
         self._inited = False
         self._license = 'PyGDOv8'
+        self._events = None
         self._blank = True
 
     def __repr__(self):
@@ -132,10 +135,15 @@ class GDO_Module(WithModuleConfig, GDO):
         return True
 
     def init(self):
+        # Application.init() creates a fresh event bus while modules stay
+        # cached. Subscribe once to every such bus, not merely once per
+        # module instance.
+        if self._events is not Application.EVENTS:
+            self._events = Application.EVENTS
+            self.gdo_subscribe_events()
         if not self._inited:
             self._inited = True
             self.gdo_init()
-            self.gdo_subscribe_events()
             if Application.IS_HTTP:
                 self.gdo_load_scripts(Application.get_page())
 

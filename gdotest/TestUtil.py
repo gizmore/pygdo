@@ -4,7 +4,7 @@ import logging
 import nest_asyncio
 from typing_extensions import TYPE_CHECKING
 
-from gdo.base.GDO_Module import GDO_Module
+from gdo.base.Cache import Cache
 from gdo.base.Message import Message
 from gdo.base.Util import gdo_print, Files
 from gdo.core.GDO_UserPermission import GDO_UserPermission
@@ -27,7 +27,7 @@ from gdo.core.GDO_Session import GDO_Session
 from gdo.core.connector.Web import Web
 from gdo.core.connector.Bash import Bash
 from gdo.install.Installer import Installer
-from index_wsgi import application, pygdo_application
+from index_wsgi import application
 
 
 class GDOTestCase(unittest.IsolatedAsyncioTestCase):
@@ -46,12 +46,14 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
         loop.set_debug(False)
         WebPlug.COOKIES = {}
         all_private_messages()
-        # Files.create_dir(Application.file_path('assets/'+GDO_Module.CORE_REV))
 
-    def _tearDownAsyncioRunner(self):
-        asyncio.gather(*Application.TASKS)
-        Application.LOOP.stop()
-        Application.LOOP.close()
+    async def asyncTearDown(self):
+        await asyncio.gather(*Application.TASKS)
+        # Application.LOOP.stop()
+        # Application.LOOP.close()
+        await super().asyncTearDown()
+
+#    def _tearDownAsyncioRunner(self):
 
     async def ticker(self, ticks: int = 1):
         for i in range(ticks):
@@ -92,6 +94,7 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
 
 def reinstall_module(name):
     drop_module(name)
+    Cache.clear()
     return install_module(name)
 
 def drop_module(name: str):

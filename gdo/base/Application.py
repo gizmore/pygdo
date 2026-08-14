@@ -370,8 +370,11 @@ class Application:
 
     @classmethod
     def publish_event(cls, name: str, *args):
-        coro = Application.EVENTS.publish(name, *args)
-        cls.run_coro(coro, 'publish_event')
+        Application.EVENTS.publish_sync(name, *args)
+
+    @classmethod
+    async def publish_event_async(cls, name: str, *args):
+        await Application.EVENTS.publish(name, *args)
 
     @classmethod
     def run_coro(cls, coro, name: str):
