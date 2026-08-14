@@ -6,6 +6,9 @@ CORE="$(dirname "$0")"
 
 rev=0
 msg=""
+# GNU xargs is inconsistent across developer machines. Keep the worker pool in
+# Bash instead; this also works with the Bash 3.2 that ships with macOS.
+THREADS="${THREADS:-8}"
 
 # Parse args: [--rev] "commit message"
 while (($#)); do
@@ -55,13 +58,43 @@ git pull --rebase
 git push
 
 echo "Syncing module repositories..."
-find gdo -iname ".git" -type d -exec sh -c '
-  CORE="$1"; MSG="$2"; repo_git="$3"
-  cd "$CORE"
-  cd "$repo_git/.."
-  pwd
-  git add -A .
-  git commit -m "$MSG" || true
-  git pull --rebase
-  git push
-' _ "$CORE" "$msg" {} \;
+if ! [[ "$THREADS" =~ ^[1-9][0-9]*$ ]]; then
+  echo "THREADS must be a positive integer, got: $THREADS" >&2
+  exit 2
+fi
+
+sync_repo() {
+  local repo="$1"
+  (
+    cd "$repo"
+    pwd
+    git add -A .
+    git commit -m "$msg" || true
+    git pull --rebase
+    git push
+  )
+}
+
+pids=()
+failed=0
+wait_for_worker() {
+  local pid="${pids[0]}"
+  if ! wait "$pid"; then
+    failed=1
+  fi
+  pids=("${pids[@]:1}")
+}
+
+while IFS= read -r -d '' repo_git; do
+  sync_repo "$CORE/$repo_git/.." &
+  pids+=("$!")
+  if ((${#pids[@]} >= THREADS)); then
+    wait_for_worker
+  fi
+done < <(find gdo -iname ".git" -type d -print0)
+
+while ((${#pids[@]})); do
+  wait_for_worker
+done
+
+exit "$failed"
