@@ -26,3 +26,12 @@ class GDO_SeoFile(GDO):
     def get_by_url(cls, url: str) -> 'GDO_SeoFile':
         url = Strings.substr_to(url, '?', url).strip('/')
         return cls.table().get_by_aid(url)
+
+    def gdo_after_create(self, gdo):
+        self.get_by_url.cache_clear()
+
+    def gdo_after_update(self, gdo):
+        self.get_by_url.cache_clear()
+
+    def gdo_after_delete(self, gdo):
+        self.get_by_url.cache_clear()
