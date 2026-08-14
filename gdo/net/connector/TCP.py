@@ -128,7 +128,7 @@ class TCP(Connector):
 
         session.user = user
         session.session = GDO_Session.for_user(user)
-        session.channel = self._server.get_or_create_channel(user.get_name())
+        session.channel = self._server.get_or_create_channel(user.get_name(), creator=user)
         await user.authenticate(session.session)
         return True
 

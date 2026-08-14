@@ -18,8 +18,13 @@ class GDT_Creator(GDT_User):
         return self
 
     def gdo_before_create(self, gdo):
+        # An explicit creator (for example a connector's authenticated user)
+        # always wins over the ambient request context.
+        if self.get_name() in gdo._dirty:
+            return self
         GDO_User = WithPygdo.gdo_user()
         user = GDO_User.current()
         user = GDO_User.system() if not user.is_persisted() else user
         gdo.set_val(self.get_name(), user.get_id())
         self.val(user.get_id())
+        return self

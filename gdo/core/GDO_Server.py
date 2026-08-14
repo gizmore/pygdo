@@ -155,15 +155,18 @@ class GDO_Server(GDO):
     ###########
     # Channel #
     ###########
-    def get_or_create_channel(self, name: str, display_name: str = None) -> 'GDO_Channel':
+    def get_or_create_channel(self, name: str, display_name: str = None, creator: GDO_User | None = None) -> 'GDO_Channel':
         from gdo.core.GDO_Channel import GDO_Channel
         channel = self.get_channel_by_name(name)
         if not channel:
+            creator = creator or GDO_User.current()
+            creator = GDO_User.system() if not creator.is_persisted() else creator
             channel = GDO_Channel.blank({
                 'chan_name': name,
                 'chan_displayname': display_name or name,
                 'chan_server': self.get_id(),
                 'chan_trigger': self.get_trigger(),
+                'chan_creator': creator.get_id(),
             }).insert()
         return channel
 

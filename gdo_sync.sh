@@ -53,10 +53,8 @@ git add -A .
 git commit -m "$msg" || true
 git pull --rebase
 git push
-sleep 1
 
 echo "Syncing module repositories..."
-sleep 1
 find gdo -iname ".git" -type d -exec sh -c '
   CORE="$1"; MSG="$2"; repo_git="$3"
   cd "$CORE"
