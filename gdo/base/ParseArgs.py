@@ -3,8 +3,6 @@ from gdo.base.Exceptions import GDOModuleException
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
-from gdo.base.Trans import Trans
-from gdo.base.Util import Strings
 from urllib.parse import unquote
 
 from typing import TYPE_CHECKING, Any, Generator

@@ -6,8 +6,6 @@ import subprocess
 import sys
 
 from gdo.base.Application import Application
-from gdo.base.Cache import Cache
-from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
@@ -19,7 +17,6 @@ from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.method.clear_cache import clear_cache
 from gdo.install.Config import Config
 from gdo.install.Installer import Installer
-from gdo.mail import module_mail
 from gdoproviders import git_remote_url
 
 
@@ -73,7 +70,6 @@ class App:
         parser = argparse.ArgumentParser(description='Configure modules. Example: ./gdo_adm.sh configure --interactive --unittests')
         parser.add_argument('--interactive', '-i', action='store_true')
         parser.add_argument('--unittests', '-u', action='store_true')
-        # parser.add_argument('--path', default='protected/config.toml')
         args = parser.parse_args(sys.argv[2:])
         path = Application.CONFIG_PATH
         data = Config.data(Application.CONFIG)
@@ -391,6 +387,7 @@ class App:
                     print(f"Module is not installed.")
         else:
             parser.print_help()
+        Files.empty_dir(Application.files_path())
         await clear_cache().gdo_execute()
         print("All Done!")
 

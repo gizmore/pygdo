@@ -125,13 +125,20 @@ class GDO(WithName, WithBulk, GDT):
 
     def fill_defaults(self, vals: dict|None=None, mark_blank: bool = True):
         cols = self.table().column_items()
-        out = vals if vals else {}
+        # Keep defaults available for INSERTs, but do not pretend they were
+        # supplied by the caller.  soft_replace() applies dirty values to an
+        # existing row; marking every implicit default dirty would overwrite
+        # generated columns such as creator/created with NULL.
+        supplied = dict(vals) if vals else {}
+        out = dict(supplied)
         for name, gdt in cols:
             if name not in out:
                 out[name] = gdt.get_initial()
         self._vals = out
         self._blank = mark_blank
-        return self.all_dirty()
+        self._all_dirty = False
+        self._dirty = list(supplied)
+        return self
 
     def gdo_hash(self) -> str:
         hash_me = hashlib.sha256()
@@ -423,8 +430,8 @@ class GDO(WithName, WithBulk, GDT):
             if not self.is_persisted():
                 return self.insert()
             if len(self._dirty) or self._all_dirty:
-                dirty = self.dirty_vals()
                 obj.before_update()
+                dirty = self.dirty_vals()
                 obj.query().type(Type.UPDATE).set_vals(dirty).where(self.pk_where()).exec()
                 self._blank = False
                 obj.after_update()

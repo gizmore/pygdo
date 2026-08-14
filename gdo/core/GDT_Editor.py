@@ -16,5 +16,5 @@ class GDT_Editor(GDT_User):
     def gdo_before_update(self, gdo):
         from gdo.core.GDO_User import GDO_User
         user = GDO_User.current()
-        user = GDO_User.system() if user.is_ghost() else user
+        user = GDO_User.system() if not user.is_persisted() else user
         gdo.set_val(self.get_name(), user.get_id())

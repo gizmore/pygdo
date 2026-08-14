@@ -8,14 +8,14 @@ from mysql.connector import OperationalError
 
 from gdo.base.Cache import Cache
 from gdo.base.LazyImporter import LazyImporter
-from gdo.base.ParseArgs import ParseArgs
 from gdo.base.UserTemp import UserTemp
 from gdo.message.GDT_HTML import GDT_HTML
 from gdo.ui.GDT_Error import GDT_Error
 from gdo.ui.GDT_Success import GDT_Success
 
+from gdo.base.ParseArgs import ParseArgs
+
 if TYPE_CHECKING:
-    from gdo.base.ParseArgs import ParseArgs
     from gdo.core.GDO_Channel import GDO_Channel
     from gdo.core.GDO_Server import GDO_Server
     from gdo.core.GDO_User import GDO_User
@@ -86,7 +86,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             return self
         return self.args(method._raw_args)
 
-    def args(self, args: ParseArgs):
+    def args(self, args: 'ParseArgs'):
         self._raw_args = args
         return self
 

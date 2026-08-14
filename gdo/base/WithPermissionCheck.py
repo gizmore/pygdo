@@ -98,16 +98,16 @@ class WithPermissionCheck:
             return self.err_type_not_allowed(types)
 
     def err_type_guest_allowed(self) -> bool:
-        from gdo.register import module_register
-        from gdo.ui.GDT_Link import GDT_Link
-        if module_enabled('register') and module_register.instance().cfg_guest_signup():
-            back_to = f"&_back_to={urlencode(Application.current_href())}"
-            link1 = GDT_Link().text('link_login_before_continue').href(href('login', 'form', back_to)).render()
-            link2 = GDT_Link().text('link_continue_as_guest').href(href('register', 'guest', back_to)).render()
-            self.err('err_type_guest', (link1, link2))
-            return False
-        else:
-            return self.err_type_members_only()
+        if module_enabled('register'):
+            from gdo.register.module_register import module_register
+            from gdo.ui.GDT_Link import GDT_Link
+            if module_register.instance().cfg_guest_signup():
+                back_to = f"&_back_to={urlencode(Application.current_href())}"
+                link1 = GDT_Link().text('link_login_before_continue').href(href('login', 'form', back_to)).render()
+                link2 = GDT_Link().text('link_continue_as_guest').href(href('register', 'guest', back_to)).render()
+                self.err('err_type_guest', (link1, link2))
+                return False
+        return self.err_type_members_only()
 
     def err_type_members_only(self):
         if module_enabled('login'):

@@ -27,8 +27,8 @@ class GDT_Message(GDT_Composite):
     def gdo_components(self) -> list['GDT']:
         components = [
             self,
-            GDT_Text(f'{self._name}_input').not_null(),
-            GDT_Editor(f"{self._name}_editor").not_null(),
+            GDT_Text(f'{self._name}_input').not_null(self.is_not_null()),
+            GDT_Editor(f"{self._name}_editor").not_null(self.is_not_null()),
         ]
         for mode in Mode.explicit():
             components.append(GDT_Text(f"{self._name}_{mode.name.lower()}"))

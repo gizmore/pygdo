@@ -8,6 +8,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.base.Util import Permutations, Arrays
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDO_Channel import GDO_Channel
 from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_MD5 import GDT_MD5
 from gdo.core.GDT_Name import GDT_Name
@@ -148,6 +149,13 @@ class CoreTestCase(GDOTestCase):
     async def test_16_asset_file(self):
         out = web_plug('gdo/core/css/pygdo.css').exec()
         self.assertIn('*', out, "css asset loading failed")
+
+    async def test_17_soft_replace_only_updates_explicit_blank_values(self):
+        candidate = GDO_Channel.blank({'chan_id': '107', 'chan_name': 'patch'})
+        dirty = candidate.dirty_vals()
+        self.assertEqual({'chan_name': 'patch'}, dirty)
+        self.assertNotIn('chan_created', dirty)
+        self.assertNotIn('chan_creator', dirty)
 
 if __name__ == '__main__':
     unittest.main()

@@ -14,11 +14,12 @@ class GDT_Creator(GDT_User):
 
     def gdo(self, gdo: 'GDO') -> Self:
         super().gdo(gdo)
-        self.gdo_before_create(gdo)
+        # self.gdo_before_create(gdo)
         return self
 
     def gdo_before_create(self, gdo):
         GDO_User = WithPygdo.gdo_user()
         user = GDO_User.current()
-        user = GDO_User.system() if user.is_ghost() else user
+        user = GDO_User.system() if not user.is_persisted() else user
         gdo.set_val(self.get_name(), user.get_id())
+        self.val(user.get_id())

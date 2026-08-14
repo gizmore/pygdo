@@ -7,6 +7,7 @@ class GDT_Edited(GDT_Created):
     def __init__(self, name: str):
         super().__init__(name)
         self.label('edited')
+        self.not_null(False)
 
     def gdo_before_update(self, gdo):
         gdo.set_val(self._name, Time.get_date())
