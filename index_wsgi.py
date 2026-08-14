@@ -2,7 +2,7 @@ import os.path
 import asyncio
 import time
 from io import BytesIO
-from urllib.parse import parse_qs, unquote
+from urllib.parse import parse_qs
 from multipart import MultipartParser
 
 from gdo.base.IPC import IPC
@@ -132,12 +132,18 @@ def pygdo_application(environ, start_response):
         args = ParseArgs()
 
         if '_url' in qs:
-            url = unquote(Strings.substr_from(qs['_url'][0], '/', qs['_url'][0]))
+            # ``parse_qs()`` already unquotes the query value once.  A second
+            # unquote here would turn an escaped route separator (``%2E``)
+            # into a literal point before ParseArgs can split the route.
+            url = Strings.substr_from(qs['_url'][0], '/', qs['_url'][0])
             # del qs['_url']
             if not url:
                 url = 'core.welcome.html'
         elif environ['PATH_INFO'] != '/':
-            url = environ['PATH_INFO'].lstrip('/')
+            # WSGI's PATH_INFO has already percent-decoded the path.  Use the
+            # raw request target so ParseArgs can split on literal points
+            # before decoding `%2E` inside a route segment.
+            url = environ.get('REQUEST_URI', environ['PATH_INFO']).split('?', 1)[0].lstrip('/')
 
         args.add_arg('_url', url)
 

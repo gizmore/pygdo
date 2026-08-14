@@ -5,6 +5,7 @@ from gdo.base.Logger import Logger
 from gdo.base.Render import Mode
 from gdo.base.Trans import Trans
 from gdo.base.Util import Strings
+from urllib.parse import unquote
 
 from typing import TYPE_CHECKING, Any, Generator
 
@@ -39,6 +40,7 @@ class ParseArgs(WithPygdo):
         try:
             method = self.loader().get_module_method(self.module, self.method)
             method._raw_args = self
+            self.resolve_web_path_args(method)
             return method
         except:
             raise GDOModuleException(self.module)
@@ -51,24 +53,38 @@ class ParseArgs(WithPygdo):
         try:
             if not url:
                 return
-            url = url.lstrip('/').replace(self.ESCAPED_SEPARATOR, self.TEMP_MARKER)
-            parts = url.split(self.ENTRY_SEPARATOR)
-            last = parts[-1]
-            self.mode = Strings.rsubstr_from(last, '.', 'html')
-            parts[-1] = Strings.rsubstr_to(last, '.', last)
-            head = parts[0]
-            if '.' in head:
-                self.module, self.method = head.split('.', 1)
-            else:
-                self.module, self.method = head, ''  # or keep previous, or default method
-            for part in parts[1:]:
-                if self.ARG_SEPARATOR not in part:
-                    continue  # or treat as flag
-                key, val = part.split(self.ARG_SEPARATOR, 1)
-                val = val.replace(self.TEMP_MARKER, self.ENTRY_SEPARATOR)
-                self.args.setdefault(key, []).append(val)
+            parts = url.lstrip('/').split('.')
+            if len(parts) < 3:
+                raise ValueError('A web route needs module, method and extension.')
+            self.module, self.method = parts[:2]
+            self.mode = unquote(parts[-1])
+            self._web_path_values = [unquote(part) for part in parts[2:-1]]
         except Exception as ex:
             Logger.exception(ex, "add_path_vars() failed")
+
+    def resolve_web_path_args(self, method: 'Method'):
+        """Split route values into positional values and named option pairs."""
+        values = getattr(self, '_web_path_values', None)
+        if values is None:
+            return
+        self._web_path_values = None
+        positionals = [gdt for gdt in method.gdo_parameters() if gdt.is_positional()]
+        self.pargs = []
+        index = 0
+        for gdt in positionals:
+            # ``name.value`` explicitly names a positional GDT; this preserves
+            # generic href(..., '&name=value') callers without a tilde syntax.
+            if index + 1 < len(values) and values[index] == gdt.get_name():
+                self.args.setdefault(values[index], []).append(values[index + 1])
+                index += 2
+            elif index < len(values):
+                self.pargs.append(values[index])
+                index += 1
+        while index + 1 < len(values):
+            self.args.setdefault(values[index], []).append(values[index + 1])
+            index += 2
+        if index < len(values):
+            Logger.warning(f'Ignoring dangling web option in {self.module}.{self.method}: {values[index]!r}')
 
     def add_arg(self, key: str, vals: list[str]|str):
         self.args[key] = vals

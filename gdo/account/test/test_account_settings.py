@@ -45,17 +45,17 @@ class AccountTest(GDOTestCase):
     def test_05_render_single_settings(self):
         out = web_plug('login.form.html').user('gizmore').exec()
         out = web_plug('login.form.html').user('gizmore').post({"submit": "1", "bind_ip": "1", "login": "gizmore", "password": "11111111"}).exec()
-        out = web_plug('account.settings;module~language.html').user('gizmore').exec()
+        out = web_plug('account.settings.module.language.html').user('gizmore').exec()
         self.assertIn('Change Language settings', out, 'Module Language does not appear in account.settings(Language).')
 
     def test_06_change_single_setting(self):
         out = web_plug('login.form.html').exec()
         out = web_plug('login.form.html').post({"submit": "1", "bind_ip": "1", "login": "gizmore", "password": "11111111"}).exec()
-        out = web_plug('account.settings;module~language.html').user('gizmore').post({'language': 'de', 'submit_language': '1'}).exec()
+        out = web_plug('account.settings.module.language.html').user('gizmore').post({'language': 'de', 'submit_language': '1'}).exec()
         self.assertIn('de', out, 'Cannot change language settings #1.')
-        out = web_plug('account.settings;module~language.html').user('gizmore').post({'language': 'en', 'submit_language': '1'}).exec()
+        out = web_plug('account.settings.module.language.html').user('gizmore').post({'language': 'en', 'submit_language': '1'}).exec()
         self.assertIn('en', out, 'Cannot change language settings #2.')
-        out = web_plug('account.settings;module~mail.html').user('gizmore').post({'submit_mail': '1'}).exec()
+        out = web_plug('account.settings.module.mail.html').user('gizmore').post({'submit_mail': '1'}).exec()
         self.assertIn('submit_mail', out, 'Cannot save email settings.')
 
 

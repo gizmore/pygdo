@@ -21,7 +21,9 @@ is_gizmore_repo() {
 
 push_repo() {
     local repo="$1" ahead
-    is_gizmore_repo "$repo" || return
+    # Not every checkout belongs to gizmore (and a few have no origin).
+    # This is an intentional skip, not a failure for ``set -e``.
+    is_gizmore_repo "$repo" || return 0
 
     echo "== $repo"
     if [[ -n "$(git -c safe.directory='*' -C "$repo" status --porcelain)" ]]; then

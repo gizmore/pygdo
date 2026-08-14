@@ -68,7 +68,14 @@ class UtilityTestCase(GDOTestCase):
 
     async def test_href(self):
         result = href('core', 'profile', '&for=gizmore{2}')
-        self.assertEqual('/core.profile;for~gizmore{2}.html?_lang=en', result, 'href() does not work as expected.')
+        self.assertEqual('/core.profile.for.gizmore%7B2%7D.html?_lang=en', result, 'href() does not build the point URL.')
+
+    async def test_href_positional(self):
+        result = href('core', 'echo', positional=('This.Test', 'one/two'))
+        self.assertEqual('/core.echo.This%2ETest.one%2Ftwo.html?_lang=en', result,
+                         'href() does not encode point-separated values safely.')
+        self.assertEqual('/core.echo..html?_lang=en', href('core', 'echo', positional=('',)),
+                         'href() must preserve an empty positional segment.')
 
     async def test_with_random_seed(self):
         with Random(42):

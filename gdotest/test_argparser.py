@@ -3,6 +3,7 @@ from urllib.parse import parse_qs
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.account.method.settings import settings
 from gdo.base.ParseArgs import ParseArgs
 from gdo.core.method.echo import echo
 from gdotest.TestUtil import GDOTestCase
@@ -38,3 +39,17 @@ class test_argparser(GDOTestCase):
         self.assertIsInstance(method, echo, 'web path parsing failed.')
         self.assertEqual(['2', '3'], parser.get_val('lst'), 'web path get parsing failed #1')
         self.assertEqual(['4'], parser.get_val('arg2'), 'web path get parsing failed #2')
+
+    async def test_03_path_web_named_positional(self):
+        parser = ParseArgs()
+        parser.add_path_vars('/account.settings.module.language.html')
+        method = parser.get_method()
+        self.assertIsInstance(method, settings, 'point web path did not load the method.')
+        self.assertEqual([], parser.pargs)
+        self.assertEqual(['language'], parser.get_val('module'))
+
+    async def test_04_path_web_empty_positional(self):
+        parser = ParseArgs()
+        parser.add_path_vars('/core.echo..html')
+        parser.get_method()
+        self.assertEqual([''], parser.pargs, 'empty positional segments must not be dropped.')

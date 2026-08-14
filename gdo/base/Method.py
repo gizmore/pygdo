@@ -317,8 +317,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         UserTemp.flash(self._env_user, GDT_Error().text(key, args).title_raw(self.gdo_module().render_name()))
         return self.redirect(href, key, args)
 
-    def href(self, append: str = '', format: str = 'html') -> str:
-        return self.gdo_module().href(self.get_name(), append, format)
+    def href(self, append: str = '', format: str = 'html', positional: tuple|list = ()) -> str:
+        return self.gdo_module().href(self.get_name(), append, format, positional)
 
     def execute_command(self, line: str):
         from gdo.base.Parser import Parser

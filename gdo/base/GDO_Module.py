@@ -181,8 +181,8 @@ class GDO_Module(WithModuleConfig, GDO):
             raise GDOMethodException(self.get_name, name)
         return klass().module(self)
 
-    def href(self, method_name: str, append: str = '', format: str = 'html'):
-        return href(self.get_name, method_name, append, format)
+    def href(self, method_name: str, append: str = '', format: str = 'html', positional: tuple|list = ()):
+        return href(self.get_name, method_name, append, format, positional)
 
     ##########
     # Errors #

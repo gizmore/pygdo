@@ -24,12 +24,12 @@ class WebTestCase(GDOTestCase):
         self.assertIsInstance(method, echo, "Cannot load method echo via web means")
 
     def test_02_web_plug_echo(self):
-        req = WebPlug("core.echo;text~This%20Test.html?_lang=de")
+        req = WebPlug("core.echo.This%20Test.html?_lang=de")
         out = req.exec()
         self.assertIn('This Test', out, "Plugged web test failed")
 
     def test_03_json_via_web(self):
-        req = WebPlug("core.echo;text~This%20Test.json?_lang=de")
+        req = WebPlug("core.echo.This%20Test.json?_lang=de")
         out = req.exec()
         self.assertIn('{', out, "web json test failed")
         self.assertIn('"text":', out, "web json test failed")
@@ -42,7 +42,7 @@ class WebTestCase(GDOTestCase):
         self.assertIn('PyGDO', out, "Welcome method does not work")
 
     async def test_05_file_not_found(self):
-        req = WebPlug("core.echoNONO;This%20Test.html?_lang=de")
+        req = WebPlug("core.echoNONO.This%20Test.html?_lang=de")
         out = req.exec()
         self.assertIn('not found', out, "Plugged web test 404 failed")
 
@@ -52,12 +52,12 @@ class WebTestCase(GDOTestCase):
         self.assertIn('margin:', out, "CSS asset pygdo.css cannot be served by web handler.")
 
     def test_07_web_path_echo_cli(self):
-        req = WebPlug("core.echo;text~This.is.a.test.cli")
+        req = WebPlug("core.echo.This%2Eis%2Ea%2Etest.cli")
         out = req.exec()
         self.assertEqual('This.is.a.test', out, "CLI echo does not work properly")
 
     def test_08_web_path_echo_txt(self):
-        req = WebPlug("core.echo;text~This.is.a.test.txt")
+        req = WebPlug("core.echo.This%2Eis%2Ea%2Etest.txt")
         out = req.exec()
         self.assertEqual('This.is.a.test', out, "TXT echo does not work properly")
 
