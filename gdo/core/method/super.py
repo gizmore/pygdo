@@ -24,7 +24,7 @@ class super(Method):
     def gdo_method_config_server(cls) -> list[GDT]:
         """"""
         return [
-            GDT_Password('superkey').initial(Application.config('core.superword')),
+            GDT_Password('superkey').initial(str(Application.config('core.superword'))),
         ]
 
     @WithRateLimit(max_calls=3, within=137)
