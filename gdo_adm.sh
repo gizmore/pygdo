@@ -2,4 +2,4 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-./.venv/bin/python gdoadm.py "$@"
+python3 gdoadm.py "$@"
