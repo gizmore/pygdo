@@ -33,8 +33,10 @@ class set_cli(Method):
             return self.reply('msg_print_cli_setting', (gdt.get_name(), Render.italic(gdt.render_val(), mode), tooltip, gdt.render_suggestion()))
         else:
             gdt = GDO_UserSetting.setting_column(key, user)
-            old = gdt.render_val()
-            user.save_setting(key, value)
-            new = user.get_setting_val(key)
-            return self.reply('msg_set_cli_setting', (key, Render.italic(old, mode), Render.italic(new, mode)))
-
+            if gdt.is_writable():
+                old = gdt.render_val()
+                user.save_setting(key, value)
+                new = user.get_setting_val(key)
+                return self.reply('msg_set_cli_setting', (key, Render.italic(old, mode), Render.italic(new, mode)))
+            else:
+                return self.err('err_not_writable')

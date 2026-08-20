@@ -167,7 +167,7 @@ class ModuleLoader:
         for module in self._cache.values():
             for gdt in module.gdo_user_config():
                 if isinstance(gdt, GDT_Field):
-                    GDT_UserSetting.register(gdt)
+                    GDT_UserSetting.register(gdt.writable(False))
             for gdt in module.gdo_user_settings():
                 if isinstance(gdt, GDT_Field):
                     GDT_UserSetting.register(gdt)
