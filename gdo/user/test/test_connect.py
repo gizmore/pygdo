@@ -7,6 +7,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_Session import GDO_Session
+from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.connector.Web import Web
 from gdo.install.Installer import Installer
 from gdotest.TestUtil import GDOTestCase, cli_plug
@@ -31,6 +32,7 @@ class ConnectAccountTest(GDOTestCase):
         for user in (self.master, self.slave, self.other):
             user._authenticated = True
             user.save_val('user_link', None)
+        await GDO_UserPermission.grant(self.master, 'staff')
 
     def request_token(self):
         output = cli_plug(self.master, f'$user.connect {self.slave.render_name()}')
@@ -72,3 +74,9 @@ class ConnectAccountTest(GDOTestCase):
         self.assertIn('invalid or has expired', output)
         self.slave.reload()
         self.assertIsNone(self.slave.get_linked_user())
+
+    def test_05_staff_can_hardlink_a_selected_connector_account(self):
+        output = cli_plug(self.master, f'$user.hardlink {self.slave.render_name()}')
+        self.assertIn('connected account', output)
+        self.slave.reload()
+        self.assertEqual(self.master.get_id(), self.slave.get_linked_user().get_id())

@@ -65,7 +65,9 @@ class GDT_User(GDT_Object):
                 query.where(f"user_server={val_serv}")
             else:
                 query.where('1=0')
-        if self._same_server:
+        if self._same_channel:
+            query.where(f'user_server={self._same_channel.get_server().get_id()}')
+        elif self._same_server:
             user = GDO_User.current()
             query.where(f'user_server={user.get_server_id()}')
         return query.limit(10)
@@ -78,8 +80,8 @@ class GDT_User(GDT_Object):
         query = self._table.select()
         users = self.query_gdos_query(val, query).limit(10).exec().fetch_all()
         if self._same_channel:
-            allowed = set(self._same_channel._users)
-            return [user for user in users if user in allowed]
+            allowed_names = self._same_channel._users
+            return [user for user in users if user.get_name() in allowed_names]
         return users
 
     ##########

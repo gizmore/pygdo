@@ -101,4 +101,4 @@ class GDO_Channel(GDO):
         return self.get_server()._channels.get(self.get_id()) is not None
 
     def is_user_online(self, user: GDO_User) -> bool:
-        return self._users.get(user.get_id()) is not None
+        return user.get_name() in self._users
