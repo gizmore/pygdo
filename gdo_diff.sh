@@ -17,6 +17,13 @@ echo "Starting gdo_diff.sh"
 # without modifying either user's global Git configuration.
 while IFS= read -r -d '' git_dir; do
     repo_dir=$(cd -- "${git_dir%/.git}" && pwd)
+    # Do not add empty repository headings to the report. The path is useful
+    # context only when there is an actual working-tree diff to inspect.
+    if LANG=en_GB LC_ALL=en_GB git \
+        -c "safe.directory=$repo_dir" \
+        -C "$repo_dir" diff --quiet; then
+        continue
+    fi
     printf '\n=== %s ===\n' "$repo_dir"
     LANG=en_GB LC_ALL=en_GB git \
         -c "safe.directory=$repo_dir" \
