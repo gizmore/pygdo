@@ -9,6 +9,7 @@ class GDT_Hash(GDT_Char):
 
     TYPES = {
         'sha256': 256 // 4,
+        'sha512': 512 // 4,
         'md5': 128 // 4,
     }
 
