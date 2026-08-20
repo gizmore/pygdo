@@ -36,6 +36,7 @@ class Message(WithEnv):
         self._message = message
         self._env_reply_to = None
         self._thread_user = None
+        self._no_sender_prefix = False
         self._env_channel = None
         self._env_session = None
         self._result = ''
@@ -47,7 +48,9 @@ class Message(WithEnv):
         return self._env_server.get_connector()
 
     def message_copy(self) -> 'Message':
-        return Message(self._message, self._env_mode).env_copy(self).result(self._result).result_gdt(self._gdt_result).comrade(self._thread_user)
+        return (Message(self._message, self._env_mode).env_copy(self).
+                result(self._result).result_gdt(self._gdt_result).
+                comrade(self._thread_user).no_sender_prefix(self._no_sender_prefix))
 
     def message(self, text: str):
         self._message = text
@@ -65,6 +68,11 @@ class Message(WithEnv):
 
     def comrade(self, user: 'GDO_User'):
         self._thread_user = user
+        return self
+
+    def no_sender_prefix(self, enabled: bool = True):
+        """Request raw connector output without an automatically added sender."""
+        self._no_sender_prefix = enabled
         return self
 
     def get_trigger(self):
