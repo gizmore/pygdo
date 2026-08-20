@@ -1,10 +1,13 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-CORE="$(dirname "$0")"
+CORE="$(pwd)"
 
-clear
-
-echo "Starting gdo_status.sh"
-
-find . -maxdepth 3 -iname ".git" -type d -exec sh -c "cd $CORE && cd {} && cd .. && echo "--------------------------------" && pwd && LANG=en_GB LC_ALL=en_GB git status && git submodule foreach git status" \;
+find . -maxdepth 3 -type d -name .git -print0 |
+while IFS= read -r -d '' gitdir; do
+	repo="${gitdir%/.git}"
+	repo_path="$(cd "$repo" && pwd)"
+	status="$(LANG=en_GB LC_ALL=en_GB git -c safe.directory="$repo_path" -C "$repo_path" status --short --ignore-submodules=none)"
+	[ -z "$status" ] && continue
+	printf '%s\n%s\n%s\n' "--------------------------------" "$repo" "$status"
+done
