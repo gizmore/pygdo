@@ -202,11 +202,14 @@ def pygdo_application(environ, start_response):
                 for chunk in gdt:
                     yield chunk
                 return
-            else:
-                return # This should b a 304
-            # Application.header('Content-Type', 'text/html; Charset=UTF-8')
+            # A forbidden file must still send its regular error response.
+            # Returning without calling ``start_response`` makes mod_wsgi
+            # turn the intentional 403 into a generic 500.
+            Application.header('Content-Type', 'text/html; charset=UTF-8')
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
+            if Application.get_status().startswith('304'):
+                return
             yield Application.get_page().method(method).result(gdt).render(Mode.render_html).encode()
             return
         else:
