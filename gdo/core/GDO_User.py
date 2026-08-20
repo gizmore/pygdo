@@ -117,6 +117,27 @@ class GDO_User(GDO):
     def get_linked_user(self) -> 'GDO_User':
         return self.gdo_value('user_link')
 
+    def get_effective_user(self) -> 'GDO_User':
+        """Return the account which owns this user's shared state.
+
+        A linked connector account remains the message origin, but acts as its
+        final link target for settings, score and ordinary method execution.
+        Broken historic data must never turn a link loop into an endless
+        request; fall back to the originating user in that case.
+        """
+        origin = current = self
+        seen = set()
+        while current and current.is_persisted():
+            user_id = current.get_id()
+            if user_id in seen:
+                return origin
+            seen.add(user_id)
+            linked = current.get_linked_user()
+            if not linked:
+                return current
+            current = linked
+        return origin
+
     def get_server_id(self) -> str:
         return self.gdo_val('user_server')
 

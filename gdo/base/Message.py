@@ -48,9 +48,11 @@ class Message(WithEnv):
         return self._env_server.get_connector()
 
     def message_copy(self) -> 'Message':
-        return (Message(self._message, self._env_mode).env_copy(self).
+        copy = (Message(self._message, self._env_mode).env_copy(self).
                 result(self._result).result_gdt(self._gdt_result).
                 comrade(self._thread_user).no_sender_prefix(self._no_sender_prefix))
+        copy._env_reply_to = self._env_reply_to
+        return copy
 
     def message(self, text: str):
         self._message = text
@@ -83,6 +85,13 @@ class Message(WithEnv):
     async def execute(self):
         try:
             Application.fresh_page()
+            # A linked connector account must keep receiving replies through
+            # its original network identity, while every method sees the
+            # account which owns shared settings, score and permissions.
+            if self._env_user:
+                self._env_reply_to = self._env_user
+                self._env_user = self._env_user.get_effective_user()
+                Application.set_current_user(self._env_user)
             await Application.EVENTS.publish('new_message', self)
             trigger = self._env_server.get_trigger()
             if self._env_channel is not None:
@@ -146,13 +155,13 @@ class Message(WithEnv):
         else:
             if self._gdt_result:
                 text = self._gdt_result.render(self._env_server.get_render_mode()) or text
-            if self._env_reply_to:
-                text = f"{self._env_reply_to}: {text}"
             self._result = text
-            u = self._thread_user if self._thread_user else self._env_user
+            u = self._thread_user if self._thread_user else (self._env_reply_to or self._env_user)
             o = self._env_user
-            if self._thread_user:
+            if u != o:
                 self._env_user = u
             await self._env_server.get_connector().send_to_user(self, with_events)
-            if self._thread_user:
-                self._env_user = o
+            # Connectors temporarily tag outbound messages as their Dog user.
+            # Keep this inbound message's effective user intact for audit and
+            # callers after delivery.
+            self._env_user = o

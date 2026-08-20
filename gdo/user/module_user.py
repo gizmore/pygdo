@@ -6,7 +6,9 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Bool import GDT_Bool
+from gdo.core.GDT_Secret import GDT_Secret
 from gdo.core.GDT_Text import GDT_Text
+from gdo.core.GDT_Token import GDT_Token
 from gdo.date.GDT_Duration import GDT_Duration
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 from gdo.date.Time import Time
@@ -26,10 +28,20 @@ class module_user(GDO_Module):
         return [
             GDT_Duration('activity_accuracy').not_null().units(2, False).initial('5m'),
             GDT_Bool('show_userlist').not_null().initial('1'),
+            GDT_Secret('user_link_pepper').not_null().initial(GDT_Token.random(32)),
         ]
+
+    async def gdo_install(self):
+        # A fresh installation needs one stable secret shared by web and Dog.
+        from gdo.base.GDO_ModuleVal import GDO_ModuleVal
+        if GDO_ModuleVal.table().get_by_id(self.get_id(), 'user_link_pepper') is None:
+            self.save_config_val('user_link_pepper', self.get_config_val('user_link_pepper'), force=True)
 
     def cfg_activity_accuracy(self) -> int:
         return self.get_config_value('activity_accuracy')
+
+    def cfg_user_link_pepper(self) -> str:
+        return self.get_config_val('user_link_pepper')
 
     def gdo_init(self):
         Application.EVENTS.subscribe('permission_granted', self.on_permission_granted)
@@ -47,6 +59,7 @@ class module_user(GDO_Module):
         return [
             GDT_Timestamp('last_activity'),
             GDT_Level('level').initial('0'),
+            GDT_Link('connect_account').href(self.href('connect')).text('link_connect_account'),
         ]
 
     def get_activity_cut_date(self) -> str:

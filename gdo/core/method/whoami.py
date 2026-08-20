@@ -16,10 +16,13 @@ class whoami(Method):
 
     def gdo_execute(self) -> GDT:
         u = self._env_user
+        reply_to = self._message._env_reply_to or u
         ps = []
         for p in u.permissions():
             ps.append(p)
 
-        authed = 'authenticated' if u._authenticated else 'not_authenticated'
-        text = t('info_who_am_i', (u.render_name(), t(authed), Arrays.human_join(ps)))
+        # Linked accounts execute as their master, but `whoami` should still
+        # identify the connector account which actually sent the message.
+        authed = 'authenticated' if reply_to._authenticated else 'not_authenticated'
+        text = t('info_who_am_i', (reply_to.render_name(), t(authed), Arrays.human_join(ps)))
         return GDT_String('result').val(text)
