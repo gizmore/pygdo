@@ -136,14 +136,33 @@ def pygdo_application(environ, start_response):
             # unquote here would turn an escaped route separator (``%2E``)
             # into a literal point before ParseArgs can split the route.
             url = Strings.substr_from(qs['_url'][0], '/', qs['_url'][0])
-            # del qs['_url']
+            # The Apache WSGI rewrite can expose its internal entry script as
+            # ``?_url=index_wsgi.py/<path>``.  It is not part of the public
+            # PyGDO path and would otherwise make directory routes resolve
+            # below a fictitious ``index_wsgi.py`` directory.
+            script_file = os.path.basename(__file__)
+            if url.lstrip('/').startswith(script_file + '/'):
+                url = url.lstrip('/')[len(script_file):]
+            # Do not add Apache's original internal route again below via
+            # ``add_get_vars()``; it would overwrite the normalized value.
+            del qs['_url']
             if not url:
                 url = 'core.welcome.html'
         elif environ['PATH_INFO'] != '/':
             # WSGI's PATH_INFO has already percent-decoded the path.  Use the
             # raw request target so ParseArgs can split on literal points
-            # before decoding `%2E` inside a route segment.
-            url = environ.get('REQUEST_URI', environ['PATH_INFO']).split('?', 1)[0].lstrip('/')
+            # before decoding `%2E` inside a route segment.  mod_wsgi may
+            # prefix REQUEST_URI with the ScriptAlias target, so remove that
+            # internal script name before resolving files/directories.
+            raw_url = environ.get('REQUEST_URI', environ['PATH_INFO']).split('?', 1)[0]
+            script_name = environ.get('SCRIPT_NAME', '').rstrip('/')
+            if script_name and raw_url.startswith(script_name + '/'):
+                raw_url = raw_url[len(script_name):]
+            else:
+                script_file = os.path.basename(__file__)
+                if raw_url.lstrip('/').startswith(script_file + '/'):
+                    raw_url = raw_url.lstrip('/')[len(script_file):]
+            url = raw_url.lstrip('/')
 
         args.add_arg('_url', url)
 
