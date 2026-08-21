@@ -1,6 +1,4 @@
-from gdo.avatar.GDT_Avatar import GDT_Avatar
 from gdo.base.Trans import t
-from gdo.base.Util import module_config_value
 from gdo.base.util.href import href
 from gdo.core.GDO_User import GDO_User
 from gdo.ui.GDT_Link import GDT_Link
