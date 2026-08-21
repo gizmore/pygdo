@@ -16,7 +16,7 @@ class whoami(Method):
 
     def gdo_execute(self) -> GDT:
         u = self._env_user
-        reply_to = self._message._env_reply_to or u
+        reply_to = self._env_reply_to or u
         ps = []
         for p in u.permissions():
             ps.append(p)

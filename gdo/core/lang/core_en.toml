@@ -249,3 +249,4 @@ msg_config_set = "Configuration for %s.%s has been changed from %s to %s."
 #########
 mt_core_do_as = "Do as / su"
 md_core_do_as = "Execute a command in the name of another user. For debugging purposes."
+err_json_invalid = "Invalid JSON document."
