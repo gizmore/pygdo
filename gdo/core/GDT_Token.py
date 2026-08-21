@@ -9,6 +9,8 @@ class GDT_Token(GDT_Char):
         super().__init__(name)
         self._min_len = self.TOKEN_LEN
         self._max_len = self.TOKEN_LEN
+        self.ascii()
+        self.case_s()
 
     @classmethod
     def random(cls, length: int = TOKEN_LEN):

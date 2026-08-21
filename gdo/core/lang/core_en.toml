@@ -175,6 +175,7 @@ mt_core_ping = "Ping"
 md_core_ping = "Test if the bot is responding."
 msg_pong = "PONG"
 msg_server_status = "%s: %s (%s)"
+msg_server_set = "%s: %s has been set to %s."
 
 ########
 # Link #
