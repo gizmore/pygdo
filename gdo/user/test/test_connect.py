@@ -60,6 +60,8 @@ class ConnectAccountTest(GDOTestCase):
         await message.execute()
         self.assertEqual(self.slave.get_id(), message._env_reply_to.get_id())
         self.assertEqual(self.master.get_id(), message._env_user.get_id())
+        self.assertIn('connector account is LinkSlave{bash}', message._result)
+        self.assertIn('linked to LinkMaster', message._result)
 
     def test_03_connection_token_cannot_replace_an_existing_link(self):
         token = self.request_token()

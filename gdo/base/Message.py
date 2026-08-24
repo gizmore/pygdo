@@ -100,6 +100,7 @@ class Message(WithEnv):
                 self._message = self._message[1:]
                 parser = Parser(self._env_mode, self._env_user, self._env_server, self._env_channel, self._env_session)
                 self._method = parser.parse(self._message)
+                self._method.env_reply_to(self._env_reply_to)
                 self._method._message = self
                 return await self.run()
         except GDOModuleException as ex:

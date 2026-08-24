@@ -24,5 +24,10 @@ class whoami(Method):
         # Linked accounts execute as their master, but `whoami` should still
         # identify the connector account which actually sent the message.
         authed = 'authenticated' if reply_to._authenticated else 'not_authenticated'
+        if reply_to.get_id() != u.get_id():
+            origin = f"{reply_to.gdo_val('user_displayname')}{{{reply_to.get_server().get_name().lower()}}}"
+            text = t('info_who_am_i_linked', (
+                origin, t(authed), u.render_name(), Arrays.human_join(ps)))
+            return GDT_String('result').val(text)
         text = t('info_who_am_i', (reply_to.render_name(), t(authed), Arrays.human_join(ps)))
         return GDT_String('result').val(text)

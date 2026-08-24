@@ -205,6 +205,7 @@ md_core_whoami = "WhoAmI"
 authenticated = "authenticated"
 not_authenticated = "not_authenticated"
 info_who_am_i = "Your username is %s (%s) with the following permissions: %s."
+info_who_am_i_linked = "Your connector account is %s (%s), linked to %s. Effective permissions: %s."
 
 #########
 # Super #
