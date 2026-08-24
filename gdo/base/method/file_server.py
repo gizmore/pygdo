@@ -1,7 +1,7 @@
 import mimetypes
 import os
 import time
-import urllib
+from urllib.parse import unquote
 from functools import lru_cache
 from os import path
 
@@ -40,12 +40,28 @@ class file_server(Method):
     @staticmethod
     @lru_cache(maxsize=65535)
     def is_forbidden(url: str) -> bool:
-        dir = Strings.substr_to(url, '/', None)
-        if not dir:
+        # Never resolve encoded path traversal or alternate path separators.
+        # ``file_server`` gets invoked before ``Application.file_path()`` and
+        # must consequently make this decision from the untrusted URL alone.
+        url = unquote(url).lstrip('/').replace('\\', '/')
+        parts = url.split('/')
+        if not url or any(part in ('', '.', '..') for part in parts):
             return True
-        for dir in Application.config('dir'):
-            if url.startswith(dir):
-                if dir == 'assets' and module_config_value('base', 'serve_gdo_assets'):
+
+        # Uploads are deliberately exposed only through a token/SEO file
+        # route, which marks this method explicitly_allowed().  Everything in
+        # protected is private configuration, logs or other service state.
+        if parts[0] in ('files', 'protected'):
+            return True
+
+        # Application.config('dir') is a dictionary. Iterating it returns its
+        # names ("logs", "config"), not directory paths ("protected/logs/").
+        # Use values and compare whole path segments to avoid prefix matches
+        # such as "assets-private".
+        for directory in Application.config('dir').values():
+            directory = directory.strip('/')
+            if url == directory or url.startswith(directory + '/'):
+                if directory == 'assets' and module_config_value('base', 'serve_gdo_assets'):
                     continue
                 return True
         if not module_config_value('base', 'serve_gdo_assets'):
