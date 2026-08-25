@@ -1,4 +1,3 @@
-from gdo.base.Util import Arrays
 from gdo.core.GDT_Repeat import GDT_Repeat
 from gdo.core.GDT_String import GDT_String
 
@@ -21,5 +20,17 @@ class GDT_RestOfText(GDT_Repeat):
     def is_multiple(self) -> bool:
         return True
 
-    # def render_form(self) -> str:
+    def render_form(self) -> str:
+        # A web form submits one string. Rendering the generic repeat widget
+        # creates a ``name[]`` input and an extra empty field, although this
+        # type is only repeated to consume all remaining *CLI* tokens.
+        # ParseArgs still supplies the web value as a one-item list, so the
+        # regular rest-of-text conversion remains intact after submission.
+        proxy = self._proxy
+        name = proxy.get_name()
+        value = proxy.get_val()
+        try:
+            return proxy.name(self._name).val(self.get_val() or '').render_form()
+        finally:
+            proxy.name(name).val(value)
     #     return self._proxy.render_form()
