@@ -27,6 +27,14 @@ class GDT_Language(GDT_ObjectSelect):
         if self._supported: query.where('lang_supported')
         return query
 
+    def to_value(self, val: str):
+        if val is None:
+            return None
+        language = self._table.get_by_id(val.lower())
+        if language and (not self._supported or language.gdo_val('lang_supported') == '1'):
+            return language
+        return None
+
     def render_val(self) -> str:
         if (val := self.get_val()) is None:
             return Render.italic(t('none'))
