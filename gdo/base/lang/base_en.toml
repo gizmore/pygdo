@@ -19,6 +19,7 @@ and = "and"
 decimal_point = '.'
 thousands_sep = ','
 authenticate = "authenticate"
+gdt_redirect_to = "Redirecting to %s..."
 
 ##############
 # Decorators #
