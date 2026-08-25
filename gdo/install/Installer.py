@@ -148,6 +148,7 @@ class Installer:
         except Exception as ex:
             Logger.exception(ex)
             if restore_from_zzz:
+                db.foreign_keys(False)
                 db.drop_table(tablename)  # Remove old temp table
                 db.query(f"RENAME TABLE {temptable} TO {tablename}")
                 db.create_table_fk(gdo)

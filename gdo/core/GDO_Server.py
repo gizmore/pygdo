@@ -22,6 +22,7 @@ from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Secret import GDT_Secret
 from gdo.core.GDT_UserType import GDT_UserType
 from gdo.date.GDT_Created import GDT_Created
+from gdo.language.GDT_Language import GDT_Language
 from gdo.net.GDT_Url import GDT_Url
 
 
@@ -69,6 +70,7 @@ class GDO_Server(GDO):
             GDT_Name('serv_username'),
             GDT_Secret('serv_password'),
             GDT_Connector('serv_connector'),
+            GDT_Language('serv_language').not_null().initial('en'),
             GDT_Bool('serv_enabled').not_null().initial('1'),
             GDT_Created('serv_created'),
         ]
@@ -78,6 +80,9 @@ class GDO_Server(GDO):
 
     def get_trigger(self) -> str:
         return self.gdo_val('serv_trigger')
+
+    def get_lang_iso(self) -> str:
+        return self.gdo_val('serv_language') or 'en'
 
     def get_username(self) -> str:
         return self.gdo_val('serv_username') or 'Dog'
@@ -166,6 +171,7 @@ class GDO_Server(GDO):
                 'chan_displayname': display_name or name,
                 'chan_server': self.get_id(),
                 'chan_trigger': self.get_trigger(),
+                'chan_language': self.get_lang_iso(),
                 'chan_creator': creator.get_id(),
             }).insert()
         return channel

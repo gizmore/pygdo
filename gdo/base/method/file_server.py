@@ -50,7 +50,7 @@ class file_server(Method):
 
         # Uploads are deliberately exposed only through a token/SEO file
         # route, which marks this method explicitly_allowed().  Everything in
-        # protected is private configuration, logs or other service state.
+        # protected is private configuration, logs or other service state.rest
         if parts[0] in ('files', 'protected'):
             return True
 

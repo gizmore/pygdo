@@ -32,6 +32,8 @@ class WithObject:
             define = define.replace(' NOT NULL', '')
         define = define.replace(' PRIMARY KEY', '')
         define = define.replace(' AUTO_INCREMENT', '')
+        if self._initial is not None:
+            define += self.gdo_column_define_default()
         return define
 
     def column_define_fk(self) -> str:
