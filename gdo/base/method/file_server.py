@@ -9,8 +9,8 @@ from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.base.Util import hdr, Files, msg, module_config_value, Strings
-from gdo.core.GDT_Path import GDT_Path
+from gdo.base.Util import hdr, Files, msg, module_config_value, module_enabled, Strings
+from gdo.core.GDT_String import GDT_String
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.message.GDT_HTML import GDT_HTML
 
@@ -24,7 +24,7 @@ class file_server(Method):
 
     def gdo_parameters(self) -> list[GDT]:
         return [
-            GDT_Path('_url').existing_file(),
+            GDT_String('_url').not_null(),
         ]
 
     @classmethod
@@ -35,7 +35,15 @@ class file_server(Method):
         return self.param_val('_url').lstrip('/')
 
     def get_path(self):
+        if seo_file := self.get_seo_file():
+            return seo_file.get_file().get_path()
         return Application.file_path(self.get_url())
+
+    def get_seo_file(self):
+        if not module_enabled('file'):
+            return None
+        from gdo.file.GDO_SeoFile import GDO_SeoFile
+        return GDO_SeoFile.get_by_url(self.get_url())
 
     @staticmethod
     @lru_cache(maxsize=65535)
@@ -88,10 +96,13 @@ class file_server(Method):
         return Application.get_client_header('HTTP_IF_NONE_MATCH') == etag
 
     def gdo_execute(self) -> GDT:
-        if not hasattr(self, '_explicitly_allowed') and file_server.is_forbidden(self.get_url()):
+        if not self.get_seo_file() and not hasattr(self, '_explicitly_allowed') and file_server.is_forbidden(self.get_url()):
             Application.status('403 Forbidden')
             return self.err('err_file_forbidden')
         file_path = self.get_path()
+        if not os.path.isfile(file_path):
+            Application.status('404 Not Found')
+            return self.err('err_file_not_found')
         if self.check_etag(file_path):
             Application.status("304 Not Modified")
             return self.empty()

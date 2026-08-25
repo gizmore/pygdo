@@ -1,5 +1,8 @@
 "%s" = "%s" # Nicht löschen :)
 module_base = "Basis"
+msg_backup_completed = "Backup %s wurde erstellt."
+msg_backup_mailed = "Backup %s wurde an %s versandt."
+msg_backup_mailed_deleted = "Das Backup wurde an %s versandt und lokal gelöscht."
 
 err_web_param_wrong = "Ein Methodenparameter konnte für Befehl %s nicht geparst werden. Im Kontext '%s'"
 err_param = "Ungültiger Wert für Parameter %s: %s"
@@ -14,6 +17,7 @@ err_not_authenticated = "Dein Konto ist nicht authentifiziert."
 err_violate_unique = "Ein Eintrag hierfür existiert bereits."
 err_gdo_validate = "GDO Validierung Fehlgeschlagen für %s mit %s: %s"
 err_file_forbidden = "Diese Datei dürfen Sie nicht heruntetrladen."
+err_file_not_found = "Die angeforderte Datei existiert nicht."
 
 and = "und"
 decimal_point = '.'

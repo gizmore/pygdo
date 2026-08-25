@@ -28,5 +28,5 @@ class module_file(GDO_Module):
     def gdo_admin_links(self) -> list['GDT_Link']:
         return [
             GDT_Link().href(self.href('files')).text('mt_files_files'),
-            GDT_Link().href(self.href('seofiles')).text('mt_files_seofiles'),
+            GDT_Link().href(self.href('seo_files')).text('mt_files_seofiles'),
         ]
