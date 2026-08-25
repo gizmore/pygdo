@@ -1,26 +1,23 @@
-from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
-from gdo.base.WithName import WithName
-from gdo.core.WithHTMLAttributes import WithHTMLAttributes
+from gdo.core.GDT_String import GDT_String
 from gdo.ui.WithHREF import WithHREF
-from gdo.ui.WithIcon import WithIcon
 from gdo.ui.WithText import WithText
 from gdo.ui.WithTitle import WithTitle
 
 
-class GDT_Link(WithHTMLAttributes, WithIcon, WithHREF, WithTitle, WithText, WithName, GDT):
+class GDT_Link(WithHREF, WithTitle, WithText, GDT_String):
+    """A string field rendered as a link, including normal table features."""
 
     def __init__(self, name: str=None):
-        super().__init__()
+        super().__init__(name)
         self.label(name or 'link')
-        self._name = name # self.generate_name()
         self.icon('link')
 
     def render_form(self):
         return self.render_html()
 
     def render_html(self) -> str:
-        return f'<a class="gdt-link" href="{self.render_href()}"><span>{self.render_icon(Mode.render_html)}{self.render_text()}</span></a>'
+        return f'<a class="gdt-link" href="{self.render_href()}"{self.html_attrs()}><span>{self.render_icon(Mode.render_html)}{self.render_text()}</span></a>'
 
     def render_cell(self) -> str:
         return self.render_html()

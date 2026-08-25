@@ -14,9 +14,9 @@ class files(MethodQueryTable):
         t = self.gdo_table()
         return [
             t.column('file_id'),
-            GDT_Link('view').label('file_name'),
+            GDT_Link('file_name'),
             t.column('file_size'),
         ]
 
-    def render_view(self, gdt: GDT_Link, gdo: GDO_File):
+    def render_file_name(self, gdt: GDT_Link, gdo: GDO_File):
         return gdt.href(gdo.get_preview_href()).text_raw(gdo.get_name()).render()

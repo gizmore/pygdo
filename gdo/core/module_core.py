@@ -165,6 +165,10 @@ class module_core(GDO_Module):
         ]
 
     async def gdo_install(self):
+        # Servers reference language.iso. Seed languages before creating the
+        # default Bash/Web servers so a fresh install satisfies that FK.
+        from gdo.language.InstallLanguage import InstallLanguage
+        InstallLanguage.now()
         InstallCore.now()
 
     def gdo_load_scripts(self, page):

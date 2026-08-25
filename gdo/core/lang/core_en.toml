@@ -63,6 +63,7 @@ from = "From"
 to = "To"
 target = "Target"
 message = "Message"
+answer = "Answer"
 an_icon = "%s Icon"
 
 ###########

@@ -56,7 +56,7 @@ class InstallTestCase(GDOTestCase):
 
         result = subprocess.run(["python3", Application.file_path("gdoadm.py"), "-u", "install", "Core"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         mc_one = GDO_Module.table().count_where()
-        need = len(module_core.instance().gdo_dependencies())
+        need = len(Installer.modules_with_deps([module_core.instance(),]))
         if mc_one < need:
             print(result.stderr)
             print(result.stdout)

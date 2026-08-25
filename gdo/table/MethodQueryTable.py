@@ -6,6 +6,9 @@ from gdo.table.MethodTable import MethodTable
 
 class MethodQueryTable(MethodTable):
 
+    def gdo_table_result(self) -> Result:
+        return self.get_table_result()
+
     def gdo_table_query(self) -> Query:
         return self.gdo_table().select()
 

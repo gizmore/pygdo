@@ -29,4 +29,5 @@ class module_file(GDO_Module):
         return [
             GDT_Link().href(self.href('files')).text('mt_files_files'),
             GDT_Link().href(self.href('seo_files')).text('mt_files_seofiles'),
+            GDT_Link().href(self.href('seo_add')).text('mt_files_seo_add'),
         ]

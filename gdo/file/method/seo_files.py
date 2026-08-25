@@ -15,9 +15,9 @@ class seo_files(MethodQueryTable):
         table = self.gdo_table()
         return [
             table.column('sf_url'),
-            GDT_Link('view').label('sf_file'),
+            GDT_Link('sf_file'),
         ]
 
-    def render_view(self, gdt: GDT_Link, gdo: GDO_SeoFile):
+    def render_sf_file(self, gdt: GDT_Link, gdo: GDO_SeoFile):
         file = gdo.get_file()
         return gdt.href(file.get_preview_href()).text_raw(file.get_name()).render()
