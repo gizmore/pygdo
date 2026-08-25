@@ -26,6 +26,7 @@ then
     ./bin/pygdo '$add_server euirc irc tcps://irc.lim.de.euirc.net:6697'
     ./bin/pygdo '$add_server libera irc tcps://irc.libera.chat:6697'
     ./bin/pygdo '$add_server rizon irc tcps://irc.rizon.net:6697'
+    ./bin/pygdo '$add_server ircnow irc tcps://irc.ircnow.org:6697'
 fi
 
 ./gdo_adm.sh cc
