@@ -16,6 +16,7 @@ from gdo.ui.GDT_Link import GDT_Link
 from gdo.ui.GDT_Page import GDT_Page
 from gdo.user.GDT_Gender import GDT_Gender
 from gdo.user.GDT_Level import GDT_Level
+from gdo.user.GDT_ProfileLink import GDT_ProfileLink
 
 
 class module_user(GDO_Module):
@@ -74,5 +75,8 @@ class module_user(GDO_Module):
             user.save_setting('last_activity', self.get_activity_cut_date())
 
     def gdo_init_sidebar(self, page: 'GDT_Page'):
+        user = GDO_User.current()
+        if user.is_user():
+            page._right_bar.add_field(GDT_ProfileLink().user(user))
         if self.get_config_value('show_userlist'):
             page._left_bar.add_field(GDT_Link().href(self.href('ranking')).text('mt_user_ranking'))

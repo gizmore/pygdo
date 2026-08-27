@@ -37,7 +37,7 @@ class profile(Method):
         card = GDT_Card()
         if module_enabled('avatar'):
             from gdo.avatar.GDT_Avatar import GDT_Avatar
-            card.image(GDT_Avatar('avatar').for_user(user))
+            card.image(GDT_Avatar('avatar').for_user(user).add_class('gdo-avatar-profile'))
         card.title('whose_profile', (user.render_name(),))
         content = card.get_content()
         for module in ModuleLoader.instance().enabled():
