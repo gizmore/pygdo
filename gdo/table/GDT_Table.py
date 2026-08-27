@@ -71,6 +71,8 @@ class GDT_Table(WithName, GDT):
 
     def render_textual(self, mode: Mode):
         method = self._table_method
+        if method.gdo_paginated():
+            method._curr_table_row_id = method.gdo_paginate_size() * (method.get_page_num() - 1)
         result = method.get_table_result()
         out = []
         for gdo in result:
