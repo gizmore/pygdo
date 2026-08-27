@@ -29,12 +29,30 @@ class Installer:
             gdo_print("Re-Loading installed modules.")
         loader = ModuleLoader.instance()
         loader.init_modules(True, True)
+        cls.migrate_user_settings()
 
         if verbose:
             gdo_print("Calling module install hooks")
         for module in modules:
             await module.gdo_install()
         return True
+
+    @classmethod
+    def migrate_user_settings(cls):
+        """Synchronise the settings-key enum after all modules registered it.
+
+        User settings are contributed by many modules but share the one
+        ``gdo_usersetting.uset_key`` enum column owned by core.  Creating an
+        already existing table cannot extend that enum, so a later module
+        install otherwise leaves its new settings impossible to persist.
+        """
+        from gdo.core.GDO_UserSetting import GDO_UserSetting
+
+        table = GDO_UserSetting.table()
+        key = table.column('uset_key')
+        Application.db().query(
+            f"ALTER TABLE {table.gdo_table_name()} MODIFY COLUMN {key.gdo_column_define()}"
+        )
 
     @classmethod
     def modules_with_deps(cls, modules: list) -> [GDO_Module]:
@@ -157,6 +175,7 @@ class Installer:
     def migrate_modules(cls, modules):
         for module in modules:
             cls.migrate_module(module)
+        cls.migrate_user_settings()
 
     @classmethod
     def column_names(cls, gdo, temptable) -> list:

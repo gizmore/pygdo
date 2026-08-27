@@ -9,8 +9,8 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_User import GDT_User
 from gdo.core.GDO_UserSetting import GDO_UserSetting
-from gdo.core.GDT_Container import GDT_Container
 from gdo.ui.GDT_Card import GDT_Card
+from gdo.ui.GDT_Menu import GDT_Menu
 
 
 class profile(Method):
@@ -34,13 +34,16 @@ class profile(Method):
         return t('md_user_profile', (self.get_user().render_name(), sitename()))
 
     def gdo_execute(self) -> GDT:
+
         user = self.get_user()
+        if user != self._env_user:
+            user.increase_setting('profile_views')
         modules = ModuleLoader.instance().enabled()
         # A profile can show settings from many modules.  Prime the target
         # user's values once, rather than issuing one query per setting.
         GDO_UserSetting.load_for_user(user)
         card = GDT_Card()
-        profile_links = GDT_Container().vertical()
+        profile_links = GDT_Menu().vertical()
         if module_enabled('avatar'):
             from gdo.avatar.GDT_Avatar import GDT_Avatar
             profile_links.add_field(GDT_Avatar('avatar').for_user(user).add_class('gdo-avatar-profile img-fluid rounded-start'))

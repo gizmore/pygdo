@@ -9,6 +9,10 @@ from gdo.core.WithProxy import WithProxy
 class GDT_Repeat(WithProxy, GDT_UInt):
 
     def __init__(self, proxy: GDT_Field):
+        # GDT_String.__init__ assigns a label for named fields.  As this
+        # class delegates labels to its proxy, it must exist before entering
+        # the base constructor (notably for GDT_RestOfText('body')).
+        self._proxy = proxy
         super().__init__(proxy.get_name())
         self.proxy(proxy.multiple())
         self._min = 1 if proxy.is_not_null() else 0

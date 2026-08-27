@@ -16,6 +16,14 @@ class WithProxy:
         self._name = gdt.get_name()
         return self
 
+    # def label(self, label: str):
+    #     self._proxy.label(label)
+    #     return self
+
+    def label(self, label: str, args: tuple = None):
+        self._proxy.label(label, args)
+        return self
+
     def render_suggestion(self) -> str:
         return self._proxy.render_suggestion()
 
@@ -26,8 +34,8 @@ class WithProxy:
     def is_not_null(self) -> bool:
         return self._proxy.is_not_null()
 
-    def render_label(self):
-        return self._proxy.render_label()
+    def render_label(self, mode=None):
+        return self._proxy.render_label(mode) if mode is not None else self._proxy.render_label()
 
     def render_val(self) -> str:
         return self._proxy.render_val()

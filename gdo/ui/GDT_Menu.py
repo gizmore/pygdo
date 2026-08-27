@@ -7,6 +7,7 @@ class GDT_Menu(GDT_Container):
 
     def __init__(self):
         super().__init__()
+        self.horizontal()
 
     def render(self, mode: Mode = Mode.render_html):
         if mode.is_html():

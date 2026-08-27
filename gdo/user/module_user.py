@@ -9,6 +9,7 @@ from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Secret import GDT_Secret
 from gdo.core.GDT_Text import GDT_Text
 from gdo.core.GDT_Token import GDT_Token
+from gdo.core.GDT_UInt import GDT_UInt
 from gdo.date.GDT_Duration import GDT_Duration
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 from gdo.date.Time import Time
@@ -61,6 +62,7 @@ class module_user(GDO_Module):
         return [
             GDT_Timestamp('last_activity'),
             GDT_Level('level').initial('0'),
+            GDT_UInt('profile_views').initial('0'),
         ]
 
     def get_activity_cut_date(self) -> str:

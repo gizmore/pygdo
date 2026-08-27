@@ -1,15 +1,21 @@
 from gdo.core.GDT_Repeat import GDT_Repeat
 from gdo.core.GDT_String import GDT_String
+from gdo.core.GDT_Text import GDT_Text
 
 
 class GDT_RestOfText(GDT_Repeat):
 
     def __init__(self, name: str):
-        super().__init__(GDT_String(name))
+        super().__init__(GDT_Text(name))
 
     def get_val(self):
-        val = super().get_val()
-        return val if val is None else " ".join(val)
+        return super().get_val()
+
+    def val(self, val: str | list[str] | None):
+        """Store CLI tokens as one text value for the text-field proxy."""
+        if isinstance(val, list):
+            val = " ".join(val)
+        return super().val(val)
 
     def get_value(self):
         if not self._converted:
@@ -21,16 +27,5 @@ class GDT_RestOfText(GDT_Repeat):
         return True
 
     def render_form(self) -> str:
-        # A web form submits one string. Rendering the generic repeat widget
-        # creates a ``name[]`` input and an extra empty field, although this
-        # type is only repeated to consume all remaining *CLI* tokens.
-        # ParseArgs still supplies the web value as a one-item list, so the
-        # regular rest-of-text conversion remains intact after submission.
-        proxy = self._proxy
-        name = proxy.get_name()
-        value = proxy.get_val()
-        try:
-            return proxy.name(self._name).val(self.get_val() or '').render_form()
-        finally:
-            proxy.name(name).val(value)
-    #     return self._proxy.render_form()
+        """A web request is one text value, unlike the CLI token remainder."""
+        return GDT_Text.render_form(self)

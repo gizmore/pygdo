@@ -11,9 +11,9 @@ class send(MethodForm):
 
     def gdo_parameters(self) -> list[GDT]:
         return [
-            GDT_User("to").not_null(),
+            GDT_User("to").not_null().with_completion(),
             GDT_Title("subject").not_null(),
-            GDT_RestOfText("body").not_null()
+            GDT_RestOfText("body").label('message').not_null()
         ]
 
     def gdo_create_form(self, form: GDT_Form) -> None:

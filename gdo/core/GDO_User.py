@@ -233,7 +233,7 @@ class GDO_User(GDO):
             return Cache.update_for(self)
         return self
 
-    def increase_setting(self, key: str, by: float | int):
+    def increase_setting(self, key: str, by: float | int = 1):
         old = self.get_setting_value(key)
         return self.save_setting(key, str(old + by))
 

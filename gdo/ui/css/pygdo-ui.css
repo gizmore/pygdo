@@ -1,3 +1,7 @@
 .gdt-menu {
     display: flex;
 }
+
+.gdt-menu.gdt-col {
+    flex-direction: column;
+}

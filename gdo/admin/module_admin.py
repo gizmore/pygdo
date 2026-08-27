@@ -12,7 +12,7 @@ class module_admin(GDO_Module):
 
     def on_user_profile_links(self, user: GDO_User, links):
         if GDO_User.current().is_staff():
-            links.add_field(GDT_Link().href(self.href('edit_user', f'&user={user.get_id()}')).text('link_edit'))
+            links.add_field(GDT_Link().href(self.href('edit_user', f'&user={user.get_id()}')).icon('edit').text('link_edit'))
 
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         user = GDO_User.current()
