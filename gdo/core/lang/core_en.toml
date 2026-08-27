@@ -192,7 +192,7 @@ msg_cache_cleared = "Caches have been cleared."
 ##############
 mt_core_web_cron = "Run Cronjobs"
 md_core_web_cron = "Run all currently due cronjobs."
-msg_core_web_cron_done = "Due cronjobs have been processed."
+msg_core_web_cron_done = "Processed %s cronjobs: %s."
 
 ############
 ### Ping ###

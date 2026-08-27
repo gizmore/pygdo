@@ -9,6 +9,6 @@ class web_cron(Method):
         return 'cronjob'
 
     def gdo_execute(self) -> GDT:
-        Cronjob.run()
-        return self.empty('msg_core_web_cron_done')
+        executed = Cronjob.run(True)
+        return self.reply('msg_core_web_cron_done', (len(executed), ', '.join(executed)))
     

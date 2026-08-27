@@ -13,13 +13,19 @@ class Cronjob:
     FORCE: bool = False
 
     @classmethod
-    def run(cls, force: bool = False) -> None:
+    def run(cls, force: bool = False) -> list[str]:
         cls.FORCE = force
+        executed = []
+        # A web request usually loads only the routed module.  Cronjobs must
+        # start from the complete enabled-module set, otherwise the admin
+        # runner silently executes whichever module happened to be loaded.
         loader = ModuleLoader.instance()
         loader.load_modules_db()
-        loader.init_modules(True, True)
+        # Do not call init_modules() here: in an active web request it clears
+        # the current page's already collected CSS and JavaScript assets.
+        loader.load_module_vars()
         GDO_Cronjob.cleanup()
-        for name, module in loader._cache.items():
+        for module in loader.enabled():
             for method in module.get_methods():
                 if isinstance(method, MethodCronjob):
                     if cls.should_run(method):
@@ -39,16 +45,16 @@ class Cronjob:
                             entry.save_val('cron_success', '0')
                         finally:
                             Logger.cron(f"Finished {method.get_sqn()}")
+                        executed.append(method.get_sqn())
+        return executed
 
 
     @classmethod
     def should_run(cls, method: MethodCronjob) -> bool:
-        if GDO_Cronjob.table().get_by_vals({'cron_method': method.get_sqn(), 'cron_success': '2'}):
-            return False
-
         if Cronjob.FORCE:
             return True
-
+        if GDO_Cronjob.table().get_by_vals({'cron_method': method.get_sqn(), 'cron_success': '2'}):
+            return False
         mod = module_core.instance()
         dt = mod.cfg_last_cron().timestamp()
         dt = int(dt)
