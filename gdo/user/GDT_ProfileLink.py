@@ -23,6 +23,7 @@ class GDT_ProfileLink(GDT_Link):
     def user(self, user: GDO_User, with_username: bool = True):
         self._user = user
         self.href(href('user', 'profile', f'&for={user.get_id()}-{user.get_name_sid()}'))
+        self.attr('title', f"{t('level')}: {user.get_setting_val('level')} | {t('score')}: {user.get_setting_val('score')}")
         return self.with_username(with_username)
 
     def with_username(self, with_username: bool = True):
@@ -38,10 +39,12 @@ class GDT_ProfileLink(GDT_Link):
         return t('profile')
 
     def render_html(self) -> str:
-        back = ''
+        content = ''
         if self._with_avatar:
             gdt = self._user.gdt_user_settings().KNOWN.get('avatar_file')
-            back += gdt.for_user(self._user).render_html()
-        back += "&nbsp;"
-        back += super().render_html()
-        return back
+            if gdt:
+                content += gdt.for_user(self._user).render_html() + '&nbsp;'
+        content += self.render_text()
+        # The avatar and user name are one profile affordance: both must be
+        # inside the anchor so clicking either opens the same profile.
+        return f'<a class="gdt-link" href="{self.render_href()}"{self.html_attrs()}><span>{content}</span></a>'
