@@ -39,3 +39,6 @@ class GDT_Language(GDT_ObjectSelect):
         if (val := self.get_val()) is None:
             return Render.italic(t('none'))
         return t(f'l_{val}')
+
+    def render_cell(self) -> str:
+        return self.render_val()

@@ -2,4 +2,5 @@ module_table = "Tables"
 
 info_search = "You can search the table globally here."
 search = 'Search'
+btn_clear_table_filters = 'Clear filters and search'
 page_no_of = "page %d of %d"

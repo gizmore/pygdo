@@ -1,6 +1,7 @@
 import functools
 from functools import lru_cache
 from typing import Iterator
+from urllib.parse import urlencode
 
 from gdo.base.Exceptions import GDOException
 from gdo.base.GDO import GDO
@@ -63,6 +64,25 @@ class MethodTable(WithGDO, MethodForm):
 
     def table_search_field(self) -> GDT_Search:
         return self.parameter(self.gdo_search_name())
+
+    def table_reset_href(self) -> str:
+        """Return this method route without its table state.
+
+        Keep ordinary method parameters intact while intentionally dropping the
+        table's page, order, filter and full-text search parameters.
+        """
+        options = []
+        positionals = []
+        for gdt in self.gdo_parameters():
+            value = self.parameter(gdt.get_name()).get_val()
+            if value is None or value == '':
+                continue
+            values = value if isinstance(value, list) else [value]
+            if gdt.is_positional():
+                positionals.extend(values)
+            else:
+                options.extend((gdt.get_name(), value) for value in values)
+        return self.href(urlencode(options, doseq=True), positional=positionals)
 
     def table_paginate_field(self) -> GDT_PageNum:
         return self.parameter(self.gdo_paginate_name())
