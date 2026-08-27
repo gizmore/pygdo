@@ -76,6 +76,14 @@ class DateTestCase(GDOTestCase):
         dt = col.get_value()
         self.assertIsInstance(dt, datetime, 'Conversion does not yield an object.')
 
+    async def test_timestamp_card(self):
+        col = GDT_Timestamp('test').val('2023-11-09 14:12:11.123')
+        card = col.render_card()
+        self.assertIn('11/09/2023 14:12:11', card, 'Timestamp card misses the absolute datetime.')
+        self.assertIn('(', card, 'Timestamp card misses the relative age.')
+        self.assertIn('gdt-icon', card, 'Timestamp card misses its field icon.')
+        self.assertIn(col.render_format(Time.FMT_BOTH_FULL), card)
+
     async def test_tz_cache(self):
         tz1 = GDO_Timezone.get_by_name('UTC')
         tz2 = GDO_Timezone.get_by_name('UTC')

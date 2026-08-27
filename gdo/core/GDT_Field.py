@@ -2,7 +2,7 @@ from typing import Any
 
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
-from gdo.base.Render import Render
+from gdo.base.Render import Render, Mode
 from gdo.base.Trans import t
 from gdo.base.WithError import WithError
 from gdo.core.WithGDO import WithGDO
@@ -227,8 +227,11 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithTooltip, WithIcon, WithError, W
     def render_json(self):
         return self.get_val()
 
+    def render_card_label(self) -> str:
+        return self.render_icon(Mode.render_html) + self.render_label()
+
     def render_card(self) -> str:
-        return "<p>" + self.render_label() + ": "  + (self.render_val() or Render.italic(t('none'))) + '</p>'
+        return "<p>" + self.render_card_label() + ": "  + (self.render_val() or Render.italic(t('none'))) + '</p>'
 
     def render_list(self) -> str:
         return self.render_html()

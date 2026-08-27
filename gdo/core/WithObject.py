@@ -146,7 +146,7 @@ class WithObject:
         return '---'
 
     def render_card(self):
-        return f"<p>{self.render_label()}: {self.render_cell()}</p>"
+        return f"<p>{self.render_card_label()}: {self.render_cell()}</p>"
 
     ############
     # Validate #

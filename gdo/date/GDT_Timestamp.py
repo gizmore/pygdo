@@ -116,6 +116,8 @@ class GDT_Timestamp(GDT_String):
         format = format or self._date_format
         if (val := self.get_val()) is None:
             return '---'
+        if format == Time.FMT_BOTH_FULL:
+            return f'{self.render_format(Time.FMT_LONG)} ({self.render_format(Time.FMT_AGO)})'
         if format == Time.FMT_AGO:
             self.attr('title', Time.display_date(val))
             self.attr('gdo-ts', str(Time.get_time(val)))
@@ -133,6 +135,4 @@ class GDT_Timestamp(GDT_String):
         return self.render_format()
 
     def render_card(self) -> str:
-        ago = '' if self._date_format == Time.FMT_AGO else self.render_format(Time.FMT_AGO)
-        if ago: ago = f" ({ago})"
-        return f'<p>{self.render_label()}: {self.render_format()}{ago}</p>'
+        return f'<p>{self.render_card_label()}: {self.render_format(Time.FMT_BOTH_FULL)}</p>'

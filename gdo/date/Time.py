@@ -41,6 +41,7 @@ class Time:
     FMT_MS = 'ms'
     FMT_DB = 'db'
     FMT_AGO = 'ago'
+    FMT_BOTH_FULL = 'both_full'
     FMT_TIME_ONLY = 'clock'
 
 
