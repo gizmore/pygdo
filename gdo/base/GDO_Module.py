@@ -112,7 +112,7 @@ class GDO_Module(WithModuleConfig, GDO):
             GDT_Name('module_name').not_null().writable(False).label('name'),
             GDT_Bool('module_enabled').not_null().initial('1').label('enabled'),
             GDT_UInt('module_priority').not_null().initial('50').writable(False),
-            GDT_UInt('module_sort').not_null().initial('50').writable(False),
+            GDT_UInt('module_sort').not_null().initial('50'),
         ]
 
     def gdo_cached(self) -> bool:

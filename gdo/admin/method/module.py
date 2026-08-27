@@ -70,6 +70,9 @@ class module(Method):
         readme = Files.get_contents(path) if Files.is_file(path) else ''
         descriptions = '\n'
         for method in module.get_methods():
+            # A method may render its title from the same parameters as this
+            # module view (notably admin.module itself).
+            method.args_copy(self)
             descriptions += f'{method.gdo_render_simple_title()}: {method.gdo_render_simple_descr()}\n'
         return GDT_PRE().add_field(GDT_HTML().html(readme + descriptions))
 

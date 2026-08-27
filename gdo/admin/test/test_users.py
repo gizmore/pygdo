@@ -8,7 +8,7 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_UserSetting import GDT_UserSetting
 from gdo.base.Query import Query
 from gdo.admin.method.users import users
-from gdotest.TestUtil import GDOTestCase, install_module
+from gdotest.TestUtil import GDOTestCase, install_module, web_gizmore, web_plug
 
 
 class AdminUsersTest(GDOTestCase):
@@ -36,6 +36,17 @@ class AdminUsersTest(GDOTestCase):
 
     def test_paginates_fifty_users_per_page(self):
         self.assertEqual(50, users().gdo_paginate_size())
+
+    def test_module_sort_is_writable_but_priority_stays_fixed(self):
+        module = ModuleLoader.instance().get_module('admin')
+        self.assertTrue(module.column('module_sort').is_writable())
+        self.assertFalse(module.column('module_priority').is_writable())
+
+    def test_module_configuration_url_keeps_the_module_parameter(self):
+        web_gizmore()
+        out = web_plug('admin.module.module.admin.html').user('gizmore').exec()
+        self.assertNotIn('Invalid value for parameter module', out)
+        self.assertIn('module_sort', out)
 
     def test_qualifies_the_default_order_column(self):
         self.assertEqual('gdo_user.user_id ASC', users().gdo_order_default())
