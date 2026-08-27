@@ -8,6 +8,7 @@ class GDT_Timezone(GDT_ObjectSelect):
     def __init__(self, name: str):
         super().__init__(name)
         self.table(GDO_Timezone.table())
+        self.icon('timezone')
 
     def gdo_choices(self) -> dict:
         return self._table.select().exec().iter(ResultType.OBJECT).fetch_all_dict()

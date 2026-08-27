@@ -125,6 +125,7 @@ class IconUTF8(IconProvider):
             'time': '⌚',
             'title': 'T',
             'trophy': '🏆',
+            'timezone': '🕰',
             'unicorn': '🦄',
             'upload': '⇧',
             'url': '🌐',

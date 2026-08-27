@@ -6,6 +6,7 @@ class GDT_Gender(GDT_Enum):
     def __init__(self, name):
         super().__init__(name)
         self._simple = False
+        self.icon('gender')
 
     def simple(self, simple: bool = True):
         self._simple = simple
