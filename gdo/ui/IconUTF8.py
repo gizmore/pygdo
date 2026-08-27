@@ -47,6 +47,7 @@ class IconUTF8(IconProvider):
             'create': '✚',
             'credits': '¢',
             'cut': '✂',
+            'database': '[]',
             'delete': '✖',
             'diamond': '❖',
             'done': '✔',
