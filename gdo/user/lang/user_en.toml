@@ -4,6 +4,7 @@ gender = "Gender"
 last_activity = "Last Activity"
 about_me = "About me"
 level = "Level"
+profile_views = "Profile Views"
 
 link_connect_account = "Connect another account"
 slave = "Controlled Account"
