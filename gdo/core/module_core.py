@@ -117,7 +117,7 @@ class module_core(GDO_Module):
 
     def gdo_user_settings(self) -> list[GDT]:
         return [
-            GDT_Bool('notice_enabled').initial('1').not_null(),
+            GDT_Bool('notice_enabled').initial('1').not_null().hidden(),
         ]
 
     def cfg_guest_system(self) -> bool:

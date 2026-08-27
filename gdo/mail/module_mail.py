@@ -24,9 +24,9 @@ class module_mail(GDO_Module):
     def gdo_user_config(self) -> list[GDT]:
         from gdo.date.GDT_DateTime import GDT_DateTime
         return [
-            GDT_Email('email').obfuscate(),
+            GDT_Email('email').obfuscate().hidden(),
             GDT_DateTime('email_confirmed'),
-            GDT_Link('change_mail').href(self.href('change_mail')).text('link_change_mail'),
+            GDT_Link('change_mail').href(self.href('change_mail')).text('link_change_mail').hidden(),
         ]
 
     def set_email_for(self, user: GDO_User, email: str, confirmed: bool = True):
