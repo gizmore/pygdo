@@ -47,7 +47,7 @@ class settings(MethodForm):
             if isinstance(gdt, GDT_Link):
                 form.add_field(gdt)
                 continue
-            if gdt.is_writable() and (not gdt.is_secret() or self._env_user.is_staff()):
+            if (not gdt.is_secret() or self._env_user.is_staff()):
                 if gdt2 := GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current()):
                     form.add_field(gdt2)
                 else:

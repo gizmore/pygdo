@@ -1,4 +1,5 @@
 from gdo.base.GDO_Module import GDO_Module
+from gdo.base.GDT import GDT
 from gdo.core.GDO_User import GDO_User
 from gdo.ui.GDT_Link import GDT_Link
 from gdo.ui.GDT_Page import GDT_Page
@@ -16,3 +17,7 @@ class module_account(GDO_Module):
             page._right_bar.add_field(GDT_Link().href(self.href('all_settings')).text('link_settings'))
 
 
+    def gdo_user_config(self) -> list[GDT]:
+        return [
+            GDT_Link('delete_account').href(self.href('delete_account')).text('delete_account'),
+        ]
