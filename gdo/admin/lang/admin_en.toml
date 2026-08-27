@@ -1,5 +1,10 @@
 module_admin = "Admin"
 
+#########
+# Users #
+#########
+mt_admin_users = "Users"
+
 ##########
 # Config #
 ##########
