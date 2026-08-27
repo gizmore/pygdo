@@ -16,12 +16,15 @@ class WithIcon(WithLabel):
     _icon_color: str
     _icon_size: str
 
-    def icon(self, name: str, alt_key: str = None, alt_args: tuple[str|int|float,...] = None, color: str = None, size=None):
-        self._icon_name = name
-        self._icon_color = color
-        self._icon_size = size or '16px'
-        self._icon_alt_key = alt_key or 'an_icon'
-        self._icon_alt_args = alt_args if alt_key else t(name)
+    def icon(self, name: str|None, alt_key: str = None, alt_args: tuple[str|int|float,...] = None, color: str = None, size=None):
+        if name:
+            self._icon_name = name
+            self._icon_color = color
+            self._icon_size = size or '16px'
+            self._icon_alt_key = alt_key or 'an_icon'
+            self._icon_alt_args = alt_args if alt_key else t(name)
+        else:
+            del self._icon_name
         return self
 
     def icon_name(self, name: str):
