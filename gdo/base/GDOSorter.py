@@ -32,8 +32,8 @@ class GDOSorter:
         for gdo in result:
             ok = True
             for key, vals in vdict.items():
-                hay = gdo.gdo_val(key) or ''
-                if not any(val and val in hay for val in vals):
+                hay = str(gdo.gdo_val(key) or '').casefold()
+                if not any(val and str(val).casefold() in hay for val in vals):
                     ok = False
                     break
             if ok:

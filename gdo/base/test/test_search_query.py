@@ -1,10 +1,12 @@
 import unittest
 
 from gdo.base.Query import Query
+from gdo.base.GDOSorter import GDOSorter
 from gdo.core.GDT_Int import GDT_Int
 from gdo.core.GDT_Float import GDT_Float
 from gdo.core.GDT_String import GDT_String
 from gdo.form.GDT_Form import GDT_Form
+from gdo.table.GDT_Filter import GDT_Filter
 
 
 class SearchRow:
@@ -48,3 +50,9 @@ class SearchQueryTest(unittest.TestCase):
         self.assertTrue(GDT_Int('id').gdo_search_gdo(row, '42'))
         self.assertFalse(GDT_Int('id').gdo_search_gdo(row, '2'))
         self.assertTrue(GDT_Float('price').gdo_search_gdo(row, '1.20'))
+
+    def test_in_memory_filter_matches_text_case_insensitively(self):
+        result = GDOSorter.filter(
+            [SearchRow({'file_name': 'DOCS.md'})],
+            GDT_Filter('f').val({'file_name': ['do']}))
+        self.assertEqual(1, len(result))

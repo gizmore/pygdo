@@ -126,6 +126,10 @@ class MethodTable(WithGDO, MethodForm):
     def gdo_create_table(self, table: GDT_Table):
         pass
 
+    def gdo_table_sort_result(self, result: list[GDO]) -> list[GDO]:
+        """Apply a table-specific stable ordering after the requested sort."""
+        return result
+
     #####################
     # Abstract Features #
     #####################
@@ -205,6 +209,7 @@ class MethodTable(WithGDO, MethodForm):
         result = self.apply_table_search_result(result)
         if self.gdo_ordered():
             result = GDOSorter.sort(result, self.parameter(self.gdo_order_name()))
+        result = self.gdo_table_sort_result(result)
         if self.gdo_filtered():
             result = GDOSorter.filter(result, self.parameter(self.gdo_filter_name()))
         if self.gdo_paginated():

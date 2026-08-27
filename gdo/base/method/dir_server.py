@@ -69,6 +69,11 @@ class dir_server(MethodTable):
             }))
         return ResultArray(files, self.gdo_table())
 
+    def gdo_table_sort_result(self, result: list[GDO]) -> list[GDO]:
+        """Keep directories above files while preserving the selected sort."""
+        root = self.get_dir()
+        return sorted(result, key=lambda file: not Files.is_dir(f"{root}/{file.get_name()}"))
+
     def render_file_name(self, gdt: GDT, gdo: GDO):
         path = self.get_path().rstrip('/')
         return GDT_Link().href("/" + path + "/" + gdt.get_val()).text_raw(gdt.get_val()).render(Mode.render_html)
