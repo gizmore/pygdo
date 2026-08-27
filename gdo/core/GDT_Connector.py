@@ -14,4 +14,7 @@ class GDT_Connector(GDT_Select):
         if val is None:
             return None
         return Connector.get_by_name(val)
-    
+
+    def display_var(self, val: str) -> str:
+        """Connector choices are classes, while the persisted value is its key."""
+        return str(val) if val is not None else super().display_var(val)

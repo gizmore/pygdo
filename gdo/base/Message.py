@@ -126,20 +126,29 @@ class Message(WithEnv):
                 Logger.exception(ex)
 
     async def run(self):
-        txt = ''
         result = self._method.execute()
         while asyncio.iscoroutine(result):
             result = await result
         self._gdt_result = result
-        txt2 = result.render(self._env_mode)
-        if txt1 := Application.get_page()._top_bar.render(self._env_mode):
-            txt += txt1 + " "
-        if txt2:
-            txt += txt2
-        self._result = txt
+        # A connector may use a different output mode than the incoming
+        # message. Render once in that final mode: TopBar fields can carry
+        # one-shot state, so a second render in ``deliver`` can lose a
+        # response such as BlackJack's ``self.msg(...); return self.empty()``.
+        self._result = self.render_response(self._env_server.get_render_mode())
         await self.deliver()
         if not Application.IS_HTTP:
             self._env_session.save()
+
+    def render_response(self, mode: Mode) -> str:
+        """Render flash/top-bar output together with a method result.
+
+        Delivery may use a connector-specific rendering mode, so rendering
+        only in :meth:`run` used to lose the top bar when ``deliver`` rendered
+        the result again.  Keep both pieces together at every render boundary.
+        """
+        top = Application.get_page()._top_bar.render(mode)
+        body = self._gdt_result.render(mode) if self._gdt_result else self._result
+        return ' '.join(part for part in (top, body) if part)
 
     async def deliver(self, with_events: bool=True, with_prefix: bool=True):
         text = self._result
@@ -150,12 +159,8 @@ class Message(WithEnv):
             # if with_prefix:
                 # reply_to = self._env_reply_to or self._env_user.render_name()
                 # text = f"{reply_to}: {text}"
-            if self._gdt_result:
-                self._result = self._gdt_result.render(self._env_server.get_render_mode()) or text
             await self._env_server.get_connector().send_to_channel(self, with_events)
         else:
-            if self._gdt_result:
-                text = self._gdt_result.render(self._env_server.get_render_mode()) or text
             self._result = text
             u = self._thread_user if self._thread_user else (self._env_reply_to or self._env_user)
             o = self._env_user

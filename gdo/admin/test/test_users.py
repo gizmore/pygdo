@@ -8,6 +8,8 @@ from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_UserSetting import GDT_UserSetting
 from gdo.base.Query import Query
 from gdo.admin.method.users import users
+from gdo.admin.method.install import install
+from gdo.admin.method.module import module
 from gdotest.TestUtil import GDOTestCase, install_module, web_gizmore, web_plug
 
 
@@ -33,6 +35,10 @@ class AdminUsersTest(GDOTestCase):
 
     def test_admin_permission_is_required(self):
         self.assertEqual('admin', users().gdo_user_permission())
+
+    def test_module_install_and_overview_are_web_only(self):
+        self.assertEqual('web', install().gdo_connectors())
+        self.assertEqual('web', module().gdo_connectors())
 
     def test_paginates_fifty_users_per_page(self):
         self.assertEqual(50, users().gdo_paginate_size())

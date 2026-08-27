@@ -11,6 +11,9 @@ from gdo.install.Installer import Installer
 
 class install(MethodForm):
 
+    def gdo_connectors(self) -> str:
+        return 'web'
+
     def gdo_user_permission(self) -> str | None:
         return 'admin'
 

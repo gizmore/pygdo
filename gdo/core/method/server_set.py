@@ -23,7 +23,11 @@ class server_set(Method):
 
     def gdo_parameters(self) -> list[GDT]:
         return [
-            GDT_Server('server').not_null().default_current(),
+            # The server is an optional named selector.  Keeping it
+            # non-positional lets `$server.set serv_trigger` address the
+            # current server's setting instead of treating `serv_trigger` as
+            # a server name.
+            GDT_Server('server').not_null().default_current().positional(False),
             GDT_String('var_name').ascii().maxlen(64).positional(),
             GDT_RestOfText('new_var_value').positional(),
         ]

@@ -8,6 +8,11 @@ from gdo.date.GDT_Timestamp import GDT_Timestamp
 
 class DateFilterTest(unittest.TestCase):
 
+    def test_timestamp_rejects_an_empty_fraction_without_a_date(self):
+        field = GDT_Timestamp('deleted').val('.000')
+        self.assertIsNone(field.get_val())
+        self.assertEqual('---', field.render_format())
+
     def test_timestamp_range_combines_date_and_time(self):
         query = Query()
         GDT_Timestamp('created').val({

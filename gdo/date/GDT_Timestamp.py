@@ -29,6 +29,11 @@ class GDT_Timestamp(GDT_String):
         val = (val or '').replace('T', ' ', 1)
         if not val:
             return ''
+        # A nullable timestamp can arrive from an empty database setting as a
+        # bare fractional part (for example ``.000``).  Do not turn that into
+        # an invalid pseudo-date such as ``.000.000``: it must remain empty.
+        if not re.fullmatch(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}(?::\d{2}(?:\.\d{0,6})?)?', val):
+            return ''
         if len(val) == 16:  # YYYY-MM-DD HH:MM
             val += ':00'
         if self._millis == 0:

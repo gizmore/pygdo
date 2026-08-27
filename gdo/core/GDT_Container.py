@@ -22,6 +22,10 @@ class GDT_Container(WithFlow, WithFields, GDT):
         children, silently dropping this container's own HTML wrapper.
         Nested containers then cannot provide their flow or CSS classes.
         """
+        if mode in (Mode.render_cli, Mode.render_irc, Mode.render_telegram,
+                    Mode.render_txt, Mode.render_markdown, Mode.render_mail,
+                    Mode.render_rss, Mode.render_doc):
+            return self.render_fields(mode)
         return GDT.render(self, mode)
 
     def render_html(self) -> str:

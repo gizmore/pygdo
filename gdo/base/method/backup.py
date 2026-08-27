@@ -9,6 +9,10 @@ from gdo.mail.GDT_Email import GDT_Email
 
 class backup(MethodForm):
 
+    @classmethod
+    def gdo_trigger(cls) -> str:
+        return ''
+
     def gdo_user_permission(self) -> str | None:
         return 'staff'
 

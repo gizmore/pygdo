@@ -7,11 +7,14 @@ from gdo.base.Render import Mode
 from gdo.core.GDO_Channel import GDO_Channel
 from gdo.core.GDT_Channel import GDT_Channel
 from gdo.core.GDO_Server import GDO_Server
+from gdo.core.GDT_Connector import GDT_Connector
+from gdo.core.GDT_Server import GDT_Server
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.connector.Bash import Bash
 from gdo.core.method.channel_set import channel_set
+from gdo.core.method.server_set import server_set
 from gdotest.TestUtil import GDOTestCase
 
 
@@ -70,3 +73,16 @@ class test_channel_set(GDOTestCase):
     def test_short_trigger_is_chan_set(self):
         self.assertEqual('channel.set', channel_set.gdo_trigger())
         self.assertEqual('chan.set', channel_set.gdo_trig())
+
+    def test_connector_setting_renders_its_persisted_name(self):
+        self.assertEqual('irc', GDT_Connector('serv_connector').val('irc').render_val())
+
+    def test_server_default_current_resolves_an_empty_option(self):
+        server = GDO_Server.table().select().first().exec().fetch_object()
+        Message('', Mode.render_cli).env_server(server)
+        self.assertEqual(server, GDT_Server('server').default_current().get_value())
+
+    def test_server_set_keeps_the_server_as_an_optional_named_parameter(self):
+        parameters = server_set().parameters()
+        self.assertFalse(parameters['server'].is_positional())
+        self.assertTrue(parameters['var_name'].is_positional())

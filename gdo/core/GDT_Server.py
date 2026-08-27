@@ -22,3 +22,11 @@ class GDT_Server(GDT_Object):
         if not val and self._default_current:
             return Message.CURRENT._env_server
         return super().to_value(val)
+
+    def get_value(self):
+        # GDT_Field skips to_value() for an empty input.  The current-server
+        # fallback is consequently resolved here as well, so a parameter such
+        # as ``--server=`` remains genuinely optional.
+        if not self.get_val() and self._default_current:
+            return Message.CURRENT._env_server
+        return super().get_value()

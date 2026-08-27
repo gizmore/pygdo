@@ -1,5 +1,4 @@
 from gdo.base.Application import Application
-from gdo.base.GDT import GDT
 from gdo.base.Trans import Trans
 from gdo.base.Util import module_enabled
 from gdo.core.GDO_User import GDO_User
