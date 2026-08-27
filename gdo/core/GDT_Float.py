@@ -1,4 +1,5 @@
 import sys
+import re
 
 from gdo.base.Trans import t
 from gdo.core.GDT_String import GDT_String
@@ -59,6 +60,24 @@ class GDT_Float(GDT_String):
 
     def gdo_column_define(self) -> str:
         return f"{self._name} DOUBLE{self.gdo_column_define_null()}{self.gdo_column_define_default()}"
+
+    def gdo_search_query(self, query, term: str):
+        """Match the precision the user actually entered.
+
+        Floating-point columns may not retain a decimal literal exactly.  A
+        search for ``1.20`` therefore compares the field rounded to two
+        fractional digits instead of comparing binary floating-point values.
+        """
+        try:
+            value = float(term)
+        except (TypeError, ValueError):
+            return
+        match = re.fullmatch(r'[+-]?\d+(?:\.(\d+))?', term.strip())
+        if not match:
+            query.search_where(f'{self.get_name()}={value}')
+            return
+        digits = len(match.group(1) or '')
+        query.search_where(f'ROUND({self.get_name()},{digits})=ROUND({value},{digits})')
 
     ############
     # Validate #

@@ -9,7 +9,9 @@ command -v git >/dev/null 2>&1 || {
     exit 127
 }
 
-clear
+if [[ -t 1 ]]; then
+    clear || true
+fi
 echo "Starting gdo_diff.sh"
 
 # Scan nested repositories without changing into their .git directories.

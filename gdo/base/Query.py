@@ -53,6 +53,7 @@ class Query:
         self._group = ''
         self._having = ''
         self._nocache = False
+        self._search_wheres = []
 
     def __repr__(self):
         return f"QRY: {self.build_query()}"
@@ -128,6 +129,21 @@ class Query:
 
     def or_where(self, where: str):
         return self.where(where, 'OR')
+
+    def search_where(self, where: str):
+        """Add one alternative to the current table-wide search.
+
+        Search terms are collected separately so they can be added as one
+        parenthesised OR group after normal (usually access-control) filters.
+        """
+        self._search_wheres.append(where)
+        return self
+
+    def apply_search_wheres(self):
+        if self._search_wheres:
+            self.where(' OR '.join(self._search_wheres))
+            self._search_wheres = []
+        return self
 
     def where(self, where: str, op='AND'):
         if self._where:

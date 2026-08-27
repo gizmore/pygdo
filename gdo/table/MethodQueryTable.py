@@ -15,6 +15,8 @@ class MethodQueryTable(MethodTable):
     def get_num_results(self) -> int:
         query = self.gdo_table_query()
         self.apply_table_filters(query)
+        if self.gdo_searched():
+            self.table_search_field().gdo(self.gdo_table()).search_query(query)
         return int(query.only_select('COUNT(*)').no_order().exec().fetch_val() or 0)
 
     def apply_table_filters(self, query: Query):
@@ -24,6 +26,8 @@ class MethodQueryTable(MethodTable):
 
     def get_table_result(self) -> Result:
         query = self.apply_table_filters(self.gdo_table_query())
+        if self.gdo_searched():
+            self.table_search_field().gdo(self.gdo_table()).search_query(query)
         if self.gdo_ordered():
             self.table_order_field().order_query(query)
         if self.gdo_paginated():

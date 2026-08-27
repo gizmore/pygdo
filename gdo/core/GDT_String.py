@@ -150,6 +150,10 @@ class GDT_String(WithCompletion, GDT_Field):
         if val := self.get_val():
             query.where(f"{self.get_name()} LIKE '%{self.escape_search(val)}%'")
 
+    def gdo_search_query(self, query: 'Query', term: str):
+        if not self.is_secret():
+            query.search_where(f"{self.get_name()} LIKE '%{self.escape_search(term)}%'")
+
     ############
     # Validate #
     ############

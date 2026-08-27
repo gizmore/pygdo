@@ -161,6 +161,9 @@ class GDT(WithSerialization):
     def gdo_filter_query(self, gdo: 'GDO', query: 'Query'):
         pass
 
+    def gdo_search_query(self, query: 'Query', term: str):
+        pass
+
     def is_filterable(self) -> bool:
         return False
 

@@ -92,6 +92,13 @@ class GDT_Int(GDT_String):
         else:
             query.where(f'{field} BETWEEN {int(lower)} AND {int(upper)}')
 
+    def gdo_search_query(self, query: 'Query', term: str):
+        try:
+            value = int(term)
+        except (TypeError, ValueError):
+            return
+        query.search_where(f'{self.get_name()}={value}')
+
     def to_value(self, val: str):
         if val is None:
             return None

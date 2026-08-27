@@ -104,6 +104,22 @@ class WithObject:
         self.error('err_select_candidates', ('|'.join(middles.keys()),))
         return None
 
+    def gdo_search_query(self, query, term: str):
+        """Search an object reference through its target table's name.
+
+        The name field contributes its own clause recursively.  This keeps
+        object search correct when a target uses a specialised or another
+        object-backed name field.
+        """
+        if not (name_column := self._table.name_column()):
+            return
+        pk = self._table.primary_key_column()
+        subquery = self._table.select().only_select(pk.get_name())
+        name_column.gdo_search_query(subquery, term)
+        subquery.apply_search_wheres()
+        if subquery._where:
+            query.search_where(f"{self.get_name()} IN ({subquery.build_query()})")
+
     ##########
     # Render #
     ##########

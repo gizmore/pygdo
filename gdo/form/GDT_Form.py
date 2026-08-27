@@ -29,6 +29,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
     _actions: GDT_Menu
     _encoding: Encoding
     _method: 'MethodForm'
+    _http_method: str
 
     def __init__(self, name: str = 'form'):
         super().__init__()
@@ -37,12 +38,17 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
         self._actions = GDT_Menu()
         self._slim = False
         self._encoding = Encoding.URLENCODED
+        self._http_method = 'POST'
         self._text_key = ''
         self._text_args = None
         self._text_escaped = False
 
     def method(self, method: 'MethodForm'):
         self._method = method
+        return self
+
+    def get(self):
+        self._http_method = 'GET'
         return self
 
     def slim(self, slim: bool = True):
@@ -91,6 +97,7 @@ class GDT_Form(WithError, WithHREF, WithTitle, WithText, WithName, GDT_Container
             'title': self.render_title(),
             'text': self.render_text(),
             'href': self.render_href(),
+            'method': self._http_method,
             'enctype': self.render_enctype(),
             'fields': self.render_fields(Mode.render_form),
             'actions': self._actions.render_fields(),
