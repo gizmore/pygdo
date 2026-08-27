@@ -28,6 +28,7 @@ class Installer:
         if verbose:
             gdo_print("Re-Loading installed modules.")
         loader = ModuleLoader.instance()
+        loader.load_modules_db(True)
         loader.init_modules(True, True)
         cls.migrate_user_settings()
 
@@ -50,6 +51,11 @@ class Installer:
 
         table = GDO_UserSetting.table()
         key = table.column('uset_key')
+        # The table can have been created before enabled modules registered
+        # their settings.  GDT_Select caches its initial choices, so rebuild
+        # this enum from the now complete GDT_UserSetting.KNOWN registry.
+        if hasattr(key, '_choices'):
+            del key._choices
         Application.db().query(
             f"ALTER TABLE {table.gdo_table_name()} MODIFY COLUMN {key.gdo_column_define()}"
         )
