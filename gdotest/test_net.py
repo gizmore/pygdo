@@ -51,6 +51,10 @@ class NetTestCase(GDOTestCase):
         bin =  b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
         self.assertEqual(bin, gdt.get_val(), 'IP6 binary no work.')
 
+    async def test_06_ip_ascii_accepts_ipv4_and_ipv6(self):
+        self.assertIsNotNone(GDT_IP('ip').val('127.0.0.1').validated())
+        self.assertIsNotNone(GDT_IP('ip').val('::1').validated())
+
 
 
 

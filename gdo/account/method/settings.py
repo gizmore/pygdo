@@ -10,6 +10,7 @@ from gdo.base.util.href import href
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Field import GDT_Field
+from gdo.core.GDT_Password import GDT_Password
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
 from gdo.form.MethodForm import MethodForm
@@ -63,6 +64,10 @@ class settings(MethodForm):
                 continue
             if gdt.is_writable():
                 key = gdt.get_name()
+                # A password input is deliberately rendered empty.  An empty
+                # post therefore means "keep the existing password".
+                if isinstance(gdt, GDT_Password) and not gdt.get_val():
+                    continue
                 if gdt.get_val() != gdt.get_prev():
                     old = gdt.get_prev()
                     new = gdt.get_val()

@@ -5,6 +5,17 @@ module_admin = "Admin"
 #########
 mt_admin_users = "Users"
 
+#############
+# Edit User #
+#############
+mt_admin_edit_user = "Edit User"
+md_admin_edit_user = "Select a user whose settings you want to edit."
+mt_admin_edit_user_for = "Edit %s"
+md_admin_edit_user_for = "Edit every setting for %s."
+select_user = "User"
+link_edit = "Edit"
+msg_admin_user_settings_changed = "Settings for %s have been changed. %s"
+
 ##########
 # Config #
 ##########

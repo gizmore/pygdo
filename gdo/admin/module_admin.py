@@ -1,3 +1,4 @@
+from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.core.GDO_User import GDO_User
 from gdo.ui.GDT_Link import GDT_Link
@@ -5,6 +6,13 @@ from gdo.ui.GDT_Page import GDT_Page
 
 
 class module_admin(GDO_Module):
+
+    def gdo_subscribe_events(self):
+        Application.EVENTS.subscribe('user_profile_links', self.on_user_profile_links)
+
+    def on_user_profile_links(self, user: GDO_User, links):
+        if GDO_User.current().is_staff():
+            links.add_field(GDT_Link().href(self.href('edit_user', f'&user={user.get_id()}')).text('link_edit'))
 
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         user = GDO_User.current()

@@ -7,6 +7,18 @@ from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_UserSetting import GDT_UserSetting
 from gdo.core.WithObject import WithObject
 from gdo.table.MethodQueryTable import MethodQueryTable
+from gdo.ui.GDT_Link import GDT_Link
+from gdo.base.util.href import href
+
+
+class GDT_EditUser(GDT_Link):
+    """An action column; it must never become part of SQL filtering/sorting."""
+
+    def is_filterable(self) -> bool:
+        return False
+
+    def is_orderable(self) -> bool:
+        return False
 
 
 class users(MethodQueryTable):
@@ -38,6 +50,11 @@ class users(MethodQueryTable):
             def render_setting_cell(field=field, render_cell=render_cell) -> str:
                 return render_cell() if field.get_val() is not None else '---'
 
+            def render_setting_json(field=field):
+                # The table wrapper adds the key.  Returning only the value
+                # keeps an unset setting JSON-null rather than nesting it.
+                return field.get_val()
+
             def use_setting_column(callback, *args, field=field, column=column):
                 original_name = field.get_name()
                 field.name(column)
@@ -68,13 +85,21 @@ class users(MethodQueryTable):
                 return use_column(callback, query, term)
 
             field.render_cell = render_setting_cell
+            field.render_json = render_setting_json
             field.gdo_filter_query = filter_setting_query
             field.gdo_search_query = search_setting_query
             fields.append(field)
         return fields
 
     def gdo_table_headers(self) -> list[GDT]:
-        return super().gdo_table_headers() + self.setting_fields()
+        headers = super().gdo_table_headers()
+        edit = GDT_EditUser('edit_user').label('edit')
+        return headers[:1] + [edit] + headers[1:] + self.setting_fields()
+
+    def render_edit_user(self, _gdt: GDT, user: GDO_User) -> str:
+        return GDT_Link().text('edit').href(
+            href('admin', 'edit_user', f'&user={user.get_id()}')
+        ).icon('edit').text('edit').render()
 
     def gdo_table_query(self) -> Query:
         query = super().gdo_table_query().only_select('gdo_user.*')

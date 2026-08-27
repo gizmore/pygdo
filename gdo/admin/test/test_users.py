@@ -4,6 +4,7 @@ import unittest
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDT_Field import GDT_Field
+from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_UserSetting import GDT_UserSetting
 from gdo.base.Query import Query
 from gdo.admin.method.users import users
@@ -38,6 +39,12 @@ class AdminUsersTest(GDOTestCase):
 
     def test_qualifies_the_default_order_column(self):
         self.assertEqual('gdo_user.user_id ASC', users().gdo_order_default())
+
+    def test_has_a_non_sortable_edit_user_action_column(self):
+        field = users().gdo_table_headers()[1]
+        self.assertEqual('edit_user', field.get_name())
+        self.assertFalse(field.is_filterable())
+        self.assertFalse(field.is_orderable())
 
     def test_unset_settings_render_as_a_dash_but_stay_null_in_json(self):
         field = users().setting_fields()[0].val(None)

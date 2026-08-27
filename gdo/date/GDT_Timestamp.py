@@ -3,6 +3,7 @@ from datetime import datetime
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.Util import Strings
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Template import tpl
 from gdo.date.Time import Time
@@ -17,7 +18,37 @@ class GDT_Timestamp(GDT_String):
         self.icon('calendar')
         self._date_format = Time.FMT_AGO
         self._millis = 3
-        self._input_type = "number"
+        self._input_type = 'datetime-local'
+        self.attr('step', self.html_step())
+
+    def html_step(self) -> str:
+        return '1' if self._millis == 0 else f"0.{('0' * (self._millis - 1))}1"
+
+    def milliseconds(self, val: str | None) -> str:
+        """Normalize a datetime-local value to this field's DB precision."""
+        val = (val or '').replace('T', ' ', 1)
+        if not val:
+            return ''
+        if len(val) == 16:  # YYYY-MM-DD HH:MM
+            val += ':00'
+        if self._millis == 0:
+            return val[:19]
+        fraction = val[20:] if len(val) > 19 and val[19] == '.' else ''
+        return f"{val[:19]}.{fraction[:self._millis].ljust(self._millis, '0')}"
+
+    def val(self, val: str | list):
+        # datetime-local posts ISO-local values while database timestamps use
+        # a space separator.
+        if isinstance(val, str):
+            val = self.milliseconds(val)
+        return super().val(val)
+
+    def html_value(self):
+        val = self.get_val()
+        if val is None:
+            return ''
+        # HTML datetime-local accepts the database timestamp's precision.
+        return Strings.html(self.milliseconds(val).replace(' ', 'T', 1))
 
     def date_format(self, date_format: str):
         self._date_format = date_format

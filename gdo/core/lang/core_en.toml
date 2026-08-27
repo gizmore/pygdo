@@ -83,6 +83,8 @@ user_name = "Username"
 user_displayname = "Displayname"
 user_link = "Linked account"
 file_mime = "Dateityp"
+edit = "Edit"
+file = "File"
 
 ###########
 # GDT_Int #

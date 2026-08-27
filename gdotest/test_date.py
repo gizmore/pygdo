@@ -7,6 +7,7 @@ from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.date.GDO_Timezone import GDO_Timezone
 from gdo.date.GDT_Duration import GDT_Duration
+from gdo.date.GDT_DateTime import GDT_DateTime
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 from gdo.date.Time import Time
 from gdotest.TestUtil import install_module, GDOTestCase
@@ -75,6 +76,21 @@ class DateTestCase(GDOTestCase):
         col = GDT_Timestamp('test').val('2023-11-09 14:12:11.123')
         dt = col.get_value()
         self.assertIsInstance(dt, datetime, 'Conversion does not yield an object.')
+
+    async def test_datetime_local_form_value_round_trips_to_db_datetime(self):
+        field = GDT_DateTime('created').val('2026-08-27 12:34:56.123456')
+        self.assertEqual('2026-08-27T12:34:56.123', field.html_value())
+        self.assertEqual('2026-08-27 12:34:56.123', field.val('2026-08-27T12:34:56.123').get_val())
+
+    async def test_timestamp_local_form_value_round_trips_to_db_timestamp(self):
+        field = GDT_Timestamp('last_activity').val('2026-08-27 12:34:56.123456')
+        self.assertEqual('', field.milliseconds(None))
+        self.assertEqual('2026-08-27T12:34:56.123', field.html_value())
+        self.assertEqual('2026-08-27 12:34:56.123', field.val('2026-08-27T12:34:56.123').get_val())
+        self.assertEqual('2026-08-27 12:34:00.000', field.val('2026-08-27T12:34').get_val())
+        field._millis = 0
+        self.assertEqual('1', field.html_step())
+        self.assertEqual('2026-08-27 12:34:56', field.milliseconds('2026-08-27T12:34:56.123'))
 
     async def test_timestamp_card(self):
         col = GDT_Timestamp('test').val('2023-11-09 14:12:11.123')

@@ -31,3 +31,7 @@ class GDT_Password(GDT_String):
         else:
             pass
         return super().val(self.hash(val))
+
+    def html_value(self):
+        """Never prefill a password input with its stored hash."""
+        return ''

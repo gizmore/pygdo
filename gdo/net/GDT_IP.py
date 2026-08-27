@@ -16,7 +16,10 @@ class GDT_IP(GDT_String):
         self.minlen(3)
         self.maxlen(39)
         self.ascii()
-        self._pattern = '/^[0-9.:]*$/'
+        # Python's regex engine does not use JavaScript-style /.../
+        # delimiters.  The old form consequently rejected every normal IP
+        # address, including 127.0.0.1.
+        self._pattern = r'^[0-9a-fA-F:.]*$'
         self._use_current_ip = False
         self._format = self.FORMAT_ASCII
 
