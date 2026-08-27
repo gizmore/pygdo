@@ -164,7 +164,7 @@ class ParseArgs(WithPygdo):
         if type(part) is str and part.startswith('--'):
             part = part.lstrip('-')
             kv = part.split('=', 1)
-            self.args[kv[0]] = kv[1]
+            self.args[kv[0]] = kv[1] if len(kv) > 1 else '1'
         else:
             self.pargs.append(part)
 
