@@ -1,6 +1,7 @@
 from __future__ import annotations
 import csv, gzip
 from typing import Optional, List, IO
+from decimal import Decimal, InvalidOperation
 
 import string
 import functools
@@ -215,6 +216,24 @@ class Files:
                 return f"{num:3.1f}{unit}{suffix}"
             num /= div
         return f"{num:.1f}Yi{suffix}"
+
+    @classmethod
+    def human_to_file_size(cls, value: str | int | float | None, div: int = 1000) -> int | None:
+        """Convert a human-readable file size into an integral byte count."""
+        if value is None:
+            return None
+        if isinstance(value, (int, float)):
+            return int(value) if value >= 0 else None
+        match = re.fullmatch(r'\s*(\d+(?:\.\d+)?)\s*([kmgtpezy]?)(?:i)?b?\s*', value, re.IGNORECASE)
+        if not match:
+            return None
+        number, unit = match.groups()
+        try:
+            multiplier = Decimal(div) ** ('kmgtpezy'.index(unit.lower()) + 1) if unit else Decimal(1)
+            result = Decimal(number) * multiplier
+        except (InvalidOperation, ValueError):
+            return None
+        return int(result)
 
     @classmethod
     def is_file(cls, path: str) -> bool:

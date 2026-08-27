@@ -22,6 +22,7 @@ class file_completion(MethodCompletion):
         dir = self.param_value('dir')
         result = []
         if dir and Files.is_dir(q):
+            q = q + '/' if not q.endswith('/') else q
             result.append({
                 'id': q,
                 'var': q,
@@ -39,6 +40,8 @@ class file_completion(MethodCompletion):
                 continue
             if dir and not Files.is_dir(path):
                 continue
+            if Files.is_dir(path):
+                path = path + '/' if not path.endswith('/') else q
             result.append({
                 'id': path,
                 'var': path,

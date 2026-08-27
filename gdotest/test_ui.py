@@ -2,6 +2,7 @@ import os.path
 import unittest
 
 from gdo.base.Application import Application
+from gdo.base.Util import Files
 from gdo.base.Render import Mode
 from gdo.core.GDT_String import GDT_String
 from gdo.base.ModuleLoader import ModuleLoader
@@ -38,7 +39,10 @@ class UITestCase(GDOTestCase):
         self.assertIn('<form', result, 'erroneous page does not render fallback')
 
     async def test_05_human_filesize(self):
-        self.assertEqual(GDT_FileSize.to_human(1024), '1.00 KB', "human file size 1kb failed")
+        self.assertEqual(GDT_FileSize('size').to_value('2.5 KiB'), 2500)
+        self.assertEqual(Files.human_to_file_size('2 KB'), 2000)
+        self.assertEqual(Files.human_to_file_size('1024'), 1024)
+        self.assertIsNone(Files.human_to_file_size('two KB'))
 
 
 if __name__ == '__main__':
