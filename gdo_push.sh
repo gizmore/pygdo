@@ -4,6 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 dry_run=0
+failures=0
 if [[ "${1:-}" == '--dry-run' ]]; then
     dry_run=1
     shift
@@ -40,11 +41,25 @@ push_repo() {
     elif ((dry_run)); then
         echo "would push $ahead commit(s)"
     else
-        git -c safe.directory='*' -C "$repo" push
+        if ! git -c safe.directory='*' -C "$repo" push; then
+            echo "error: push failed; continuing with remaining repositories" >&2
+            ((failures += 1))
+        fi
     fi
 }
 
-push_repo .
+push_repo . || {
+    echo "error: failed to inspect root repository; continuing" >&2
+    ((failures += 1))
+}
 while IFS= read -r -d '' repo_git; do
-    push_repo "${repo_git%/.git}"
+    push_repo "${repo_git%/.git}" || {
+        echo "error: failed to inspect ${repo_git%/.git}; continuing" >&2
+        ((failures += 1))
+    }
 done < <(find gdo -type d -name .git -print0)
+
+if ((failures)); then
+    echo "Finished with $failures failed push(es)." >&2
+    exit 1
+fi
