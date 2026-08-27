@@ -18,7 +18,7 @@ class GDT_Bool(GDT_Select):
             '1': True,
         }
 
-    def display_val(self, val: str) -> str:
+    def display_var(self, val: str) -> str:
         if val is None:
             return Render.italic(t('none'))
         return t('yes') if val == '1' else t('no')

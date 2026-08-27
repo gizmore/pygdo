@@ -384,13 +384,13 @@ class GDT(WithSerialization):
         return self.render_xml()
 
     def render_val(self) -> str:
-        return self.display_val(self.get_val())
+        return self.display_var(self.get_val())
 
     def render_suggestion(self) -> str:
         return self.EMPTY_STR
 
     @classmethod
-    def display_val(cls, val: str) -> str:
+    def display_var(cls, val: str) -> str:
         return val
 
     def copy_as(self, new_name: str = None) -> Self:

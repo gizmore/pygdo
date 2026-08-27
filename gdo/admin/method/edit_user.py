@@ -115,8 +115,8 @@ class edit_user(MethodForm):
                 user.save_setting(field.get_name(), new)
                 changes.append('%s: %s → %s' % (
                     field.render_label(),
-                    Render.italic(field.display_val(old), self._env_mode),
-                    Render.italic(field.display_val(new), self._env_mode),
+                    Render.italic(field.display_var(old), self._env_mode),
+                    Render.italic(field.display_var(new), self._env_mode),
                 ))
         if changes:
             self.msg('msg_admin_user_settings_changed', (user.render_name(), ' '.join(changes)))

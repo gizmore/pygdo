@@ -218,7 +218,7 @@ class GDT_File(GDT_Object):
     def render_form(self) -> str:
         return GDT_Template().template('file', 'test.html', {'field': self}).render()
 
-    def display_val(cls, val: str) -> str:
+    def display_var(cls, val: str) -> str:
         if val and (file := GDO_File.table().get_by_aid(val)):
             return html(file.get_name())
         return t('none')

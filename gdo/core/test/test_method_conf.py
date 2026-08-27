@@ -33,7 +33,7 @@ class MethodConfTest(unittest.TestCase):
         command.conf = MagicMock()
         command.conf.get_name.return_value = 'enabled'
         command.conf.get_initial.return_value = '0'
-        command.conf.display_val.side_effect = lambda value: value
+        command.conf.display_var.side_effect = lambda value: value
         command.delete_value = MagicMock()
         command.set_value = MagicMock()
         command.reply = MagicMock()

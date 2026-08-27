@@ -99,11 +99,11 @@ class GDT_Select(GDT_ComboBox):
             examples.append('...')
         return ", ".join(examples)
 
-    def display_val(self, val: str) -> str:
+    def display_var(self, val: str) -> str:
         self.init_choices()
         if val is not None and (choice := self._choices.get(str(val))) is not None:
             return self._choice_label(choice)
-        return super().display_val(val)
+        return super().display_var(val)
 
     def render_table_filter(self, vals: dict) -> str:
         return tpl('table', 'filter_bool.html', vals)

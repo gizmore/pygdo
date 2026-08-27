@@ -62,9 +62,9 @@ class MethodConf(Method):
             return self.reply('msg_config_set', (
                 method.gdo_trigger(),
                 conf.get_name(),
-                Render.italic(conf.display_val(old)),
-                Render.italic(conf.display_val(conf.get_initial())),
+                Render.italic(conf.display_var(old)),
+                Render.italic(conf.display_var(conf.get_initial())),
             ))
         self.set_config_val(method, key, val)
         new = self.get_config_val(method, key)
-        return self.reply('msg_config_set', (method.gdo_trigger(), conf.get_name(), Render.italic(conf.display_val(old)), Render.italic(conf.display_val(new))))
+        return self.reply('msg_config_set', (method.gdo_trigger(), conf.get_name(), Render.italic(conf.display_var(old)), Render.italic(conf.display_var(new))))

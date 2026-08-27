@@ -66,8 +66,8 @@ class AccountTest(GDOTestCase):
 
     def test_07_save_user_setting_with_action_link(self):
         timezone = GDO_Timezone.get_by_name('Europe/Berlin')
-        self.assertIn('Europe/Berlin', GDT_Timezone('timezone').display_val(timezone.get_id()))
-        self.assertEqual('English', GDT_Language('language').display_val('en'))
+        self.assertIn('Europe/Berlin', GDT_Timezone('timezone').display_var(timezone.get_id()))
+        self.assertEqual('English', GDT_Language('language').display_var('en'))
         with patch('gdo.core.GDO_User.IPC.send'):
             out = web_plug('account.settings.module.user.html').user('gizmore').post({
                 'about_me': 'Settings regression test',

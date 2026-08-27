@@ -50,13 +50,13 @@ class configure(MethodForm):
         new = module_sort.get_val()
         if old != new:
             module.save_val('module_sort', new)
-            changes.append((module.render_name(), module_sort.get_name(), Render.italic(module_sort.display_val(old)), Render.italic(module_sort.display_val(new))))
+            changes.append((module.render_name(), module_sort.get_name(), Render.italic(module_sort.display_var(old)), Render.italic(module_sort.display_var(new))))
         for gdt in module.module_config().values():
             old = gdt.get_prev()
             new = gdt.get_val()
             if old != new:
                 await module.save_config_val(gdt.get_name(), new, True)
-                changes.append((module.render_name(), gdt.get_name(), Render.italic(gdt.display_val(old)), Render.italic(gdt.display_val(new))))
+                changes.append((module.render_name(), gdt.get_name(), Render.italic(gdt.display_var(old)), Render.italic(gdt.display_var(new))))
         for change in changes:
             UserTemp.flash(self._env_user, GDT_Success().title_raw(module.render_name()).text('msg_module_conf_changed', change))
         return self.redirect(href('admin', 'module', f'&module={module.get_name}'))

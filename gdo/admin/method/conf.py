@@ -90,7 +90,7 @@ class conf(Method):
         val = gdt.to_val(gdt.to_value(value))
         old = Render.italic(gdt.render_val(), self._env_mode)
         await module.save_config_val(gdt.get_name(), val)
-        new = Render.italic(gdt.display_val(val), self._env_mode)
+        new = Render.italic(gdt.display_var(val), self._env_mode)
         if old == new:
             return self.reply('msg_module_conf_no_change', (gdt.get_name(), module.render_name(), old))
         return self.reply('msg_module_conf_changed', (module.render_name(), gdt.get_name(), old, new))

@@ -246,5 +246,5 @@ class GDT_String(WithCompletion, GDT_Field):
     def render_list(self) -> str:
         return self.render_html()
 
-    def display_val(cls, val: str) -> str:
+    def display_var(cls, val: str) -> str:
         return html(val, Application.get_mode())
