@@ -54,7 +54,7 @@ class module_user(GDO_Module):
     def gdo_user_settings(self) -> list[GDT]:
         return [
             GDT_Gender('gender'),
-            GDT_Text('about_me'),
+            GDT_Text('about_me').icon('quote'),
             GDT_Link('connect_account').href(self.href('connect')).text('link_connect_account').hidden(),
         ]
 

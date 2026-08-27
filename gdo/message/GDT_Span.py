@@ -38,4 +38,4 @@ class GDT_Span(WithHTMLAttributes, GDT_Container):
         tag = self.get_tag()
         attrs = self.html_attrs()
         attrs = f" {attrs}" if attrs else ''
-        return f"<{tag}{attrs}>{super().render()}</{tag}>"
+        return f"<{tag}{attrs}>{self.render_fields(Mode.render_html)}</{tag}>"

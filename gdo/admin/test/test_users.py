@@ -48,6 +48,12 @@ class AdminUsersTest(GDOTestCase):
         self.assertNotIn('Invalid value for parameter module', out)
         self.assertIn('module_sort', out)
 
+    def test_language_module_page_renders_its_readme(self):
+        web_gizmore()
+        out = web_plug('admin.module.module.language.html').user('gizmore').exec()
+        self.assertNotIn('RecursionError', out)
+        self.assertIn('<pre>', out)
+
     def test_qualifies_the_default_order_column(self):
         self.assertEqual('gdo_user.user_id ASC', users().gdo_order_default())
 
