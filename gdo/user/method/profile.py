@@ -35,6 +35,10 @@ class profile(Method):
 
     def gdo_execute(self) -> GDT:
         user = self.get_user()
+        modules = ModuleLoader.instance().enabled()
+        # A profile can show settings from many modules.  Prime the target
+        # user's values once, rather than issuing one query per setting.
+        GDO_UserSetting.load_for_user(user)
         card = GDT_Card()
         profile_links = GDT_Container().vertical()
         if module_enabled('avatar'):
@@ -45,13 +49,14 @@ class profile(Method):
             card.image(profile_links)
         card.title('mt_user_profile', (user.render_name(),))
         content = card.get_content()
-        for module in ModuleLoader.instance().enabled():
+        for module in modules:
             for gdt in module.gdo_profile_links(user):
                 if isinstance(gdt, GDT_Field) and not gdt.is_hidden():
                     content.add_field(gdt)
-        for module in ModuleLoader.instance().enabled():
-            for gdt in module.all_user_settings():
-                if gdt := GDO_UserSetting.setting_column(gdt.get_name(), user):
-                    if isinstance(gdt, GDT_Field) and gdt.get_val() is not None and not gdt.is_secret() and not gdt.is_hidden():
-                        content.add_field(gdt)
+        for module in modules:
+            for gdt in (*module.gdo_user_settings(), *module.gdo_user_config()):
+                if isinstance(gdt, GDT_Field):
+                    if setting := GDO_UserSetting.setting_column(gdt.get_name(), user):
+                        if setting.get_val() is not None and not setting.is_secret() and not setting.is_hidden():
+                            content.add_field(setting)
         return card

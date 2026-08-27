@@ -25,6 +25,7 @@ class ipc_uset(Method):
 
     def gdo_execute(self) -> GDT:
         key = self.param_val('key')
-        if user := Cache.OCACHE['gdo_user'].get(key):
-            user._settings[key] = self.param_val('value')
+        user_id = self.get_user().get_id()
+        if user := Cache.OCACHE['gdo_user'].get(user_id):
+            user._vals[key] = self.param_val('value')
         return self.empty()

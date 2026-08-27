@@ -19,6 +19,8 @@ class GDO_UserSetting(GDO):
         if gdt := GDT_UserSetting.KNOWN.get(key, None):
             if not user.is_persisted():
                 return gdt.val(gdt.get_initial())
+            if key in user._vals:
+                return gdt.val(user._vals[key])
             if gdo := cls.get_setting(user, key):
                 return gdt.val(gdo.get_val())
             else:
@@ -35,6 +37,27 @@ class GDO_UserSetting(GDO):
     @classmethod
     def get_setting(cls, user: GDO_User, key: str):
         return cls.table().get_by_id(user.get_id(), key)
+
+    @classmethod
+    def load_for_user(cls, user: GDO_User) -> dict[str, str | None]:
+        """Load all known settings for *user* with one query.
+
+        Missing rows intentionally receive their field initial value.  This
+        lets callers distinguish a loaded default from a setting that has not
+        been looked up yet and prevents a later per-field fallback query.
+        """
+        values = {
+            key: gdt.get_initial()
+            for key, gdt in GDT_UserSetting.KNOWN.items()
+        }
+        if user.is_persisted():
+            result = cls.table().select('uset_key,uset_val').where(
+                f'uset_user={cls.quote(user.get_id())}'
+            ).exec()
+            while row := result.fetch_assoc():
+                values[row['uset_key']] = row['uset_val']
+        user._vals.update(values)
+        return values
 
     #######
     # GDO #

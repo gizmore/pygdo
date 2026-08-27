@@ -85,6 +85,10 @@ class GDT_User(GDT_Object):
             if user := self._table.get_by_aid(val):
                 return [user]
             return []
+        if user_id := Strings.regex_first(r'^(\d+)-', val):
+            if user := self._table.get_by_aid(user_id):
+                return [user]
+            return []
         query = self._table.select()
         users = self.query_gdos_query(val, query).limit(10).exec().fetch_all()
         if self._same_channel:
@@ -99,5 +103,6 @@ class GDT_User(GDT_Object):
     def render_html(self) -> str:
         if user := self.get_gdo():
             name = user.render_name()
-            return GDT_Link().text_raw(name).href(href('user', 'profile', f'&for={name}')).render()
+            profile_id = f'{user.get_id()}-{user.get_name_sid()}'
+            return GDT_Link().text_raw(name).href(href('user', 'profile', f'&for={profile_id}')).render()
         return Render.italic(t('none'))

@@ -61,6 +61,9 @@ class GDO_Server(GDO):
     def get_by_connector(cls, name: str):
         return cls.table().get_by_vals({"serv_connector": name})
 
+    def gdo_persistent(self) -> bool:
+        return False
+
     def gdo_columns(self) -> list[GDT]:
         return [
             GDT_AutoInc('serv_id'),
