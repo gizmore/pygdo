@@ -3,8 +3,10 @@ from urllib.parse import parse_qsl, quote, urlencode
 
 
 def _segment(value: str) -> str:
-    """Encode a point-separated URL segment; points are route separators."""
-    return quote(str(value), safe='').replace('.', '%2E')
+    """Encode a point-separated URL segment through Apache and PyGDO."""
+    # Apache decodes the path once before it reaches PyGDO. Keep an escaped
+    # point for ParseArgs, where it is decoded only after route splitting.
+    return quote(str(value), safe='').replace('.', '%252E')
 
 
 def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html', positional: tuple|list = ()):

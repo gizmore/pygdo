@@ -1,10 +1,11 @@
 import os.path
+import tempfile
 import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import t
-from gdo.base.Util import Strings, Arrays, Random
+from gdo.base.Util import Strings, Arrays, Files, Random
 from gdo.base.util.href import href
 from gdotest.TestUtil import GDOTestCase
 
@@ -69,10 +70,13 @@ class UtilityTestCase(GDOTestCase):
     async def test_href(self):
         result = href('core', 'profile', '&for=gizmore{2}')
         self.assertEqual('/core.profile.for.gizmore%7B2%7D.html?_lang=en', result, 'href() does not build the point URL.')
+        result = href('logs', 'view', '&user=1&file=logs.files')
+        self.assertEqual('/logs.view.user.1.file.logs%252Efiles.html?_lang=en', result,
+                         'href() does not escape dots inside named route values.')
 
     async def test_href_positional(self):
         result = href('core', 'echo', positional=('This.Test', 'one/two'))
-        self.assertEqual('/core.echo.This%2ETest.one%2Ftwo.html?_lang=en', result,
+        self.assertEqual('/core.echo.This%252ETest.one%2Ftwo.html?_lang=en', result,
                          'href() does not encode point-separated values safely.')
         self.assertEqual('/core.echo..html?_lang=en', href('core', 'echo', positional=('',)),
                          'href() must preserve an empty positional segment.')
@@ -87,6 +91,19 @@ class UtilityTestCase(GDOTestCase):
             b2 = Random.mrand(1, 100)
         self.assertEqual(a1, a2, 'Random.mrand not working a1!=a2.')
         self.assertEqual(b1, b2, 'Random.mrand not working b1!=b2.')
+
+    async def test_copy_dir_does_not_require_metadata_permissions(self):
+        with tempfile.TemporaryDirectory() as source, tempfile.TemporaryDirectory() as target:
+            nested = os.path.join(source, 'nested')
+            os.mkdir(nested)
+            source_file = os.path.join(nested, 'test.txt')
+            with open(source_file, 'w', encoding='utf-8') as file:
+                file.write('PyGDO')
+
+            Files.copy_dir(source, target)
+
+            with open(os.path.join(target, 'nested', 'test.txt'), encoding='utf-8') as file:
+                self.assertEqual('PyGDO', file.read())
 
 
 if __name__ == '__main__':

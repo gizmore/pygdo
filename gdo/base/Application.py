@@ -133,6 +133,8 @@ class Application:
         cls.STORAGE.lang = user.get_lang_iso()
         Logger.user(user)
         cls.get_module_user().instance().set_last_activity(user)
+        if cls.IS_HTTP:
+            cls.EVENTS.publish_sync('user_request', user)
 
     @classmethod
     def fresh_page(cls):

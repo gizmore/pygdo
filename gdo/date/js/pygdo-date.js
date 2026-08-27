@@ -20,6 +20,12 @@ window.gdo.date = {
 
         const values = [];
         const factorKeys = Object.keys(factors);
+        const unitLabel = function(unit) {
+            // Language JSON is loaded asynchronously. Never render a bare
+            // number while it is still on its way; the stable unit suffix is
+            // both readable and replaced by the translation on the next tick.
+            return window.gdo.lang[unit] || unit.substring(3);
+        };
 
         if (withMillis) {
             let remainder = seconds;
@@ -39,7 +45,7 @@ window.gdo.date = {
             const value = remainder % factor;
             remainder = Math.floor(remainder / factor);
             if (value) {
-                values.push([value, window.gdo.t(unit)]);
+                values.push([value, unitLabel(unit)]);
             }
         }
 
@@ -57,7 +63,8 @@ window.gdo.date = {
         for(const tse of document.querySelectorAll('.ago[gdo-ts]')) {
             const ts = tse.getAttribute('gdo-ts')
             const t = (new Date().getTime()) / 1000.0 - parseFloat(ts)
-            tse.innerHTML = window.gdo.date.humanDuration(t, 2, false) + gdo.t('ago');
+            const ago = window.gdo.lang.ago ? ` ${gdo.t('ago')}` : '';
+            tse.textContent = window.gdo.date.humanDuration(t, 2, false) + ago;
         }
     },
 

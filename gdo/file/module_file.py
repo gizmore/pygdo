@@ -21,7 +21,6 @@ class module_file(GDO_Module):
         ]
 
     def gdo_load_scripts(self, page: 'GDT_Page'):
-        self.add_bower_js('flow.js/lib/flow.js')
         self.add_js('js/gdo-flow.js')
         self.add_css('css/pygdo-file.css')
 

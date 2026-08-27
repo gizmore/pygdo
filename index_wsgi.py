@@ -258,7 +258,7 @@ def pygdo_application(environ, start_response):
                         if part.filename:
                             args.add_file(part.name, part.filename, part.raw)
                         else:
-                            fields[part.name] = part.value
+                            fields.setdefault(part.name, []).append(part.value)
                     args.add_post_vars(fields)
 
             elif environ['REQUEST_METHOD'] == 'POST':  # POST PARAMS

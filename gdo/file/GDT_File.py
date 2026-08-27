@@ -45,8 +45,9 @@ class GDT_File(GDT_Object):
 
     def gdo_added_to_form(self, form: 'GDT_Form'):
         form.multipart()
-        self._method = form._method
-        self.upload_path(f"{form._method.gdo_module().get_name}.{form._method.get_name()}.{self._name}")
+        self._method = getattr(form, '_method', None)
+        if self._method:
+            self.upload_path(f"{self._method.gdo_module().get_name}.{self._method.get_name()}.{self._name}")
 
     def get_file(self) -> list[GDO_File]:
         return self.get_value()
@@ -243,4 +244,11 @@ class GDT_File(GDT_Object):
     # Upload #
     ##########
     def flow_upload(self):
-        return GDT_String('result')
+        """Store one asynchronous Flow.js upload in the current session.
+
+        The final form submission performs validation and persists the file.
+        This request only needs to make the uploaded file available to that
+        later validation step.
+        """
+        self.gdo_file_upload(self._method)
+        return GDT_String('result').val('success')

@@ -1,7 +1,7 @@
 <div class="gdt-form-field">
-<label for="<%=field._name%>"><%=field.render_label()%></label>
+<label for="<%=input.get_name()%>"><%=field.render_label()%></label>
 </div>
-<textarea id="<%=field._name%>" name="<%=field._name%>"
+<textarea id="<%=input.get_name()%>" name="<%=input.get_name()%>"
 aria-label="<%=field.render_label(Mode.render_html)%>"
 <%=input.input_required()%>
 <%=input.input_readonly()%>><%=input.html_value()%></textarea>

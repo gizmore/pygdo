@@ -113,6 +113,7 @@ class module_core(GDO_Module):
     def gdo_admin_links(self) -> list[GDT_Link]:
         return [
             GDT_Link().href(self.href('clear_cache')).text('mt_core_clear_cache'),
+            GDT_Link().href(self.href('web_cron')).text('mt_core_web_cron'),
         ]
 
     def gdo_user_settings(self) -> list[GDT]:

@@ -11,6 +11,9 @@ class GDT_ProfileLink(GDT_Link):
 
     def __init__(self, name: str=None):
         super().__init__(name)
+        # A profile name is already a clear navigation affordance. Unlike a
+        # generic GDT_Link it should not prepend the generic link glyph.
+        del self._icon_name
         self._with_avatar = False
         self._with_username = False
 
@@ -19,7 +22,7 @@ class GDT_ProfileLink(GDT_Link):
 
     def user(self, user: GDO_User, with_username: bool = True):
         self._user = user
-        self.href(href('user', 'profile', f'&for={user.render_name()}'))
+        self.href(href('user', 'profile', f'&for={user.get_name_sid()}'))
         return self.with_username(with_username)
 
     def with_username(self, with_username: bool = True):

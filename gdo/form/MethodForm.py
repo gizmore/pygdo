@@ -56,6 +56,7 @@ class MethodForm(Method):
 
         ### Flow upload
         if key := self._raw_args.args.get('flowField'):
+            key = key[0] if isinstance(key, list) else key
             return form.get_field(key).flow_upload()
 
         for gdt in self.parameters().values():

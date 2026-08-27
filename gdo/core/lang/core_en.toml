@@ -187,6 +187,13 @@ mt_core_clear_cache = "Clear Cache"
 md_core_clear_cache = "Clear all caches."
 msg_cache_cleared = "Caches have been cleared."
 
+##############
+### Web Cron ###
+##############
+mt_core_web_cron = "Run Cronjobs"
+md_core_web_cron = "Run all currently due cronjobs."
+msg_core_web_cron_done = "Due cronjobs have been processed."
+
 ############
 ### Ping ###
 ############

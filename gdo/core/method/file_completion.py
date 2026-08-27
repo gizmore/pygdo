@@ -21,6 +21,19 @@ class file_completion(MethodCompletion):
         file = self.param_value('file') and False
         dir = self.param_value('dir')
         result = []
+        if dir and Files.is_dir(q):
+            result.append({
+                'id': q,
+                'var': q,
+                'display_var': q,
+            })
+        if file and Files.is_file(q):
+            result.append({
+                'id': q,
+                'var': q,
+                'display_var': q,
+            })
+
         for path in glob(f"{q}*", include_hidden=True):
             if file and not Files.is_file(path):
                 continue
