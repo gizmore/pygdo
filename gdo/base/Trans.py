@@ -107,7 +107,8 @@ class Trans:
     @staticmethod
     def tiso2(iso: str, key: str, args: tuple = None):
         try:
-            if format := Trans.CACHE.get(iso, Trans.EN).get(key):
+            cache = Trans.CACHE.get(iso, Trans.EN)
+            if format := cache.get(key, Trans.EN.get(key)):
                 return format % args if args else format
         except:
             pass
@@ -115,4 +116,5 @@ class Trans:
 
     @staticmethod
     def has(key: str) -> bool:
-        return key in Trans.CACHE[Application.STORAGE.lang]
+        cache = Trans.CACHE.get(Application.STORAGE.lang, Trans.EN)
+        return key in cache or key in Trans.EN

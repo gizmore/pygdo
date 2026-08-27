@@ -6,7 +6,6 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Render import Render
 from gdo.base.Trans import t
-from gdo.base.Util import html
 from gdo.base.util.href import href
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDO_UserSetting import GDO_UserSetting
@@ -58,21 +57,19 @@ class settings(MethodForm):
 
     def form_submitted(self):
         user = self._env_user
-        module = self.get_module()
         out = []
-        for gdt in module.all_user_settings():
+        for gdt in self.get_form().all_fields():
             if isinstance(gdt, GDT_Link):
                 continue
             if gdt.is_writable():
                 key = gdt.get_name()
-                self.init_parameter(gdt)
-                if gdt.get_val() != gdt._prev:
+                if gdt.get_val() != gdt.get_prev():
                     old = gdt.get_prev()
                     new = gdt.get_val()
                     gdt.val(old)
                     user.save_setting(key, new)
                     gdt.val(new)
-                    out.append(t('setting_changed', (key, Render.italic(html(str(old)), self._env_mode), Render.italic(html(str(new)), self._env_mode))))
+                    out.append(t('setting_changed', (key, Render.italic(gdt.display_val(old), self._env_mode), Render.italic(gdt.display_val(new), self._env_mode))))
         if len(out):
             self.msg('msg_settings_changed', (" ".join(out),))
         return self.render_page()

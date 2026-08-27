@@ -1,9 +1,13 @@
 import os
 import unittest
+from unittest.mock import patch
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
-from gdotest.TestUtil import cli_plug, reinstall_module, cli_gizmore, web_plug, GDOTestCase, install_module
+from gdo.date.GDO_Timezone import GDO_Timezone
+from gdo.date.GDT_Timezone import GDT_Timezone
+from gdo.language.GDT_Language import GDT_Language
+from gdotest.TestUtil import cli_plug, reinstall_module, cli_gizmore, web_gizmore, web_plug, GDOTestCase, install_module
 
 
 class AccountTest(GDOTestCase):
@@ -59,6 +63,23 @@ class AccountTest(GDOTestCase):
         self.assertIn('en', out, 'Cannot change language settings #2.')
         out = web_plug('account.settings.module.mail.html').user('gizmore').post({'submit_mail': '1'}).exec()
         self.assertIn('submit_mail', out, 'Cannot save email settings.')
+
+    def test_07_save_user_setting_with_action_link(self):
+        timezone = GDO_Timezone.get_by_name('Europe/Berlin')
+        self.assertIn('Europe/Berlin', GDT_Timezone('timezone').display_val(timezone.get_id()))
+        self.assertEqual('English', GDT_Language('language').display_val('en'))
+        with patch('gdo.core.GDO_User.IPC.send'):
+            out = web_plug('account.settings.module.user.html').user('gizmore').post({
+                'about_me': 'Settings regression test',
+                'submit_user': '1',
+            }).exec()
+            timezone_out = web_plug('account.settings.module.date.html').user('gizmore').post({
+                'timezone': timezone.get_id(),
+                'submit_date': '1',
+            }).exec()
+        self.assertIn('Settings regression test', out, 'User settings form did not retain its submitted value.')
+        self.assertEqual('Settings regression test', web_gizmore().get_setting_val('about_me'))
+        self.assertIn('Europe/Berlin', timezone_out, 'Timezone changes must display the timezone name.')
 
 
 if __name__ == '__main__':
