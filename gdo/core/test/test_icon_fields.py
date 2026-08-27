@@ -1,5 +1,6 @@
 from gdo.base.Render import Mode
 from gdo.date.GDT_Timezone import GDT_Timezone
+from gdo.maps.GDT_TrackMode import GDT_TrackMode
 from gdo.ui.IconUTF8 import IconUTF8
 from gdo.user.GDT_Gender import GDT_Gender
 from gdotest.TestUtil import GDOTestCase
@@ -15,6 +16,7 @@ class IconFieldTest(GDOTestCase):
     def test_gender_and_timezone_have_utf8_icons(self):
         self.assertEqual('⚥', GDT_Gender('gender').render_icon(Mode.render_cli))
         self.assertEqual('🕰', GDT_Timezone('timezone').render_icon(Mode.render_cli))
+        self.assertEqual('🎚', GDT_TrackMode('tracking_mode').render_icon(Mode.render_cli))
 
     def test_every_utf8_icon_has_a_font_awesome_mapping(self):
         from gdo.icon_fa.IconFA import IconFA
