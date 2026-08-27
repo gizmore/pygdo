@@ -43,8 +43,8 @@ class settings(MethodForm):
     def gdo_create_form(self, form: GDT_Form) -> None:
         module = self.get_module()
         form.text('md_account_settings', (module.render_name(),))
-        for gdt in module.all_user_settings():
-            if not gdt.is_secret() or self._env_user.is_staff():
+        for gdt in module.gdo_user_settings():
+            if gdt.is_writable() and (not gdt.is_secret() or self._env_user.is_staff()):
                 if gdt2 := GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current()):
                     form.add_field(gdt2)
                 else:
@@ -56,7 +56,7 @@ class settings(MethodForm):
         user = self._env_user
         module = self.get_module()
         out = []
-        for gdt in module._all_user_settings():
+        for gdt in module.gdo_user_settings():
             if gdt.is_writable():
                 key = gdt.get_name()
                 self.init_parameter(gdt)

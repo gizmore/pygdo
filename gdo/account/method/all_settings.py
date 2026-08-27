@@ -19,10 +19,9 @@ class all_settings(Method):
         cont = GDT_Container()
         loader = ModuleLoader.instance()
         for module in loader._cache.values():
-            for _ in module.all_user_settings():
+            if any(gdt.is_writable() for gdt in module.gdo_user_settings()):
                 method = settings().args_copy(self, True).env_copy(self).input('module', module.get_name)
                 cont.add_field(method)
-                break
         for method in cont.all_fields():
             await method.execute()
         return cont
