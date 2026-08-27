@@ -54,13 +54,13 @@ class module_user(GDO_Module):
         return [
             GDT_Gender('gender'),
             GDT_Text('about_me'),
+            GDT_Link('connect_account').href(self.href('connect')).text('link_connect_account'),
         ]
 
     def gdo_user_config(self) -> list[GDT]:
         return [
             GDT_Timestamp('last_activity'),
             GDT_Level('level').initial('0'),
-            GDT_Link('connect_account').href(self.href('connect')).text('link_connect_account'),
         ]
 
     def get_activity_cut_date(self) -> str:

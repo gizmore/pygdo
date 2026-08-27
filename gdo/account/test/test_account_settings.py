@@ -41,6 +41,8 @@ class AccountTest(GDOTestCase):
         out = web_plug('login.form.html').user('gizmore').post({"submit": "1", "bind_ip": "1", "login": "gizmore", "password": "11111111"}).exec()
         out = web_plug('account.all_settings.html').user('gizmore').exec()
         self.assertIn('Language', out, 'Language module not shown in all_settings().')
+        self.assertIn('Connect another account', out, 'Account-connect link missing from user settings.')
+        self.assertIn('user.connect', out, 'Account-connect URL missing from user settings.')
 
     def test_05_render_single_settings(self):
         out = web_plug('login.form.html').user('gizmore').exec()

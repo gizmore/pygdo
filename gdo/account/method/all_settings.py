@@ -16,12 +16,14 @@ class all_settings(Method):
         return 'member,guest'
 
     async def gdo_execute(self) -> GDT:
-        cont = GDT_Container()
+        cont = GDT_Container().vertical()
         loader = ModuleLoader.instance()
+        methods = []
         for module in loader._cache.values():
-            if any(gdt.is_writable() for gdt in module.gdo_user_settings()):
+            if any(gdt.is_writable() for gdt in module.all_user_settings()):
                 method = settings().args_copy(self, True).env_copy(self).input('module', module.get_name)
                 cont.add_field(method)
-        for method in cont.all_fields():
+                methods.append(method)
+        for method in methods:
             await method.execute()
         return cont

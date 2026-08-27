@@ -93,7 +93,8 @@ class WithModuleConfig:
         if not hasattr(self, '_user_config'):
             config = []
             for gdt in self._all_user_settings():
-                config.append(gdt)
+                if gdt is not None:
+                    config.append(gdt)
             self._user_config = config
         return self._user_config
 
@@ -103,12 +104,13 @@ class WithModuleConfig:
         from gdo.core.GDT_Field import GDT_Field
         for gdt in self.gdo_user_settings():
             if isinstance(gdt, GDT_Field):
-                yield GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current())
+                if setting := GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current()):
+                    yield setting
             else:
                 yield gdt
         for gdt in self.gdo_user_config():
             if isinstance(gdt, GDT_Field):
-                gdt = GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current())
-                yield gdt.writable(False)
+                if setting := GDO_UserSetting.setting_column(gdt.get_name(), GDO_User.current()):
+                    yield setting.writable(False)
             else:
                 yield gdt

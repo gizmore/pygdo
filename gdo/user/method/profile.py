@@ -38,11 +38,12 @@ class profile(Method):
         if module_enabled('avatar'):
             from gdo.avatar.GDT_Avatar import GDT_Avatar
             card.image(GDT_Avatar('avatar').for_user(user).add_class('gdo-avatar-profile'))
-        card.title('whose_profile', (user.render_name(),))
+        card.title('mt_user_profile', (user.render_name(),))
         content = card.get_content()
         for module in ModuleLoader.instance().enabled():
             for gdt in module.gdo_profile_links(user):
-                content.add_field(gdt)
+                if isinstance(gdt, GDT_Field) and not gdt.is_hidden():
+                    content.add_field(gdt)
         for module in ModuleLoader.instance().enabled():
             for gdt in module.all_user_settings():
                 if gdt := GDO_UserSetting.setting_column(gdt.get_name(), user):

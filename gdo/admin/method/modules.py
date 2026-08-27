@@ -50,7 +50,7 @@ class modules(MethodTable):
 
     def admin_links(self) -> list[GDT_Link]:
         back = []
-        for module in ModuleLoader.instance()._cache.values():
+        for module in ModuleLoader.instance().enabled():
             back.extend(module.gdo_admin_links())
         return back
 
