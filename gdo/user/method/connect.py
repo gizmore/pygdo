@@ -24,9 +24,8 @@ class connect(MethodForm):
         master = self._env_user
         slave = self.param_value('slave')
         if slave.get_id() == master.get_id() or slave.get_effective_user().get_id() == master.get_id():
-            return self.empty('This account is already linked to you.')
+            return self.err('err_user_already_linked')
         if slave.get_linked_user():
-            return self.empty('This account is already linked. Unlink it before creating a new request.')
+            return self.empty('err_user_different_link')
         token = UserLinkToken.create(master, slave)
-        return self.empty(
-            f'Ask {slave.render_name()} to send: $user.approve {token}')
+        return self.msg('msg_user_link_request', (slave.render_name(), f'$user.approve {token}'))
