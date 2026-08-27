@@ -11,8 +11,10 @@ class GDT_Module(GDT_Select):
         self._enabled = None
 
     def gdo_choices(self):
+        loader = ModuleLoader.instance()
+        loader.load_modules_fs()
         choices = {}
-        for name, module in ModuleLoader.instance()._cache.items():
+        for name, module in loader._cache.items():
             if ((self._enabled is True and module.is_enabled()) or
                 (self._enabled is False and not module.is_enabled()) or
                 (self._enabled is None)):

@@ -1,4 +1,5 @@
 from typing import Any, TYPE_CHECKING
+from gdo.base.Application import Application
 if TYPE_CHECKING:
     from gdo.core.GDO_User import GDO_User
 
@@ -31,7 +32,28 @@ class UserTemp:
 
     @classmethod
     def flash(cls, user: 'GDO_User', gdt: GDT):
+        if Application.IS_HTTP and Application.has_session():
+            session = Application.get_session()
+            if session.is_persisted():
+                flash = session.get('flash', [])
+                flash.append(gdt.render_html())
+                session.set('flash', flash)
+                return
         cache = cls.get_for_user(user)
         if not (flash := cache.get('flash')):
             cache['flash'] = flash = GDT_Bar().vertical()
         flash.add_field(gdt)
+
+    @classmethod
+    def render_flash(cls, user: 'GDO_User', consume: bool = True) -> str:
+        if Application.IS_HTTP and Application.has_session():
+            session = Application.get_session()
+            if session.is_persisted():
+                flash = ''.join(session.get('flash', []))
+                if consume:
+                    session.remove('flash').save()
+                return flash
+        flash = cls.get_cached_for_user(user, 'flash', cls.EMPTY_BAR).render_html()
+        if consume:
+            cls.clear_for_user(user, 'flash')
+        return flash

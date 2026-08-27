@@ -19,6 +19,9 @@ from gdo.ui.GDT_Panel import GDT_Panel
 
 class module(Method):
 
+    def gdo_user_permission(self) -> str | None:
+        return 'admin'
+
     def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Module('module').not_null(),

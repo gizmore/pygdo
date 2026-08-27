@@ -137,7 +137,7 @@ class ModuleLoader:
         query = GDO_Module.table().select()
         if isinstance(enabled, bool):
             query.where(f"module_enabled=%i" % enabled)
-        result = query.order('module_priority').exec()
+        result = query.order('module_sort,module_priority').exec()
         for db in result:
             try:
                 fs = self.gdo_import(db.gdo_val('module_name'))

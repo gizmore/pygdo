@@ -72,6 +72,8 @@ class GDT_Page(GDT):
                 result = self._result.render(Mode.render_html)
                 Cache.add_timed_cache(key, seconds, result)
         if not result: result = self._result.render(Mode.render_html)
+        user = self.gdo_user().current()
+        flash = UserTemp.render_flash(user, not 300 <= Application.get_status_code() < 400)
         html = tplhtml('ui', 'page.html', {
             'lang': Application.LANG_ISO,
             'result': result,
@@ -86,7 +88,7 @@ class GDT_Page(GDT):
             'meta_inline': self.application().STORAGE.meta_inline,
             'js': self.render_js(),
             'js_inline': self.render_js_inline(),
-            'flash': UserTemp.get_cached_for_user(self.gdo_user().current(), 'flash', UserTemp.EMPTY_BAR).render_html(),
+            'flash': flash,
             'top_bar': self._top_bar.render_html(),
             'left_bar': self._left_bar.render_html(),
             'right_bar': self._right_bar.render_html(),

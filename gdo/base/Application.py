@@ -183,6 +183,7 @@ class Application:
         cls.IS_HTTP = True
         cls.STORAGE.environ = environ
         cls.STORAGE.headers = {}
+        cls.STORAGE.status = '200 GDO OK'
         cls.init_cookies_wsgi(environ)
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
         cls.PROTOCOL = environ.get('REQUEST_SCHEME', environ.get('wsgi.url_scheme', cls.config('core.force_tls', '0'))).lower()
@@ -204,6 +205,7 @@ class Application:
         cls.STORAGE.environ = scope
         cls.STORAGE.environ['headers'] = cls.asgi_headers(scope)
         cls.STORAGE.headers = {}
+        cls.STORAGE.status = '200 GDO OK'
         cls.init_cookies_asgi(scope)
         cls.STORAGE.ip = scope.get('client')[0]
         cls.PROTOCOL = scope.get('scheme')

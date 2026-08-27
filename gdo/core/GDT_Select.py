@@ -25,7 +25,11 @@ class GDT_Select(GDT_ComboBox):
         if val is None:
             return super().validate(val)
         if (value := self.to_value(val)) is not None:
-            self.value(value)
+            # Validation must not call value(): it would overwrite _prev
+            # with the already submitted value and hide Select changes from
+            # callers comparing get_prev() with get_val().
+            self._value = value
+            self._converted = True
             return True
         if self._errkey:
             return False

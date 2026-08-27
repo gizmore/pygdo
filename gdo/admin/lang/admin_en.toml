@@ -31,7 +31,8 @@ mt_admin_module = "%s Configuration"
 md_admin_module = "Configure the %s module on %s."
 dependencies = "Dependencies"
 friendencies = "Friendencies"
-
+not_installed = "Not installed"
+installed = "Installed"
 
 ###########
 # Modules #
@@ -52,5 +53,9 @@ mt_admin_install = "Install Module"
 md_admin_install = "Install a Module"
 install = "Install"
 wipe = "Wipe"
+enable = "Enable"
+disable = "Disable"
 msg_module_installed = "Module got installed."
 msg_module_wiped = "Module got wiped."
+msg_module_enabled = "Module has been enabled."
+msg_module_disabled = "Module has been disabled."

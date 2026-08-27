@@ -90,18 +90,23 @@ class Installer:
     def install_module_entry(cls, module: GDO_Module):
         loader = ModuleLoader.instance()
         db = loader.load_module_db(module.get_name)
-        mid = '0'
         if db is not None:
-            mid = db.get_id()
+            # vals() clears dirty state.  Reinstalling a previously disabled
+            # module must therefore explicitly persist its enabled flag.
             module = db
-        module.vals({
-            'module_id': mid,
-            'module_name': module.get_name,
-            'module_enabled': '1',
-            'module_priority': str(module._priority),
-        })
-        module.all_dirty(db is None)
-        module.soft_replace()
+            module.save_vals({
+                'module_enabled': '1',
+                'module_priority': str(module._priority),
+            })
+        else:
+            module.vals({
+                'module_id': '0',
+                'module_name': module.get_name,
+                'module_enabled': '1',
+                'module_priority': str(module._priority),
+                'module_sort': str(module._priority),
+            })
+            module.all_dirty().soft_replace()
 
         return module
 

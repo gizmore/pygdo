@@ -34,6 +34,7 @@ err_decorate_only_instance_methods = "Can only decorate instance methods. At bes
 # GDO_Module #
 ##############
 module_priority = "Priority"
+module_sort = "Sort order"
 
 ######################
 # Method permissions #

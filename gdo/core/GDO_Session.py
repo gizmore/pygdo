@@ -119,7 +119,9 @@ class GDO_Session(GDO):
         ]
 
     def save(self):
-        if self._data:
+        # Persist an empty mapping as well: it clears previously stored session
+        # data (for example a consumed flash message).
+        if self._data is not None:
             self.set_value('sess_data', self._data)
         if self.get_token() == self.DEFAULT_COOKIE:
             return self
@@ -140,7 +142,7 @@ class GDO_Session(GDO):
         return self
 
     def remove(self, key: str):
-        if key in self._data:
+        if self._data and key in self._data:
             del self._data[key]
         return self
 

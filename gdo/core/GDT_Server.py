@@ -11,6 +11,7 @@ class GDT_Server(GDT_Object):
         from gdo.core.GDO_Server import GDO_Server
         super().__init__(name)
         self.table(GDO_Server.table())
+        self.label('server')
         self._default_current = False
 
     def default_current(self, default_current: bool = True):

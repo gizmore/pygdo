@@ -1,4 +1,3 @@
-from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Message import Message
 from gdo.base.Method import Method
@@ -10,7 +9,7 @@ class do_as(Method):
 
     @classmethod
     def gdo_trigger(cls) -> str:
-        return 'as'
+        return 'do.as'
 
     def gdo_parameters(self) -> list[GDT]:
         return [

@@ -78,6 +78,9 @@ answer = "Answer"
 an_icon = "%s Icon"
 server = "Server"
 client = "Client"
+user_type = "Usertype"
+user_name = "Username"
+user_displayname = "Displayname"
 
 ###########
 # GDT_Int #

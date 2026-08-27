@@ -34,6 +34,7 @@ err_decorate_only_instance_methods = "Kann nur Instanzmethoden dekorieren. Am be
 # GDO_Module #
 ##############
 module_priority = "Priorität"
+module_sort = "Sortierung"
 
 ######################
 # Method permissions #
