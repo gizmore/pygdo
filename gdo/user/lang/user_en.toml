@@ -13,3 +13,6 @@ md_user_profile = "%s's profile on %s."
 
 mt_user_ranking = "Users"
 md_user_ranking = "User search and ranking."
+
+mt_user_connect = "Link User Account"
+md_user_connect = "Link another user to your account by requesting a connect command token"
