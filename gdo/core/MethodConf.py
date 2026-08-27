@@ -8,6 +8,8 @@ from gdo.core.GDT_String import GDT_String
 
 class MethodConf(Method):
 
+    DELETE_VALUE = 'NULL'
+
     def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Method('method').not_null().positional(),
@@ -30,6 +32,9 @@ class MethodConf(Method):
     def set_config_val(self, method: Method, key: str, val: str):
         raise Exception("OOPS, set_config_val not implemented.")
 
+    def delete_config_val(self, method: Method, key: str):
+        raise Exception("OOPS, delete_config_val not implemented.")
+
     def gdo_execute(self) -> GDT:
         method = self.get_method()
         if key := self.param_val('key'):
@@ -51,7 +56,15 @@ class MethodConf(Method):
 
     def set_config(self, method: Method, key: str, val: str):
         old = self.get_config_val(method, key)
+        conf = self.get_config(method, key)
+        if val.upper() == self.DELETE_VALUE:
+            self.delete_config_val(method, key)
+            return self.reply('msg_config_set', (
+                method.gdo_trigger(),
+                conf.get_name(),
+                Render.italic(conf.display_val(old)),
+                Render.italic(conf.display_val(conf.get_initial())),
+            ))
         self.set_config_val(method, key, val)
         new = self.get_config_val(method, key)
-        conf = self.get_config(method, key)
         return self.reply('msg_config_set', (method.gdo_trigger(), conf.get_name(), Render.italic(conf.display_val(old)), Render.italic(conf.display_val(new))))
