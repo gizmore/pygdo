@@ -20,3 +20,6 @@ class GDT_Container(WithFlow, WithFields, GDT):
 
     def render_list(self) -> str:
         return self.render_fields(Mode.render_list)
+
+    def render_card(self) -> str:
+        return self.render_fields(Mode.render_card)

@@ -1,14 +1,15 @@
 from gdo.base.GDT import GDT
+from gdo.base.Application import Application
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Trans import t, sitename
 from gdo.base.Util import module_enabled
 from gdo.base.WithRateLimit import WithRateLimit
 from gdo.core.GDO_User import GDO_User
-from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_User import GDT_User
-from gdo.core.GDT_UserSetting import GDT_UserSetting
+from gdo.core.GDO_UserSetting import GDO_UserSetting
+from gdo.core.GDT_Container import GDT_Container
 from gdo.ui.GDT_Card import GDT_Card
 
 
@@ -35,9 +36,13 @@ class profile(Method):
     def gdo_execute(self) -> GDT:
         user = self.get_user()
         card = GDT_Card()
+        profile_links = GDT_Container().vertical()
         if module_enabled('avatar'):
             from gdo.avatar.GDT_Avatar import GDT_Avatar
-            card.image(GDT_Avatar('avatar').for_user(user).add_class('gdo-avatar-profile'))
+            profile_links.add_field(GDT_Avatar('avatar').for_user(user).add_class('gdo-avatar-profile img-fluid rounded-start'))
+        Application.EVENTS.publish_sync('user_profile_links', user, profile_links)
+        if profile_links.all_fields():
+            card.image(profile_links)
         card.title('mt_user_profile', (user.render_name(),))
         content = card.get_content()
         for module in ModuleLoader.instance().enabled():

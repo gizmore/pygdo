@@ -6,13 +6,12 @@ from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.WithGDO import WithGDO
 from gdo.date.GDT_Created import GDT_Created
-from gdo.ui.GDT_Image import GDT_Image
 from gdo.ui.WithText import WithText
 from gdo.ui.WithTitle import WithTitle
 
 
 class GDT_Card(WithGDO, WithText, WithTitle, GDT):
-    _image: GDT_Image
+    _image: GDT
     _header: GDT_Container
     _content: GDT_Container
     _footer: GDT_Container
@@ -23,7 +22,7 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
         self._content = GDT_Container()
         self._footer = GDT_Container()
 
-    def image(self, image: GDT_Image):
+    def image(self, image: GDT):
         self._image = image
         return self
 

@@ -4,9 +4,6 @@ module_admin = "Admin"
 # Users #
 #########
 mt_admin_users = "Users"
-mt_admin_login_as = "Login as user"
-mailb_admin_login_as = "Hello %s,<br>\n<br>Staff member %s logged into your account on %s.<br>\n"
-mails_admin_login_as = "An administrator logged into your account"
 
 ##########
 # Config #
@@ -62,3 +59,12 @@ msg_module_installed = "Module got installed."
 msg_module_wiped = "Module got wiped."
 msg_module_enabled = "Module has been enabled."
 msg_module_disabled = "Module has been disabled."
+
+############
+# Login As #
+############
+mt_admin_login_as = "Login As"
+md_admin_login_as = "Login as a different user"
+as_user = "As User"
+mailb_admin_login_as = "Hello %s,<br>\n<br>Staff member %s logged into your account on %s.<br>\n"
+mails_admin_login_as = "An administrator logged into your account"

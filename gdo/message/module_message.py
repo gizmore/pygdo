@@ -20,5 +20,5 @@ class module_message(GDO_Module):
 
     def gdo_user_settings(self) -> list[GDT]:
         return [
-            GDT_Editor('message_editor').not_null().initial('html'),
+            GDT_Editor('message_editor').not_null().initial('html').hidden(),
         ]

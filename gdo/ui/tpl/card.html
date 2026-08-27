@@ -2,7 +2,7 @@
   <div class="row g-0">
     <div class="col-md-4">
         <% if field.has_image():
-            write(field._image.add_class('img-fluid rounded-start').render(Mode.render_card))
+            write(field._image.render(Mode.render_card))
         %>
     </div>
     <div class="col-md-8">

@@ -2,6 +2,7 @@ module_mail = "E-Mail"
 
 email_confirmed = "Email confirmed at"
 link_change_mail = "Change E-Mail"
+link_mail_send = "Compose E-Mail"
 err_emails_invalid = "Invalid email address in list: %s"
 
 mt_mail_send = "Send Email"

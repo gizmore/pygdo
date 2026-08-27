@@ -18,7 +18,7 @@ class login_as(MethodForm):
         return 'staff'
 
     def gdo_create_form(self, form: GDT_Form) -> None:
-        form.add_field(GDT_User('as_user').not_null())
+        form.add_field(GDT_User('as_user').not_null().with_completion())
         super().gdo_create_form(form)
 
     def gdo_render_title(self) -> str:

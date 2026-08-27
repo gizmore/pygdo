@@ -21,6 +21,14 @@ class module_mail(GDO_Module):
             'gpg',
         ]
 
+    def gdo_subscribe_events(self):
+        Application.EVENTS.subscribe('user_profile_links', self.on_user_profile_links)
+
+    def on_user_profile_links(self, user: GDO_User, links):
+        viewer = GDO_User.current()
+        if viewer.is_user() and viewer.get_id() != user.get_id() and user.get_mail():
+            links.add_field(GDT_Link().href(self.href('send', f'&to={user.get_id()}')).text('link_mail_send'))
+
     def gdo_user_config(self) -> list[GDT]:
         from gdo.date.GDT_DateTime import GDT_DateTime
         return [

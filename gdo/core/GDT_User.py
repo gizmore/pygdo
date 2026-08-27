@@ -53,6 +53,13 @@ class GDT_User(GDT_Object):
     def online(self, online: bool = True) -> Self:
         return self.authenticated(online)
 
+    def with_completion(self, with_completion: bool = True):
+        if with_completion:
+            self.completion(href('user', 'user_completion'))
+        else:
+            self.completion(None)
+        return self
+
     def query_gdos_query(self, val: str, query: Query) -> Query:
         val_serv = Strings.regex_first(r'{([^{}]+)}$', val)
         val = Strings.substr_to(val, '{', val)
