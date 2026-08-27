@@ -27,7 +27,7 @@ class ranking(MethodQueryTable):
             GDT_Level('level'),
             GDT_UserName('user_name').label('username'),
         ])
-        headers.append(GDT_Server('user_server'))
+        headers.append(GDT_Server('user_server').label('server'))
         return headers
 
     def gdo_table_query(self):

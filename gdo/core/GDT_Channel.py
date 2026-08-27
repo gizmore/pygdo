@@ -1,5 +1,6 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.Message import Message
 from gdo.base.Query import Query
 from gdo.base.Util import Strings
 from gdo.core.GDO_Channel import GDO_Channel
@@ -8,9 +9,21 @@ from gdo.core.GDT_ObjectSelect import GDT_ObjectSelect
 
 class GDT_Channel(GDT_ObjectSelect):
 
+    _default_current: bool
+
     def __init__(self, name):
         super().__init__(name)
         self.table(GDO_Channel.table())
+        self._default_current = False
+
+    def default_current(self, default_current: bool = True):
+        self._default_current = default_current
+        return self
+
+    def to_value(self, val: str):
+        if not val and self._default_current:
+            return Message.CURRENT._env_channel
+        return super().to_value(val)
 
     def query_gdos_query(self, val: str, query: Query) -> Query:
         val_serv = Strings.regex_first(r'{([^{}]+)}$', val)

@@ -32,6 +32,17 @@ suggest_object = "An ID like '123' or maybe a name like 'giz'"
 ### Messages ###
 ################
 msg_back_to = "You can now get back to %s."
+msg_server_settings = "Settings for %s: %s"
+msg_server_setting = "%s: %s = %s"
+msg_server_setting_set = "%s: %s changed from %s to %s."
+tt_server_set_null = "Use NULL as the new value to clear a nullable setting."
+err_server_set_unknown = "Unknown or immutable server setting: %s."
+err_server_set_invalid = "Invalid value for %s: %s"
+msg_channel_settings = "Settings for %s: %s"
+msg_channel_setting = "%s: %s = %s"
+msg_channel_setting_set = "%s: %s changed from %s to %s."
+err_channel_set_unknown = "Unknown or immutable channel setting: %s."
+err_channel_set_invalid = "Invalid value for %s: %s"
 
 ##############
 ### Fields ###
@@ -65,6 +76,8 @@ target = "Target"
 message = "Message"
 answer = "Answer"
 an_icon = "%s Icon"
+server = "Server"
+client = "Client"
 
 ###########
 # GDT_Int #
