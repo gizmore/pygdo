@@ -23,6 +23,7 @@ class AdminUsersTest(GDOTestCase):
     def test_joins_every_registered_user_setting(self):
         method = users()
         query = method.gdo_table_query()
+        self.assertTrue(query._columns.startswith('gdo_user.*'))
         for key, field in GDT_UserSetting.KNOWN.items():
             if not isinstance(field, GDT_Field) or field.is_secret():
                 self.assertNotIn(f'setting_{key}.uset_val as {key}', query._columns)
@@ -34,6 +35,9 @@ class AdminUsersTest(GDOTestCase):
 
     def test_paginates_fifty_users_per_page(self):
         self.assertEqual(50, users().gdo_paginate_size())
+
+    def test_qualifies_the_default_order_column(self):
+        self.assertEqual('gdo_user.user_id ASC', users().gdo_order_default())
 
     def test_unset_settings_render_as_a_dash_but_stay_null_in_json(self):
         field = users().setting_fields()[0].val(None)
@@ -51,6 +55,7 @@ class AdminUsersTest(GDOTestCase):
         query = Query().select().table('gdo_user')
         field.val('giz').gdo_filter_query(GDO_User.table(), query)
         self.assertIn('setting_creator.uset_val IN (SELECT user_id FROM gdo_user', query._where)
+
 
 
 if __name__ == '__main__':

@@ -17,6 +17,9 @@ class users(MethodQueryTable):
     def gdo_paginate_size(self) -> int:
         return 50
 
+    def gdo_order_default(self) -> str:
+        return 'gdo_user.user_id ASC'
+
     def gdo_table(self) -> GDO:
         return GDO_User.table()
 
@@ -74,10 +77,10 @@ class users(MethodQueryTable):
         return super().gdo_table_headers() + self.setting_fields()
 
     def gdo_table_query(self) -> Query:
-        query = super().gdo_table_query()
+        query = super().gdo_table_query().only_select('gdo_user.*')
         for gdt in self.setting_fields():
             GDO_User.join_setting(query, gdt.get_name())
-        return query
+        return query.debug()
 
     def gdo_table_search_query(self, query: Query, term: str):
         if term:

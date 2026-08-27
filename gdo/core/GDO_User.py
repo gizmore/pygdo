@@ -30,6 +30,15 @@ from gdo.date.Time import Time
 from gdo.net.GDT_IP import GDT_IP
 
 
+class GDT_UserLink(GDT_Object):
+    """A user link must identify both the account and its connector."""
+
+    def render_cell(self) -> str:
+        if user := self.get_gdo():
+            return user.get_name_sid()
+        return '---'
+
+
 class GDO_User(GDO):
     """
     The holy user object. It should be very slim as users will be scattered around hopefully.
@@ -92,7 +101,7 @@ class GDO_User(GDO):
             GDT_Name('user_name').not_null(),
             GDT_UserName('user_displayname').not_null(),
             GDT_Server('user_server').not_null().cascade_delete(),
-            GDT_Object('user_link').table(GDO_User.table()),
+            GDT_UserLink('user_link').table(GDO_User.table()),
             GDT_Index('user_idx_name').index_fields('user_name'),
             GDT_Index('user_idx_serv').index_fields('user_server'),
         ]
