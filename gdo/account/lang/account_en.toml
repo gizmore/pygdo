@@ -1,6 +1,26 @@
 module_account = "Account"
 link_settings = "Settings"
 
+##################
+# delete_account #
+##################
+delete_account = "Delete Account"
+mt_account_delete_account = "Delete Account"
+md_account_delete_account = "Disable your account, or permanently remove it and its data."
+reason = "Reason"
+confirm_account_delete = "I understand the selected action."
+confirm_account_disable = "Really disable this account?"
+confirm_account_prune = "Really permanently prune this account?"
+disable = "Disable"
+prune = "Prune"
+account_delete_disabled = "disabled (the deleted timestamp was set)"
+account_delete_pruned = "permanently pruned"
+err_account_delete_confirm = "Please confirm the selected account action."
+msg_account_disabled = "Your account has been disabled."
+msg_account_pruned = "Your account has been permanently removed."
+mails_account_delete = "Account deletion request"
+mailb_account_delete = "Account %s was %s.<br>\n<br>Reason:<br>\n%s"
+
 ############
 # list_cli #
 ############

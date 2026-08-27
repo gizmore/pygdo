@@ -1,0 +1,11 @@
+<div class="gdt-form-field">
+    <label for="<%=field.get_name()%>"><%=field.render_label(Mode.render_html)%></label>
+    <textarea id="<%=field.get_name()%>" name="<%=field.get_name()%>" class="<%=' is-invalid' if field.has_error() else '' %>"
+              <%=field.html_readonly()%>
+              <%=field.html_placeholder()%>
+              <%=field.html_required()%>
+              aria-label="<%=field.render_label(Mode.render_html)%>"><%=field.html_value()%></textarea>
+    <% if field.has_error():
+        write(f'<div class="form-field-error">%s</div>' % field.render_error())
+    %>
+</div>

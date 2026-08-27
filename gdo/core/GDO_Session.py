@@ -112,7 +112,7 @@ class GDO_Session(GDO):
         return [
             GDT_AutoInc('sess_id'),
             GDT_Token('sess_token'),
-            GDT_User('sess_user'),
+            GDT_User('sess_user').cascade_delete(),
             GDT_IP('sess_ip'),
             GDT_Serialize('sess_data'),
             GDT_Edited('sess_time'),

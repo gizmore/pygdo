@@ -19,5 +19,7 @@ class module_account(GDO_Module):
 
     def gdo_user_config(self) -> list[GDT]:
         return [
-            GDT_Link('delete_account').href(self.href('delete_account')).text('delete_account'),
+            # This is an account-management action, not public profile data.
+            # all_settings() renders links explicitly, whereas the profile skips hidden fields.
+            GDT_Link('delete_account').href(self.href('delete_account')).text('delete_account').hidden(),
         ]

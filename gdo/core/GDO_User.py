@@ -101,13 +101,10 @@ class GDO_User(GDO):
             GDT_Name('user_name').not_null(),
             GDT_UserName('user_displayname').not_null(),
             GDT_Server('user_server').not_null().cascade_delete(),
-            GDT_UserLink('user_link').table(GDO_User.table()),
+            GDT_UserLink('user_link').table(GDO_User.table()).cascade_delete(),
             GDT_Index('user_idx_name').index_fields('user_name'),
             GDT_Index('user_idx_serv').index_fields('user_server'),
         ]
-
-    # def gdo_persistent(self) -> bool:
-    #     return True
 
     def get_lang_iso(self):
         return self.get_setting_val('language')
@@ -285,6 +282,9 @@ class GDO_User(GDO):
 
     def is_ghost(self) -> bool:
         return self.is_type('ghost')
+
+    def is_deleted(self) -> bool:
+        return bool(self.get_setting_val('deleted'))
 
     def is_user(self) -> bool:
         return self.get_user_type() in ('member', 'guest', 'link')
