@@ -38,19 +38,19 @@ class install(MethodForm):
         button = GDT_Submit(name).text(name).calling(call)
         return button.attr('disabled', 'disabled') if disabled else button
 
-    def install(self):
-        Installer.install_module(self.get_module())
+    async def install(self):
+        await Installer.install_modules([self.get_module()])
         return self.redirect_module('msg_module_installed')
 
-    def wipe(self):
+    async def wipe(self):
         Installer.wipe(self.get_module())
         return self.redirect_module('msg_module_wiped')
 
-    def enable(self):
+    async def enable(self):
         self.get_module().save_val('module_enabled', '1')
         return self.redirect_module('msg_module_enabled')
 
-    def disable(self):
+    async def disable(self):
         self.get_module().save_val('module_enabled', '0')
         return self.redirect_module('msg_module_disabled')
 

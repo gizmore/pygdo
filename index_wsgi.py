@@ -68,8 +68,13 @@ def aiorun(coro):
     return coro
 
 def application(environ, start_response):
-    Application.LOOP = asyncio.new_event_loop()
-    return pygdo_application(environ, start_response)
+    loop = asyncio.new_event_loop()
+    Application.LOOP = loop
+    try:
+        yield from pygdo_application(environ, start_response)
+    finally:
+        if not loop.is_closed():
+            loop.close()
 
 def pygdo_application(environ, start_response):
     """
@@ -127,8 +132,11 @@ def pygdo_application(environ, start_response):
             Cache.clear_ocache()
 
         qs = parse_qs(environ['QUERY_STRING'])
+        # PATH_INFO is required by WSGI, but keep direct/unit-test calls
+        # compatible with minimal environ stubs as well.
+        path_info = environ.get('PATH_INFO', '/')
         welcome_url = Application.main_method_url()
-        if environ['PATH_INFO'] == '/' and '_url' not in qs:
+        if path_info == '/' and '_url' not in qs:
             url = welcome_url
 
         Application.request_method(environ['REQUEST_METHOD'])
@@ -151,13 +159,13 @@ def pygdo_application(environ, start_response):
             del qs['_url']
             if not url:
                 url = welcome_url
-        elif environ['PATH_INFO'] != '/':
+        elif path_info != '/':
             # WSGI's PATH_INFO has already percent-decoded the path.  Use the
             # raw request target so ParseArgs can split on literal points
             # before decoding `%2E` inside a route segment.  mod_wsgi may
             # prefix REQUEST_URI with the ScriptAlias target, so remove that
             # internal script name before resolving files/directories.
-            raw_url = environ.get('REQUEST_URI', environ['PATH_INFO']).split('?', 1)[0]
+            raw_url = environ.get('REQUEST_URI', path_info).split('?', 1)[0]
             script_name = environ.get('SCRIPT_NAME', '').rstrip('/')
             if script_name and raw_url.startswith(script_name + '/'):
                 raw_url = raw_url[len(script_name):]

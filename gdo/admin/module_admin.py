@@ -14,4 +14,5 @@ class module_admin(GDO_Module):
     def gdo_admin_links(self) -> list['GDT_Link']:
         return [
             GDT_Link().href(self.href('users')).text('mt_admin_users'),
+            GDT_Link().href(self.href('login_as')).text('mt_admin_login_as'),
         ]

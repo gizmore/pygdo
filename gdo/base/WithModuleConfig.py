@@ -63,7 +63,7 @@ class WithModuleConfig:
     def get_config_value(self, key: str):
         return self.config_column(key).get_value()
 
-    def save_config_val(self, key: str, val: str, force: bool = False):
+    async def save_config_val(self, key: str, val: str, force: bool = False):
         from gdo.base.GDO_ModuleVal import GDO_ModuleVal
         gdt = self.config_column(key)
         if val == self.get_config_val(key) and not force:
@@ -76,15 +76,15 @@ class WithModuleConfig:
                 'mv_val': val,
             }).soft_replace()
             from gdo.base.IPC import IPC
-            Application.publish_event(f"module_{self.get_name}_{key}_changed", self, gdt)
+            await Application.publish_event_async(f"module_{self.get_name}_{key}_changed", self, gdt)
             IPC.send('base.ipc_modconf', (self.get_name, key, val))
         else:
             raise GDOValidationException(self.get_name, key, val, gdt.render_suggestion())
         return self
 
-    def increase_config_val(self, key: str, by: int | float):
+    async def increase_config_val(self, key: str, by: int | float):
         old = self.get_config_value(key)
-        return self.save_config_val(key, str(old + by))
+        return await self.save_config_val(key, str(old + by))
 
     ########
     # User #

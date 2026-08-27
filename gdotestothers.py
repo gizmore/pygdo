@@ -1,3 +1,4 @@
+import asyncio
 import os.path
 import unittest
 
@@ -9,13 +10,13 @@ from gdo.base.Util import Files
 from gdo.install.Installer import Installer
 
 
-def run_tests():
+async def run_tests():
     Application.init(os.path.dirname(__file__) + '/')
 
     loader = ModuleLoader.instance()
     modules = list(loader.load_modules_fs().values())
     loader.init_modules(False)
-    Installer.install_modules(modules)
+    await Installer.install_modules(modules)
     for module in modules:
         test_directory = module.file_path('test/')
         if Files.exists(test_directory):
@@ -28,4 +29,4 @@ def run_tests():
 
 
 if __name__ == '__main__':
-    run_tests()
+    asyncio.run(run_tests())

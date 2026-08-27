@@ -18,13 +18,13 @@ class ModuleConfigTestCase(GDOTestCase):
 
     async def test_01_module_config(self):
         mod = module_core.instance()
-        mod.save_config_val('send_404_mails', '0')
+        await mod.save_config_val('send_404_mails', '0')
         ModuleLoader.instance().reset()
         ModuleLoader.instance().load_modules_db(True)
         ModuleLoader.instance().init_modules()
         got = mod.get_config_val('send_404_mails')
         self.assertEqual(got, '0', "Check if changed default config is working.")
-        mod.save_config_val('send_404_mails', '1')
+        await mod.save_config_val('send_404_mails', '1')
         got = mod.get_config_val('send_404_mails')
         self.assertEqual(got, '1', "Check if changed back config is working.")
 

@@ -1,5 +1,6 @@
 from gdo.base.GDT import GDT
 from gdo.base.Message import Message
+from gdo.core.Connector import Connector
 from gdo.base.Method import Method
 from gdo.core.GDT_RestOfText import GDT_RestOfText
 from gdo.core.GDT_User import GDT_User
@@ -10,6 +11,9 @@ class do_as(Method):
     @classmethod
     def gdo_trigger(cls) -> str:
         return 'do.as'
+
+    def gdo_connectors(self) -> str:
+        return Connector.text_connectors()
 
     def gdo_parameters(self) -> list[GDT]:
         return [

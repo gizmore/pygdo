@@ -42,7 +42,7 @@ class configure(MethodForm):
         form.add_fields(*module.module_config().values())
         super().gdo_create_form(form)
 
-    def form_submitted(self):
+    async def form_submitted(self):
         module = self.get_module()
         changes = []
         module_sort = self.get_form().get_field('module_sort')
@@ -55,7 +55,7 @@ class configure(MethodForm):
             old = gdt.get_prev()
             new = gdt.get_val()
             if old != new:
-                module.save_config_val(gdt.get_name(), new, True)
+                await module.save_config_val(gdt.get_name(), new, True)
                 changes.append((module.render_name(), gdt.get_name(), Render.italic(gdt.display_val(old)), Render.italic(gdt.display_val(new))))
         for change in changes:
             UserTemp.flash(self._env_user, GDT_Success().title_raw(module.render_name()).text('msg_module_conf_changed', change))

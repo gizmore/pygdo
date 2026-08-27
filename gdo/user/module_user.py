@@ -36,7 +36,7 @@ class module_user(GDO_Module):
         # A fresh installation needs one stable secret shared by web and Dog.
         from gdo.base.GDO_ModuleVal import GDO_ModuleVal
         if GDO_ModuleVal.table().get_by_id(self.get_id(), 'user_link_pepper') is None:
-            self.save_config_val('user_link_pepper', self.get_config_val('user_link_pepper'), force=True)
+            await self.save_config_val('user_link_pepper', self.get_config_val('user_link_pepper'), force=True)
 
     def cfg_activity_accuracy(self) -> int:
         return self.get_config_value('activity_accuracy')

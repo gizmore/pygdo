@@ -4,6 +4,9 @@ module_admin = "Admin"
 # Users #
 #########
 mt_admin_users = "Users"
+mt_admin_login_as = "Login as user"
+mailb_admin_login_as = "Hello %s,<br>\n<br>Staff member %s logged into your account on %s.<br>\n"
+mails_admin_login_as = "An administrator logged into your account"
 
 ##########
 # Config #

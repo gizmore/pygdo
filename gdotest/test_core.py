@@ -15,6 +15,7 @@ from gdo.core.GDT_Name import GDT_Name
 from gdo.core.GDT_Path import GDT_Path
 from gdo.core.GDT_User import GDT_User
 from gdo.core.connector.Bash import Bash
+from gdo.ui.GDT_Color import GDT_Color
 from gdo.core.connector.Web import Web
 from gdo.core.method.reload import reload
 from gdo.core.method.welcome import welcome
@@ -62,6 +63,12 @@ class CoreTestCase(GDOTestCase):
             self.assertIsNotNone(GDT_Name('name').val(value).validated(), f'Name should be valid: {value}')
         for value in ('_name', '-name', '.name', 'name.dot', 'a/', 'a'):
             self.assertIsNone(GDT_Name('name').val(value).validated(), f'Name should be invalid: {value}')
+
+    async def test_04c_color_adds_opaque_alpha(self):
+        color = GDT_Color('color').val('#333377')
+        self.assertEqual('#333377ff', color.get_val())
+        self.assertEqual('#333377', color.html_value())
+        self.assertIsNotNone(color.validated())
 
     async def test_05_clear_cache(self):
         cli_plug(None, "$cc")

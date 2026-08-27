@@ -33,7 +33,7 @@ class conf(Method):
     def get_module(self) -> GDO_Module:
         return self.param_value('module')
 
-    def gdo_execute(self) -> GDT:
+    async def gdo_execute(self) -> GDT:
         module = self.get_module()
         if not module:
             return self.list_all()
@@ -50,7 +50,7 @@ class conf(Method):
         if not value:
             return self.show_value(module, gdt)
         value = None if value.lower() == "none" else value
-        return self.set_value(module, gdt, value)
+        return await self.set_value(module, gdt, value)
 
     def list_all(self):
         loader = ModuleLoader.instance()
@@ -86,10 +86,10 @@ class conf(Method):
         val = Render.italic(gdt.render_val(), self._env_mode)
         return self.reply('msg_module_conf_options', (module.render_name(), gdt.get_name(), tt, val, gdt.render_suggestion()))
 
-    def set_value(self, module: GDO_Module, gdt: GDT, value: str):
+    async def set_value(self, module: GDO_Module, gdt: GDT, value: str):
         val = gdt.to_val(gdt.to_value(value))
         old = Render.italic(gdt.render_val(), self._env_mode)
-        module.save_config_val(gdt.get_name(), val)
+        await module.save_config_val(gdt.get_name(), val)
         new = Render.italic(gdt.display_val(val), self._env_mode)
         if old == new:
             return self.reply('msg_module_conf_no_change', (gdt.get_name(), module.render_name(), old))

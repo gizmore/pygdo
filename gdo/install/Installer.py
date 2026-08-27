@@ -23,25 +23,17 @@ class Installer:
         if verbose:
             gdo_print(f"Installing {len(modules)} module entries.")
         for module in modules:
-            cls.install_module(module, verbose)
+            await cls.install_module(module, verbose)
 
         if verbose:
             gdo_print("Re-Loading installed modules.")
         loader = ModuleLoader.instance()
         loader.init_modules(True, True)
 
-        # if verbose:
-        #     gdo_print("Migrating core for user settings.")
-        # Installer.migrate_gdo(GDO_UserSetting.table())
-
         if verbose:
             gdo_print("Calling module install hooks")
         for module in modules:
-            try:
-                await module.gdo_install()
-            except Exception as ex:
-                Logger.exception(ex)
-                return False
+            await module.gdo_install()
         return True
 
     @classmethod
@@ -64,7 +56,7 @@ class Installer:
         return sorted(deps, key=lambda m: m._priority)
 
     @classmethod
-    def install_module(cls, module: GDO_Module, verbose: bool = False) -> bool:
+    async def install_module(cls, module: GDO_Module, verbose: bool = False) -> bool:
         try:
             if not module.is_installable():
                 return False

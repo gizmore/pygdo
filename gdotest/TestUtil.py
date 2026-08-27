@@ -159,6 +159,7 @@ class WebPlug:
             'mod_wsgi.request_start': str(round(time.time())),
             'REQUEST_SCHEME': 'http',
             'REQUEST_URI': url,
+            'PATH_INFO': '/',
         }
         cookies = self.get_cookies()
         if cookies:

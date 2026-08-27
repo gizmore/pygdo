@@ -25,7 +25,7 @@ class ipc_modconf(Method):
     def get_module(self) -> GDO_Module:
         return self.param_value('module')
 
-    def gdo_execute(self) -> GDT:
+    async def gdo_execute(self) -> GDT:
         """
         Only update the module config.
         """
@@ -34,5 +34,5 @@ class ipc_modconf(Method):
         val = self.param_val('value')
         gdt = module._module_config.get(key)
         if gdt.validate(val):
-            module.save_config_val(key, val)
+            await module.save_config_val(key, val)
         return self.empty()

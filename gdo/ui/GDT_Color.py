@@ -21,6 +21,18 @@ class GDT_Color(GDT_Char):
         self._mode = mode
         return self
 
+    def get_input(self, value: str | None = None) -> str | None:
+        """Normalize browser colour input to the stored RGBA representation."""
+        value = self.get_val() if value is None else value
+        if isinstance(value, str) and re.fullmatch(r'#[0-9a-f]{6}', value, re.IGNORECASE):
+            return value + 'ff'
+        return value
+
+    def val(self, val: str | list):
+        if isinstance(val, str):
+            val = self.get_input(val)
+        return super().val(val)
+
     def render_html(self):
         return f'<span class="gdt_color" style="background: {self.get_value()}">{self.get_val()}</span>'
 
@@ -46,7 +58,8 @@ class GDT_Color(GDT_Char):
     #         return val[0:6]
 
     def html_value(self):
-        return self.get_value()
+        value = self.get_value()
+        return value[:7] if value else value
 
     def html_pattern(self):
         return ''
