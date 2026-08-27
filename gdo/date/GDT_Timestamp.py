@@ -1,5 +1,10 @@
+import re
+from datetime import datetime
+
 from gdo.base.Application import Application
+from gdo.base.GDT import GDT
 from gdo.core.GDT_String import GDT_String
+from gdo.core.GDT_Template import tpl
 from gdo.date.Time import Time
 
 
@@ -20,6 +25,77 @@ class GDT_Timestamp(GDT_String):
 
     def gdo_column_define(self) -> str:
         return f"{self._name} TIMESTAMP({self._millis}){self.gdo_column_define_null()}{self.gdo_column_define_default()}"
+
+    def filter_has_date(self) -> bool:
+        return True
+
+    def filter_has_time(self) -> bool:
+        return True
+
+    def render_table_filter(self, vals: dict) -> str:
+        return tpl('date', 'filter_datetime.html', vals)
+
+    @staticmethod
+    def filter_date(value: str) -> str | None:
+        if not value or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+            return None
+        try:
+            datetime.strptime(value, '%Y-%m-%d')
+        except ValueError:
+            return None
+        return value
+
+    @staticmethod
+    def filter_time(value: str, end: bool = False) -> str | None:
+        if not value or not re.fullmatch(r'\d{2}:\d{2}(?::\d{2})?', value):
+            return None
+        try:
+            datetime.strptime(value, '%H:%M' if len(value) == 5 else '%H:%M:%S')
+        except ValueError:
+            return None
+        if len(value) == 5:
+            return value + (':59.999' if end else ':00')
+        return value + ('.999' if end else '')
+
+    def gdo_filter_query(self, gdo: 'GDO', query: 'Query'):
+        values = self.get_val()
+        if not isinstance(values, dict):
+            return super().gdo_filter_query(gdo, query)
+
+        date_from = self.filter_date(values.get('date_from', '')) if self.filter_has_date() else None
+        date_to = self.filter_date(values.get('date_to', '')) if self.filter_has_date() else None
+        time_from = self.filter_time(values.get('time_from', '')) if self.filter_has_time() else None
+        time_to = self.filter_time(values.get('time_to', ''), True) if self.filter_has_time() else None
+        field = self.get_name()
+
+        if not self.filter_has_time():
+            if date_from and date_to:
+                query.where(f"{field} BETWEEN {GDT.quote(date_from)} AND {GDT.quote(date_to)}")
+            elif date := date_from or date_to:
+                query.where(f"{field}={GDT.quote(date)}")
+            return
+
+        # One selected date means that calendar day, not an unbounded range
+        # starting or ending at midnight.  Any entered time narrows the
+        # corresponding side of that day.
+        if date_from and not date_to:
+            date_to = date_from
+        elif date_to and not date_from:
+            date_from = date_to
+
+        if date_from:
+            start = date_from if not self.filter_has_time() else f"{date_from} {time_from or '00:00:00'}"
+            query.where(f"{field}>={GDT.quote(start)}")
+        elif time_from:
+            condition = f"{field}>={GDT.quote(time_from)}" if not self.filter_has_date() else f"TIME({field})>={GDT.quote(time_from)}"
+            query.where(condition)
+
+        if date_to:
+            end = date_to if not self.filter_has_time() else f"{date_to} {time_to or '23:59:59.999'}"
+            query.where(f"{field}<={GDT.quote(end)}")
+        elif time_to:
+            condition = f"{field}<={GDT.quote(time_to)}" if not self.filter_has_date() else f"TIME({field})<={GDT.quote(time_to)}"
+            query.where(condition)
 
     def get_date(self) -> str:
         return self.get_val()

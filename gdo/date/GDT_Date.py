@@ -9,3 +9,6 @@ class GDT_Date(GDT_Timestamp):
 
     def gdo_column_define(self) -> str:
         return f"{self._name} DATE {self.gdo_column_define_null()}{self.gdo_column_define_default()}"
+
+    def filter_has_time(self) -> bool:
+        return False

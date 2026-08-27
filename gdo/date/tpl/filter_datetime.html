@@ -1,0 +1,6 @@
+<div class="gdt-filter gdt-filter-datetime">
+    <input type="date" name="<%=field._name%>[<%=gdt._name%>][date_from]" value="<%=field.filter_date_value(gdt, 'date_from')%>"<%='' if gdt.filter_has_date() else ' disabled'%>>
+    <input type="time" step="1" name="<%=field._name%>[<%=gdt._name%>][time_from]" value="<%=field.filter_date_value(gdt, 'time_from')%>"<%='' if gdt.filter_has_time() else ' disabled'%>>
+    <input type="date" name="<%=field._name%>[<%=gdt._name%>][date_to]" value="<%=field.filter_date_value(gdt, 'date_to')%>"<%='' if gdt.filter_has_date() else ' disabled'%>>
+    <input type="time" step="1" name="<%=field._name%>[<%=gdt._name%>][time_to]" value="<%=field.filter_date_value(gdt, 'time_to')%>"<%='' if gdt.filter_has_time() else ' disabled'%>>
+</div>
