@@ -15,3 +15,10 @@ class GDT_Search(GDT_String):
         for gdt in table.columns().values():
             gdt.gdo_search_query(query, term)
         return query.apply_search_wheres() if apply else query
+
+    def search_gdo(self, gdo) -> bool:
+        """Apply the global search predicate to one in-memory table row."""
+        if not (term := self.get_val()):
+            return True
+        table = self._gdo
+        return any(column.gdo_search_gdo(gdo, term) for column in table.columns().values())

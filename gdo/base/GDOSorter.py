@@ -40,6 +40,10 @@ class GDOSorter:
                 filtered.append(gdo)
         return filtered
 
+    @staticmethod
+    def search(result: list[GDO], search) -> list[GDO]:
+        return [gdo for gdo in result if search.search_gdo(gdo)]
+
     @classmethod
     def paginate(cls, result: list[GDO], page: GDT_PageNum, ipp: int = 10) -> list[GDO]:
         begin = (page.get_value() - 1) * ipp

@@ -79,6 +79,17 @@ class GDT_Float(GDT_String):
         digits = len(match.group(1) or '')
         query.search_where(f'ROUND({self.get_name()},{digits})=ROUND({value},{digits})')
 
+    def gdo_search_gdo(self, gdo: 'GDO', term: str) -> bool:
+        """Match the entered decimal precision without binary-float noise."""
+        try:
+            value = float(term)
+            field_value = float(gdo.gdo_val(self.get_name()))
+        except (TypeError, ValueError):
+            return False
+        match = re.fullmatch(r'[+-]?\d+(?:\.(\d+))?', term.strip())
+        digits = len(match.group(1) or '') if match else 0
+        return round(field_value, digits) == round(value, digits)
+
     ############
     # Validate #
     ############

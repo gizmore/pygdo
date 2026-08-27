@@ -181,7 +181,17 @@ class MethodTable(WithGDO, MethodForm):
     # Table #
     #########
     def get_num_results(self) -> int:
-        return self.gdo_table_result().get_num_rows()
+        result = self.gdo_table_result()._data
+        result = self.apply_table_search_result(result)
+        if self.gdo_filtered():
+            result = GDOSorter.filter(result, self.parameter(self.gdo_filter_name()))
+        return len(result)
+
+    def apply_table_search_result(self, result: list[GDO]) -> list[GDO]:
+        if self.gdo_searched():
+            search = self.table_search_field().gdo(self.gdo_table())
+            result = GDOSorter.search(result, search)
+        return result
 
     @functools.cache
     def get_table(self) -> GDT_Table:
@@ -192,6 +202,7 @@ class MethodTable(WithGDO, MethodForm):
 
     def get_table_result(self) -> Result:
         result = self.gdo_table_result()._data
+        result = self.apply_table_search_result(result)
         if self.gdo_ordered():
             result = GDOSorter.sort(result, self.parameter(self.gdo_order_name()))
         if self.gdo_filtered():

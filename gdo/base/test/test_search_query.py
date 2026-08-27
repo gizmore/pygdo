@@ -7,6 +7,15 @@ from gdo.core.GDT_String import GDT_String
 from gdo.form.GDT_Form import GDT_Form
 
 
+class SearchRow:
+
+    def __init__(self, values: dict[str, str]):
+        self.values = values
+
+    def gdo_val(self, name: str):
+        return self.values.get(name)
+
+
 class SearchQueryTest(unittest.TestCase):
 
     def test_search_terms_are_grouped_after_existing_filters(self):
@@ -32,3 +41,10 @@ class SearchQueryTest(unittest.TestCase):
 
     def test_search_forms_use_get(self):
         self.assertEqual('GET', GDT_Form().get()._http_method)
+
+    def test_in_memory_search_matches_field_semantics(self):
+        row = SearchRow({'name': 'Shadowdogs DOCS', 'id': '42', 'price': '1.204'})
+        self.assertTrue(GDT_String('name').gdo_search_gdo(row, 'docs'))
+        self.assertTrue(GDT_Int('id').gdo_search_gdo(row, '42'))
+        self.assertFalse(GDT_Int('id').gdo_search_gdo(row, '2'))
+        self.assertTrue(GDT_Float('price').gdo_search_gdo(row, '1.20'))

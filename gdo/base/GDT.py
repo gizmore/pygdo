@@ -164,6 +164,18 @@ class GDT(WithSerialization):
     def gdo_search_query(self, query: 'Query', term: str):
         pass
 
+    def gdo_search_gdo(self, gdo: 'GDO', term: str) -> bool:
+        """Return whether an in-memory row matches a global search term.
+
+        Query-backed tables translate this operation into SQL via
+        :meth:`gdo_search_query`.  Tables backed by ``ResultArray`` need the
+        equivalent predicate locally instead.
+        """
+        if self.is_secret():
+            return False
+        value = gdo.gdo_val(self.get_name())
+        return value is not None and term.casefold() in str(value).casefold()
+
     def is_filterable(self) -> bool:
         return False
 

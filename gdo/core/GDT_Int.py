@@ -99,6 +99,12 @@ class GDT_Int(GDT_String):
             return
         query.search_where(f'{self.get_name()}={value}')
 
+    def gdo_search_gdo(self, gdo: 'GDO', term: str) -> bool:
+        try:
+            return int(gdo.gdo_val(self.get_name())) == int(term)
+        except (TypeError, ValueError):
+            return False
+
     def to_value(self, val: str):
         if val is None:
             return None

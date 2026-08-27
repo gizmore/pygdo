@@ -119,6 +119,14 @@ class WithObject:
         if subquery._where:
             query.search_where(f"{self.get_name()} IN ({subquery.build_query()})")
 
+    def gdo_search_gdo(self, gdo: GDO, term: str) -> bool:
+        """Search an object reference through its name column recursively."""
+        if not (name_column := self._table.name_column()):
+            return False
+        if not (target := self.gdo(gdo).get_gdo()):
+            return False
+        return name_column.gdo_search_gdo(target, term)
+
     ##########
     # Render #
     ##########
