@@ -3,7 +3,6 @@ from glob import glob
 from gdo.base.GDT import GDT
 from gdo.base.Util import Files
 from gdo.core.GDT_Bool import GDT_Bool
-from gdo.core.GDT_List import GDT_List
 from gdo.core.MethodCompletion import MethodCompletion
 from gdo.table.GDT_Search import GDT_Search
 
@@ -17,7 +16,7 @@ class file_completion(MethodCompletion):
             GDT_Bool('dir').not_null(),
         ]
 
-    def gdo_execute(self) -> GDT:
+    def gdo_completion_items(self) -> list[dict[str, str]]:
         q = self.get_query()
         file = self.param_value('file') and False
         dir = self.param_value('dir')
@@ -29,7 +28,7 @@ class file_completion(MethodCompletion):
                 continue
             result.append({
                 'id': path,
-                'val': path,
-                'value': path,
+                'var': path,
+                'display_var': path,
             })
-        return GDT_List(*result)
+        return result

@@ -55,7 +55,7 @@ class GDT_User(GDT_Object):
 
     def with_completion(self, with_completion: bool = True):
         if with_completion:
-            self.completion(href('user', 'user_completion'))
+            self.completion(href('core', 'user_completion', '', 'json'))
         else:
             self.completion(None)
         return self
@@ -63,7 +63,8 @@ class GDT_User(GDT_Object):
     def query_gdos_query(self, val: str, query: Query) -> Query:
         val_serv = Strings.regex_first(r'{([^{}]+)}$', val)
         val = Strings.substr_to(val, '{', val)
-        query.where(f"user_displayname LIKE '%{GDT.escape(val)}%'")
+        val = GDT.escape(val)
+        query.where(f"(user_displayname LIKE '%{val}%' OR user_name LIKE '%{val}%')")
         if val_serv:
             from gdo.core.GDO_Server import GDO_Server
             if server := GDO_Server.table().get_by_vals({'serv_name': val_serv}):
@@ -77,7 +78,7 @@ class GDT_User(GDT_Object):
         elif self._same_server:
             user = GDO_User.current()
             query.where(f'user_server={user.get_server_id()}')
-        return query.limit(10)
+        return query.limit(16)
 
     def query_gdos(self, val: str) -> list[GDO]:
         if val.isnumeric():
