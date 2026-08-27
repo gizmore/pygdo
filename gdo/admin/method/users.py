@@ -80,7 +80,7 @@ class users(MethodQueryTable):
         query = super().gdo_table_query().only_select('gdo_user.*')
         for gdt in self.setting_fields():
             GDO_User.join_setting(query, gdt.get_name())
-        return query.debug()
+        return query
 
     def gdo_table_search_query(self, query: Query, term: str):
         if term:
