@@ -3,13 +3,10 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Render import Render
 from gdo.base.Trans import t
-from gdo.base.Util import Files
 from gdo.core.GDT_List import GDT_List
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.MethodForm import MethodForm
 from gdo.language.GDT_Trans import GDT_Trans
-from gdo.message.GDT_HTML import GDT_HTML
-from gdo.message.GDT_PRE import GDT_PRE
 from gdo.ui.GDT_Bar import GDT_Bar
 from gdo.ui.GDT_Menu import GDT_Menu
 from gdo.ui.GDT_Title import GDT_Title
@@ -63,20 +60,5 @@ class configure(MethodForm):
             GDT_Title('mt').text('mt_admin_configure', (module.render_name(),)),
             GDT_Trans().text(installed),
             self.get_form(),
-            GDT_PRE().add_field(GDT_HTML().html(self.get_module_descr())),
         )
         return bar
-
-    def get_module_descr(self) -> str:
-        return self.get_module_readme() + self.get_module_method_descriptions()
-
-    def get_module_readme(self) -> str:
-        path = self.get_module().file_path('README.md')
-        if not Files.is_file(path): return ''
-        return Files.get_contents(path)
-
-    def get_module_method_descriptions(self):
-        back = '\n'
-        for method in self.get_module().get_methods():
-            back += f'{method.gdo_render_simple_title()}: {method.gdo_render_simple_descr()}\n'
-        return back

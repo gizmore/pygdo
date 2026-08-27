@@ -29,6 +29,8 @@ md_admin_dashboard = "Admin Dashboard for your PyGDO installation."
 ##########
 mt_admin_module = "%s Configuration"
 md_admin_module = "Configure the %s module on %s."
+dependencies = "Dependencies"
+friendencies = "Friendencies"
 
 
 ###########
