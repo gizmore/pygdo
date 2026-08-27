@@ -103,7 +103,8 @@ async def app(scope, receive, send):
 
             qs = parse_qs(scope['query_string'].decode())
 
-            url = scope['path'] if scope['path'].lstrip('/') else '/core.welcome.html'
+            welcome_url = f"/{Application.main_method_url()}"
+            url = scope['path'] if scope['path'].lstrip('/') else welcome_url
 
             scope['REQUEST_URI'] = scope['path'] + '?' + scope['query_string'].decode()
 

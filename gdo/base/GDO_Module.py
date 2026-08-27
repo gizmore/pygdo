@@ -84,6 +84,10 @@ class GDO_Module(WithModuleConfig, GDO):
     def gdo_is_site_module(self) -> bool:
         return False
 
+    def gdo_main_method_name(self) -> str:
+        """The method rendered when this module is configured as the site root."""
+        return 'welcome'
+
     @cached_property
     def get_name(self):
         return self.__class__.__name__[7:]

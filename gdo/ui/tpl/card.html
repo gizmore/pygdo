@@ -7,7 +7,7 @@
     </div>
     <div class="col-md-8">
       <div class="card-body">
-        <h5 class="card-title"><%=field.get_header().render()%></h5>
+        <h5 class="card-title"><%=field.get_header().render() or field.render_title()%></h5>
           <div class="text">
               <%=field.get_content().render(Mode.render_card)%>
           </div>

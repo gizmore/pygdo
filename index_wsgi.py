@@ -127,6 +127,9 @@ def pygdo_application(environ, start_response):
             Cache.clear_ocache()
 
         qs = parse_qs(environ['QUERY_STRING'])
+        welcome_url = Application.main_method_url()
+        if environ['PATH_INFO'] == '/' and '_url' not in qs:
+            url = welcome_url
 
         Application.request_method(environ['REQUEST_METHOD'])
         args = ParseArgs()
@@ -147,7 +150,7 @@ def pygdo_application(environ, start_response):
             # ``add_get_vars()``; it would overwrite the normalized value.
             del qs['_url']
             if not url:
-                url = 'core.welcome.html'
+                url = welcome_url
         elif environ['PATH_INFO'] != '/':
             # WSGI's PATH_INFO has already percent-decoded the path.  Use the
             # raw request target so ParseArgs can split on literal points

@@ -103,6 +103,15 @@ class Application:
         return os.path.join(cls.PATH, path)
 
     @classmethod
+    def main_method_url(cls) -> str:
+        """Return the configured website-root route supplied by its module."""
+        module_name = cls.config('core.main_module', 'core')
+        module = cls.LOADER.get_module(module_name)
+        if module is None:
+            module = cls.LOADER.get_module('core')
+        return f"{module.get_name}.{module.gdo_main_method_name()}.html"
+
+    @classmethod
     def files_path(cls, path: str = ''):
         return cls.file_path(Application.config('dir.files') + path)
 

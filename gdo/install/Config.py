@@ -27,6 +27,7 @@ class Config:
             GDT_Section().title_raw('Core and Debug'),
             GDT_Enum('core.env').choices({'dev': 'dev', 'test': 'test', 'prod': 'prod'}).not_null().initial('dev'),
             cls.data_str('core.sitename', 'PyGDO', "Short abbrev of the site's name, like WeChall or Google."),
+            cls.data_str('core.main_module', 'core', 'Module whose main method is shown at the website root.'),
             cls.data_str('core.web_root', '/', 'Needs to end with a slash, E.g.: "/" or "/www/".'),
             cls.data_str('core.domain', 'localhost', "full domain for full urls in mails."),
             cls.data_str('core.secret', GDT_Token.random(32), "Secret used in token calculations."),
