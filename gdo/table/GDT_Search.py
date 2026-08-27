@@ -8,10 +8,10 @@ class GDT_Search(GDT_String):
         super().__init__(name)
         self.icon('search')
 
-    def search_query(self, query: Query) -> Query:
+    def search_query(self, query: Query, apply: bool = True) -> Query:
         if not (term := self.get_val()):
             return query
         table = self._gdo
         for gdt in table.columns().values():
             gdt.gdo_search_query(query, term)
-        return query.apply_search_wheres()
+        return query.apply_search_wheres() if apply else query
