@@ -26,6 +26,7 @@ from gdo.base.Util import Arrays
 class Application:
     DB: 'Database'
     RUNNING = True
+    RESTARTING = False
     PROTOCOL = 'http'
     IS_HTTP = False
     IS_DOG = None

@@ -1,6 +1,7 @@
 import asyncio
 import os
 import signal
+import sys
 import time
 from functools import lru_cache
 
@@ -64,6 +65,9 @@ class launch(Method):
         signal.signal(signal.SIGUSR1, self.handle_sigusr1)
         IPC.send('base.ipc_dogpid')
         await self.mainloop()
+        if Application.RESTARTING:
+            Application.RESTARTING = False
+            os.execv(sys.executable, [sys.executable, *sys.argv])
         return self.reply('msg_all_done')
 
     @classmethod

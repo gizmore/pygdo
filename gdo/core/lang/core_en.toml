@@ -278,6 +278,7 @@ and_n_more = "and %s more"
 mt_core_die = "Die"
 md_core_die = "Make the bot quit."
 msg_dying = "Shutting down..."
+msg_rebooting = "Restarting..."
 
 #########
 # confs #
