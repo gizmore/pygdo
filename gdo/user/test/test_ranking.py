@@ -3,10 +3,12 @@ import unittest
 from unittest.mock import patch
 
 from gdo.base.Application import Application
+from gdo.base.Render import Mode
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_Session import GDO_Session
 from gdo.core.GDO_User import GDO_User
 from gdo.user.module_user import module_user
+from gdo.user.GDT_Level import GDT_Level
 from gdotest.TestUtil import GDOTestCase, install_module, web_gizmore, web_plug
 
 
@@ -42,6 +44,9 @@ class UserRankingTest(GDOTestCase):
         with patch.object(GDO_User, 'save_setting') as save_setting:
             module_user.instance().set_last_activity(GDO_User.ghost())
         save_setting.assert_not_called()
+
+    def test_empty_level_renders_as_placeholder_in_a_table(self):
+        self.assertEqual('---', GDT_Level('level').val(None).render(Mode.render_cell))
 
 
 if __name__ == '__main__':

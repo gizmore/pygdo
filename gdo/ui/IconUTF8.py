@@ -35,6 +35,7 @@ class IconUTF8(IconProvider):
             'business': ' 🏬',
             'calendar': '📅',
             'captcha': '♺',
+            'card': '🂠',
             'caret': '⌄',
             'cc': '💳',
             'close': '✖',

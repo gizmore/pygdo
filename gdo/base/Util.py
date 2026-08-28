@@ -211,6 +211,7 @@ class Files:
 
     @classmethod
     def human_file_size(cls, num: int, div: int = 1000, suffix: str = "B") -> str:
+        num = int(num or 0)
         for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
             if num < div:
                 return f"{num:3.1f}{unit}{suffix}"
