@@ -170,5 +170,8 @@ class GDT_Timestamp(GDT_String):
     def render_txt(self):
         return self.render_format()
 
+    def render_irc(self):
+        return self.render_format(Time.FMT_AGO)
+
     def render_card(self) -> str:
         return f'<p>{self.render_card_label()}: {self.render_format(Time.FMT_BOTH_FULL)}</p>'

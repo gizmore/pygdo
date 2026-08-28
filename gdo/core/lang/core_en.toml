@@ -206,6 +206,13 @@ msg_pong = "PONG"
 msg_server_status = "%s: %s (%s)"
 msg_server_set = "%s: %s has been set to %s."
 
+#########
+# Stats #
+#########
+mt_core_stats = "Statistics"
+md_core_stats = "Database queries per seoond metrics"
+msg_stats = "Laufzeit %s - %.02f queries per second"
+
 ########
 # Link #
 ########
