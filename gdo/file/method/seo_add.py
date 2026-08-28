@@ -9,6 +9,9 @@ from gdo.core.GDT_String import GDT_String
 class seo_add(MethodForm):
     """Publish an uploaded file under one stable, public SEO path."""
 
+    def gdo_connectors(self) -> str:
+        return 'web'
+
     def gdo_user_permission(self) -> str | None:
         return 'staff'
 

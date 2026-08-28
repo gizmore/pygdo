@@ -8,6 +8,9 @@ from gdo.ui.GDT_Link import GDT_Link
 class seo_files(MethodQueryTable):
     """Staff overview of public SEO-path-to-upload mappings."""
 
+    def gdo_connectors(self) -> str:
+        return 'web'
+
     def gdo_table(self) -> GDO:
         return GDO_SeoFile.table()
 
