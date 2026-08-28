@@ -608,7 +608,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def _config_channel_for(cls, key: str):
         return cls._config_for_key(cls._config_channel(), key)
 
-    def save_config_channel(self, key: str, val: str):
+    def save_config_channel(self, key: str, val: str | None):
         from gdo.core.GDO_Method import GDO_Method
         from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
         from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
@@ -627,7 +627,7 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
             else:
                 entry.save_val('mv_val', val)
 
-    def get_config_channel(self, key: str) -> GDT:
+    def get_config_channel(self, key: str) -> GDT | None:
         return self._get_config_channel(key, self._env_channel)
 
     def _get_config_channel(self, key: str, channel: 'GDO_Channel|None') -> GDT|None:

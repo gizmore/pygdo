@@ -143,6 +143,8 @@ class GDO_Server(GDO):
         return user
 
     def get_user_by_name(self, username: str) -> GDO_User:
+        if user := self._users.get(username, None):
+            return user
         return GDO_User.table().get_by_vals({
             'user_server': self.get_id(),
             'user_name': username,
