@@ -14,6 +14,7 @@ from gdo.core.GDO_UserPermission import GDO_UserPermission
 from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.connector.Bash import Bash
 from gdo.core.method.channel_set import channel_set
+from gdo.core.method.chan_toggle import chan_toggle
 from gdo.core.method.server_set import server_set
 from gdotest.TestUtil import GDOTestCase
 
@@ -73,6 +74,19 @@ class test_channel_set(GDOTestCase):
     def test_short_trigger_is_chan_set(self):
         self.assertEqual('channel.set', channel_set.gdo_trigger())
         self.assertEqual('chan.set', channel_set.gdo_trig())
+
+    async def test_bash_cli_channel_mode_can_be_toggled(self):
+        user = await Bash.get_server().get_or_create_user('channel_toggle_user')
+        channel = Bash.get_server().get_or_create_channel('channel_toggle_user')
+        method = (chan_toggle().env_user(user).env_server(Bash.get_server()).env_channel(channel).
+                  env_session(GDO_Session.for_user(user)).input('enabled', '0'))
+        await method.execute()
+        self.assertFalse(Application.STORAGE.cli_channel_mode)
+
+        method = (chan_toggle().env_user(user).env_server(Bash.get_server()).env_channel(channel).
+                  env_session(GDO_Session.for_user(user)).input('enabled', '1'))
+        await method.execute()
+        self.assertTrue(Application.STORAGE.cli_channel_mode)
 
     def test_connector_setting_renders_its_persisted_name(self):
         self.assertEqual('irc', GDT_Connector('serv_connector').val('irc').render_val())

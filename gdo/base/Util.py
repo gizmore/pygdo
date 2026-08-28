@@ -32,12 +32,84 @@ from gdo.base.Render import Mode
 
 from prompt_toolkit.shortcuts import print_formatted_text as pt_print
 from prompt_toolkit.formatted_text import ANSI
+from prompt_toolkit.application.current import get_app_session
+from prompt_toolkit.utils import get_cwidth
 
 from gdo.base.WithPygdo import WithPygdo
 
 
+ANSI_ESCAPE = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
+
+
+def terminal_wrap(text: str, width: int) -> str:
+    """Wrap terminal text at whitespace without counting ANSI escape codes.
+
+    Terminals otherwise hard-wrap a long ``$help`` response at their pane
+    boundary, which can split command names one character at a time.  Leave a
+    column spare for the terminal's auto-wrap behaviour and insert our own
+    newlines only between words.  A single word wider than the pane naturally
+    remains intact as far as the terminal permits.
+    """
+    if width < 1:
+        return text
+
+    lines: list[str] = []
+    line = ''
+    line_width = 0
+    word = ''
+    word_width = 0
+    whitespace = ''
+
+    def flush_word() -> None:
+        nonlocal line, line_width, word, word_width, whitespace
+        if not word:
+            return
+        gap_width = get_cwidth(whitespace)
+        if line and line_width + gap_width + word_width > width:
+            lines.append(line)
+            line = word
+            line_width = word_width
+        else:
+            line += whitespace + word
+            line_width += gap_width + word_width
+        word = ''
+        word_width = 0
+        whitespace = ''
+
+    index = 0
+    while index < len(text):
+        if match := ANSI_ESCAPE.match(text, index):
+            word += match.group(0)
+            index = match.end()
+            continue
+        char = text[index]
+        index += 1
+        if char == '\n':
+            flush_word()
+            lines.append(line)
+            line = ''
+            line_width = 0
+            whitespace = ''
+        elif char.isspace():
+            flush_word()
+            if line:
+                whitespace += char
+        else:
+            word += char
+            word_width += get_cwidth(char)
+
+    flush_word()
+    if line or not lines:
+        lines.append(line)
+    return '\n'.join(lines)
+
+
 def gdo_print(s: str, end="\n"):
-    pt_print(ANSI(s), end=end)
+    # Prompt-toolkit prints through the active tmux/terminal output.  Its
+    # auto-wrap is character based, so wrap beforehand using that output's
+    # current pane width.
+    columns = get_app_session().output.get_size().columns
+    pt_print(ANSI(terminal_wrap(s, max(1, columns - 1))), end=end)
 
 
 def hdr(name: str, value: str):

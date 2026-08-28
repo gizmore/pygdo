@@ -31,6 +31,11 @@ class Installer:
         loader = ModuleLoader.instance()
         loader.load_modules_db(True)
         loader.init_modules(True, True)
+        # ``load_modules_db`` imports the freshly installed module, but the
+        # running process also needs its methods registered immediately.  In
+        # particular, ``safe.install`` must not require a Dog restart before
+        # the new module's text commands can be used.
+        loader.init_cli()
         cls.migrate_user_settings()
 
         if verbose:

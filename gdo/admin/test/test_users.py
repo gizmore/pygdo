@@ -10,6 +10,7 @@ from gdo.base.Query import Query
 from gdo.admin.method.users import users
 from gdo.admin.method.install import install
 from gdo.admin.method.module import module
+from gdo.admin.method.safe_install import safe_install
 from gdotest.TestUtil import GDOTestCase, install_module, web_gizmore, web_plug
 
 
@@ -39,6 +40,12 @@ class AdminUsersTest(GDOTestCase):
     def test_module_install_and_overview_are_web_only(self):
         self.assertEqual('web', install().gdo_connectors())
         self.assertEqual('web', module().gdo_connectors())
+
+    def test_safe_install_is_owner_only_for_text_connectors(self):
+        method = safe_install()
+        self.assertEqual('safe.install', method.gdo_trigger())
+        self.assertEqual('owner', method.gdo_user_permission())
+        self.assertNotEqual('web', method.gdo_connectors())
 
     def test_paginates_fifty_users_per_page(self):
         self.assertEqual(50, users().gdo_paginate_size())

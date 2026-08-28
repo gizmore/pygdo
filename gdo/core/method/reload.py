@@ -29,5 +29,10 @@ class reload(Method):
                     self.err('err_reload_module', (module_name, str(e)))
 
         Trans.reload()
-        ModuleLoader.instance().reload_modules()
+        loader = ModuleLoader.instance()
+        loader.reload_modules()
+        # A module installed while this process was running has its instance
+        # in the loader cache, but its command classes still need registering.
+        # Keep `$reload` useful as the no-restart activation path.
+        loader.init_cli()
         return self.msg('msg_modules_reloaded')

@@ -70,19 +70,22 @@ async def pygdo(line: str = None):
 
 
 async def get_parser():
+    from gdo.base.Application import Application
     from gdo.base.Parser import Parser
     from gdo.base.Render import Mode
     from gdo.base.Util import CLI
     from gdo.core.GDO_Session import GDO_Session
     user = await CLI.get_current_user()
     server = user.get_server()
-    channel = server.get_or_create_channel(user.gdo_val('user_name'))
+    channel = None
+    if getattr(Application.STORAGE, 'cli_channel_mode', True):
+        channel = server.get_or_create_channel(user.gdo_val('user_name'))
     session = GDO_Session.for_user(user)
     return Parser(Mode.render_cli, user, server, channel, session)
 
 
 async def process_line(line: str) -> None:
-    from gdo.base.Exceptions import GDOParamError
+    from gdo.base.Exceptions import GDOParamError, GDOModuleException, GDOError
     from gdo.base.Application import Application
     from gdo.base.Render import Render, Mode
     from gdo.core.connector.Bash import Bash
@@ -118,7 +121,7 @@ async def process_line(line: str) -> None:
                 message._result += txt1
             await message.deliver()
             method._env_session.save()
-    except GDOParamError as ex:
+    except (GDOParamError, GDOModuleException, GDOError) as ex:
         print(Render.red(str(ex), Mode.render_cli))
 
 def handle_sigusr1(self, event: str, args: any = None):

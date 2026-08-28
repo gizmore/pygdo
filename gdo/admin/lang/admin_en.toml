@@ -71,6 +71,14 @@ msg_module_wiped = "Module got wiped."
 msg_module_enabled = "Module has been enabled."
 msg_module_disabled = "Module has been disabled."
 
+################
+# Safe Install #
+################
+safe_install = "Safely install a module"
+err_safe_install_confirm = "Refusing to install a module without --confirm=1."
+err_safe_install_installed = "%s is already installed; safe.install never reinstalls or wipes modules."
+msg_safe_install_done = "%s has been installed."
+
 ############
 # Login As #
 ############
