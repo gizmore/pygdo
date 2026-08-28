@@ -40,5 +40,14 @@ class GDT_Language(GDT_ObjectSelect):
             return Render.italic(t('none'))
         return t(f'l_{val}')
 
+    def render_txt(self) -> str:
+        return self.render_val()
+
+    def render_cli(self) -> str:
+        return self.render_val()
+
+    def render_irc(self) -> str:
+        return self.render_val()
+
     def render_cell(self) -> str:
         return self.render_val()

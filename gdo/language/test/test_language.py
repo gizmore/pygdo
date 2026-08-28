@@ -27,6 +27,8 @@ class LanguageTest(unittest.TestCase):
     def test_cell_renders_localized_language_name(self):
         field = GDT_Language('language').supported().val('de')
         self.assertEqual(t('l_de'), field.render_cell())
+        self.assertEqual(t('l_de'), field.render_txt())
+        self.assertEqual(t('l_de'), field.render_cli())
 
 
 if __name__ == '__main__':

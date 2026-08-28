@@ -22,3 +22,6 @@ class GDT_Bool(GDT_Select):
         if val is None:
             return Render.italic(t('none'))
         return t('yes') if val == '1' else t('no')
+
+    def render_txt(self) -> str:
+        return self.render_val()

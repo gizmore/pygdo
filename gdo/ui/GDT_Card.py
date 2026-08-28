@@ -1,8 +1,9 @@
 from gdo.base.GDT import GDT
-from gdo.base.Render import Mode
+from gdo.base.Render import Mode, Render
 from gdo.base.Util import module_enabled
 from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Creator import GDT_Creator
+from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template
 from gdo.core.WithGDO import WithGDO
 from gdo.date.GDT_Created import GDT_Created
@@ -64,9 +65,21 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
         })
 
     def render_text(self, mode: Mode = Mode.render_html) -> str:
-        text = self._header.render(mode)
-        text += ' | '
-        text += self._content.render(mode)
-        text += ' | '
-        text += self._footer.render(mode)
-        return text.strip(' |')
+        return ' | '.join(filter(None, (
+            self.render_text_section(self._header, mode),
+            self.render_text_section(self._content, mode),
+            self.render_text_section(self._footer, mode),
+        )))
+
+    @staticmethod
+    def render_text_section(section: GDT_Container, mode: Mode) -> str:
+        """Render Card fields as labelled values for CLI/chat output."""
+        out = []
+        for field in section.get_fields():
+            value = field.render(mode)
+            if not value:
+                continue
+            if isinstance(field, GDT_Field):
+                value = f'{field.render_label(mode)}: {Render.bold(value, mode)}'
+            out.append(value)
+        return ' | '.join(out)
