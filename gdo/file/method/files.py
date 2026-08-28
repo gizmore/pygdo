@@ -14,7 +14,8 @@ class files(MethodQueryTable):
         t = self.gdo_table()
         return [
             t.column('file_id'),
-            GDT_Link('file_name'),
+            GDT_Link('file_name').icon(None),
+            t.column('file_mime'),
             t.column('file_size'),
         ]
 

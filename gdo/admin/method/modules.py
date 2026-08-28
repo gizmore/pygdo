@@ -81,5 +81,6 @@ class modules(MethodTable):
     def render_module_name(self, gdt: GDT_Name, gdo: GDO_Module) -> str:
         return (GDT_Link().
                 text_raw(gdo.get_name).
+                icon(None).
                 href(href('admin', 'module', f"&module={gdo.get_name}")).
                 render())
