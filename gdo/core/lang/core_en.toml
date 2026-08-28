@@ -213,6 +213,12 @@ mt_core_stats = "Statistics"
 md_core_stats = "Database queries per seoond metrics"
 msg_stats = "Laufzeit %s - %.02f queries per second"
 
+###############
+# Permissions #
+###############
+mt_core_permissions = "Permissions"
+md_core_permissions = "List an overview of the permissions"
+
 ########
 # Link #
 ########
