@@ -12,6 +12,7 @@ class GDT_Link(WithHREF, WithTitle, WithText, GDT_String):
         super().__init__(name)
         self.label(name or 'link')
         self.icon('link')
+        self.writable(False)
 
     def render_form(self):
         return self.render_html()

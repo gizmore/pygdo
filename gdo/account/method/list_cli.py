@@ -23,7 +23,7 @@ class list_cli(Method):
         vals = {}
         for module in loader.enabled():
             for gdt in module.gdo_user_settings():
-                if isinstance(gdt, GDT_Field):
+                if gdt.is_writable():
                     gdt = GDO_UserSetting.setting_column(gdt.get_name(), user)
                     vals[gdt.get_name()] = f"{gdt.get_name()}({gdt.render_val()})"
         sorted_vals = [vals[key] for key in sorted(vals.keys())]  # Get sorted values based on sorted keys

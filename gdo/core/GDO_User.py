@@ -12,6 +12,7 @@ from gdo.base.Result import Result
 from gdo.base.Trans import t
 from gdo.base.Util import module_enabled
 from gdo.core.GDT_Index import GDT_Index
+from gdo.core.GDT_Unique import GDT_Unique
 from gdo.core.GDT_UserName import GDT_UserName
 
 if TYPE_CHECKING:
@@ -98,12 +99,13 @@ class GDO_User(GDO):
         return [
             GDT_AutoInc('user_id'),
             GDT_UserType('user_type').not_null().initial(GDT_UserType.MEMBER),
-            GDT_Name('user_name').not_null(),
-            GDT_UserName('user_displayname').not_null(),
+            GDT_Name('user_name').not_null().icon('user'),
+            GDT_UserName('user_displayname').not_null().icon('user'),
             GDT_Server('user_server').not_null().cascade_delete(),
             GDT_UserLink('user_link').table(GDO_User.table()).cascade_delete(),
             GDT_Index('user_idx_name').index_fields('user_name'),
             GDT_Index('user_idx_serv').index_fields('user_server'),
+            GDT_Unique('user_unq_dn').unique_columns('user_displayname'),
         ]
 
     def get_lang_iso(self):

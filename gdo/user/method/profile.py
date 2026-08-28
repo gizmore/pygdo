@@ -52,6 +52,9 @@ class profile(Method):
             card.image(profile_links)
         card.title('mt_user_profile', (user.render_name(),))
         content = card.get_content()
+        content.add_field(user.column('user_name'))
+        content.add_field(user.column('user_displayname'))
+        content.add_field(user.column('user_server'))
         for module in modules:
             for gdt in module.gdo_profile_links(user):
                 if isinstance(gdt, GDT_Field) and not gdt.is_hidden():
