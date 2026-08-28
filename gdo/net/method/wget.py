@@ -28,7 +28,7 @@ class wget(Method):
         http = httplib2.Http()
         response, content = http.request(url['scheme'] + '://' + url['host'] + ':' + str(url['port']) + url['path'], method=method)
         encoding = self.parse_encoding(response)
-        content = content.decode(encoding)
+        content = content.decode(encoding or 'utf-8')
         if not self.param_value('full'):
             content = self.html_to_text(content)
         return GDT_HTML().html(content)
