@@ -24,6 +24,7 @@ decimal_point = '.'
 thousands_sep = ','
 authenticate = "authentifizieren"
 gdt_redirect_to = "Weiterleitung zu %s..."
+backup = "Backup"
 
 ##############
 # Decorators #

@@ -33,7 +33,7 @@ class module_base(GDO_Module):
 
     def gdo_admin_links(self) -> list['GDT_Link']:
         return [
-            GDT_Link().href(self.href('backup')),
+            GDT_Link('backup').href(self.href('backup')).text('backup'),
         ]
 
     def gdo_module_config(self) -> list[GDT]:
