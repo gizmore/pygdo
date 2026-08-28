@@ -74,7 +74,7 @@ class settings(MethodForm):
                     gdt.val(old)
                     user.save_setting(key, new)
                     gdt.val(new)
-                    out.append(t('setting_changed', (key, Render.italic(gdt.display_var(old), self._env_mode), Render.italic(gdt.display_var(new), self._env_mode))))
+                    out.append(t('setting_changed', (t(key), Render.italic(gdt.display_var(old), self._env_mode), Render.italic(gdt.display_var(new), self._env_mode))))
         if len(out):
             self.msg('msg_settings_changed', (" ".join(out),))
         return self.render_page()
