@@ -43,7 +43,7 @@ class Parser:
             if char == '"':
                 inside_quotes = not inside_quotes
                 current_command += char
-            elif char == '&' and line[i] == '&' and not inside_quotes:
+            elif char == '&' and i < ln and line[i] == '&' and not inside_quotes:
                 i += 1
                 commands.append(current_command.strip())
                 current_command = ''
@@ -77,8 +77,13 @@ class Parser:
                     curr_tokens.append(current_token)
                     current_token = ''
             elif char == '\\':
-                current_token += line[i]
-                i += 1
+                # A trailing backslash is a literal character, not an index
+                # past the end of the command line.
+                if i < j:
+                    current_token += line[i]
+                    i += 1
+                else:
+                    current_token += char
             elif char == '"':
                 inside_quotes = not inside_quotes
             elif char == ')' and not inside_quotes and bracket_open:
@@ -91,7 +96,7 @@ class Parser:
                 curr_tokens = tokens[token_level]
                 curr_tokens.append(new)
                 bracket_open -= 1
-            elif char == '$' and not inside_quotes and current_token == '' and line[i] == '(':
+            elif char == '$' and not inside_quotes and current_token == '' and i < j and line[i] == '(':
                 bracket_open += 1
                 token_level += 1
                 i += 1

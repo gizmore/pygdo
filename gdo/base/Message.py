@@ -83,6 +83,8 @@ class Message(WithEnv):
         return self._env_server.get_trigger()
 
     async def execute(self):
+        previous_mode = Application.get_mode()
+        Application.mode(self._env_mode)
         try:
             Application.fresh_page()
             # A linked connector account must keep receiving replies through
@@ -124,6 +126,8 @@ class Message(WithEnv):
                 await self.deliver()
             except Exception as ex:
                 Logger.exception(ex)
+        finally:
+            Application.mode(previous_mode)
 
     async def run(self):
         result = self._method.execute()

@@ -11,12 +11,15 @@ class calc(MethodForm):
         return t('md_math_calc', (self.render_allowed_functions(),))
 
     def render_allowed_functions(self) -> str:
-        values = list(GDT_MathExpression('x').get_namespace().keys())
+        values = [key for key in GDT_MathExpression('x').get_namespace() if key not in ('for', 'in')]
         return ', '.join(values)
 
     @classmethod
     def gdo_trigger(cls) -> str:
         return 'calc'
+
+    def gdo_permission(self):
+        return 'voice'
 
     def gdo_create_form(self, form: GDT_Form) -> None:
         form.text('md_math_calc', (self.render_allowed_functions(),))
@@ -25,7 +28,7 @@ class calc(MethodForm):
 
     def form_submitted(self):
         expr = self.param_value('expression').lower().replace('_', self.last_value())
-        result = str(eval(expr, self.parameter('expression').get_namespace()))
+        result = str(eval(expr, {'__builtins__': {}}, self.parameter('expression').get_namespace()))
         self.LAST_RESULT[self._env_user] = result
         return self.empty(str(result))
 

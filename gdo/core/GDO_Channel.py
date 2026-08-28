@@ -94,11 +94,21 @@ class GDO_Channel(GDO):
 
     async def on_user_left(self, user: GDO_User):
         user_name = user.get_name()
-        del self._users[user_name]
-        await Application.EVENTS.publish('user_left_channel', user, self)
+        if user_name in self._users:
+            del self._users[user_name]
+            await Application.EVENTS.publish('user_left_channel', user, self)
+
+    async def on_bot_joined(self, user: GDO_User):
+        self._users = { user.get_name(): user }
+        await Application.EVENTS.publish('bot_joined_channel', user, self)
+
+    async def on_bot_left(self, user: GDO_User):
+        await Application.EVENTS.publish('bot_left_channel', user, self)
+        self._users = {}
+        self.get_server()._channels.pop(self.get_name(), None)
 
     def is_online(self) -> bool:
-        return self.get_server()._channels.get(self.get_id()) is not None
+        return self.get_server()._channels.get(self.get_name()) is not None
 
     def is_user_online(self, user: GDO_User) -> bool:
         return user.get_name() in self._users

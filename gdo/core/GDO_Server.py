@@ -1,6 +1,8 @@
 import asyncio
 from typing import TYPE_CHECKING
 
+from discord import channel
+
 from gdo.core.GDT_Bool import GDT_Bool
 
 if TYPE_CHECKING:
@@ -108,17 +110,34 @@ class GDO_Server(GDO):
     ##########
     # Events #
     ##########
-    async def on_user_joined(self, user: 'GDO_User'):
+    async def on_user_joined(self, user: 'GDO_User', channel: 'GDO_Channel | None' = None):
+        """Remember a user globally and, when known, in a channel context."""
+        was_online = user.get_name() in self._users
         self._users[user.get_name()] = user
+        if channel:
+            self._channels[channel.get_name()] = channel
         if not self.get_connector().gdo_needs_authentication():
             user._authenticated = True
-        await Application.EVENTS.publish('user_joined_server', user)
+        if not was_online:
+            await Application.EVENTS.publish('user_joined_server', user)
 
     async def on_user_quit(self, user: 'GDO_User'):
-        for name, channel in self._channels.items():
+        for channel in list(self._channels.values()):
             await channel.on_user_left(user)
-        del self._users[user.get_name()]
-        await Application.EVENTS.publish('user_quit_server', user)
+        if self._users.pop(user.get_name(), None):
+            await Application.EVENTS.publish('user_quit_server', user)
+
+    async def on_bot_joined(self, user: 'GDO_User', channel: 'GDO_Channel'):
+        await Application.EVENTS.publish('bot_joined_server', user)
+        self._users[user.get_name()] = user
+        self._channels[channel.get_name()] = channel
+
+    async def on_bot_quit(self, user: 'GDO_User'):
+        for channel in list(self._channels.values()):
+            await channel.on_bot_left(user)
+        await Application.EVENTS.publish('bot_quit_server', user)
+        self._users = {}
+        self._channels = {}
 
     ########
     # User #
@@ -183,6 +202,8 @@ class GDO_Server(GDO):
 
     def get_channel_by_name(self, name: str) -> 'GDO_Channel':
         from gdo.core.GDO_Channel import GDO_Channel
+        if channel := self._channels.get(name, None):
+            return channel
         return GDO_Channel.table().get_by_vals({
             'chan_server': self.get_id(),
             'chan_name': name,

@@ -3,6 +3,7 @@ import unittest
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.base.Parser import Parser
 from gdo.base import module_base
 from gdotest.TestUtil import cli_plug, GDOTestCase
 
@@ -53,6 +54,12 @@ class CLITestCase(GDOTestCase):
         line = "$echo 1 $(echo 2) $(echo 3 $(echo 4)) 5 $(echo 6) $(echo 7 8)"
         result = cli_plug(None, line)
         self.assertEqual('1 2 3 4 5 6 7 8', result, "Command nesting does not work.")
+
+    async def test_08_tokenizer_accepts_trailing_special_characters(self):
+        parser = Parser(None, None, None, None, None)
+        self.assertEqual(['\x00echo', '$'], parser.tokenize('echo $'))
+        self.assertEqual(['\x00echo', '\\'], parser.tokenize('echo \\'))
+        self.assertEqual(['echo &'], parser.split_commands('echo &'))
 
 
 if __name__ == '__main__':
