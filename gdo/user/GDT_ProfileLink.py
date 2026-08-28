@@ -1,5 +1,6 @@
 from gdo.base.Trans import t
 from gdo.base.util.href import href
+from gdo.base.Render import Mode
 from gdo.core.GDO_User import GDO_User
 from gdo.ui.GDT_Link import GDT_Link
 
@@ -47,4 +48,4 @@ class GDT_ProfileLink(GDT_Link):
         content += self.render_text()
         # The avatar and user name are one profile affordance: both must be
         # inside the anchor so clicking either opens the same profile.
-        return f'<a class="gdt-link" href="{self.render_href()}"{self.html_attrs()}><span>{content}</span></a>'
+        return f'<a class="gdt-link" href="{self.render_href()}"{self.html_attrs()}><span>{self.render_icon(Mode.render_html)}{content}</span></a>'

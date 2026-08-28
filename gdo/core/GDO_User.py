@@ -104,7 +104,7 @@ class GDO_User(GDO):
             GDT_UserLink('user_link').table(GDO_User.table()).cascade_delete(),
             GDT_Index('user_idx_name').index_fields('user_name'),
             GDT_Index('user_idx_serv').index_fields('user_server'),
-            GDT_Unique('user_unq_dn').unique_columns('user_displayname'),
+            # GDT_Unique('user_unq_dn').unique_columns('user_displayname'),
         ]
 
     def get_lang_iso(self):

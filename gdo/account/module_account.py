@@ -14,7 +14,7 @@ class module_account(GDO_Module):
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         user = GDO_User.current()
         if user.is_user():
-            page._right_bar.add_field(GDT_Link().href(self.href('all_settings')).text('link_settings'))
+            page._right_bar.add_field(GDT_Link().href(self.href('all_settings')).text('link_settings').icon('account'))
 
 
     def gdo_user_config(self) -> list[GDT]:

@@ -79,6 +79,6 @@ class module_user(GDO_Module):
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         user = GDO_User.current()
         if user.is_user():
-            page._right_bar.add_field(GDT_ProfileLink().user(user))
-        if self.get_config_value('show_userlist'):
-            page._left_bar.add_field(GDT_Link().href(self.href('ranking')).text('mt_user_ranking').icon('users'))
+            page._right_bar.add_field(GDT_ProfileLink().user(user).icon('face'))
+        # if self.get_config_value('show_userlist'):
+        #     page._left_bar.add_field(GDT_Link().href(self.href('ranking')).text('mt_user_ranking').icon('users'))

@@ -16,7 +16,6 @@ class GDT_RandomSeed(GDT_UInt):
         return self
 
     def gdo_before_create(self, gdo):
-        if not self.get_val() and self._init_random:
+        if not gdo.gdo_val(self._name) and self._init_random:
             gdo.set_value(self._name, Random.mrand(1))
         return self
-    

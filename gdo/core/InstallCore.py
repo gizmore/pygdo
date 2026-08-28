@@ -18,7 +18,7 @@ class InstallCore:
 
     @classmethod
     def install_system(cls):
-        if not GDO_User.system().is_persisted():
+        if not GDO_User.table().get_by_aid('1'):
             GDO_User.blank({
                 'user_type': GDT_UserType.SYSTEM,
                 'user_name': 'System',

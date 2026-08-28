@@ -1,7 +1,6 @@
 import os.path
 
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger

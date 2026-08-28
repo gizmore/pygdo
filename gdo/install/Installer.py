@@ -10,6 +10,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Render
 from gdo.base.Result import ResultType
 from gdo.base.Util import Arrays, msg, Files, gdo_print
+from gdo.core.GDO_User import GDO_User
 
 
 class Installer:

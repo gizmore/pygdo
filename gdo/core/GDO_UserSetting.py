@@ -100,7 +100,7 @@ class GDO_UserSetting(GDO):
                        f"settings_{key}.uset_key = {GDT.quote(key)}")
             where = f"(settings_{key}.uset_val {op} {cls.quote(val)}"
             if setting.get_initial() == val and op == '=':
-                where += " OR settings_{key}.uset_val IS NULL"
+                where += f" OR settings_{key}.uset_val IS NULL"
             where += ")"
             query.where(where)
         return query
