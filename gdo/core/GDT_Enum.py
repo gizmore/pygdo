@@ -12,3 +12,6 @@ class GDT_Enum(GDT_Select):
     def gdo_column_define(self) -> str:
         values = "','".join(key for key in self.init_choices())
         return f"{self._name} ENUM ('{values}') CHARSET ascii COLLATE ascii_bin {self.gdo_column_define_null()}{self.gdo_column_define_default()}"
+
+    def render_txt(self) -> str:
+        return self.render_val()
