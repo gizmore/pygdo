@@ -1,4 +1,3 @@
-import functools
 
 from typing_extensions import Self
 
@@ -320,7 +319,6 @@ class GDO_User(GDO):
     # Render #
     ##########
 
-    @functools.cache
     def render_name(self) -> str:
         server = self.get_server()
         serv = '' if server.get_id() == '2' else f"{{{server.get_name().lower()}}}"
