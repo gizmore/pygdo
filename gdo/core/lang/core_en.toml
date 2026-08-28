@@ -211,7 +211,7 @@ msg_server_set = "%s: %s has been set to %s."
 #########
 mt_core_stats = "Statistics"
 md_core_stats = "Database queries per seoond metrics"
-msg_stats = "Laufzeit %s - %.02f queries per second"
+msg_stats = "I am connected to %d/%d servers, seeing %d channels and %d users. Runtime %s - %.02f queries per second."
 
 ###############
 # Permissions #

@@ -23,6 +23,10 @@ class GDT_EditUser(GDT_Link):
 
 class users(MethodQueryTable):
 
+    @classmethod
+    def gdo_trigger(cls) -> str:
+        return ''
+
     def gdo_user_permission(self) -> str | None:
         return 'admin'
 
