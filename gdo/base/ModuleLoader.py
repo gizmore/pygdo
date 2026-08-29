@@ -18,7 +18,7 @@ import glob
 import importlib
 
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOException, GDODBException
+from gdo.base.Exceptions import GDOException, GDODBException, GDOMethodException
 from gdo.base.GDO_ModuleVal import GDO_ModuleVal
 from gdo.base.Result import ResultType
 from gdo.base.Util import Files, html
@@ -216,4 +216,11 @@ class ModuleLoader:
                     Logger.exception(ex, f"Error in {method.__module__}.{method.__class__.__name__}")
 
     def get_module_method(self, module_name: str, method_name: str) -> Method:
-        return self.get_module(module_name).get_method(method_name)
+        module = self.get_module(module_name)
+        try:
+            return module.get_method(method_name)
+        except GDOMethodException:
+            # IPC and public routing use ``module.trigger``.  A method may
+            # have a Python filename such as ``irc_raw`` while exposing the
+            # deliberately nicer trigger ``irc.raw``.
+            return module.get_method_by_trigger(f'{module_name}.{method_name}')

@@ -1,4 +1,5 @@
 import os
+from unittest.mock import patch
 
 from gdo.base.Application import Application
 from gdo.base.Message import Message
@@ -16,6 +17,8 @@ from gdo.core.connector.Bash import Bash
 from gdo.core.method.channel_set import channel_set
 from gdo.core.method.chan_toggle import chan_toggle
 from gdo.core.method.server_set import server_set
+from gdo.core.method.add_server import add_server
+from gdo.net.GDT_Url import GDT_Url
 from gdotest.TestUtil import GDOTestCase
 
 
@@ -100,3 +103,10 @@ class test_channel_set(GDOTestCase):
         parameters = server_set().parameters()
         self.assertFalse(parameters['server'].is_positional())
         self.assertTrue(parameters['var_name'].is_positional())
+
+    def test_add_server_uses_a_tcp_only_reachability_check(self):
+        self.assertTrue(add_server().parameters()['url']._url_reachable)
+        url = GDT_Url('url').all_schemes().in_and_external().reachable()
+        with patch('gdo.net.GDT_Url.socket.create_connection') as connect:
+            self.assertTrue(url.validate('ircs://irc.overthewire.org:6697'))
+        connect.assert_called_once_with(('irc.overthewire.org', 6697), timeout=5)

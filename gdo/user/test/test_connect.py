@@ -81,3 +81,18 @@ class ConnectAccountTest(GDOTestCase):
         self.assertIn('connected account', output)
         self.slave.reload()
         self.assertEqual(self.master.get_id(), self.slave.get_linked_user().get_id())
+
+    def test_06_a_linked_connector_account_can_unlink_itself_with_confirmation(self):
+        token = self.request_token()
+        cli_plug(self.slave, f'$user.approve {token}')
+
+        output = cli_plug(self.slave, '$user.unlink')
+        self.assertIn('--confirm=1', output)
+        self.slave.reload()
+        self.assertEqual(self.master.get_id(), self.slave.get_linked_user().get_id())
+
+        output = cli_plug(self.slave, '$user.unlink --confirm=1')
+        self.assertIn('no longer linked', output)
+        self.slave.reload()
+        self.assertIsNone(self.slave.get_linked_user())
+        self.assertTrue(self.master.is_persisted())

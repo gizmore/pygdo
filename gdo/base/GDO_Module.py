@@ -188,6 +188,13 @@ class GDO_Module(WithModuleConfig, GDO):
     def get_method(self, name: str) -> 'Method':
         return self.instantiate_method(name)
 
+    def get_method_by_trigger(self, trigger: str) -> 'Method':
+        """Resolve a public method trigger, not its Python filename."""
+        for method in self.get_methods():
+            if method.gdo_trigger() == trigger:
+                return method
+        raise GDOMethodException(self.get_name, trigger)
+
     def instantiate_method(self, name: str) -> 'Method':
         klass = self.get_method_klasses().get(name)
         if not klass:

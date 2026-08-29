@@ -309,6 +309,7 @@ class Time:
     def _human_duration_raw(seconds: float, n_units: int, factors: dict, with_millis: bool = True) -> str:
         values = []
         factor_keys = list(factors.keys())
+        seconds = seconds or 0
         if with_millis:
             for unit in factor_keys[:2]:  # 'us' and 'ms'
                 remainder = seconds * factors[unit]

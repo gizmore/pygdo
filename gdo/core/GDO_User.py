@@ -284,6 +284,9 @@ class GDO_User(GDO):
     def is_ghost(self) -> bool:
         return self.is_type('ghost')
 
+    def is_system(self) -> bool:
+        return self.is_type(GDT_UserType.SYSTEM)
+
     def is_deleted(self) -> bool:
         return bool(self.get_setting_val('deleted'))
 

@@ -17,3 +17,9 @@ md_user_ranking = "User search and ranking."
 
 mt_user_connect = "Link User Account"
 md_user_connect = "Link another user to your account by requesting a connect command token"
+
+mt_user_unlink = "Unlink account"
+md_user_unlink = "Remove this connector account's link to its connected account."
+err_user_unlink_not_linked = "This connector account is not linked."
+err_user_unlink_confirm = "Refusing to unlink without --confirm=1."
+msg_user_unlinked = "%s is no longer linked to %s."

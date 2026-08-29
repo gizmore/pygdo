@@ -219,6 +219,7 @@ class Installer:
         db = Application.db()
         try:
             db.foreign_keys(False)
+            cls.wipe_configuration(module)
             for klass in reversed(module.gdo_classes()):
                 db.drop_table(klass.table().gdo_table_name())
             db.foreign_keys(True)
@@ -228,6 +229,52 @@ class Installer:
             Logger.exception(ex)
         finally:
             db.foreign_keys(True)
+
+    @classmethod
+    def wipe_configuration(cls, module: GDO_Module):
+        """Remove every configuration row owned by *module* before wiping it.
+
+        Module values are tied directly to the module row.  Method values are
+        tied to the method registry instead, and user settings only carry their
+        setting key.  Foreign keys are deliberately disabled during a wipe so
+        that module tables can be dropped in any order; consequently all three
+        groups must be removed explicitly.
+        """
+        from gdo.base.GDO_ModuleVal import GDO_ModuleVal
+        from gdo.core.GDO_Method import GDO_Method
+        from gdo.core.GDO_MethodValChannel import GDO_MethodValChannel
+        from gdo.core.GDO_MethodValChannelBlob import GDO_MethodValChannelBlob
+        from gdo.core.GDO_MethodValServer import GDO_MethodValServer
+        from gdo.core.GDO_MethodValServerBlob import GDO_MethodValServerBlob
+        from gdo.core.GDO_MethodValUser import GDO_MethodValUser
+        from gdo.core.GDO_MethodValUserBlob import GDO_MethodValUserBlob
+        from gdo.core.GDO_UserSetting import GDO_UserSetting
+
+        GDO_ModuleVal.table().delete_by_vals({'mv_module': module.get_id()})
+
+        # Delete the method overrides.  Keep registry rows: long-lived Dog
+        # method instances cache their method ID, and the registry itself is
+        # shared metadata rather than module configuration.
+        method_prefix = GDO_Method.quote(f'{module.get_name}.%')
+        methods = GDO_Method.table().all(f'm_name LIKE {method_prefix}')
+        method_value_tables = (
+            GDO_MethodValChannel,
+            GDO_MethodValChannelBlob,
+            GDO_MethodValServer,
+            GDO_MethodValServerBlob,
+            GDO_MethodValUser,
+            GDO_MethodValUserBlob,
+        )
+        for method in methods:
+            for table in method_value_tables:
+                table.table().delete_by_vals({'mv_method': method.get_id()})
+
+        # User configuration and user settings share gdo_usersetting.  Keys
+        # are globally unique by convention, so removing this module's keys
+        # resets its users to the field initials on a later reinstall.
+        for gdt in (*module.gdo_user_config(), *module.gdo_user_settings()):
+            if gdt is not None:
+                GDO_UserSetting.table().delete_by_vals({'uset_key': gdt.get_name()})
 
     @classmethod
     def load_provider_toml(cls):

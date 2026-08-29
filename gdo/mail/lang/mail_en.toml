@@ -4,7 +4,18 @@ email_confirmed = "Email confirmed at"
 link_change_mail = "Change E-Mail"
 link_mail_send = "Compose E-Mail"
 err_emails_invalid = "Invalid email address in list: %s"
+err_mail_unchanged = "This is already your confirmed email address."
 
 mt_mail_send = "Send Email"
 md_mail_send = "Send an Email to a single user."
 msg_mail_send = "Mail has been sent."
+
+###########
+# Change #
+###########
+mails_change_mail = "Confirm your new email address"
+mailb_change_mail = "Hello %s\n\nConfirm your new email address for %s:\n\n%s\n\nText command: '%s'\n\nIf you did not request this, you can ignore this email.\n\nKind Regards,\nThe {1} System"
+mails_change_mail_requested = "Email address change requested"
+mailb_change_mail_requested = "Hello %s\n\nA change of the email address for your %s account to %s was requested. The address remains unchanged until the new mailbox confirms it.\n\nIf this was not you, please secure your account.\n\nKind Regards,\nThe {1} System"
+msg_change_mail_requested = "We sent a confirmation link to your new email address."
+msg_mail_changed = "Your email address has been changed and confirmed."

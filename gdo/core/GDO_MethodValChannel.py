@@ -1,6 +1,6 @@
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
-from gdo.core.GDT_Name import GDT_Name
+from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Object import GDT_Object
 class GDO_MethodValChannel(GDO):
 
@@ -10,7 +10,9 @@ class GDO_MethodValChannel(GDO):
         return [
             GDT_Object('mv_method').table(GDO_Method.table()).primary().cascade_delete(),
             GDT_Object('mv_channel').table(GDO_Channel.table()).primary().cascade_delete(),
-            GDT_Name('mv_key').primary(),
+            # Channel configuration may use a local filename as its key.
+            # Names deliberately exclude dots, while filenames need them.
+            GDT_String('mv_key').primary(),
             GDT_String('mv_val'),
         ]
 

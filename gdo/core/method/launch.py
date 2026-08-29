@@ -72,7 +72,8 @@ class launch(Method):
 
     @classmethod
     def lock_path(cls) -> str:
-        return Application.file_path('bin/dog.pid')
+        """Keep Dog locks separate for independently configured instances."""
+        return Application.file_path(f'{Application.config("core.env")}.pid')
 
     def is_running(self):
         return Files.is_file(self.lock_path())

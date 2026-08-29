@@ -140,12 +140,10 @@ class GDT_Url(GDT_String):
 
     def validate_exists(self, url):
         if self._url_reachable:
-            if url['scheme'].startswith('http'):
-                return self.validate_http_exists(url)
-            elif url['tls']:
-                return self.validate_tls_exists(url)
-            else:
-                return self.validate_plain_exists(url)
+            # Reachability is deliberately only a TCP connect.  Protocol
+            # handshakes (notably IRC TLS) are more brittle and belong to the
+            # connector, which can report/retry them with its own policy.
+            return self.validate_plain_exists(url)
         return True
 
     def validate_http_exists(self, url):
@@ -163,7 +161,7 @@ class GDT_Url(GDT_String):
 
     def validate_plain_exists(self, url):
         try:
-            with socket.create_connection((url['host'], url['port'])) as sock:
+            with socket.create_connection((url['host'], url['port']), timeout=5) as sock:
                 return True
         except (socket.timeout, ConnectionError, OSError):
             self.error('err_url_available', (html(url['raw']),))

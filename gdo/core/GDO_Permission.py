@@ -35,6 +35,11 @@ class GDO_Permission(GDO):
 
     @classmethod
     def has_permission(cls, user: 'GDO_User', permission: str):
+        # Dog/IPC actions are executed as the internal System account.  It is
+        # not a human role and must not depend on rows accidentally created
+        # by permission checks in a fresh schema.
+        if user.is_system():
+            return True
         GDO_UserPermission = LazyImporter.import_once('from gdo.core.GDO_UserPermission import GDO_UserPermission')
         for perm_name in permission.split(','):
             if perm := cls.get_by_name(perm_name):

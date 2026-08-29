@@ -22,7 +22,7 @@ async def event_pump():
         await Application.execute_queue()
         await asyncio.sleep(0.5)
 
-async def pygdo(line: str = None):
+async def pygdo(line: str = None, config: str = 'protected/config.toml'):
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
     from gdo.base.Util import Files
@@ -31,7 +31,7 @@ async def pygdo(line: str = None):
     parser = argparse.ArgumentParser(description='Run a pygdo command or the pygdo repl interpreter.')
     parser.add_argument('--test', action='store_true')
     parser.add_argument('--dogmode', action='store_true')
-    parser.add_argument('--config', nargs='?', default='protected/config.toml')
+    parser.add_argument('--config', nargs='?', const=config, default=config)
     args, rest = parser.parse_known_args(sys.argv[1:])
 
     Application.IS_DOG = True
@@ -167,12 +167,18 @@ async def repl():
         RUNNING = 0
         # Thread.join()
 
-async def launcher(line: str = None):
+async def launcher(line: str = None, config: str = 'protected/config.toml'):
+    """Launch PyGDO with an optional configuration file.
+
+    Embedded callers (debug helpers, tests and alternate Dog instances) can
+    now select a config without mutating ``sys.argv``. The command-line
+    ``--config`` argument still takes precedence.
+    """
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))
     sys.path.append(parent_dir)
     from gdo.base.Application import Application
     Application.LOOP = asyncio.get_running_loop()
-    await pygdo(line)
+    await pygdo(line, config)
 
 
 if __name__ == '__main__':

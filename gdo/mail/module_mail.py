@@ -34,7 +34,10 @@ class module_mail(GDO_Module):
         return [
             GDT_Email('email').obfuscate().hidden(),
             GDT_DateTime('email_confirmed'),
-            GDT_Link('change_mail').href(self.href('change_mail')).text('link_change_mail').hidden(),
+            # Do not expose ``email`` as a generic writable setting: every
+            # address must go through the confirmation flow.  The same form
+            # also handles accounts which do not have an old address yet.
+            GDT_Link('change_mail').href(self.href('change_mail')).text('link_change_mail'),
         ]
 
     def set_email_for(self, user: GDO_User, email: str, confirmed: bool = True):

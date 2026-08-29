@@ -31,6 +31,13 @@ class reload(Method):
         Trans.reload()
         loader = ModuleLoader.instance()
         loader.reload_modules()
+        # Newly added method files are hidden behind each module's cached
+        # discovery result.  `$reload` is explicitly the hot-reload path, so
+        # rebuild that list and the trigger maps from scratch.
+        for module in loader._cache.values():
+            module.get_method_klasses.cache_clear()
+        loader._methods.clear()
+        loader._meths.clear()
         # A module installed while this process was running has its instance
         # in the loader cache, but its command classes still need registering.
         # Keep `$reload` useful as the no-restart activation path.
