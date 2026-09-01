@@ -6,6 +6,8 @@
 /bin/dog.lock
 /bin/dog.pid
 /bin/web.pids
+/dev.pid
+/tes.pid
 __pycache__/
 /node_modules/
 /**/node_modules/
