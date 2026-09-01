@@ -66,6 +66,7 @@ register = [["https://github.com/gizmore/pygdo-register"], ["form", "login"], fa
 rss = [["https://github.com/mira-gpt/pygdo-rss"], ["core"], false]
 scum = [["https://github.com/gizmore/pygdo-scum"], [], false]
 shadowdogs = [["https://github.com/gizmore/pygdo-shadowdogs"], ["favicon"], false]
+shoutbox = [["https://github.com/gizmore/pygdo-shoutbox"], [], false]
 slapwarz = [["https://github.com/gizmore/pygdo-slapwarz"], [], false]
 table = [["https://github.com/gizmore/pygdo"], [], false]
 tags = [["https://github.com/gizmore/pygdo-tags"], [], false]
