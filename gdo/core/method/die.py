@@ -16,7 +16,7 @@ class die(Method):
     def gdo_trigger(cls) -> str:
         return 'die'
 
-    def gdo_permission(self):
+    def gdo_user_permission(self) -> str | None:
         return 'admin'
 
     def gdo_parameters(self) -> list[GDT]:

@@ -27,4 +27,4 @@ class MathTestCase(GDOTestCase):
         self.assertFalse(field.validate('2**129'))
 
     async def test_02_calculator_requires_voice(self):
-        self.assertEqual('voice', calc().gdo_permission())
+        self.assertEqual('voice', calc().gdo_user_permission())

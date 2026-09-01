@@ -18,7 +18,7 @@ class calc(MethodForm):
     def gdo_trigger(cls) -> str:
         return 'calc'
 
-    def gdo_permission(self):
+    def gdo_user_permission(self) -> str | None:
         return 'voice'
 
     def gdo_create_form(self, form: GDT_Form) -> None:
