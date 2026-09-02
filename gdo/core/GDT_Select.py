@@ -8,6 +8,9 @@ from gdo.core.GDT_Template import tpl
 
 class GDT_Select(GDT_ComboBox):
 
+    def html_disabled(self) -> str:
+        return '' if self.is_writable() else ' disabled="disabled"'
+
     def gdo_choices(self) -> dict:
         return {}
 
