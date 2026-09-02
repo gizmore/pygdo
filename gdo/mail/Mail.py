@@ -184,14 +184,17 @@ class Mail:
             return
         host = Application.config('mail.imap_host')
         port = int(Application.config('mail.imap_port', '993'))
-        user = Application.config('mail.imap_user')
-        password = Application.config('mail.imap_pass')
+        # A normal Dog mailbox uses the same submission credentials for IMAP.
+        # Dedicated IMAP credentials remain possible without duplicating the
+        # common password in the configuration by default.
+        user = Application.config('mail.imap_user') or Application.config('mail.user')
+        password = Application.config('mail.imap_pass') or Application.config('mail.pass')
         folder = Application.config('mail.imap_sent_folder', 'Sent')
         if not all((host, user, password, folder)):
             raise ValueError('Sent-mail storage is enabled but IMAP configuration is incomplete.')
         client_class = imaplib.IMAP4_SSL if Application.config('mail.imap_ssl', '1') == '1' else imaplib.IMAP4
         with client_class(host, port) as client:
             client.login(user, password)
-            status, _data = client.append(folder, '\\Seen', None, message.as_bytes())
+            status, _data = client.append(client._quote(folder), '\\Seen', None, message.as_bytes())
             if status != 'OK':
                 raise RuntimeError(f'Could not append sent mail to {folder}: {status}')

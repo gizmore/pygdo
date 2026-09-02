@@ -77,16 +77,20 @@ class MailAttachmentTest(unittest.TestCase):
             'mail.imap_host': 'imap.example.test',
             'mail.imap_port': '993',
             'mail.imap_ssl': '1',
-            'mail.imap_user': 'dog@example.test',
-            'mail.imap_pass': 'secret',
+            'mail.imap_user': '',
+            'mail.imap_pass': '',
+            'mail.user': 'dog@example.test',
+            'mail.pass': 'secret',
             'mail.imap_sent_folder': 'Sent',
         }
         client = imap.return_value.__enter__.return_value
+        client._quote.return_value = '"Sent"'
         client.append.return_value = ('OK', [])
         with patch.object(Application, 'config', side_effect=lambda key, default=None: config.get(key, default)):
             self.mail.store_in_sent(self.mail.build_message())
 
         client.login.assert_called_once_with('dog@example.test', 'secret')
+        client._quote.assert_called_once_with('Sent')
         client.append.assert_called_once()
 
 
