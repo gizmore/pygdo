@@ -22,6 +22,12 @@ class GDT_Composite(WithName, WithIcon, WithGDO, WithNullable, GDT):
     def gdo_components(self) -> list['GDT_Field']:
         raise GDOException(f'Composite {self.__class__.__name__} has to override gdo_components')
 
+    def gdo(self, gdo):
+        super().gdo(gdo)
+        for component in self.components()[1:]:
+            component.gdo(gdo)
+        return self
+
     def dirty_vals(self) -> dict[str,str]:
         vals = {}
         vals.update(super().dirty_vals())
@@ -51,4 +57,3 @@ class GDT_Composite(WithName, WithIcon, WithGDO, WithNullable, GDT):
             if not gdt.validate(gdt.get_val()):
                 return self.error(gdt._errkey, gdt._errargs)
         return True
-
