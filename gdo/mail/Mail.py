@@ -34,10 +34,7 @@ class Mail:
 
     @classmethod
     def from_bot(cls):
-        mail = cls().sender(cls._cfg('sender'), cls._cfg('sender_name'))
-        if reply_to := cls._cfg('reply_to'):
-            mail.reply_to(reply_to)
-        return mail
+        return cls().sender(cls._cfg('sender'), cls._cfg('sender_name'))
 
     @classmethod
     def is_debug(cls):
