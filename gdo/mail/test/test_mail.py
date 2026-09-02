@@ -54,6 +54,17 @@ class MailAttachmentTest(unittest.TestCase):
 
         self.assertEqual('mira@example.test', self.mail.build_message()['Reply-To'])
 
+    def test_bot_mail_uses_the_configured_reply_to(self):
+        config = {
+            'mail.sender': 'dog@example.test',
+            'mail.sender_name': 'Dog',
+            'mail.reply_to': 'mira@example.test',
+        }
+        with patch.object(Application, 'config', side_effect=lambda key, default=None: config.get(key, default)):
+            mail = Mail.from_bot().recipient('user@example.test').subject('Test').body('Test')
+
+        self.assertEqual('mira@example.test', mail.build_message()['Reply-To'])
+
     def test_bcc_is_not_exposed_in_the_message_headers(self):
         self.mail.bcc('dog@example.test')
 
