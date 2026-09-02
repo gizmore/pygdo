@@ -87,6 +87,14 @@ class Config:
             cls.data_str('mail.pass', 'pygdo'),
             cls.data_str('mail.sender', 'pygdo@localhost'),
             cls.data_str('mail.sender_name', 'PyGDO System'),
+            cls.data_str('mail.reply_to', ''),
+            cls.data_int('mail.store_sent', 0).min(0).max(1),
+            cls.data_str('mail.imap_host', ''),
+            cls.data_int('mail.imap_port', 993),
+            cls.data_int('mail.imap_ssl', 1).min(0).max(1),
+            cls.data_str('mail.imap_user', ''),
+            cls.data_str('mail.imap_pass', ''),
+            cls.data_str('mail.imap_sent_folder', 'Sent'),
             cls.data_str('mail.errors_to', 'errors@pygdo.com'),
         ]
         dic = {}
