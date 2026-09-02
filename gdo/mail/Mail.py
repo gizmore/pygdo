@@ -1,5 +1,6 @@
 import pickle
 import smtplib
+import imaplib
 from pathlib import Path
 from email import encoders
 from email.mime.base import MIMEBase
@@ -33,7 +34,10 @@ class Mail:
 
     @classmethod
     def from_bot(cls):
-        return cls().sender(cls._cfg('sender'), cls._cfg('sender_name'))
+        mail = cls().sender(cls._cfg('sender'), cls._cfg('sender_name'))
+        if reply_to := cls._cfg('reply_to'):
+            mail.reply_to(reply_to)
+        return mail
 
     @classmethod
     def is_debug(cls):
@@ -42,6 +46,9 @@ class Mail:
     def __init__(self):
         self._lazy = False
         self._recipients = []
+        self._cc = []
+        self._bcc = []
+        self._reply = ''
         self._attachments = []
 
     def lazy(self, lazy: bool = True):
@@ -130,6 +137,10 @@ class Mail:
         message = MIMEMultipart()
         message["From"] = self._sender
         message["To"] = ",".join(self._recipients)
+        if self._reply:
+            message["Reply-To"] = self._reply
+        if self._cc:
+            message["Cc"] = ",".join(self._cc)
         message["Subject"] = self._subject
         message.attach(MIMEText(self._body_html(), "html"))
         message.attach(MIMEText(self._body_text(), "plain"))
@@ -148,7 +159,7 @@ class Mail:
         password = Application.config('mail.pass')
 
         sender_email = self._sender
-        receiver_email = self._recipients
+        receiver_email = list(dict.fromkeys([*self._recipients, *self._cc, *self._bcc]))
         message = self.build_message()
 
         # Send the email
@@ -158,4 +169,29 @@ class Mail:
             server.login(login, password)
             server.sendmail(sender_email, receiver_email, message.as_string())
 
+        try:
+            self.store_in_sent(message)
+        except Exception as ex:
+            # SMTP has already accepted the message. Do not turn an archive
+            # failure into a retry that could deliver a duplicate email.
+            Logger.exception(ex, 'Mail was sent but could not be stored in Sent.')
+
         return True
+
+    def store_in_sent(self, message) -> None:
+        """Append a successfully submitted message to the sender mailbox."""
+        if Application.config('mail.store_sent', '0') != '1':
+            return
+        host = Application.config('mail.imap_host')
+        port = int(Application.config('mail.imap_port', '993'))
+        user = Application.config('mail.imap_user')
+        password = Application.config('mail.imap_pass')
+        folder = Application.config('mail.imap_sent_folder', 'Sent')
+        if not all((host, user, password, folder)):
+            raise ValueError('Sent-mail storage is enabled but IMAP configuration is incomplete.')
+        client_class = imaplib.IMAP4_SSL if Application.config('mail.imap_ssl', '1') == '1' else imaplib.IMAP4
+        with client_class(host, port) as client:
+            client.login(user, password)
+            status, _data = client.append(folder, '\\Seen', None, message.as_bytes())
+            if status != 'OK':
+                raise RuntimeError(f'Could not append sent mail to {folder}: {status}')

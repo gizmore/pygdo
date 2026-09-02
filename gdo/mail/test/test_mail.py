@@ -2,6 +2,7 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
@@ -47,6 +48,35 @@ class MailAttachmentTest(unittest.TestCase):
     def test_attachment_rejects_missing_file(self):
         with self.assertRaises(FileNotFoundError):
             self.mail.attachment(Path(self.temp.name) / 'missing.log')
+
+    def test_reply_to_is_added_to_the_message(self):
+        self.mail.reply_to('mira@example.test')
+
+        self.assertEqual('mira@example.test', self.mail.build_message()['Reply-To'])
+
+    def test_bcc_is_not_exposed_in_the_message_headers(self):
+        self.mail.bcc('dog@example.test')
+
+        self.assertIsNone(self.mail.build_message()['Bcc'])
+
+    @patch('gdo.mail.Mail.imaplib.IMAP4_SSL')
+    def test_sent_message_is_appended_to_imap(self, imap):
+        config = {
+            'mail.store_sent': '1',
+            'mail.imap_host': 'imap.example.test',
+            'mail.imap_port': '993',
+            'mail.imap_ssl': '1',
+            'mail.imap_user': 'dog@example.test',
+            'mail.imap_pass': 'secret',
+            'mail.imap_sent_folder': 'Sent',
+        }
+        client = imap.return_value.__enter__.return_value
+        client.append.return_value = ('OK', [])
+        with patch.object(Application, 'config', side_effect=lambda key, default=None: config.get(key, default)):
+            self.mail.store_in_sent(self.mail.build_message())
+
+        client.login.assert_called_once_with('dog@example.test', 'secret')
+        client.append.assert_called_once()
 
 
 class MailFormTest(GDOTestCase):
