@@ -1,6 +1,7 @@
 import pickle
 import smtplib
 import imaplib
+from email.utils import parseaddr
 from pathlib import Path
 from email import encoders
 from email.mime.base import MIMEBase
@@ -158,7 +159,9 @@ class Mail:
         login = Application.config('mail.user')
         password = Application.config('mail.pass')
 
-        sender_email = self._sender
+        # SMTP's envelope sender must be an address, not the display-formatted
+        # value used for the visible From header (e.g. "Dog, PyGDO <…>").
+        sender_email = parseaddr(self._sender)[1]
         receiver_email = list(dict.fromkeys([*self._recipients, *self._cc, *self._bcc]))
         message = self.build_message()
 
