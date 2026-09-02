@@ -311,8 +311,15 @@ class GDO_User(GDO):
 
     def permissions(self) -> list[str]:
         if self.is_persisted():
+            GDO_Permission = LazyImporter.import_once('from gdo.core.GDO_Permission import GDO_Permission')
             from gdo.core.GDO_UserPermission import GDO_UserPermission
-            return GDO_UserPermission.table().select('perm_name').where(f'pu_user={self.get_id()}').join_object('pu_perm').exec().fetch_column()
+            entries = GDO_UserPermission.table().select().where(
+                f'pu_user={self.get_id()} AND pu_has').exec().fetch_all()
+            return [
+                permission.get_name()
+                for entry in entries
+                if (permission := GDO_Permission.table().get_by_id(entry.gdo_val('pu_perm')))
+            ]
         return self.EMPTY_LIST
 
     def persisted(self):

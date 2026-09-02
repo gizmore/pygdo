@@ -264,6 +264,17 @@ md_core_super = "Get granted all priviledges on a server."
 msg_super_granted = "You got granted staff permissions on this server."
 err_wrong_superword = "The password is wrong."
 
+#########
+# Grant #
+#########
+mt_core_grant = "Grant Permission"
+md_core_grant = "Grant or revoke a permission for a user."
+msg_permission_granted = "Granted %s to %s."
+msg_permission_revoked = "Revoked %s from %s."
+msg_user_permissions = "%s has permissions: %s"
+err_permission_grant_denied = "You may only grant or revoke permissions you have yourself."
+err_permission_not_found = "This permission does not exist. Use $perms to list permissions."
+
 ########
 # Look #
 ########

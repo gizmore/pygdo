@@ -46,9 +46,9 @@ class module_user(GDO_Module):
         return self.get_config_val('user_link_pepper')
 
     def gdo_init(self):
-        Application.EVENTS.subscribe('permission_granted', self.on_permission_granted)
+        Application.EVENTS.subscribe('permission_changed', self.on_permission_changed)
 
-    async def on_permission_granted(self, user: GDO_User, perm_name: str):
+    async def on_permission_changed(self, user: GDO_User, perm_name: str):
         Cache.remove('users_with_permission')
 
     def gdo_user_settings(self) -> list[GDT]:

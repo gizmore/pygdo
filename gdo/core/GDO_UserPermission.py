@@ -21,7 +21,16 @@ class GDO_UserPermission(GDO):
             'pu_perm': permission.get_id(),
             'pu_has': '1',
         }).soft_replace()
-        await Application.EVENTS.publish('permission_granted', user, permission.get_name())
+        await Application.EVENTS.publish('permission_changed', user, permission.get_name())
+
+    @classmethod
+    async def revoke_permission(cls, user: GDO_User, permission: GDO_Permission):
+        cls.blank({
+            'pu_user': user.get_id(),
+            'pu_perm': permission.get_id(),
+            'pu_has': '0',
+        }).soft_replace()
+        await Application.EVENTS.publish('permission_changed', user, permission.get_name())
 
     @classmethod
     def users_with_perm_id(cls, perm_id: str) -> list[GDO_User]:
