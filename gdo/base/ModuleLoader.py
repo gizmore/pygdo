@@ -197,7 +197,11 @@ class ModuleLoader:
         for config in result:
             module_name, key, val = config
             if module := self.get_module(module_name):
-                module.config_column(key).initial(val)
+                # A module upgrade can legitimately remove a setting. Keep
+                # the obsolete persisted value from preventing the module
+                # registry from loading.
+                if column := module.config_column(key):
+                    column.initial(val)
 
     def init_cli(self):
         """
