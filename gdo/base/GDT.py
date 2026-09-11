@@ -361,7 +361,7 @@ class GDT(WithSerialization):
         return self.render_txt()
 
     def render_cell(self) -> str:
-        return self.render_html()
+        return self.render_html() if self.get_val() is not None else Render.italic(t('none'))
 
     def render_cli(self) -> str:
         return self.render_txt()

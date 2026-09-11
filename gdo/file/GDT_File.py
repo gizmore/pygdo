@@ -1,4 +1,5 @@
 from gdo.base.Application import Application
+from gdo.base.GDO import GDO
 from gdo.base.Method import Method
 from gdo.base.Trans import t
 from gdo.base.Util import Files, urlencode, html
@@ -51,6 +52,11 @@ class GDT_File(GDT_Object):
 
     def get_file(self) -> list[GDO_File]:
         return self.get_value()
+
+    def get_gdo(self) -> GDO:
+        if gdo := super().get_gdo():
+            return gdo if self.is_multiple() else gdo[0]
+        return None
 
     ###########
     # Options #
