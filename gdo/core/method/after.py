@@ -1,5 +1,3 @@
-import asyncio
-
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Message import Message
@@ -21,6 +19,13 @@ class after(Method):
         ]
 
     async def gdo_execute(self) -> GDT:
-        await asyncio.sleep(self.param_value('time'))
-        Application.MESSAGES.put(Message(" ".join(self.param_val('command')), self._env_mode).env_copy(self))
+        duration = self.param_value('time')
+        command = self.param_val('command')
+        trigger = self._env_channel.get_trigger() if self._env_channel else self._env_server.get_trigger()
+        message = Message(f'{trigger}{command}', self._env_mode).env_copy(self)
+
+        async def enqueue():
+            Application.MESSAGES.put(message)
+
+        Application.EVENTS.add_timer_async(duration, enqueue)
         return self.empty()
