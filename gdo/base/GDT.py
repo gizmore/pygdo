@@ -273,6 +273,12 @@ class GDT(WithSerialization):
     def is_writable(self) -> bool:
         return False
 
+    def is_disabled(self) -> bool:
+        return False
+
+    def disabled(self, disabled: bool = True):
+        return self
+
     def is_hidden(self) -> bool:
         return False
 

@@ -28,6 +28,7 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithTooltip, WithIcon, WithError, W
     _position: int
     _multiple: bool
     _not_null: bool
+    _disabled: bool
 
     def __init__(self, name: str):
         super().__init__()
@@ -41,6 +42,7 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithTooltip, WithIcon, WithError, W
         self._converted = False
         self._unique = False
         self._writable = True
+        self._disabled = False
         self._hidden = False
         self._positional = None
         self._position = -1
@@ -141,6 +143,13 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithTooltip, WithIcon, WithError, W
 
     def multiple(self):
         self._multiple = True
+        return self
+
+    def is_disabled(self) -> bool:
+        return self._disabled
+
+    def disabled(self, disabled: bool=True):
+        self._disabled = disabled
         return self
 
     def positional(self, positional: bool|None = True):

@@ -4,6 +4,7 @@ help_web_connector = "Simply use this very website"
 help_bash_connector = "Simply use an SSH terminal. (probably not public)"
 sitename = "PyGDO"
 sitedesc = "A default PyGDO chat system website frontend."
+serv_tls_validate = "Validate TLS certificate"
 
 ##############
 ### Errors ###
@@ -86,6 +87,7 @@ user_link = "Linked account"
 file_mime = "Dateityp"
 edit = "Edit"
 file = "File"
+price = "Price"
 
 ###########
 # GDT_Int #

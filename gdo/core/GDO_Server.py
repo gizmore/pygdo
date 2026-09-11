@@ -76,6 +76,7 @@ class GDO_Server(GDO):
             GDT_Secret('serv_password'),
             GDT_Connector('serv_connector'),
             GDT_Language('serv_language').not_null().initial('en'),
+            GDT_Bool('serv_tls_validate').not_null().initial('1'),
             GDT_Bool('serv_enabled').not_null().initial('1'),
             GDT_Created('serv_created'),
         ]
@@ -97,6 +98,10 @@ class GDO_Server(GDO):
 
     def get_connector_name(self) -> str:
         return self.gdo_val('serv_connector')
+
+    def tls_validate(self) -> bool:
+        """Whether TLS peers for this server must present a valid certificate."""
+        return self.gdo_val('serv_tls_validate') != '0'
 
     def get_connector(self) -> Connector:
         if self._connector is None:

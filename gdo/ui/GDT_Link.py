@@ -1,6 +1,7 @@
 from gdo.base.Render import Mode
 from gdo.core.GDT_String import GDT_String
 from gdo.ui.WithHREF import WithHREF
+from gdo.ui.WithIcon import WithIcon
 from gdo.ui.WithText import WithText
 from gdo.ui.WithTitle import WithTitle
 
@@ -18,6 +19,8 @@ class GDT_Link(WithHREF, WithTitle, WithText, GDT_String):
         return self.render_html()
 
     def render_html(self) -> str:
+        if self.is_disabled():
+            return f'<a class="gdt-link gdt-link-disabled" aria-disabled="true" tabindex="-1"{self.html_attrs()}><span>{WithIcon.display_icon("stop", Mode.render_html)}{self.render_text()}</span></a>'
         return f'<a class="gdt-link" href="{self.render_href()}"{self.html_attrs()}><span>{self.render_icon(Mode.render_html)}{self.render_text()}</span></a>'
 
     def render_cell(self) -> str:
