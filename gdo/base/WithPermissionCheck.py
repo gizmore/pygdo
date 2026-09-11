@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import hmac
+from decimal import Decimal
 from typing import Type
 
 from gdo.base.Application import Application
@@ -21,6 +22,9 @@ class WithPermissionCheck:
     CACHE: dict[Type['WithPermissionCheck'],dict['GDO_User',bool]] = {}
 
     def has_permission(self, user: 'GDO_User', display_error: bool = True) -> bool:
+        # A cached permission never substitutes for a current balance check.
+        if not self.has_price_permission(user, display_error):
+            return False
         if not (cached := self.CACHE.get(self.__class__)):
             self.CACHE[self.__class__] = cached = {}
         if cached.get(user):
@@ -55,6 +59,25 @@ class WithPermissionCheck:
             return False if not display_error else self.err_method_disabled()
         cached[user] = True
         return True
+
+    def has_price_permission(self, user: 'GDO_User', display_error: bool = True) -> bool:
+        price = Decimal(str(self.gdo_method_price()))
+        if not price.is_finite() or price < 0:
+            raise ValueError('Method price must be finite and non-negative')
+        if price == 0:
+            return True
+        if not module_enabled('payment_credits'):
+            if display_error:
+                self.err('err_method_credits_unavailable')
+            return False
+        from gdo.core.GDO_UserSetting import GDO_UserSetting
+        setting = GDO_UserSetting.get_setting(user, 'credits') if user.is_persisted() else None
+        balance = Decimal(setting.gdo_val('uset_val') or '0') if setting else Decimal(0)
+        if balance >= price:
+            return True
+        if display_error:
+            self.err('err_method_credits', (str(price), str(balance)))
+        return False
 
     def _disabled_in_channel(self, channel: 'GDO_Channel') -> bool:
         return self._get_config_channel('disabled', channel).get_value()
@@ -169,6 +192,5 @@ class WithPermissionCheck:
         except Exception as ex:
             Logger.exception(ex, 'Cannot validate auth token.')
             return ''
-
 
 

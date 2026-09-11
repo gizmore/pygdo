@@ -189,6 +189,10 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     def gdo_needs_level(self) -> int:
         return 0
 
+    def gdo_method_price(self) -> float:
+        """Required credits for execution; this declaration does not debit them."""
+        return 0.0
+
     def gdo_execute(self) -> GDT:
         raise GDOError('err_stub')
 

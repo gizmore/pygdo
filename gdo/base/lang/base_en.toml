@@ -21,6 +21,8 @@ err_file_not_found = "The requested file does not exist."
 
 and = "and"
 decimal_point = '.'
+err_method_credits = "This method costs %s credits. Your balance is %s credits."
+err_method_credits_unavailable = "The credits module must be enabled to use this paid method."
 thousands_sep = ','
 authenticate = "authenticate"
 gdt_redirect_to = "Redirecting to %s..."
