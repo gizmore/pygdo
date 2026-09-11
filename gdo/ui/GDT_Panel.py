@@ -14,5 +14,5 @@ class GDT_Panel(WithTitle, WithText, GDT):
         return tplhtml('ui', 'panel.html', {
             'html_class': self.html_class(),
             'title': self.render_title(),
-            'text': self.render_text(),
+            'text': self.render_text() if self.has_text() else '',
         })

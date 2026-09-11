@@ -28,6 +28,9 @@ class MethodCrud(MethodForm):
     def feature_update(self) -> bool:
         return True
 
+    def feature_delete(self) -> bool:
+        return True
+
     def gdo_parameters(self) -> list[GDT]:
         return [GDT_Object(self.crud_name()).table(self.gdo_table())]
 
@@ -46,13 +49,20 @@ class MethodCrud(MethodForm):
         target = gdo or self.gdo_table()
         form.add_fields(*self.gdo_form_fields(target))
         if gdo and self.feature_update():
-            form.actions().add_field(
-                GDT_Submit('update').calling(self.on_update).default_button()
-            )
+            form.actions().add_field(self.crud_edit_button())
+            if self.feature_delete():
+                form.actions().add_field(self.crud_delete_button())
         elif not gdo and self.feature_create():
-            form.actions().add_field(
-                GDT_Submit('create').calling(self.on_create).default_button()
-            )
+            form.actions().add_field(self.crud_create_button())
+
+    def crud_create_button(self) -> GDT_Submit:
+        return GDT_Submit('create').text_raw('Create').calling(self.on_create).default_button()
+
+    def crud_edit_button(self) -> GDT_Submit:
+        return GDT_Submit('edit').text_raw('Edit').calling(self.on_update).default_button()
+
+    def crud_delete_button(self) -> GDT_Submit:
+        return GDT_Submit('delete').text_raw('Delete').calling(self.on_delete)
 
     def form_values(self) -> dict[str, str]:
         return {
@@ -69,4 +79,11 @@ class MethodCrud(MethodForm):
         gdo = self.crud_gdo()
         gdo.save_vals(self.form_values())
         self.msg('msg_crud_updated', (gdo.render_name(),))
+        return self.get_form()
+
+    def on_delete(self):
+        gdo = self.crud_gdo()
+        name = gdo.render_name()
+        gdo.delete()
+        self.msg('msg_crud_deleted', (name,))
         return self.get_form()
