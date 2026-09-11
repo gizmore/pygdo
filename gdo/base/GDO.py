@@ -283,9 +283,6 @@ class GDO(WithName, WithBulk, GDT):
         self.set_val(key, val)
         return self.save()
 
-    def increment(self, key: str, by: float|int) -> Self:
-        return self.save_val(key, str(self.gdo_value(key) + by))
-
     @classmethod
     def get_name(cls):
         return cls.__name__
@@ -302,6 +299,16 @@ class GDO(WithName, WithBulk, GDT):
 
     def query(self) -> Query:
         return Query().table(self.gdo_table_name()).gdo(self)
+
+    def increase(self, key: str, amount=1) -> Self:
+        """Increment a persisted field atomically, without a read/modify/write race."""
+        if self._blank:
+            raise ValueError('Cannot increment an unsaved object')
+        self.query().type(Type.UPDATE).increase(key, amount).where(self.pk_where()).exec()
+        row = self.select().where(self.pk_where()).nocache().exec().fetch_assoc()
+        self.set_val(key, row[key], dirty=False)
+        self._dirty = [name for name in self._dirty if name != key]
+        return self
 
     def select(self, columns: str='*') -> Query:
         query = self.query().select(columns)

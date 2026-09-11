@@ -20,8 +20,8 @@ err_file_forbidden = "Diese Datei dürfen Sie nicht heruntetrladen."
 err_file_not_found = "Die angeforderte Datei existiert nicht."
 
 and = "und"
-decimal_point = '.'
-thousands_sep = ','
+decimal_point = ','
+thousands_sep = '.'
 authenticate = "authentifizieren"
 gdt_redirect_to = "Weiterleitung zu %s..."
 backup = "Backup"

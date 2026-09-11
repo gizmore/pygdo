@@ -9,6 +9,7 @@ from gdo.base.Util import module_enabled
 from gdo.form.GDT_CSRF import GDT_CSRF
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
+from gdo.ui.GDT_Button import GDT_Button
 
 
 class MethodForm(Method):
@@ -66,7 +67,7 @@ class MethodForm(Method):
         for button in form.actions()._fields:
             if button._default_button and not Application.IS_HTTP:
                 clicked = button
-            if isinstance(button, GDT_Submit) and button.get_val():
+            if isinstance(button, GDT_Button) and not button.is_disabled() and button.get_val():
                 clicked = button
                 break
         if clicked:

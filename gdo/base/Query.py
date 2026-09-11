@@ -54,6 +54,8 @@ class Query:
         self._having = ''
         self._nocache = False
         self._search_wheres = []
+        self._for_update = False
+        self._increments = {}
 
     def __repr__(self):
         return f"QRY: {self.build_query()}"
@@ -205,6 +207,19 @@ class Query:
         self._nocache = nocache
         return self
 
+    def for_update(self):
+        self._for_update = True
+        return self.nocache()
+
+    def increase(self, key: str, amount=1):
+        from decimal import Decimal
+        amount = Decimal(str(amount))
+        if not amount.is_finite():
+            raise ValueError('Increment must be finite')
+        self._gdo.column(key)
+        self._increments[key] = amount
+        return self
+
     def join_object(self, key: str, join: str = 'JOIN'):
         from gdo.core.GDT_Join import GDT_Join
         from gdo.core.WithObject import WithObject
@@ -236,7 +251,7 @@ class Query:
         if self.is_raw():
             return self._raw
         if self.is_select():
-            return f"SELECT {self._columns} FROM {self._table} {self._join}{self._build_where()}{self._build_group()}{self._build_having()}{self._build_order()}{self.build_limit()}"
+            return f"SELECT {self._columns} FROM {self._table} {self._join}{self._build_where()}{self._build_group()}{self._build_having()}{self._build_order()}{self.build_limit()}" + (' FOR UPDATE' if self._for_update else '')
         if self.is_delete():
             return f"DELETE FROM {self._table} {self._join} WHERE {self._where}"
         if self.is_insert():
@@ -248,7 +263,9 @@ class Query:
             values = ",".join(map(lambda v: GDT.quote(v), self._vals.values()))
             return f"REPLACE INTO {self._table} ({keys}) VALUES ({values})"
         if self.is_update():
-            set_string = ",".join(map(lambda kv: f"{kv[0]}={GDT.quote(kv[1])}", self._vals.items()))
+            assignments = [f"{key}={GDT.quote(value)}" for key, value in getattr(self, '_vals', {}).items()]
+            assignments += [f"`{key}`=`{key}`+({amount})" for key, amount in self._increments.items()]
+            set_string = ','.join(assignments)
             return f"UPDATE {self._table} SET {set_string} WHERE {self._where}"
         raise GDOException("err_query_type_unknown")
 

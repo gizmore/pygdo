@@ -9,6 +9,11 @@ class GDT_Button(WithName, WithText, GDT_Field):
 
     def __init__(self, name: str):
         super().__init__(name)
+        self._default_button = False
+
+    def default_button(self, default_button: bool = True):
+        self._default_button = default_button
+        return self
 
     def calling(self, call: callable):
         self._call = call
@@ -16,4 +21,3 @@ class GDT_Button(WithName, WithText, GDT_Field):
 
     def call(self) -> GDT:
         return self._call()
-

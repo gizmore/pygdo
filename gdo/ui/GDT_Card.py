@@ -9,9 +9,10 @@ from gdo.core.WithGDO import WithGDO
 from gdo.date.GDT_Created import GDT_Created
 from gdo.ui.WithText import WithText
 from gdo.ui.WithTitle import WithTitle
+from gdo.ui.WithImage import WithImage
 
 
-class GDT_Card(WithGDO, WithText, WithTitle, GDT):
+class GDT_Card(WithImage, WithGDO, WithText, WithTitle, GDT):
     _image: GDT
     _header: GDT_Container
     _content: GDT_Container
@@ -22,13 +23,6 @@ class GDT_Card(WithGDO, WithText, WithTitle, GDT):
         self._header = GDT_Container()
         self._content = GDT_Container()
         self._footer = GDT_Container()
-
-    def image(self, image: GDT):
-        self._image = image
-        return self
-
-    def has_image(self) -> bool:
-        return hasattr(self, '_image')
 
     def get_header(self) -> GDT_Container:
         # if not hasattr(self, '_header'):
