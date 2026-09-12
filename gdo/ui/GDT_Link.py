@@ -18,6 +18,18 @@ class GDT_Link(WithHREF, WithTitle, WithText, GDT_String):
     def render_form(self):
         return self.render_html()
 
+    def nofollow(self, nofollow: bool = True):
+        """Ask search engines not to follow this navigation-only link."""
+        relations = set(self.get_attrs().get('rel', '').split())
+        if nofollow:
+            relations.add('nofollow')
+        else:
+            relations.discard('nofollow')
+        if relations:
+            return self.attr('rel', ' '.join(sorted(relations)))
+        self.get_attrs().pop('rel', None)
+        return self
+
     def render_html(self) -> str:
         if self.is_disabled():
             return f'<a class="gdt-link gdt-link-disabled" aria-disabled="true" tabindex="-1"{self.html_attrs()}><span>{WithIcon.display_icon("stop", Mode.render_html)}{self.render_text()}</span></a>'

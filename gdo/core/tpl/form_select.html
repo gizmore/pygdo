@@ -1,11 +1,12 @@
 <div class="gdt-select">
     <label for="<%=field._name%>"><%=field.render_label()%></label>
-    <select id="<%=field._name%>" name="<%=field._name%>"<%=field.html_disabled()%>>
+    <select id="<%=field._name%>" name="<%=field._name%>"<%=field.html_disabled()%><%=field.html_attrs()%>>
         <%
-        for key, gdt in field.init_choices().items():
-            if isinstance(gdt, GDT):
-                gdt = gdt.render_list()
-            writeln(f'<option{field.html_selected(key)} value="{key}">{gdt}</option>')
+        for key, choice in field.init_choices().items():
+            attrs = field.html_option_attrs(key, choice)
+            if isinstance(choice, GDT):
+                choice = choice.render_list()
+            writeln(f'<option{field.html_selected(key)} value="{key}"{attrs}>{choice}</option>')
         %>
     </select>
     <% if field.has_error():

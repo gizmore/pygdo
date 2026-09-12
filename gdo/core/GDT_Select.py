@@ -85,6 +85,10 @@ class GDT_Select(GDT_ComboBox):
             return html(x.render_name())
         return html(x.get_name())
 
+    def html_option_attrs(self, key: str, choice) -> str:
+        """Return optional safe HTML attributes for one form option."""
+        return self.EMPTY_STR
+
     ##########
     # Render #
     ##########
