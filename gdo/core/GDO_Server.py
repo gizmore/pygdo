@@ -258,7 +258,9 @@ class GDO_Server(GDO):
     # Message #
     ###########
     async def send_to_user(self, user: GDO_User, key: str, args: tuple = None, notice: bool=False):
-        text = tusr(user, key, args)
+        from gdo.base.Trans import Trans
+        with Trans.message_context(self):
+            text = tusr(user, key, args)
         message = Message(text, Application.get_mode())
         message.env_user(user, True).env_server(self).env_channel(None)
         await self.get_connector().send_to_user(message.result(text), True, notice)

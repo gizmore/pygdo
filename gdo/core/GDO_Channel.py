@@ -84,7 +84,9 @@ class GDO_Channel(GDO):
         await self.send(self.t(key, args))
 
     def t(self, key: str, args: tuple[str|int|float, ...]) -> str:
-        return tiso(self.get_lang_iso(), key, args)
+        from gdo.base.Trans import Trans
+        with Trans.message_context(self.get_server(), self):
+            return tiso(self.get_lang_iso(), key, args)
 
     async def on_user_joined(self, user: GDO_User):
         user_name = user.get_name()

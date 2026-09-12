@@ -1,6 +1,8 @@
 import glob
 import os
 import re
+from contextlib import contextmanager
+from contextvars import ContextVar
 
 import msgspec.json
 import tomlkit
@@ -36,6 +38,21 @@ def sitename() -> str:
 
 
 class Trans:
+
+    TRIGGER: ContextVar[str] = ContextVar('translation_trigger', default='$')
+
+    @staticmethod
+    @contextmanager
+    def message_context(server=None, channel=None):
+        """Snapshot the destination prefix; restore it across nested/async work."""
+        trigger = channel.get_trigger() if channel is not None else None
+        if trigger is None and server is not None:
+            trigger = server.get_trigger()
+        token = Trans.TRIGGER.set(trigger if trigger is not None else '$')
+        try:
+            yield
+        finally:
+            Trans.TRIGGER.reset(token)
 
     REGEX_BOLD = re.compile(r'\*\*(.+?)\*\*')
 
@@ -101,6 +118,7 @@ class Trans:
 
     @staticmethod
     def replace_output(text: str, mode: Mode = None) -> str:
+        text = text.replace('$t$', Trans.TRIGGER.get())
         mode = mode or Application.get_mode()
         return Trans.REGEX_BOLD.sub(lambda m: Render.bold(m.group(1), mode), text)
 

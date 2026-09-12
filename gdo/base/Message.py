@@ -83,6 +83,11 @@ class Message(WithEnv):
         return self._env_server.get_trigger()
 
     async def execute(self):
+        from gdo.base.Trans import Trans
+        with Trans.message_context(self._env_server, self._env_channel):
+            return await self._execute_in_context()
+
+    async def _execute_in_context(self):
         previous_mode = Application.get_mode()
         Application.mode(self._env_mode)
         try:
