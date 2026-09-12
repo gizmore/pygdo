@@ -9,3 +9,6 @@ class WithGDO:
     def gdo(self, gdo: 'GDO') -> Self:
         self._gdo = gdo
         return self
+
+    def get_gdo(self) -> 'GDO|None':
+        return getattr(self, '_gdo', None)

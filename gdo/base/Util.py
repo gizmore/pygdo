@@ -187,6 +187,11 @@ class CLI:
 class Strings:
 
     @staticmethod
+    def seo(value: str) -> str:
+        """Turn text into an ASCII-only, underscore-separated SEO token."""
+        return re.sub(r'[^A-Za-z0-9]+', '_', value or '').strip('_')
+
+    @staticmethod
     def substr_from(s: str, frm: str, default='') -> str:
         """Return substring from the first occurrence of `frm` in `s`, or `default` if `frm` is not found."""
         index = s.find(frm)

@@ -5,6 +5,7 @@ help_bash_connector = "Simply use an SSH terminal. (probably not public)"
 sitename = "PyGDO"
 sitedesc = "A default PyGDO chat system website frontend."
 serv_tls_validate = "Validate TLS certificate"
+serv_tls_client_check = "Check IRC TLS certificate"
 
 ##############
 ### Errors ###
@@ -88,6 +89,8 @@ file_mime = "Dateityp"
 edit = "Edit"
 file = "File"
 price = "Price"
+parent = "Parent"
+icon = "Icon"
 
 ###########
 # GDT_Int #

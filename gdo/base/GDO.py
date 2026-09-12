@@ -12,7 +12,7 @@ from gdo.base.Result import ResultType
 from gdo.base.Cache import Cache
 from gdo.base.GDT import GDT
 from gdo.base.Query import Type, Query
-from gdo.base.Trans import t
+from gdo.base.Trans import t, Trans
 from gdo.base.Util import Strings, Arrays
 from gdo.base.WithBulk import WithBulk
 from gdo.base.WithName import WithName
@@ -149,6 +149,9 @@ class GDO(WithName, WithBulk, GDT):
 
     def render_name(self):
         return self.get_name()
+
+    def render_class_name(self):
+        return Trans.t(self.gdo_table_name())
 
     def render_list(self):
         return self.render_name()

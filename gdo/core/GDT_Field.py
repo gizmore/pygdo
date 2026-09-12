@@ -215,7 +215,10 @@ class GDT_Field(WithHTMLAttributes, WithGDO, WithTooltip, WithIcon, WithError, W
         return True
 
     def validate_unique(self, val: str):
-        if self._gdo.table().get_by_vals({self._name: val}):
+        existing = self._gdo.table().get_by_vals({self._name: val})
+        current = self.get_gdo()
+        if (existing and (current is None or not current.is_persisted() or
+                          existing.get_id() != current.get_id())):
             return self.error_unique()
         return True
 

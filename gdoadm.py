@@ -377,19 +377,67 @@ class App:
             Application.db().query(f"CREATE DATABASE {Application.db().db_name}")
             print("Wiping all modules...")
         elif args.module:
-            modules = ModuleLoader.instance().load_modules_fs(args.module, False)
-            modules = list(modules.values())
-            for module in modules:
-                if module := ModuleLoader.instance().load_module_db(module.get_name):
-                    print(f"Wiping module {module.get_name}")
-                    Installer.wipe(module)
-                else:
-                    print(f"Module is not installed.")
+            loader = ModuleLoader.instance()
+            wanted = loader.load_modules_fs(args.module, False)
+            loader.load_modules_fs()
+            installed = {module.get_name: module for module in loader.load_modules_db(None)}
+            wanted = {name: installed[name] for name in wanted if name in installed}
+            missing = set(loader.load_modules_fs(args.module, False)) - set(wanted)
+            for name in sorted(missing):
+                print(f"Module {name} is not installed.")
+
+            conflicts = self.wipe_conflicts(wanted, installed)
+            if conflicts:
+                for name, dependents in conflicts.items():
+                    print(
+                        f"Cannot wipe {name}: installed modules depend on it: "
+                        f"{', '.join(dependents)}. Include them explicitly, e.g. "
+                        f"./gdo_adm.sh wipe {','.join([name, *dependents])}"
+                    )
+                return
+
+            for module in self.wipe_order(wanted):
+                print(f"Wiping module {module.get_name}")
+                Installer.wipe(module)
         else:
             parser.print_help()
+            return
         Files.empty_dir(Application.files_path())
         await clear_cache().gdo_execute()
         print("All Done!")
+
+    @staticmethod
+    def wipe_conflicts(wanted: dict, installed: dict) -> dict[str, list[str]]:
+        """Return installed reverse dependencies missing from a wipe request."""
+        wanted_names = set(wanted)
+        conflicts: dict[str, list[str]] = {}
+        for name in wanted_names:
+            dependents = [
+                candidate_name
+                for candidate_name, candidate in installed.items()
+                if name in candidate.gdo_dependencies() and candidate_name not in wanted_names
+            ]
+            if dependents:
+                conflicts[name] = sorted(dependents)
+        return conflicts
+
+    @staticmethod
+    def wipe_order(wanted: dict) -> list:
+        """Remove dependent modules before the modules they depend on."""
+        pending = dict(wanted)
+        ordered = []
+        while pending:
+            leaves = [
+                name for name in pending
+                if not any(name in module.gdo_dependencies() for module in pending.values())
+            ]
+            if not leaves:
+                # Cycles cannot have a safe dependency order, but every
+                # conflicting module was explicitly requested by the caller.
+                leaves = list(pending)
+            for name in sorted(leaves):
+                ordered.append(pending.pop(name))
+        return ordered
 
     async def migrate(self):
         parser = argparse.ArgumentParser(

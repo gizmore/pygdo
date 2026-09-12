@@ -22,6 +22,7 @@ class GDT_IconSelect(GDT_Select):
     def __init__(self, name: str = 'icon'):
         super().__init__(name)
         self.ascii().maxlen(64)
+        self.label('icon')
         self.attr('data-gdt-icon-select', '1')
 
     @classmethod

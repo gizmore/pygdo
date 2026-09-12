@@ -1,6 +1,8 @@
 from typing import Self
 
 from gdo.base.GDO import GDO
+from gdo.base.Render import Render
+from gdo.base.Trans import t
 from gdo.base.WithPygdo import WithPygdo
 from gdo.core.GDT_User import GDT_User
 
@@ -16,6 +18,17 @@ class GDT_Creator(GDT_User):
         super().gdo(gdo)
         # self.gdo_before_create(gdo)
         return self
+
+    def render_html(self) -> str:
+        if user := self.get_gdo():
+            # Keep the core model independent from the user module at import
+            # time, but consistently render creators as profile affordances.
+            from gdo.user.GDT_ProfileLink import GDT_ProfileLink
+            return GDT_ProfileLink().user(user).render_html()
+        return Render.italic(t('none'))
+
+    def render_cell(self) -> str:
+        return self.render_html()
 
     def gdo_before_create(self, gdo):
         # An explicit creator (for example a connector's authenticated user)

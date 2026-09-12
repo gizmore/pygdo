@@ -56,13 +56,13 @@ class MethodCrud(MethodForm):
             form.actions().add_field(self.crud_create_button())
 
     def crud_create_button(self) -> GDT_Submit:
-        return GDT_Submit('create').text_raw('Create').calling(self.on_create).default_button()
+        return GDT_Submit('create').text('create').calling(self.on_create).default_button()
 
     def crud_edit_button(self) -> GDT_Submit:
-        return GDT_Submit('edit').text_raw('Edit').calling(self.on_update).default_button()
+        return GDT_Submit('edit').text('edit').calling(self.on_update).default_button()
 
     def crud_delete_button(self) -> GDT_Submit:
-        return GDT_Submit('delete').text_raw('Delete').calling(self.on_delete)
+        return GDT_Submit('delete').text('delete').calling(self.on_delete)
 
     def form_values(self) -> dict[str, str]:
         return {
@@ -72,18 +72,18 @@ class MethodCrud(MethodForm):
 
     def on_create(self):
         gdo = self.gdo_table().blank(self.form_values()).insert()
-        self.msg('msg_crud_created', (gdo.render_name(),))
+        self.msg('msg_crud_created', (gdo.render_class_name(), gdo.render_name(),))
         return self.get_form()
 
     def on_update(self):
         gdo = self.crud_gdo()
         gdo.save_vals(self.form_values())
-        self.msg('msg_crud_updated', (gdo.render_name(),))
+        self.msg('msg_crud_updated', (gdo.render_class_name(), gdo.render_name(),))
         return self.get_form()
 
     def on_delete(self):
         gdo = self.crud_gdo()
         name = gdo.render_name()
         gdo.delete()
-        self.msg('msg_crud_deleted', (name,))
+        self.msg('msg_crud_deleted', (gdo.render_class_name(), name,))
         return self.get_form()
