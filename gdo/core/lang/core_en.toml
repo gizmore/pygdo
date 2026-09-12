@@ -111,6 +111,7 @@ suggest_range_float = "A decimal number between %.01f and %.01f"
 ##################
 yes = "Yes"
 no = "No"
+undetermined = "Undetermined"
 choose = "Please choose"
 
 #################
