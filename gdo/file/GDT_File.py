@@ -143,7 +143,7 @@ class GDT_File(GDT_Object):
     def deletion(self, method: Method):
         if f"{self._name}.sess.delete" in method._raw_args.args:
             self.cleanup_temp_dir()
-        if f"{self._name}.file.delete" in method._raw_args.args:
+        if not self._no_delete and f"{self._name}.file.delete" in method._raw_args.args:
             if files := self.get_persisted_files():
                 for file in files:
                     file.delete()
