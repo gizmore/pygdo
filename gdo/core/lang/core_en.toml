@@ -4,7 +4,6 @@ help_web_connector = "Simply use this very website"
 help_bash_connector = "Simply use an SSH terminal. (probably not public)"
 sitename = "PyGDO"
 sitedesc = "A default PyGDO chat system website frontend."
-serv_tls_validate = "Validate TLS certificate"
 serv_tls_client_check = "Check IRC TLS certificate"
 
 ##############

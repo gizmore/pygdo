@@ -170,8 +170,13 @@ class Installer:
                 restore_from_zzz = True  # At this point we can restore on error
                 db.drop_table(tablename)  # Drop old
                 db.create_table(gdo)  # Create new
-                db.create_table_fk(gdo)  # with FKs
                 db.query(f"INSERT INTO {tablename} ({columns}) SELECT {columns} FROM {temptable}")  # Copy zzz to new
+                # Copy before restoring constraints.  gdo_user.user_link is a
+                # self-reference, so a bulk insert can otherwise encounter a
+                # linked user before the referenced user has been restored.
+                # Adding the FKs afterwards still validates the complete,
+                # restored table.
+                db.create_table_fk(gdo)  # with FKs
         except Exception as ex:
             Logger.exception(ex)
             if restore_from_zzz:
@@ -199,20 +204,16 @@ class Installer:
                  f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{temptable}'"
                  )
         result = db.select(query, False)
-        rows = result.iter(ResultType.ROW).fetch_all()
-        old = map(lambda c: c[0], rows)
+        old = [row[0] for row in result.iter(ResultType.ROW).fetch_all()]
 
-        # New column names
-        query = ("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
-                 f"WHERE TABLE_SCHEMA = '{db.db_name}' AND TABLE_NAME = '{gdo.gdo_table_name()}'")
-        result = db.select(query, False)
-        rows = result.iter(ResultType.ROW).fetch_all()
-        new = map(lambda c: c[0], rows)
+        # The destination table does not exist yet.  Comparing against the
+        # current table here made a removed source column part of the restore
+        # INSERT, which fails after the replacement table has been created.
+        # The GDO declaration is the destination schema.
+        new = list(gdo.columns().keys())
         if old == new:
             return []
-        if old and new:
-            return list(set(old).intersection(new))
-        return []
+        return [column for column in new if column in old]
 
     @classmethod
     def wipe(cls, module: GDO_Module):
