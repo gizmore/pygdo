@@ -68,3 +68,10 @@ class CompletionTest(GDOTestCase):
         self.assertEqual(user.get_id(), data[0]['id'])
         self.assertEqual(user.get_name_sid(), data[0]['var'])
         self.assertEqual(user.render_name(), data[0]['display_var'])
+
+    async def test_gdt_user_resolves_a_displayname(self):
+        user = await Web.get_server().get_or_create_user('CompletionDisplayName', 'VisibleCompletionName')
+
+        found = GDT_User('user').query_gdos('VisibleCompletionName')
+
+        self.assertIn(user.get_id(), [candidate.get_id() for candidate in found])

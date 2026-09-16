@@ -247,9 +247,9 @@ md_core_profile = "%s's Profile."
 # Set Name #
 ############
 mt_core_set_name = "Set Displayname"
-md_core_set_name = "Set your displayed username."
+md_core_set_name = "Set a user's displayname."
 err_username_taken = "This username is already taken."
-msg_username_set = "Your displayname has been set to %s."
+msg_username_set_for = "%s's displayname has been set to %s."
 
 ##########
 # WhoAmI #

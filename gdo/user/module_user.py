@@ -5,6 +5,7 @@ from gdo.base.Cache import Cache
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Secret import GDT_Secret
 from gdo.core.GDT_Text import GDT_Text
@@ -45,6 +46,9 @@ class module_user(GDO_Module):
     def cfg_user_link_pepper(self) -> str:
         return self.get_config_val('user_link_pepper')
 
+    def cfg_show_userlist(self) -> bool:
+        return self.get_config_value('show_userlist')
+
     def gdo_init(self):
         Application.EVENTS.subscribe('permission_changed', self.on_permission_changed)
 
@@ -76,9 +80,27 @@ class module_user(GDO_Module):
         if self.cfg_activity_accuracy() and not user.is_ghost() and user.is_persisted():
             user.save_setting('last_activity', self.get_activity_cut_date())
 
+    def online_users(self) -> list[GDO_User]:
+        """Return the live connector snapshots, deduplicated by linked identity."""
+        users = {}
+        for server in GDO_Server.table().select().exec():
+            for user in server._users.values():
+                if user.is_user():
+                    user = user.get_effective_user()
+                    users[user.get_id()] = user
+        return sorted(users.values(), key=lambda user: user.get_displayname().lower())
+
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         user = GDO_User.current()
+        if self.cfg_show_userlist():
+            page._left_bar.add_field(
+                GDT_Link().href(self.href('online')).text('online_users', (len(self.online_users()),)).icon('users').attr(
+                    'onclick', 'return gdo.user.openOnlineUsers(this.href);'
+                )
+            )
         if user.is_user():
             page._right_bar.add_field(GDT_ProfileLink().user(user).icon('face'))
-        # if self.get_config_value('show_userlist'):
-        #     page._left_bar.add_field(GDT_Link().href(self.href('ranking')).text('mt_user_ranking').icon('users'))
+
+    def gdo_load_scripts(self, page: 'GDT_Page'):
+        self.add_js('js/pygdo-user.js')
+        self.add_css('css/pygdo-user.css')

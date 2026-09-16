@@ -1,37 +1,38 @@
 from gdo.base.GDT import GDT
 from gdo.base.Util import html
+from gdo.base.Method import Method
+from gdo.core.GDO_Permission import GDO_Permission
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDT_User import GDT_User
 from gdo.core.GDT_UserName import GDT_UserName
-from gdo.form.GDT_Form import GDT_Form
-from gdo.form.GDT_Validator import GDT_Validator
-from gdo.form.MethodForm import MethodForm
 
 
-class set_name(MethodForm):
+class set_name(Method):
 
     @classmethod
     def gdo_trigger(cls) -> str:
+        return 'name'
+
+    @classmethod
+    def gdo_trig(cls) -> str:
         return 'setname'
 
-    def gdo_user_type(self) -> str | None:
-        return 'member,guest'
+    def gdo_user_permission(self) -> str | None:
+        return GDO_Permission.STAFF
 
-    def gdo_create_form(self, form: GDT_Form) -> None:
-        form.add_fields(
-            GDT_UserName('name').not_null(),
-            GDT_Validator().validator(form, 'name', self.validate_name),
+    def gdo_parameters(self) -> list[GDT]:
+        return [
+            GDT_User('user').not_null().positional().with_completion(),
+            GDT_UserName('displayname').not_null().positional(),
+        ]
+
+    def gdo_execute(self) -> GDT:
+        user = self.param_value('user')
+        displayname = self.param_val('displayname')
+        count = GDO_User.table().count_where(
+            f"user_server={user.get_server_id()} AND user_displayname={GDT.quote(displayname)} AND user_id != {user.get_id()} AND user_link IS NULL"
         )
-        super().gdo_create_form(form)
-
-    def validate_name(self, form: GDT_Form, field: GDT, value: any):
-        my_id = self._env_user.get_id()
-        count = GDO_User.table().count_where(f"user_server={self._env_server.get_id()} AND user_displayname={GDT.quote(value)} AND user_id != {GDT.quote(my_id)} AND user_link IS NULL")
         if count:
-            return field.error('err_username_taken')
-        return True
-
-    def form_submitted(self):
-        name = self.param_val('name')
-        self._env_user.save_val('user_displayname', name)
-        return self.msg('msg_username_set', (html(name),))
-
+            return self.err('err_username_taken')
+        user.save_val('user_displayname', displayname)
+        return self.reply('msg_username_set_for', (user.get_name_sid(), html(displayname)))

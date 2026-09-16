@@ -1,9 +1,8 @@
 from gdo.base.Render import Mode
 from gdo.core.GDT_Container import GDT_Container
-from gdo.core.WithHTMLAttributes import WithHTMLAttributes
 
 
-class GDT_Span(WithHTMLAttributes, GDT_Container):
+class GDT_Span(GDT_Container):
 
     def get_tag(self) -> str:
         return 'span'

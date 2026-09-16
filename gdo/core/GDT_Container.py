@@ -1,10 +1,11 @@
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
 from gdo.core.WithFields import WithFields
+from gdo.core.WithHTMLAttributes import WithHTMLAttributes
 from gdo.ui.WithFlow import WithFlow
 
 
-class GDT_Container(WithFlow, WithFields, GDT):
+class GDT_Container(WithHTMLAttributes, WithFlow, WithFields, GDT):
 
     __slots__ = (
         '_fields',
@@ -29,7 +30,7 @@ class GDT_Container(WithFlow, WithFields, GDT):
         return GDT.render(self, mode)
 
     def render_html(self) -> str:
-        return f'<div class="gdt-container {self.render_class()}">{self.render_fields()}</div>\n'
+        return f'<div class="gdt-container {self.render_class()}"{self.html_attrs()}>{self.render_fields()}</div>\n'
 
     def render_list(self) -> str:
         return self.render_fields(Mode.render_list)

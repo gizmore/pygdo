@@ -1,0 +1,11 @@
+.user-online-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+	gap: .5rem;
+	padding: 1rem;
+}
+
+.user-online-grid .gdt-link {
+	display: block;
+	padding: .5rem;
+}
