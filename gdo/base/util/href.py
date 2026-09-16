@@ -30,4 +30,4 @@ def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'
 
 
 def url(module_name: str, method_name: str, append: str = '', fmt: str = 'html', positional: tuple|list = ()):
-    return Application.PROTOCOL + "://" + Application.domain() + Application.get_current_port(':') + Application.web_root() + href(module_name, method_name, append, fmt, positional)
+    return Application.PROTOCOL + "://" + Application.domain() + Application.get_current_port(':') + Application.web_root().rstrip('/') + href(module_name, method_name, append, fmt, positional)

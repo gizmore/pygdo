@@ -64,6 +64,9 @@ class GDT_Page(GDT):
     def render_txt(self) -> str:
         return self._result.render_txt()
 
+    def render_rss(self) -> str:
+        return self._result.render_rss()
+
     def render_html(self):
         result = ''
         if seconds := self._method.gdo_cached():

@@ -288,6 +288,8 @@ def pygdo_application(environ, start_response):
                 Application.header('Content-Type', 'application/json; Charset=UTF-8')
             elif mode == Mode.render_txt:
                 Application.header('Content-Type', 'text/plain; Charset=UTF-8')
+            elif mode == Mode.render_rss:
+                Application.header('Content-Type', 'application/rss+xml; Charset=UTF-8')
 
             page = Application.get_page()
             result = page.result(result).method(method)

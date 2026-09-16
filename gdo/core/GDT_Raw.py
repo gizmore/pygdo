@@ -11,3 +11,6 @@ class GDT_Raw(GDT_String):
 
     def render_html(self) -> str:
         return self.get_val()
+
+    def render_xml(self) -> str:
+        return self.get_val()

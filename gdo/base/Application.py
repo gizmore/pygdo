@@ -371,10 +371,10 @@ class Application:
     def get_current_port(cls, pre_colon: str = ':') -> str:
         if cls.is_tls() or Application.config('core.force_tls', '0') == '1':
             port = Application.config('core.tls_port')
-            return port if port == '443' else pre_colon + port
+            return '' if not port or port == '443' else pre_colon + port
         else:
             port = Application.config('core.port')
-            return port if port == '80' else pre_colon + port
+            return '' if not port or port == '80' else pre_colon + port
 
     @classmethod
     async def execute_queue(cls) -> None:
