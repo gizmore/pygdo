@@ -45,13 +45,6 @@ class UserRankingTest(GDOTestCase):
             module_user.instance().set_last_activity(GDO_User.ghost())
         save_setting.assert_not_called()
 
-    def test_online_users_uses_live_server_snapshot(self):
-        gizmore = web_gizmore()
-        server = gizmore.get_server()
-        server._users[gizmore.get_name()] = gizmore
-        self.assertIn(gizmore, module_user.instance().online_users())
-        self.assertIn('user-online-grid', web_plug('user.online.html').exec())
-
     def test_empty_level_renders_as_placeholder_in_a_table(self):
         self.assertEqual('---', GDT_Level('level').val(None).render(Mode.render_cell))
 

@@ -33,6 +33,7 @@ class IconUTF8(IconProvider):
             'book': '📖',
             'bulb': '💡',
             'business': ' 🏬',
+            'cake': '🎂',
             'calendar': '📅',
             'captcha': '♺',
             'card': '🂠',
