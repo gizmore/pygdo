@@ -32,6 +32,9 @@ class GDT_HTML(GDT):
     def render_html(self) -> str:
         return self._html
 
+    def render_card(self) -> str:
+        return self.render_html()
+
     def render_cli(self) -> str:
         return self.render_txt()
 
