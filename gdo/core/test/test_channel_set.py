@@ -99,6 +99,11 @@ class test_channel_set(GDOTestCase):
         Message('', Mode.render_cli).env_server(server)
         self.assertEqual(server, GDT_Server('server').default_current().get_value())
 
+    def test_channel_selector_chains_current_and_connector_filter(self):
+        field = GDT_Channel('channel').default_current().connectors('irc, websocket')
+        self.assertTrue(field._default_current)
+        self.assertEqual(['irc', 'websocket'], field._connectors)
+
     def test_server_set_keeps_the_server_as_an_optional_named_parameter(self):
         parameters = server_set().parameters()
         self.assertFalse(parameters['server'].is_positional())

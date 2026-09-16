@@ -10,11 +10,17 @@ from gdo.core.GDT_ObjectSelect import GDT_ObjectSelect
 class GDT_Channel(GDT_ObjectSelect):
 
     _default_current: bool
+    _connectors: list[str]
 
     def __init__(self, name):
         super().__init__(name)
         self.table(GDO_Channel.table())
         self._default_current = False
+        self._connectors = []
+
+    def connectors(self, connector_csv: str):
+        self._connectors = [name.strip() for name in connector_csv.split(',') if name.strip()]
+        return self
 
     def default_current(self, default_current: bool = True):
         self._default_current = default_current
@@ -29,6 +35,11 @@ class GDT_Channel(GDT_ObjectSelect):
         val_serv = Strings.regex_first(r'{([^{}]+)}$', val)
         val = Strings.substr_to(val, '{', val)
         query.where(f"chan_displayname LIKE '%{GDT.escape(val)}%'")
+        if self._connectors:
+            from gdo.core.GDO_Server import GDO_Server
+            connectors = ','.join(GDT.quote(name) for name in self._connectors)
+            query.join(f'JOIN {GDO_Server.table().gdo_table_name()} ON serv_id=chan_server')
+            query.where(f'serv_connector IN ({connectors})')
         if val_serv:
             from gdo.core.GDO_Server import GDO_Server
             if server := GDO_Server.table().get_by_vals({'serv_name': val_serv}):
