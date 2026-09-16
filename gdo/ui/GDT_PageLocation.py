@@ -6,6 +6,7 @@ class GDT_PageLocation(GDT_Enum):
 
     def gdo_choices(self) -> dict:
         return {
+            '_none': 'None',
             '_title_bar': 'Head',
             '_top_bar': 'Top',
             '_left_bar': 'Left',
@@ -14,4 +15,5 @@ class GDT_PageLocation(GDT_Enum):
         }
 
     def get_value(self):
-        return getattr(Application.get_page(), self.get_val())
+        v = self.get_val()
+        return None if v is None else getattr(Application.get_page(), v)
