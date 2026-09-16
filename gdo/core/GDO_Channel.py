@@ -114,3 +114,7 @@ class GDO_Channel(GDO):
 
     def is_user_online(self, user: GDO_User) -> bool:
         return user.get_name() in self._users
+
+    def online_users(self) -> list[GDO_User]:
+        """Return the connector-maintained member snapshot for this channel."""
+        return list(self._users.values())
