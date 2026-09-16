@@ -75,3 +75,12 @@ class CompletionTest(GDOTestCase):
         found = GDT_User('user').query_gdos('VisibleCompletionName')
 
         self.assertIn(user.get_id(), [candidate.get_id() for candidate in found])
+
+    async def test_gdt_user_prefers_an_exact_nickname(self):
+        server = Web.get_server()
+        exact = await server.get_or_create_user('Dog')
+        await server.get_or_create_user('Dog_99')
+
+        found = GDT_User('user').query_gdos('Dog')
+
+        self.assertEqual([exact.get_id()], [candidate.get_id() for candidate in found])

@@ -4,7 +4,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Query import Query
 from gdo.base.Render import Render
 from gdo.base.Trans import t
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, StringsUtil
 from gdo.base.util.href import href
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Object import GDT_Object
@@ -60,11 +60,15 @@ class GDT_User(GDT_Object):
             self.completion(None)
         return self
 
-    def query_gdos_query(self, val: str, query: Query) -> Query:
+    def query_gdos_query(self, val: str, query: Query, exact: bool = False) -> Query:
+        val = StringsUtil.utf8deobfuscate(val)
         val_serv = Strings.regex_first(r'{([^{}]+)}$', val)
         val = Strings.substr_to(val, '{', val)
         val = GDT.escape(val)
-        query.where(f"(user_displayname LIKE '%{val}%' OR user_name LIKE '%{val}%')")
+        if exact:
+            query.where(f"(user_displayname='{val}' OR user_name='{val}')")
+        else:
+            query.where(f"(user_displayname LIKE '%{val}%' OR user_name LIKE '%{val}%')")
         if val_serv:
             from gdo.core.GDO_Server import GDO_Server
             if server := GDO_Server.table().get_by_vals({'serv_name': val_serv}):
@@ -89,6 +93,11 @@ class GDT_User(GDT_Object):
             if user := self._table.get_by_aid(user_id):
                 return [user]
             return []
+        # A complete nickname is never an invitation to expand into lookalikes.
+        # Resolve it first; only fall back to completion-style matching if absent.
+        exact = self.query_gdos_query(val, self._table.select(), True).limit(10).exec().fetch_all()
+        if exact:
+            return exact
         query = self._table.select()
         users = self.query_gdos_query(val, query).limit(10).exec().fetch_all()
         if self._same_channel:

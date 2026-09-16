@@ -9,7 +9,7 @@ from gdo.base.LazyImporter import LazyImporter
 from gdo.base.Query import Query
 from gdo.base.Result import Result
 from gdo.base.Trans import t
-from gdo.base.Util import module_enabled
+from gdo.base.Util import module_enabled, StringsUtil
 from gdo.core.GDT_Index import GDT_Index
 from gdo.core.GDT_Unique import GDT_Unique
 from gdo.core.GDT_UserName import GDT_UserName
@@ -329,10 +329,14 @@ class GDO_User(GDO):
     # Render #
     ##########
 
+    def render_displayname(self) -> str:
+        """Render a safe display name without its connector/server suffix."""
+        return StringsUtil.utf8obfuscate(self.gdo_val('user_displayname'))
+
     def render_name(self) -> str:
         server = self.get_server()
         serv = '' if server.get_id() == '2' else f"{{{server.get_name().lower()}}}"
-        return f"{self.gdo_val('user_displayname')}{serv}"
+        return f"{self.render_displayname()}{serv}"
 
     #########
     # Hooks #

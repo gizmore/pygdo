@@ -7,6 +7,12 @@ from gdo.core.WithObject import WithObject
 
 class GDT_Object(WithObject, GDT_UInt):
 
+    def get_value(self):
+        """Resolve an object default even though GDT_Field skips empty values."""
+        if not self.get_val() and self._default_random:
+            return self.query_default_random()
+        return super().get_value()
+
     def html_value(self):
         if gdo := self.get_value():
             return html(gdo.render_name())

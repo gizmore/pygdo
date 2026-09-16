@@ -184,7 +184,35 @@ class CLI:
         name = os.environ.get('PYGDO_USER') or getpass.getuser()
         return await Bash.get_server().get_or_create_user(name)
 
-class Strings:
+class StringsUtil:
+
+    UTF8_LOOKALIKES = str.maketrans({
+        'a': 'а', 'c': 'с', 'e': 'е', 'i': 'і', 'j': 'ј', 'o': 'о', 'p': 'р', 's': 'ѕ', 'x': 'х', 'y': 'у',
+        'A': 'А', 'B': 'Β', 'C': 'С', 'E': 'Е', 'H': 'Н', 'I': 'І', 'J': 'Ј', 'K': 'Κ', 'M': 'Μ', 'N': 'Ν',
+        'O': 'О', 'P': 'Р', 'S': 'Ѕ', 'T': 'Τ', 'X': 'Χ', 'Y': 'Υ', 'Z': 'Ζ',
+    })
+
+    @staticmethod
+    def utf8obfuscate(s: str) -> str:
+        """Keep text readable while preventing ASCII-only nickname highlights."""
+        return s.translate(StringsUtil.UTF8_LOOKALIKES)
+
+    UTF8_LOOKALIKES_REVERSE = str.maketrans({
+        value: key
+        for key, value in {
+            'a': 'а', 'c': 'с', 'e': 'е', 'i': 'і', 'j': 'ј', 'o': 'о', 'p': 'р', 's': 'ѕ', 'x': 'х', 'y': 'у',
+            'A': 'А', 'B': 'Β', 'C': 'С', 'E': 'Е', 'H': 'Н', 'I': 'І', 'J': 'Ј', 'K': 'Κ', 'M': 'Μ', 'N': 'Ν',
+            'O': 'О', 'P': 'Р', 'S': 'Ѕ', 'T': 'Τ', 'X': 'Χ', 'Y': 'Υ', 'Z': 'Ζ',
+        }.items()
+    })
+
+    @staticmethod
+    def utf8deobfuscate(s: str) -> str:
+        """Recover ASCII input copied from an obfuscated display name."""
+        return s.translate(StringsUtil.UTF8_LOOKALIKES_REVERSE)
+
+
+class Strings(StringsUtil):
 
     @staticmethod
     def seo(value: str) -> str:

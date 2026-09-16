@@ -1,6 +1,6 @@
 import unittest
 
-from gdo.base.Util import Strings
+from gdo.base.Util import Strings, StringsUtil
 
 
 class StringsTest(unittest.TestCase):
@@ -11,3 +11,7 @@ class StringsTest(unittest.TestCase):
 
     def test_seo_replaces_non_ascii_characters(self):
         self.assertEqual('H_llo', Strings.seo('Hällo'))
+
+    def test_utf8_obfuscate_avoids_ascii_nickname_matches(self):
+        self.assertEqual('rау', StringsUtil.utf8obfuscate('ray'))
+        self.assertEqual('ray', StringsUtil.utf8deobfuscate('rау'))
