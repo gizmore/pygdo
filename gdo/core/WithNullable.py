@@ -13,8 +13,9 @@ class WithNullable:
         return self.error_not_null() if not val and self.is_not_null() else True
 
     def error_not_null(self):
+        name = self.get_name()
         suggestions = self.render_suggestion()
         if suggestions:
-            return self.error('err_not_null', (self.render_suggestion(),))
+            return self.error('err_not_null', (name, suggestions))
         else:
-            return self.error('err_not_null_no_suggestions')
+            return self.error('err_not_null_no_suggestions', (name,))
