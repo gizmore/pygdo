@@ -98,6 +98,33 @@ class GDT_User(GDT_Object):
         exact = self.query_gdos_query(val, self._table.select(), True).limit(10).exec().fetch_all()
         if exact:
             return exact
+        # Prefer an unambiguous nickname prefix over a broad substring match.
+        # IRC users often enter just the first character of a distinctive nick;
+        # expanding that into every account that merely contains the character is
+        # surprising and prevents otherwise resolvable commands.
+        prefix_query = self._table.select()
+        prefix = Strings.substr_to(StringsUtil.utf8deobfuscate(val), '{', val)
+        prefix = GDT.escape(prefix)
+        prefix_query.where(f"(user_displayname LIKE '{prefix}%' OR user_name LIKE '{prefix}%')")
+        val_serv = Strings.regex_first(r'{([^{}]+)}$', StringsUtil.utf8deobfuscate(val))
+        if val_serv:
+            from gdo.core.GDO_Server import GDO_Server
+            if server := GDO_Server.table().get_by_vals({'serv_name': val_serv}):
+                prefix_query.where(f"user_server={server.get_id()}")
+            elif val_serv.isdecimal():
+                prefix_query.where(f"user_server={val_serv}")
+            else:
+                prefix_query.where('1=0')
+        if self._same_channel:
+            prefix_query.where(f'user_server={self._same_channel.get_server().get_id()}')
+        elif self._same_server:
+            prefix_query.where(f'user_server={GDO_User.current().get_server_id()}')
+        prefix_users = prefix_query.limit(2).exec().fetch_all()
+        if self._same_channel:
+            allowed_names = self._same_channel._users
+            prefix_users = [user for user in prefix_users if user.get_name() in allowed_names]
+        if len(prefix_users) == 1:
+            return prefix_users
         query = self._table.select()
         users = self.query_gdos_query(val, query).limit(10).exec().fetch_all()
         if self._same_channel:
