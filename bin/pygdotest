@@ -1,4 +1,4 @@
 #!/bin/bash
 set -euo pipefail
 script_dir="$(dirname "$0")"
-exec "$script_dir/../.venv/bin/python" "$script_dir/pygdo.py" --test "$@"
+exec python3 "$script_dir/pygdo.py" --test "$@"

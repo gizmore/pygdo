@@ -2,4 +2,4 @@
 set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-exec env PYGDO_USER=mira "$script_dir/.venv/bin/python" "$script_dir/bin/pygdo.py" "$@"
+exec env PYGDO_USER=mira python3 "$script_dir/bin/pygdo.py" "$@"
