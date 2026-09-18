@@ -9,3 +9,6 @@ class GDT_Anchor(GDT_Span):
 
     def render_markdown(self):
         return f"[{super().render_fields(Mode.render_markdown)}]({self.attr('href')})"
+
+    def render_slack(self):
+        return f"<{self.attr('href')}|{super().render_fields(Mode.render_slack)}>"

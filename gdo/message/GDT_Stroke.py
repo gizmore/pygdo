@@ -13,6 +13,9 @@ class GDT_Stroke(GDT_Span):
     def render_markdown(self):
         return Render.strike(super().render_fields(Mode.render_markdown), Mode.render_markdown)
 
+    def render_slack(self):
+        return Render.strike(super().render_fields(Mode.render_slack), Mode.render_slack)
+
     def render_irc(self):
         return Render.strike(super().render_fields(Mode.render_irc), Mode.render_irc)
 

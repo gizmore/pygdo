@@ -10,6 +10,9 @@ class GDT_Bold(GDT_Span):
     def render_markdown(self):
         return f"**{super().render_fields(Mode.render_markdown)}**"
 
+    def render_slack(self):
+        return f"*{super().render_fields(Mode.render_slack)}*"
+
     def render_cli(self):
         return Render.bold(super().render_fields(Mode.render_cli), Mode.render_cli)
 

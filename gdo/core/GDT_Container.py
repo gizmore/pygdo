@@ -24,7 +24,7 @@ class GDT_Container(WithHTMLAttributes, WithFlow, WithFields, GDT):
         Nested containers then cannot provide their flow or CSS classes.
         """
         if mode in (Mode.render_cli, Mode.render_irc, Mode.render_telegram,
-                    Mode.render_txt, Mode.render_markdown, Mode.render_mail,
+                    Mode.render_txt, Mode.render_markdown, Mode.render_slack, Mode.render_mail,
                     Mode.render_rss, Mode.render_doc):
             return self.render_fields(mode)
         return GDT.render(self, mode)

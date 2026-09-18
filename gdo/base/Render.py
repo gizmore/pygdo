@@ -29,6 +29,9 @@ class Mode(Enum):
     render_rss = 19
     render_doc = 20
     render_toml = 21
+    # Slack has its own mrkdwn dialect.  It is close to Markdown, but bold,
+    # italic and links use different delimiters.
+    render_slack = 22
 
     @staticmethod
     @lru_cache
@@ -39,6 +42,7 @@ class Mode(Enum):
             Mode.render_irc,
             Mode.render_telegram,
             Mode.render_markdown,
+            Mode.render_slack,
             Mode.render_txt,
         ]
 
@@ -63,7 +67,7 @@ class Render(WithPygdo):
         """
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.render_txt | Mode.render_markdown | Mode.render_telegram:
+            case Mode.render_txt | Mode.render_markdown | Mode.render_telegram | Mode.render_slack:
                 return s
             case Mode.render_cli:
                 return cls._cli_color(s, '2')
@@ -81,7 +85,7 @@ class Render(WithPygdo):
         """
         mode = mode or cls.application().get_mode()
         match mode:
-            case Mode.render_txt | Mode.render_markdown | Mode.render_telegram:
+            case Mode.render_txt | Mode.render_markdown | Mode.render_telegram | Mode.render_slack:
                 return s
             case Mode.render_cli:
                 return cls._cli_color(s, '1')
@@ -98,6 +102,8 @@ class Render(WithPygdo):
         match mode:
             case Mode.render_txt | Mode.render_markdown:
                 return f"**{s}**"
+            case Mode.render_slack:
+                return f"*{s}*"
             case Mode.render_cli:
                 return cls._cli_mode('1', s)
             case Mode.render_irc:
@@ -130,6 +136,8 @@ class Render(WithPygdo):
                 return f"/{s}/"
             case Mode.render_markdown:
                 return f"*{s}*"
+            case Mode.render_slack:
+                return f"_{s}_"
             case Mode.render_cli:
                 return cls._cli_mode('3', s)
             case Mode.render_irc:
@@ -160,6 +168,8 @@ class Render(WithPygdo):
         match mode:
             case Mode.render_txt | Mode.render_markdown | Mode.render_telegram:
                 return f"~~{s}~~"
+            case Mode.render_slack:
+                return f"~{s}~"
             case Mode.render_cli:
                 return cls._cli_mode('9', s)
             case Mode.render_irc:

@@ -9,3 +9,6 @@ class GDT_PRE(GDT_Span):
 
     def render_markdown(self):
         return "\n\n" + super().render_fields(Mode.render_markdown) + "\n\n"
+
+    def render_slack(self):
+        return "\n```" + super().render_fields(Mode.render_slack) + "```\n"

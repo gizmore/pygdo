@@ -24,6 +24,9 @@ class GDT_Span(GDT_Container):
     def render_markdown(self):
         return self.render_fields(Mode.render_markdown)
 
+    def render_slack(self):
+        return self.render_fields(Mode.render_slack)
+
     def render_cli(self):
         return self.render_fields(Mode.render_cli)
 

@@ -331,6 +331,11 @@ class GDT(WithSerialization):
         return self.render_gdt(mode)
 
     def render_gdt(self, mode: Mode) -> str|dict|list|None:
+        # Slack is a textual Markdown variant.  Most fields need no special
+        # treatment, so use their Markdown renderer unless they opt into a
+        # dedicated ``render_slack`` implementation.
+        if mode == Mode.render_slack:
+            return getattr(self, 'render_slack', self.render_markdown)()
         return getattr(self, mode.name)()
 
     # def render_method(self, mode: Mode):
