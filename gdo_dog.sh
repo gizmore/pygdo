@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-./gdo_adm.sh install irc,telegram,pm,markdown,blackjack,account,admin,contact,perf,math,login,register,recovery,bootstrap5,avatar,shadowdogs,vote,poll,quote,scum,slapwarz,websocket,discord,connect,whatsapp,mira,oracle,zen,rss,maps,online,favicon,icon_fa,logs,greetings,payment_paypal,payment_credits,lup_connector,translate
+./gdo_adm.sh install irc,telegram,pm,markdown,blackjack,slack,account,admin,contact,perf,math,login,register,recovery,bootstrap5,avatar,shadowdogs,vote,poll,quote,scum,slapwarz,websocket,discord,connect,whatsapp,mira,oracle,zen,rss,maps,online,favicon,icon_fa,logs,greetings,payment_paypal,payment_credits,lup_connector,translate
 ./gdo_adm.sh admin gizmore 11113333 gizmore@wechall.net
 ./gdo_adm.sh admin mira ChangeMe gizmore@wechall.net
 ./gdo_adm.sh admin --server 2 gizmore 11113333 gizmore@wechall.net
