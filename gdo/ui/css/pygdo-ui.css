@@ -5,3 +5,10 @@
 .gdt-menu.gdt-col {
     flex-direction: column;
 }
+
+/* Keep adjacent action buttons visually distinct in horizontal menus. */
+.gdt-menu.gdt-row > .gdt-button,
+.gdt-menu.gdt-row > .gdt-submit {
+    margin-left: 4px;
+    margin-right: 4px;
+}
