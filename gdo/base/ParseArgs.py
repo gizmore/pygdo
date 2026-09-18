@@ -160,17 +160,36 @@ class ParseArgs(WithPygdo):
     def add_file(self, name: str, filename: str, raw_data: bytes):
         self.files.append((name, filename, raw_data))
 
+    @staticmethod
+    def is_cli_option(part: str|GDT) -> bool:
+        """A dash option, but never a signed numeric positional value."""
+        if type(part) is not str or not part.startswith('-') or part == '-':
+            return False
+        try:
+            float(part)
+            return False
+        except ValueError:
+            return True
+
     def add_cli_part(self, part: str|GDT):
-        if type(part) is str and part.startswith('--'):
-            part = part.lstrip('-')
-            kv = part.split('=', 1)
-            self.args[kv[0]] = kv[1] if len(kv) > 1 else '1'
+        if self.is_cli_option(part):
+            key, *value = part.lstrip('-').split('=', 1)
+            self.args[key] = value[0] if value else '1'
         else:
             self.pargs.append(part)
 
     def add_cli_line(self, cli_args: list[str]):
-        for part in cli_args:
+        index = 0
+        while index < len(cli_args):
+            part = cli_args[index]
+            if self.is_cli_option(part) and '=' not in part:
+                key = part.lstrip('-')
+                if index + 1 < len(cli_args) and not self.is_cli_option(cli_args[index + 1]):
+                    self.args[key] = cli_args[index + 1]
+                    index += 2
+                    continue
             self.add_cli_part(part)
+            index += 1
 
     def get_mode(self):
         try:
