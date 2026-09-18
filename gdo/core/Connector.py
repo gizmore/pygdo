@@ -126,10 +126,28 @@ class Connector:
         return True
 
     def disconnected(self):
+        """Mark an intentional disconnect; the owner may reconnect immediately."""
         self._connected = False
         self._connecting = False
         self._connect_failures = 0
         self._next_connect_time = Application.TIME
+        self.gdo_disconnected()
+
+    def connection_lost(self):
+        """Mark an unexpected remote failure and back off reconnect attempts.
+
+        Treating an EOF, reset or IRC ``ERROR`` like an intentional disconnect
+        caused a tight connect/disconnect loop.  Servers then quite reasonably
+        throttle the client.  Keep the normal bounded retry policy, but make
+        sure a connected socket which dies participates in it as well.
+        """
+        self._connected = False
+        self._connecting = False
+        self._connect_failures += 1
+        self._next_connect_time = Application.TIME + min(
+            self._connect_failures * 10,
+            Time.ONE_MINUTE * 2,
+        )
         self.gdo_disconnected()
 
     def connect_failed(self):
