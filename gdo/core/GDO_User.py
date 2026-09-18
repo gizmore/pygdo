@@ -92,7 +92,7 @@ class GDO_User(GDO):
 
     @classmethod
     def current(cls) -> Self:
-        return Application.STORAGE.user or cls.ghost()
+        return Application.get_current_user() or cls.ghost()
 
     def gdo_columns(self) -> list:
         return [

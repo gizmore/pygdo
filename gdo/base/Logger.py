@@ -1,5 +1,6 @@
 import sys
 import datetime
+from contextvars import ContextVar
 
 import aiofiles
 from rich.console import Console
@@ -18,17 +19,23 @@ class Logger:
     LINES_WRITTEN = 0 #PYPP#DELETE#
 
     _base: str
-    _user: 'GDO_User|None' = None
+    # Log attribution belongs to the current request/connector task.  A global
+    # user leaks identity across concurrently handled connector messages.
+    USER: ContextVar = ContextVar('logger_user', default=None)
 
     @classmethod
     def init(cls, base: str = None):
         cls._base = base
-        cls._user = None
+        cls.user(None)
         WithPygdo.util('Files').create_dir(cls._base)
 
     @classmethod
     def user(cls, user: 'GDO_User'):
-        cls._user = user
+        cls.USER.set(user)
+
+    @classmethod
+    def get_user(cls) -> 'GDO_User|None':
+        return cls.USER.get()
 
     @classmethod
     def request(cls, url: str, qs: str):
@@ -72,13 +79,14 @@ class Logger:
     def write(cls, path: str, content: str, user_log: bool = True):
         pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
         path = datetime.datetime.now().strftime('%Y-%m-%d') + '_' + path
-        if cls._user:
-            pre += cls._user.get_name() + " - "
+        user = cls.get_user()
+        if user:
+            pre += user.get_name() + " - "
         with open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:
             fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
-        if cls._user and user_log:
-            dir_name = f"{cls._base}{cls._user.get_server().get_name()}/{cls._user.get_name()}/"
+        if user and user_log:
+            dir_name = f"{cls._base}{user.get_server().get_name()}/{user.get_name()}/"
             WithPygdo.util('Files').create_dir(dir_name)
             with open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 fo.write(f'{pre}{content}\n')
@@ -88,13 +96,14 @@ class Logger:
     async def awrite(cls, path: str, content: str, user_log: bool = True):
         pre = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - "
         path = datetime.datetime.now().strftime('%Y-%m-%d') + '_' + path
-        if cls._user:
-            pre += cls._user.get_name() + " - "
+        user = cls.get_user()
+        if user:
+            pre += user.get_name() + " - "
         async with aiofiles.open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:
             await fo.write(f"{pre}{content}\n")
             cls.LINES_WRITTEN += 1  #PYPP#DELETE#
-        if cls._user and user_log:
-            dir_name = f"{cls._base}{cls._user.get_server().get_name()}/{cls._user.get_name()}/"
+        if user and user_log:
+            dir_name = f"{cls._base}{user.get_server().get_name()}/{user.get_name()}/"
             await WithPygdo.util('Files').acreate_dir(dir_name)
             async with aiofiles.open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 await fo.write(f"{pre}{content}\n")

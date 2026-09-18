@@ -4,6 +4,7 @@ import queue
 import threading
 import time
 from asyncio import AbstractEventLoop
+from contextvars import ContextVar, Token
 
 import tomlkit
 
@@ -37,7 +38,10 @@ class Application:
     LOADER: 'ModuleLoader'
     EVENTS: 'Events'
     STORAGE = threading.local()
-    LANG_ISO = 'en'
+    # Request identity and language must not be process-global.  ContextVars
+    # isolate both OS threads and concurrently scheduled asyncio tasks.
+    CURRENT_USER: ContextVar = ContextVar('current_user', default=None)
+    CURRENT_LANG_ISO: ContextVar[str] = ContextVar('current_lang_iso', default='en')
     TIME = round(time.time(), 6)
     FIRST_TIME = TIME
     IPC_TS = TIME
@@ -130,12 +134,28 @@ class Application:
 
     @classmethod
     def set_current_user(cls, user):
-        cls.STORAGE.user = user
-        cls.STORAGE.lang = user.get_lang_iso()
+        cls.CURRENT_USER.set(user)
+        cls.set_lang_iso(user.get_lang_iso())
         Logger.user(user)
         cls.get_module_user().instance().set_last_activity(user)
         if cls.IS_HTTP:
             cls.EVENTS.publish_sync('user_request', user)
+
+    @classmethod
+    def get_current_user(cls):
+        return cls.CURRENT_USER.get()
+
+    @classmethod
+    def set_lang_iso(cls, iso: str) -> Token:
+        return cls.CURRENT_LANG_ISO.set(iso or 'en')
+
+    @classmethod
+    def get_lang_iso(cls) -> str:
+        return cls.CURRENT_LANG_ISO.get()
+
+    @classmethod
+    def reset_lang_iso(cls, token: Token):
+        cls.CURRENT_LANG_ISO.reset(token)
 
     @classmethod
     def fresh_page(cls):
@@ -200,8 +220,8 @@ class Application:
         cls.STORAGE.ip = environ.get('REMOTE_ADDR')
         cls.PROTOCOL = environ.get('REQUEST_SCHEME', environ.get('wsgi.url_scheme', cls.config('core.force_tls', '0'))).lower()
         cls.mode(Mode.render_html)
-        cls.STORAGE.lang = 'en'
-        cls.STORAGE.user = None
+        cls.CURRENT_USER.set(None)
+        cls.set_lang_iso('en')
         Cache = LazyImporter.import_once("from gdo.base.Cache import Cache")
         Cache.clear_ocache()
 
@@ -236,19 +256,21 @@ class Application:
         cls.fresh_page()
         cls.DB_READS = 0 #PP#DELETE#
         cls.DB_WRITES = 0 #PP#DELETE#
-        cls.STORAGE.user = None
-        cls.STORAGE.lang = 'en'
+        cls.CURRENT_USER.set(None)
+        cls.set_lang_iso('en')
         cls.TASKS = []
-        Logger._user = None
+        Logger.user(None)
 
     @classmethod
     def init_thread(cls, thread):
+        # A reused worker must not inherit identity or language from its
+        # previous request. ContextVars also keep async tasks independent.
+        cls.CURRENT_USER.set(None)
+        cls.set_lang_iso('en')
         if not hasattr(cls.STORAGE, 'DB'):
             cls.mode(Mode.render_html)
             if thread:
                 cls.fresh_page()
-            cls.STORAGE.lang = 'en'
-            cls.STORAGE.user = None
             cls.TIME = round(time.time(), 6)
             if cfg := cls.CONFIG.get('db'):
                 Database = LazyImporter.import_once('from gdo.base.Database import Database')

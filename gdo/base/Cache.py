@@ -339,7 +339,7 @@ class Cache:
 #############
 
 def _hash_args(args, kwargs):
-    return hashlib.md5(str((args, frozenset(kwargs.items()), Application.STORAGE.lang)).encode()).hexdigest()
+    return hashlib.md5(str((args, frozenset(kwargs.items()), Application.get_lang_iso())).encode()).hexdigest()
 
 def gdo_redis_cached(cache_key: str):
     def decorator(func: callable):
@@ -382,7 +382,7 @@ def gdo_lru_cache(fn=None, *, maxsize=256, typed=False):
 
         @wraps(f)
         def wrapper(self, *args, **kwargs):
-            return _cached(Application.STORAGE.lang, self, *args, **kwargs)
+            return _cached(Application.get_lang_iso(), self, *args, **kwargs)
 
         wrapper.cache_info = _cached.cache_info
         wrapper.cache_clear = _cached.cache_clear

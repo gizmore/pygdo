@@ -7,4 +7,4 @@ from gdo.core.GDT_Dict import GDT_Dict
 class language(Method):
 
     def gdo_execute(self) -> GDT:
-        return GDT_Dict(Trans.CACHE.get(Application.STORAGE.lang, Trans.EN))
+        return GDT_Dict(Trans.CACHE.get(Application.get_lang_iso(), Trans.EN))

@@ -78,7 +78,7 @@ class GDT_Page(GDT):
         user = self.gdo_user().current()
         flash = UserTemp.render_flash(user, not 300 <= Application.get_status_code() < 400)
         html = tplhtml('ui', 'page.html', {
-            'lang': Application.LANG_ISO,
+            'lang': Application.get_lang_iso(),
             'result': result,
             'title': self._method.gdo_render_title(),
             'descr': self._method.gdo_render_descr(),

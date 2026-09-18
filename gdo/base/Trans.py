@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 def t(key: str, args: tuple=None):
-    return Trans.tiso(Application.STORAGE.lang, key, args)
+    return Trans.tiso(Application.get_lang_iso(), key, args)
 
 
 def tusr(user: 'GDO_User', key: str, args: tuple = None):
@@ -64,18 +64,17 @@ class Trans:
         'en': EN,
     }
 
-    old_iso: str
     new_iso: str
 
     def __init__(self, iso: str):
         self.new_iso = iso
-        self.old_iso = Application.STORAGE.lang
+        self.token = None
 
     def __enter__(self):
-        Application.STORAGE.lang = self.new_iso
+        self.token = Application.set_lang_iso(self.new_iso)
 
     def __exit__(self, *args):
-        Application.STORAGE.lang = self.old_iso
+        Application.reset_lang_iso(self.token)
 
     @staticmethod
     def init():
@@ -108,7 +107,7 @@ class Trans:
 
     @staticmethod
     def t(key: str, args: tuple=None):
-        return Trans.tiso(Application.STORAGE.lang, key, args)
+        return Trans.tiso(Application.get_lang_iso(), key, args)
 
     @staticmethod
     def tiso(iso: str, key: str, args: tuple = None):
@@ -134,5 +133,5 @@ class Trans:
 
     @staticmethod
     def has(key: str) -> bool:
-        cache = Trans.CACHE.get(Application.STORAGE.lang, Trans.EN)
+        cache = Trans.CACHE.get(Application.get_lang_iso(), Trans.EN)
         return key in cache or key in Trans.EN

@@ -24,7 +24,7 @@ def href(module_name: str, method_name: str, append: str = '', fmt: str = 'html'
         else:
             options.extend((key, value))
     if not any(key == '_lang' for key, _value in technical):
-        technical.append(('_lang', Application.STORAGE.lang))
+        technical.append(('_lang', Application.get_lang_iso()))
     parts = [module_name, method_name, *map(_segment, positional), *map(_segment, options), fmt]
     return f"/{'.'.join(parts)}?{urlencode(technical, doseq=True)}"
 

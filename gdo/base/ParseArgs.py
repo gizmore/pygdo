@@ -185,7 +185,7 @@ class ParseArgs(WithPygdo):
         self.files = []
 
     def get_args_cache_key(self, method: 'Method') -> str:
-        return f"{method.fqcn()}.{self.args}.{self.pargs}.{Application.STORAGE.lang}"
+        return f"{method.fqcn()}.{self.args}.{self.pargs}.{Application.get_lang_iso()}"
 
     def get_files(self, key: str) -> list[tuple[str, str, bytes]]:
         back = []

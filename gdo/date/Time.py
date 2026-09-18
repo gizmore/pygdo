@@ -138,7 +138,7 @@ class Time:
 
     @staticmethod
     def parse_time(date: str, tz: str = None, format: str = 'parse') -> float:
-        return Time.parse_time_iso(Application.LANG_ISO, date, tz, format)
+        return Time.parse_time_iso(Application.get_lang_iso(), date, tz, format)
 
     @staticmethod
     def parse_time_db(date: str) -> float:
@@ -155,7 +155,7 @@ class Time:
 
     @staticmethod
     def parse_datetime(date: str, tz: str = None, fmt: str = 'parse') -> None | datetime:
-        return Time.parse_datetime_iso(Application.LANG_ISO, date, tz, fmt)
+        return Time.parse_datetime_iso(Application.get_lang_iso(), date, tz, fmt)
 
     @staticmethod
     def parse_datetime_db(date: str, tz: str = TIMEZONE) -> None | datetime:
@@ -198,7 +198,7 @@ class Time:
 
     @staticmethod
     def display_timestamp(timestamp: float, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
-        return Time.display_timestamp_iso(Application.LANG_ISO, timestamp, fmt, default, tz)
+        return Time.display_timestamp_iso(Application.get_lang_iso(), timestamp, fmt, default, tz)
 
     @staticmethod
     def display_timestamp_iso(iso: str, timestamp: float, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
@@ -222,7 +222,7 @@ class Time:
 
     @staticmethod
     def display_date(date: str = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
-        return Time.display_date_iso(Application.LANG_ISO, date, fmt, default, tz)
+        return Time.display_date_iso(Application.get_lang_iso(), date, fmt, default, tz)
 
     @staticmethod
     def display_date_iso(iso: str, date: str = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
@@ -233,7 +233,7 @@ class Time:
 
     @staticmethod
     def display_datetime(datetime_obj: datetime = None, fmt: str = 'short', default: str = '---', tz: str = None) -> str:
-        return Time.display_datetime_iso(Application.LANG_ISO, datetime_obj, fmt, default, tz)
+        return Time.display_datetime_iso(Application.get_lang_iso(), datetime_obj, fmt, default, tz)
 
     @staticmethod
     def display_time_iso(iso: str, time: datetime = None, fmt: str = 'short', default: str = '---', timezone_id: str = None) -> str:
@@ -283,7 +283,7 @@ class Time:
 
     @staticmethod
     def human_duration(seconds: float, n_units: int = 2, with_millis: bool = True, remove_zero_units: bool = True) -> str:
-        return Time.human_duration_iso(Application.LANG_ISO, seconds, n_units, with_millis)
+        return Time.human_duration_iso(Application.get_lang_iso(), seconds, n_units, with_millis)
 
     @staticmethod
     def human_duration_iso(iso: str, seconds: float, n_units: int = 2, with_millis: bool = True) -> str:

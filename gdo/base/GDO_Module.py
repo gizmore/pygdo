@@ -208,7 +208,7 @@ class GDO_Module(WithModuleConfig, GDO):
     # Errors #
     ##########
     def t(self, key: str, args: tuple[str|int|float,...] = None):
-        return Trans.tiso(Application.STORAGE.lang, key, args)
+        return Trans.tiso(Application.get_lang_iso(), key, args)
 
     def err(self, key: str, args: list[str] = None):
         err(key, args, self.render_name())
