@@ -57,6 +57,11 @@ class Logger:
         cls.write('message.log', content)
 
     @classmethod
+    def warning(cls, content: str):
+        """Record a recoverable warning in the normal message log."""
+        cls.write('message.log', content)
+
+    @classmethod
     def message(cls, content: str):
         cls.write('message.log', content)
 
