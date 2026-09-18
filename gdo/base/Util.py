@@ -404,7 +404,10 @@ class Files:
 
     @classmethod
     def copy(cls, src: str, dst: str) -> bool:
-        shutil.copy(src, dst)
+        # This utility copies application data, not ownership or mode bits.
+        # ``shutil.copy`` also calls copymode(), which fails when a shared
+        # storage file was originally created by another service account.
+        shutil.copyfile(src, dst)
         return True
 
     @classmethod
