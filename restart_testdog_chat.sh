@@ -18,6 +18,7 @@ watch_dirs=(
     "$project_dir/gdo/net"
     "$project_dir/gdo/mira"
     "$project_dir/gdo/translate"
+    "$project_dir/gdo/git"
     "$project_dir/gdo/youtube"
 )
 
