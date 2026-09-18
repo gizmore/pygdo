@@ -31,6 +31,11 @@ class GDT_Int(GDT_String):
     def get_val(self):
         return GDT_Field.get_val(self)
 
+    @classmethod
+    def display_var(cls, val: str | int) -> str:
+        """Database integer values render as native ints in cards."""
+        return str(val) if val is not None else ''
+
     ##############
     # Attributes #
     ##############
