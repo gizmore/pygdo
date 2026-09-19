@@ -34,6 +34,7 @@ class GDO_Server(GDO):
     _users: dict[str, 'GDO_User']
     _has_loop: bool
     _loop_task: asyncio.Task|None
+    connection_completed: bool
 
     __slots__ = (
         '_connector',
@@ -41,6 +42,7 @@ class GDO_Server(GDO):
         '_users',
         '_has_loop',
         '_loop_task',
+        'connection_completed',
     )
 
     def __init__(self):
@@ -50,6 +52,7 @@ class GDO_Server(GDO):
         self._loop_task = None
         self._channels = {}
         self._connector = None
+        self.connection_completed = False
 
     def gdo_wake_up(self):
         super().gdo_wake_up()
@@ -58,6 +61,7 @@ class GDO_Server(GDO):
         self._loop_task = None
         self._channels = {}
         self._connector = None
+        self.connection_completed = False
 
     @classmethod
     def get_by_connector(cls, name: str):
