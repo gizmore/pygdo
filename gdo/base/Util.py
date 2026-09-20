@@ -383,7 +383,9 @@ class Files:
 
     @classmethod
     async def acreate_dir(cls, dir_name: str, exist_ok: bool = True) -> bool:
-        await asyncio.to_thread(os.makedirs, dir_name, exist_ok=exist_ok, mode=int(WithPygdo.application().config('files.mode.dir', 0o700), 0))
+        mode = WithPygdo.application().config('file.mode.dir', "0o0700")
+        mode = int(mode, 0) if isinstance(mode, str) else int(mode)
+        await asyncio.to_thread(os.makedirs, dir_name, exist_ok=exist_ok, mode=mode)
         return True
 
     @classmethod
