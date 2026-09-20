@@ -1,5 +1,5 @@
 import os
-from unittest.mock import patch
+from unittest.mock import AsyncMock, Mock, patch
 
 from gdo.base.Application import Application
 from gdo.base.Message import Message
@@ -90,6 +90,20 @@ class test_channel_set(GDOTestCase):
                   env_session(GDO_Session.for_user(user)).input('enabled', '1'))
         await method.execute()
         self.assertTrue(Application.STORAGE.cli_channel_mode)
+
+    async def test_system_channel_notice_has_no_visible_sender_prefix(self):
+        connector = Mock()
+        connector.get_render_mode.return_value = Mode.render_irc
+        connector.send_to_channel = AsyncMock()
+        server = Mock()
+        server.get_connector.return_value = connector
+        channel = Mock()
+        channel.get_server.return_value = server
+
+        await GDO_Channel.send(channel, 'Automated notice')
+
+        message = connector.send_to_channel.await_args.args[0]
+        self.assertFalse(message.wants_sender_prefix())
 
     def test_connector_setting_renders_its_persisted_name(self):
         self.assertEqual('irc', GDT_Connector('serv_connector').val('irc').render_val())

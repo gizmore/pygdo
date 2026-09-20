@@ -77,7 +77,9 @@ class GDO_Channel(GDO):
             conn = server.get_connector()
             msg = Message(message, conn.get_render_mode())
             msg.env_user(GDO_User.system(), True)
-            msg.env_server(server).env_channel(self).result(message)
+            # System is the internal routing identity for automated notices,
+            # not a conversational author to expose in channel output.
+            msg.env_server(server).env_channel(self).result(message).no_sender_prefix()
             await conn.send_to_channel(msg)
 
     async def send_text(self, key: str, args: tuple[str|int|float,...]):
