@@ -82,7 +82,7 @@ class Message(WithEnv):
         return not (
             self._thread_user or
             self._no_sender_prefix or
-            (self._env_reply_to and self._env_reply_to.get_id() == 1)
+            self._env_reply_to
         )
 
     def get_trigger(self):
@@ -104,6 +104,12 @@ class Message(WithEnv):
             # its original network identity, while every method sees the
             # account which owns shared settings, score and permissions.
             if self._env_user:
+                # Ignore is deliberately checked on the originating connector
+                # account before linked-account resolution. Service bots still
+                # participate in presence, but their automated notices and
+                # messages never enter chat, translation, or Mira consumers.
+                if self._env_user.get_setting_value('ignore'):
+                    return
                 self._env_reply_to = self._env_user
                 self._env_user = self._env_user.get_effective_user()
                 Application.set_current_user(self._env_user)

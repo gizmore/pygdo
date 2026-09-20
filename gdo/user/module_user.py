@@ -5,6 +5,7 @@ from gdo.base.Cache import Cache
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Secret import GDT_Secret
 from gdo.core.GDT_Text import GDT_Text
 from gdo.core.GDT_Token import GDT_Token
@@ -58,6 +59,9 @@ class module_user(GDO_Module):
 
     def gdo_user_config(self) -> list[GDT]:
         return [
+            # Connector/service accounts can remain known for presence while
+            # their automated chatter is excluded from message consumers.
+            GDT_Bool('ignore').not_null().initial('0'),
             GDT_Timestamp('last_activity'),
             GDT_Level('level').initial('0'),
             GDT_UInt('profile_views').initial('0'),

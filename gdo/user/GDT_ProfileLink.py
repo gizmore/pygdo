@@ -36,8 +36,12 @@ class GDT_ProfileLink(GDT_Link):
         self._with_avatar = with_avatar
         return self
 
-    def render_label(self) -> str:
+    def render_label(self, mode: Mode = Mode.render_html) -> str:
         return t('profile')
+
+    def render_irc(self) -> str:
+        """Chat cannot use an HTML profile URL; show the linked user name."""
+        return self.render_text(Mode.render_irc)
 
     def render_html(self) -> str:
         content = ''

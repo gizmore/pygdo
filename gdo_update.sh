@@ -3,16 +3,39 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-# THREADS: number of parallel processes
-# Default: 15
-# 0 means unlimited where supported by xargs.
-THREADS="${1:-15}"
+# Update source checkouts without discarding local work. Pass a positive
+# integer to select the parallelism (default: 15). Runtime-affecting hooks
+# are deliberately opt-in via --apply.
+THREADS=15
+APPLY=0
+for arg in "$@"; do
+	case "$arg" in
+		--apply) APPLY=1 ;;
+		*[!0-9]*|'')
+			echo "Usage: $0 [threads] [--apply]" >&2
+			exit 2
+			;;
+		*) THREADS="$arg" ;;
+	esac
+done
 
 mkdir -p temp
 
+repo_dirs() {
+	printf '%s\0' .
+	find ./gdo -mindepth 2 -maxdepth 2 -type d -name '.git' -printf '%h\0'
+}
+
+ensure_clean() {
+	local repo_dir="$1"
+	if [[ -n "$(git -C "$repo_dir" status --porcelain)" ]]; then
+		echo "Refusing to update dirty checkout: $repo_dir" >&2
+		return 1
+	fi
+}
+
 update_repo() {
-	local git_dir="$1"
-	local repo_dir="${git_dir%/.git}"
+	local repo_dir="$1"
 	local repo_name
 	local log_file
 
@@ -21,14 +44,10 @@ update_repo() {
 
 	(
 		cd "$repo_dir"
-
 		{
 			printf '%s\n' "-----------------------------"
 			printf 'updating repo [ "%s" ]:\n' "$(pwd)"
-
-			LANG=en_GB LC_ALL=en_GB git pull
-			git submodule foreach git pull
-			git submodule update --recursive --remote
+			LANG=en_GB LC_ALL=en_GB git pull --ff-only
 		} >"$log_file" 2>&1
 	)
 
@@ -38,30 +57,22 @@ update_repo() {
 
 export -f update_repo
 
-echo "Resetting sourcecode to factory defaults for preprocessor."
-bash gdo_reset.sh
+echo "Checking that every checkout is clean. No reset will be performed."
+while IFS= read -r -d '' repo_dir; do
+	ensure_clean "$repo_dir"
+done < <(repo_dirs)
 
-echo "Updating the main phpgdo repository and its submodules."
-update_repo "./.git"
+echo "Updating the main PyGDO repository and extension modules."
+update_repo .
+repo_dirs | tail -z -n +2 | xargs -0 -r -n 1 -P "$THREADS" bash -c 'update_repo "$1"' _
 
-echo "Updating all extension modules and submodules in $THREADS parallel threads."
-find ./gdo \
-	-mindepth 2 \
-	-maxdepth 2 \
-	-type d \
-	-name '.git' \
-	-print0 |
-	xargs -0 -n 1 -P "$THREADS" \
-		bash -c 'update_repo "$1"' _
+if (( ! APPLY )); then
+	echo "Source update completed. Skipped configure, database update, yarn, and service restart."
+	echo "Run '$0 --apply' only after reviewing the updated source."
+	exit 0
+fi
 
-cd "$(dirname "$0")"
-
-echo "Triggering 'gdo_adm.sh confgrade'."
+echo "Applying explicit maintenance hooks."
 bash gdo_adm.sh configure
-
-echo "Triggering 'gdo_adm.sh update'."
 bash gdo_adm.sh update
-
-echo "Triggering 'gdo_yarn.sh'."
 bash gdo_yarn.sh
-```
