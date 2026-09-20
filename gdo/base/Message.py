@@ -77,6 +77,14 @@ class Message(WithEnv):
         self._no_sender_prefix = enabled
         return self
 
+    def wants_sender_prefix(self) -> bool:
+        """Whether a channel connector should add the Dog's display name."""
+        return not (
+            self._thread_user or
+            self._no_sender_prefix or
+            (self._env_reply_to and self._env_reply_to.get_id() == 1)
+        )
+
     def get_trigger(self):
         if self._env_channel:
             return self._env_channel.get_trigger()
