@@ -12,7 +12,11 @@ class GDT_Email(GDT_String):
     def __init__(self, name: str):
         super().__init__(name)
         self.ascii().maxlen(96).case_i()
-        self.pattern("^[^@\\s]+@[^@\\s]+$")
+        # Account mail must remain portable across ordinary SMTP relays.
+        # SMTPUTF8 is optional end-to-end, so reject non-ASCII directly in
+        # the field pattern instead of accepting an address that may fail at
+        # delivery time.
+        self.pattern(r"^(?=[\x00-\x7F]+$)[^@\s]+@[^@\s]+$")
         self.icon('email')
         self._obfuscate = False
         self._input_type = "email"
