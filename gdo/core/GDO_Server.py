@@ -136,6 +136,14 @@ class GDO_Server(GDO):
         if self._users.pop(user.get_name(), None):
             await Application.EVENTS.publish('user_quit_server', user)
 
+    async def on_user_connected(self, user: 'GDO_User'):
+        """Publish a protocol-confirmed connection, distinct from presence."""
+        await Application.EVENTS.publish('user_connected_server', user)
+
+    async def on_user_disconnected(self, user: 'GDO_User'):
+        """Publish a protocol-confirmed disconnect, before presence removal."""
+        await Application.EVENTS.publish('user_disconnected_server', user)
+
     async def on_bot_joined(self, user: 'GDO_User', channel: 'GDO_Channel'):
         await Application.EVENTS.publish('bot_joined_server', user)
         self._users[user.get_name()] = user
@@ -261,12 +269,14 @@ class GDO_Server(GDO):
     ###########
     # Message #
     ###########
-    async def send_to_user(self, user: GDO_User, key: str, args: tuple = None, notice: bool=False):
+    async def send_to_user(self, user: GDO_User, key: str, args: tuple = None,
+                           notice: bool=False, mira_reply: bool=False):
         from gdo.base.Trans import Trans
         with Trans.message_context(self):
             text = tusr(user, key, args)
         message = Message(text, Application.get_mode())
         message.env_user(user, True).env_server(self).env_channel(None)
+        message._mira_reply = mira_reply
         await self.get_connector().send_to_user(message.result(text), True, notice)
 
     ##########
