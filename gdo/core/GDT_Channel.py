@@ -51,8 +51,4 @@ class GDT_Channel(GDT_ObjectSelect):
         return query
 
     def query_gdos(self, val: str) -> list[GDO]:
-        if val.isdecimal():
-            if channel := self._table.get_by_aid(val):
-                return [channel]
-            return []
         return self.query_gdos_query(val, self._table.select()).limit(10).exec().fetch_all()

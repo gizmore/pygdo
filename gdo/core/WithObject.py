@@ -61,15 +61,29 @@ class WithObject:
     def to_value(self, val: str):
         if val is None:
             return self.query_default_random() if self._default_random else None
+        # Object IDs are explicit so a completely numeric connector nickname
+        # remains a name. Parser and ordinary numeric GDTs must not inherit
+        # object-reference syntax.
+        if val.startswith('#') and val[1:].isdecimal():
+            return self._table.get_by_aid(val[1:])
         return self.get_by_name(val)
+
+    def get_value(self):
+        """Resolve stored foreign keys as IDs without changing their raw value."""
+        if not self._converted:
+            val = self.get_val()
+            gdo = getattr(self, '_gdo', None)
+            stored = gdo.gdo_val(self._name) if gdo else None
+            if val is not None and val == stored:
+                self._value = self.to_value(f'#{val}')
+                self._converted = True
+                return self._value
+        return super().get_value()
 
     def get_gdo(self) -> GDO:
         return self.get_value()
 
     def query_gdos(self, val: str) -> list[GDO]:
-        if val.isdigit():
-            if gdo := self._table.get_by_aid(val):
-                return [gdo]
         if gdt := self._table.name_column():
             return self._table.select().where(f"{gdt.get_name()} LIKE '%{GDO.escape(val)}%'").exec().fetch_all()
         return GDO.EMPTY_LIST

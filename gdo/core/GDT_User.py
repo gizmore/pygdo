@@ -85,10 +85,6 @@ class GDT_User(GDT_Object):
         return query.limit(16)
 
     def query_gdos(self, val: str) -> list[GDO]:
-        if val.isnumeric():
-            if user := self._table.get_by_aid(val):
-                return [user]
-            return []
         if user_id := Strings.regex_first(r'^(\d+)-', val):
             if user := self._table.get_by_aid(user_id):
                 return [user]
