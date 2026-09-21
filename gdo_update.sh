@@ -28,8 +28,11 @@ repo_dirs() {
 
 ensure_clean() {
 	local repo_dir="$1"
-	if [[ -n "$(git -C "$repo_dir" status --porcelain)" ]]; then
-		echo "Refusing to update dirty checkout: $repo_dir" >&2
+	# Runtime files (PIDs, logs, local downloads) can be untracked. Only
+	# tracked edits or staged changes could be overwritten or conflict with a
+	# fast-forward update.
+	if ! git -C "$repo_dir" diff --quiet || ! git -C "$repo_dir" diff --cached --quiet; then
+		echo "Refusing to update checkout with tracked changes: $repo_dir" >&2
 		return 1
 	fi
 }
