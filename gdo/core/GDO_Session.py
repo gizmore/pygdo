@@ -1,4 +1,5 @@
 from gdo.base.Application import Application
+from gdo.base.DBLock import DBLock
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Util import msg
@@ -20,11 +21,13 @@ class GDO_Session(GDO):
 
     __slots__ = (
         '_data',
+        '_lock',
     )
 
     def __init__(self):
         super().__init__()
         self._data = {}
+        self._lock = None
 
     def __repr__(self):
         return f"{self.get_name()}()"
@@ -121,11 +124,14 @@ class GDO_Session(GDO):
     def save(self):
         # Persist an empty mapping as well: it clears previously stored session
         # data (for example a consumed flash message).
-        if self._data is not None:
-            self.set_value('sess_data', self._data)
-        if self.get_token() == self.DEFAULT_COOKIE:
-            return self
-        return super().save()
+        try:
+            if self._data is not None:
+                self.set_value('sess_data', self._data)
+            if self.get_token() == self.DEFAULT_COOKIE:
+                return self
+            return super().save()
+        finally:
+            self.release_lock()
 
     def set_header(self):
         self.set_cookie_header(self.cookie_value())
@@ -152,6 +158,20 @@ class GDO_Session(GDO):
     def get_uid(self) -> str:
         uid = self.gdo_val('sess_user')
         return uid or '0'
+
+    def lock_name(self) -> str:
+        """Return the database mutex name for this persisted session."""
+        return f'GDO_SESSION:{self.get_id()}'
+
+    def hold_lock(self, lock: DBLock):
+        """Keep a request lock until this session has been persisted."""
+        self._lock = lock
+        return self
+
+    def release_lock(self):
+        if self._lock is not None:
+            self._lock.__exit__(None, None, None)
+            self._lock = None
 
     def get_ip(self) -> str | None:
         return self.gdo_val('sess_ip')

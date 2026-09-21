@@ -218,6 +218,7 @@ async def app(scope, receive, send):
                     result = await result
 
                 if type(result) is GDT_FileOut:
+                    session.save()
                     size = int(Application.get_header('Content-Length'))
                     await send({
                         'type': 'http.response.start',

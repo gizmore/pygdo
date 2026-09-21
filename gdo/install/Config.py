@@ -76,6 +76,7 @@ class Config:
             GDT_Section().title_raw('Session'),
             cls.data_str('sess.name', 'PyGDO'),
             cls.data_str('sess.same_site', 'lax'),
+            cls.data_int('sess.lock', 0, 'Serialize state-changing requests for the same persisted session. 0/1').min(0).max(1),
             GDT_Section().title_raw('Log'),
             cls.data_int('log.request', 1, '0/1').min(0).max(1),
             GDT_Section().title_raw('Mail'),

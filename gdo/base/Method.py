@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from gdo.base.GDO_Module import GDO_Module
 
 from gdo.base.Application import Application
+from gdo.base.DBLock import DBLock
 from gdo.base.Exceptions import GDOError, GDOParamError
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
@@ -117,6 +118,27 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
 
     def gdo_transactional(self) -> bool:
         return Application.get_request_method() != 'GET'
+
+    def gdo_locks_session(self) -> bool:
+        """Whether this state-changing method serializes its session.
+
+        Methods that stream, upload, or otherwise wait on external I/O may
+        override this with ``False``.  The global switch is ``sess.lock``.
+        """
+        return self.gdo_transactional()
+
+    def gdo_session_lock(self) -> DBLock | None:
+        """Create the short per-session execution mutex when it is enabled."""
+        session = getattr(self, '_env_session', None)
+        if not (
+            self.gdo_locks_session()
+            and str(Application.config('sess.lock', '0')).lower() in ('1', 'true', 'yes', 'on')
+            and session is not None
+            and hasattr(session, 'is_persisted')
+            and session.is_persisted()
+        ):
+            return None
+        return DBLock(session.lock_name())
 
     def gdo_parameters(self) -> list[GDT]:
         return GDO.EMPTY_LIST
@@ -361,6 +383,18 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
     METHOD_CACHE: dict[str, tuple[float, GDT]] = {}
 
     async def execute(self):
+        lock = self.gdo_session_lock()
+        if lock is None:
+            return await self._execute()
+        lock.__enter__()
+        self._env_session.hold_lock(lock)
+        try:
+            return await self._execute()
+        except Exception:
+            self._env_session.release_lock()
+            raise
+
+    async def _execute(self):
         if self.gdo_cached():
             key = self._raw_args.get_args_cache_key(self)
             if Cache.get_timed_cache(key):

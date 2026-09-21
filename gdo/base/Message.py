@@ -158,9 +158,9 @@ class Message(WithEnv):
         # one-shot state, so a second render in ``deliver`` can lose a
         # response such as BlackJack's ``self.msg(...); return self.empty()``.
         self._result = self.render_response(self._env_server.get_render_mode())
-        await self.deliver()
         if not Application.IS_HTTP:
             self._env_session.save()
+        await self.deliver()
 
     def render_response(self, mode: Mode) -> str:
         """Render flash/top-bar output together with a method result.

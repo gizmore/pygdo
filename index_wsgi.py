@@ -275,6 +275,7 @@ def pygdo_application(environ, start_response):
                 result = GDT_Error.from_exception(ex, method.gdo_module().render_name())
 
             if type(result) is GDT_FileOut:
+                session.save()
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
                 for chunk in result:
