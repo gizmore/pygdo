@@ -1,5 +1,6 @@
 import os
 import unittest
+from pathlib import Path
 
 from gdo.base.Application import Application
 from gdo.base.Render import Mode, Render
@@ -21,10 +22,28 @@ class DogTestCase(GDOTestCase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         Application.init(os.path.dirname(__file__) + "/../")
+        self.require_isolated_config(Application.CONFIG_PATH, Application.PATH)
         loader = ModuleLoader.instance()
         loader.load_modules_db()
         loader.init_modules(True, True)
         loader.init_cli()
+
+    @staticmethod
+    def require_isolated_config(config_path: str, application_path: str):
+        """Prevent connector tests from creating servers in the live database."""
+        live_config = (Path(application_path) / 'protected' / 'config.toml').resolve()
+        if Path(config_path).resolve() == live_config:
+            raise RuntimeError(
+                'Dog tests refuse to run with protected/config.toml; '
+                'use an isolated test configuration.'
+            )
+
+    def test_00_refuses_live_config(self):
+        with self.assertRaisesRegex(RuntimeError, 'refuse to run'):
+            self.require_isolated_config(
+                str(Path(Application.PATH) / 'protected' / 'config.toml'),
+                Application.PATH,
+            )
 
     async def test_01_connector_gdt(self):
         gdt = GDT_Connector("conn").initial("web")
