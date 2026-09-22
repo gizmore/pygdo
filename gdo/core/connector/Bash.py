@@ -13,6 +13,9 @@ class Bash(Connector):
     def render_user_connect_help(self) -> str:
         return t('help_bash_connector')
 
+    def render_user_command_help(self) -> str:
+        return '(gl+hf)'
+
     def get_render_mode(self) -> Mode:
         return Mode.render_cli
 
@@ -44,4 +47,3 @@ class Bash(Connector):
         Logger.debug("Bash connect...")
         self._connected = True
         return True
-

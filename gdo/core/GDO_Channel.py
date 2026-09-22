@@ -8,6 +8,7 @@ from gdo.core.GDO_Method import GDO_Method
 from gdo.core.GDO_Server import GDO_Server
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_AutoInc import GDT_AutoInc
+from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Char import GDT_Char
 from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_Name import GDT_Name
@@ -33,6 +34,7 @@ class GDO_Channel(GDO):
             GDT_String('chan_displayname').maxlen(96).not_null(),
             GDT_Language('chan_language').not_null().initial('en'),
             GDT_Char('chan_trigger').maxlen(1).not_null().initial('$'),
+            GDT_Bool('chan_autojoin').not_null().initial('0'),
             GDT_Created('chan_created'),
             GDT_Creator('chan_creator'),
         ]
