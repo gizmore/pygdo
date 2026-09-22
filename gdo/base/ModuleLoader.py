@@ -109,7 +109,7 @@ class ModuleLoader:
                 raise GDOException(f"Cannot import module {modulename}")
             return module
         except Exception as ex:
-            Logger.exception(ex, 'import module.')
+            Logger.exception(ex, f'Error importing module {modulename}.')
             return None
 
     def module_installed(self, modulename: str) -> bool:
@@ -144,21 +144,25 @@ class ModuleLoader:
                 fs.vals(db._vals)
                 back.append(fs.all_dirty(False))
             except Exception as ex:
-                Logger.exception(ex)
+                Logger.exception(ex, f"Error loading module {db.gdo_val('module_name')}.")
         self._enabled = back
         return back
 
     def load_module_db(self, modulename, enabled=False):
-        from gdo.base.GDO_Module import GDO_Module
-        db = GDO_Module.table().get_by_name(modulename)
-        fs = self.gdo_import(modulename)
-        if db:
-            fs.vals(db._vals)
-        else:
+        try:
+            from gdo.base.GDO_Module import GDO_Module
+            db = GDO_Module.table().get_by_name(modulename)
+            fs = self.gdo_import(modulename)
+            if db:
+                fs.vals(db._vals)
+            else:
+                return None
+            if enabled and not fs.is_enabled():
+                return None
+            return fs
+        except Exception as ex:
+            Logger.exception(ex, 'load_module_db')
             return None
-        if enabled and not fs.is_enabled():
-            return None
-        return fs
 
     def init_user_settings(self):
         from gdo.core.GDT_UserSetting import GDT_UserSetting
@@ -208,7 +212,12 @@ class ModuleLoader:
         Init all methods
         """
         for module in self._cache.values():
-            for method in module.get_method_klasses().values():
+            try:
+                methods = module.get_method_klasses()
+            except Exception as ex:
+                Logger.exception(ex, f'Error loading methods for module {module.get_name()}.')
+                continue
+            for method in methods.values():
                 try:
                     if trigger := method.gdo_trigger():
                         self._methods[trigger.lower()] = method
@@ -217,7 +226,7 @@ class ModuleLoader:
                         else:
                             self._meths[trigger.lower()] = method
                 except Exception as ex:
-                    Logger.exception(ex, f"Error in {method.__module__}.{method.__class__.__name__}")
+                    Logger.exception(ex, f"Error registering method {method.__module__}.{method.__name__}.")
 
     def get_module_method(self, module_name: str, method_name: str) -> Method:
         module = self.get_module(module_name)
