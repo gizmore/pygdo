@@ -16,4 +16,4 @@ class GDT_PageLocation(GDT_Enum):
 
     def get_value(self):
         v = self.get_val()
-        return None if v is None else getattr(Application.get_page(), v)
+        return None if v is None or v == '_none' else getattr(Application.get_page(), v)

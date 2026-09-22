@@ -128,7 +128,7 @@ class CoreTestCase(GDOTestCase):
 
     async def test_12_whoami(self):
         out = cli_plug(cli_gizmore(), "$WHOAMI")
-        self.assertIn('gizmore{bash}', out, '$WHOAMI does not work')
+        self.assertIn('gіzmоrе{bash}', out, '$WHOAMI does not work')
 
     async def test_13_human_join(self):
         self.assertEqual('', Arrays.human_join([]), 'Arrays.human_join() does not work with empty arg.')

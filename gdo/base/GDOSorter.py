@@ -14,12 +14,13 @@ class GDOSorter:
         sort_dict = order.get_order_dict()
         def compare(gdo1: GDO, gdo2: GDO):
             for key, direction in sort_dict.items():
-                gdt = gdo1.column(key)
-                cmp = gdt.gdo_compare(gdo1, gdo2)
-                if direction == 'DESC':
-                    cmp *= -1
-                if cmp:
-                    return cmp
+                if gdt := gdo1.column(key):
+                    direction = gdt.default_order() if direction == 'DEF' else direction
+                    cmp = gdt.gdo_compare(gdo1, gdo2)
+                    if direction == 'DESC':
+                        cmp *= -1
+                    if cmp:
+                        return cmp
             return 0  # Equal values
 
         return sorted(result, key=cmp_to_key(compare))
