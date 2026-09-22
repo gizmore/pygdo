@@ -31,6 +31,7 @@ class GDT_User(GDT_Object):
         self._same_server = False
         self._same_channel = None
         self._authenticated = False
+        self.with_completion()
         self.icon('user')
 
     def myself(self, myself: bool = True):

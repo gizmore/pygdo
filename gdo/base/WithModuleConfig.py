@@ -70,6 +70,7 @@ class WithModuleConfig:
             return self
         if gdt.validate(val):
             gdt.val(val)
+            val = gdt.to_val(gdt.get_value())
             GDO_ModuleVal.blank({
                 'mv_module': self.get_id(),
                 'mv_key': key,
