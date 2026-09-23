@@ -30,7 +30,7 @@ class GDT_Order(WithHREF, GDT_String):
 
     def get_order_dict(self) -> dict[str, str]:
         if val := self.get_val():
-            return {key: direction for key, direction in ((s+' DEF').split(' ') for s in val)}
+            return {key: direction for key, direction in ((s + ' DEF').split(' ')[0:2] for s in val)}
         else:
             return {}
 
