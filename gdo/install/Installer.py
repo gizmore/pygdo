@@ -160,10 +160,13 @@ class Installer:
         temptable = f"zzz_temp_{tablename}"
         try:
             db.foreign_keys(False)
-            result = db.select(f"SHOW CREATE TABLE {tablename}", False)
-            query = result.fetch_row()[1]
-            query = query.replace(tablename, temptable)
-            db.query(query)  # CREATE TABLE zzz% like old
+            # The temporary table is only a data snapshot used to restore
+            # columns after recreating the destination schema.  Copying the
+            # original CREATE TABLE statement also copies named indexes and
+            # constraints; prefixing the table name can then push those names
+            # beyond MySQL's 64-character identifier limit.  A CTAS snapshot
+            # contains exactly the old columns we need, without constraints.
+            db.query(f"CREATE TABLE {temptable} AS SELECT * FROM {tablename} WHERE 0")
             if cols := cls.column_names(gdo, temptable):  # something changed?
                 columns = ",".join(cols)
                 db.query(f"INSERT INTO {temptable} SELECT * FROM {tablename}")  # copy old to zzz

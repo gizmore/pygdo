@@ -1,3 +1,4 @@
+import hashlib
 from typing import TYPE_CHECKING
 
 from gdo.base.Application import Application
@@ -125,6 +126,19 @@ class Database(WithPygdo):
         query = f"CREATE TABLE IF NOT EXISTS {gdo.gdo_table_name()} (" + ",\n".join(cols) + f") ENGINE = {engine}"
         self.query(query)
 
+    @staticmethod
+    def constraint_name(kind: str, table_name: str, column_name: str) -> str:
+        """Return a stable, readable MySQL-safe constraint name.
+
+        MySQL accepts identifiers up to 64 characters.  Keep ordinary names
+        useful in schema inspection, but retain uniqueness for long names by
+        replacing their tail with an MD5 digest of the complete name.
+        """
+        name = f"GDO__{kind}__{table_name}__{column_name}"
+        if len(name) <= 64:
+            return name
+        return f"{name[:30]}__{hashlib.md5(name.encode()).hexdigest()}"
+
     def create_table_fk(self, gdo: 'GDO'):
         from gdo.core.GDT_Unique import GDT_Unique
         Application.db().foreign_keys(False)
@@ -132,13 +146,13 @@ class Database(WithPygdo):
         Application.db().foreign_keys(True)
         for name, gdt in gdo.columns().items():
             if fk := gdt.column_define_fk():
-                cn = f"GDO__FK__{gdo.gdo_table_name()}__{name}"
+                cn = self.constraint_name('FK', gdo.gdo_table_name(), name)
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} {fk}")
             if gdt.is_unique():
-                cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{name}"
+                cn = self.constraint_name('UNIQUE', gdo.gdo_table_name(), name)
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({name})")
             if isinstance(gdt, GDT_Unique):
-                cn = f"GDO__UNIQUE__{gdo.gdo_table_name()}__{name}"
+                cn = self.constraint_name('UNIQUE', gdo.gdo_table_name(), name)
                 self.query(f"ALTER TABLE {gdo.gdo_table_name()} ADD CONSTRAINT {cn} UNIQUE({', '.join(gdt._column_names)})")
 
     def delete_all_fk(self, gdo: 'GDO'):
