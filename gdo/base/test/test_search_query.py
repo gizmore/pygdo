@@ -1,4 +1,5 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.base.Query import Query
 from gdo.base.GDOSorter import GDOSorter
@@ -18,7 +19,7 @@ class SearchRow:
         return self.values.get(name)
 
 
-class SearchQueryTest(unittest.TestCase):
+class SearchQueryTest(GDOTestCase):
 
     def test_search_terms_are_grouped_after_existing_filters(self):
         query = Query().where('pm_owner=5')

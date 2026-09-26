@@ -1,9 +1,10 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.table.GDT_Order import GDT_Order
 
 
-class OrderTest(unittest.TestCase):
+class OrderTest(GDOTestCase):
 
     def test_explicit_direction(self):
         order = GDT_Order('o').initial(['file_name ASC'])

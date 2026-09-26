@@ -1,4 +1,5 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 from unittest.mock import AsyncMock, patch
 
 import msgspec
@@ -8,7 +9,7 @@ from gdo.base.Cache import Cache
 from gdo.base.IPC import IPC
 
 
-class IPCWakeupTest(unittest.IsolatedAsyncioTestCase):
+class IPCWakeupTest(GDOTestCase):
     def setUp(self):
         self.old_pid = IPC.PID
         self.old_next_check = IPC.DOG_NEXT_CHECK

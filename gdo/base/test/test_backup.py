@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from gdotest.TestUtil import GDOTestCase
 from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
@@ -8,7 +9,7 @@ from zipfile import ZipFile
 from gdo.base.Backup import Backup
 
 
-class BackupTest(unittest.TestCase):
+class BackupTest(GDOTestCase):
 
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

@@ -1,5 +1,6 @@
 import os
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
@@ -7,7 +8,7 @@ from gdo.base.Trans import t
 from gdo.language.GDT_Language import GDT_Language
 
 
-class LanguageTest(unittest.TestCase):
+class LanguageTest(GDOTestCase):
 
     @classmethod
     def setUpClass(cls):

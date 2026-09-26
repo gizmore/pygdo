@@ -1,11 +1,12 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.base.Application import Application
 from gdo.base.Render import Mode
 from gdo.core.method.health import health
 
 
-class HealthTest(unittest.TestCase):
+class HealthTest(GDOTestCase):
 
     def setUp(self):
         Application.mode(Mode.render_cli)

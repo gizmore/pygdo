@@ -1,11 +1,12 @@
 import os
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.base.Application import Application
 from gdo.mail.GDT_Email import GDT_Email
 
 
-class EmailEncodingTest(unittest.TestCase):
+class EmailEncodingTest(GDOTestCase):
     """Portable account addresses must not silently accept SMTPUTF8 input."""
 
     @classmethod

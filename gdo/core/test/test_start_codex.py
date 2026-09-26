@@ -1,5 +1,6 @@
 import subprocess
 import unittest
+from gdotest.TestUtil import GDOTestCase
 from unittest.mock import MagicMock, patch
 
 from gdo.base.Application import Application
@@ -7,7 +8,7 @@ from gdo.base.Render import Mode
 from gdo.core.method.start_codex import start_codex
 
 
-class StartCodexTest(unittest.TestCase):
+class StartCodexTest(GDOTestCase):
 
     def setUp(self):
         Application.mode(Mode.render_cli)

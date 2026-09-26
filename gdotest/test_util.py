@@ -1,6 +1,7 @@
 import os.path
 import tempfile
 import unittest
+from pathlib import Path
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
@@ -22,6 +23,11 @@ class UtilityTestCase(GDOTestCase):
         self.assertEqual(Strings.substr_to(s, '.'), 'foo', 'Test substr_to')
         self.assertEqual(Strings.rsubstr_from(s, '.'), 'html', 'Test rsubstr_from')
         self.assertEqual(Strings.rsubstr_to(s, '.'), 'foo.bar', 'Test rsubstr_to')
+
+    async def test_rejects_default_live_config(self):
+        live_config = Path(Application.PATH) / 'protected' / 'config.toml'
+        with self.assertRaisesRegex(RuntimeError, 'refuses to run'):
+            self.require_isolated_config(str(live_config), Application.PATH)
 
     async def test_arrays(self):
         original_list = [1, 2, 3, 4, 2, 3, 5]

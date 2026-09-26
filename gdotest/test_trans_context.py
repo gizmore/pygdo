@@ -1,5 +1,6 @@
 import asyncio
 import unittest
+from gdotest.TestUtil import GDOTestCase
 from unittest.mock import AsyncMock, Mock, patch
 
 from gdo.base.Application import Application
@@ -8,7 +9,7 @@ from gdo.base.Render import Mode
 from gdo.base.Trans import Trans, t, tiso, tusr
 
 
-class TranslationContextTest(unittest.IsolatedAsyncioTestCase):
+class TranslationContextTest(GDOTestCase):
     def setUp(self):
         Application.mode(Mode.render_txt)
         Application.STORAGE.lang = 'en'

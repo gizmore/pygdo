@@ -1,4 +1,5 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.base.Query import Query
 from gdo.date.GDT_Date import GDT_Date
@@ -6,7 +7,7 @@ from gdo.date.GDT_Time import GDT_Time
 from gdo.date.GDT_Timestamp import GDT_Timestamp
 
 
-class DateFilterTest(unittest.TestCase):
+class DateFilterTest(GDOTestCase):
 
     def test_timestamp_rejects_an_empty_fraction_without_a_date(self):
         field = GDT_Timestamp('deleted').val('.000')

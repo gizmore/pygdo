@@ -1,11 +1,12 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 from unittest.mock import Mock, patch
 
 from gdo.base.Method import Method
 from gdo.base.WithPermissionCheck import WithPermissionCheck
 
 
-class MethodPriceTest(unittest.TestCase):
+class MethodPriceTest(GDOTestCase):
     def setUp(self):
         self.method = object.__new__(Method)
         self.user = Mock()

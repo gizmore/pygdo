@@ -34,7 +34,10 @@ class GDO_Channel(GDO):
             GDT_String('chan_displayname').maxlen(96).not_null(),
             GDT_Language('chan_language').not_null().initial('en'),
             GDT_Char('chan_trigger').maxlen(1).not_null().initial('$'),
-            GDT_Bool('chan_autojoin').not_null().initial('0'),
+            # Conversations discovered by a connector are public entry points
+            # by default.  Connector-specific part/leave operations may still
+            # explicitly opt a channel out.
+            GDT_Bool('chan_autojoin').not_null().initial('1'),
             GDT_Created('chan_created'),
             GDT_Creator('chan_creator'),
         ]

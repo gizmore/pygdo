@@ -35,6 +35,8 @@ class Message(WithEnv):
         self.env_mode(mode)
         self._message = message
         self._env_reply_to = None
+        self._reply_privately = False
+        self._reply_notice = False
         self._thread_user = None
         self._no_sender_prefix = False
         self._env_channel = None
@@ -52,6 +54,8 @@ class Message(WithEnv):
                 result(self._result).result_gdt(self._gdt_result).
                 comrade(self._thread_user).no_sender_prefix(self._no_sender_prefix))
         copy._env_reply_to = self._env_reply_to
+        copy._reply_privately = self._reply_privately
+        copy._reply_notice = self._reply_notice
         return copy
 
     def message(self, text: str):
@@ -77,6 +81,12 @@ class Message(WithEnv):
         self._no_sender_prefix = enabled
         return self
 
+    def reply_privately(self, notice: bool = False):
+        """Deliver this response to its sender instead of the source channel."""
+        self._reply_privately = True
+        self._reply_notice = notice
+        return self
+
     def wants_sender_prefix(self) -> bool:
         """Whether a channel connector should add the Dog's display name."""
         return not (
@@ -86,7 +96,7 @@ class Message(WithEnv):
         )
 
     def get_trigger(self):
-        if self._env_channel:
+        if self._env_channel and not self._reply_privately:
             return self._env_channel.get_trigger()
         return self._env_server.get_trigger()
 
@@ -178,7 +188,7 @@ class Message(WithEnv):
         if not text or self._delivered:
             return
        # self._delivered = True
-        if self._env_channel:
+        if self._env_channel and not self._reply_privately:
             # if with_prefix:
                 # reply_to = self._env_reply_to or self._env_user.render_name()
                 # text = f"{reply_to}: {text}"
@@ -189,7 +199,8 @@ class Message(WithEnv):
             o = self._env_user
             if u != o:
                 self._env_user = u
-            await self._env_server.get_connector().send_to_user(self, with_events)
+            await self._env_server.get_connector().send_to_user(
+                self, with_events, self._reply_notice)
             # Connectors temporarily tag outbound messages as their Dog user.
             # Keep this inbound message's effective user intact for audit and
             # callers after delivery.

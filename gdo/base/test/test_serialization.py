@@ -1,4 +1,5 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 import msgspec
 
@@ -6,7 +7,7 @@ from gdo.base.GDO import GDO
 from gdo.base.WithSerialization import WithSerialization
 
 
-class SerializationTest(unittest.TestCase):
+class SerializationTest(GDOTestCase):
     def test_roundtrip_preserves_blank_state_after_wakeup(self):
         blank = GDO.__new__(GDO)
         blank._blank = True

@@ -1,9 +1,10 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.user.method.about import about
 
 
-class AboutTest(unittest.TestCase):
+class AboutTest(GDOTestCase):
 
     def test_format_about_flattens_whitespace(self):
         self.assertEqual('Hello from Mira', about.format_about('  Hello\n from\tMira  '))

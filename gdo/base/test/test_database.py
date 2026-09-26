@@ -1,10 +1,11 @@
 import hashlib
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.base.Database import Database
 
 
-class DatabaseTest(unittest.TestCase):
+class DatabaseTest(GDOTestCase):
 
     def test_constraint_name_keeps_short_names_readable(self):
         self.assertEqual(

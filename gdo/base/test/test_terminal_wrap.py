@@ -1,9 +1,10 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.base.Util import terminal_wrap
 
 
-class TerminalWrapTest(unittest.TestCase):
+class TerminalWrapTest(GDOTestCase):
 
     def test_wraps_at_whitespace(self):
         self.assertEqual('alpha\nbeta\ngamma', terminal_wrap('alpha beta gamma', 6))

@@ -1,11 +1,12 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 from unittest.mock import patch
 
 from gdo.base.Application import Application
 from gdo.base.method.file_server import file_server
 
 
-class FileServerTest(unittest.TestCase):
+class FileServerTest(GDOTestCase):
 
     DIRS = {
         'files': 'files/',

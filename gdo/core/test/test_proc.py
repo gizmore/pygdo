@@ -1,4 +1,5 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 from unittest.mock import MagicMock, patch
 
 from gdo.base.Application import Application
@@ -8,7 +9,7 @@ from gdo.core.GDO_Process import GDO_Process
 from gdo.core.method.proc import proc
 
 
-class ProcTest(unittest.TestCase):
+class ProcTest(GDOTestCase):
 
     def setUp(self):
         Application.mode(Mode.render_cli)

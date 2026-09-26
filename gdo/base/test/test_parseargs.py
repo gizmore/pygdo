@@ -1,4 +1,5 @@
 import unittest
+from gdotest.TestUtil import GDOTestCase
 
 from gdo.base.ParseArgs import ParseArgs
 from gdo.base.Parser import Parser
@@ -10,7 +11,7 @@ class _FakeMethod:
         self._raw_args = ParseArgs()
 
 
-class ParseArgsTest(unittest.TestCase):
+class ParseArgsTest(GDOTestCase):
 
     def test_bare_cli_flag_means_true(self):
         args = ParseArgs()

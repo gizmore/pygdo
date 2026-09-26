@@ -15,7 +15,7 @@ from gdo.mail.Mail import Mail
 from gdotest.TestUtil import GDOTestCase, reinstall_module, web_plug
 
 
-class MailAttachmentTest(unittest.TestCase):
+class MailAttachmentTest(GDOTestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.file = Path(self.temp.name) / 'log.txt'

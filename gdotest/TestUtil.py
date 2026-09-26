@@ -17,6 +17,7 @@ import time
 import unittest
 import urllib
 from http.cookies import SimpleCookie
+from pathlib import Path
 from urllib.parse import urlencode
 
 from gdo.base.Application import Application
@@ -40,12 +41,25 @@ class GDOTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self):
         await super().asyncSetUp()
+        self.require_isolated_config(Application.CONFIG_PATH, Application.PATH)
         Application.IS_TEST = True
         Application.LOOP = loop = asyncio.get_running_loop()
         nest_asyncio.apply()
         loop.set_debug(False)
         WebPlug.COOKIES = {}
         all_private_messages()
+
+    @staticmethod
+    def require_isolated_config(config_path: str, application_path: str):
+        """Refuse tests when they are pointed at the default live config."""
+        if not config_path or not application_path:
+            return
+        live_config = (Path(application_path) / 'protected' / 'config.toml').resolve()
+        if Path(config_path).resolve() == live_config:
+            raise RuntimeError(
+                'GDOTestCase refuses to run with protected/config.toml; '
+                'use protected/config_test.toml or another isolated config.'
+            )
 
     async def asyncTearDown(self):
         await asyncio.gather(*Application.TASKS)
