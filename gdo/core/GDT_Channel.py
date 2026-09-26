@@ -31,6 +31,12 @@ class GDT_Channel(GDT_ObjectSelect):
             return Message.CURRENT._env_channel
         return super().to_value(val)
 
+    def get_value(self):
+        """Resolve the current channel when an optional value is omitted."""
+        if not self.get_val() and self._default_current:
+            return Message.CURRENT._env_channel
+        return super().get_value()
+
     def query_gdos_query(self, val: str, query: Query) -> Query:
         val_serv = Strings.regex_first(r'{([^{}]+)}$', val)
         val = Strings.substr_to(val, '{', val)
