@@ -134,14 +134,20 @@ class IPC:
 
     @classmethod
     def send(cls, event: str, args: Any = None):
+        db = Application.db()
+        if db.is_in_transaction():
+            Application.defer_after_commit(cls.send_now, event, args)
+            return
+        cls.send_now(event, args)
+
+    @classmethod
+    def send_now(cls, event: str, args: Any = None):
+        """Publish an IPC event after any enclosing DB transaction committed."""
         cls.COUNT += 1 #PYPP#DELETE#
         if Application.is_unit_test():
-            coro = GDO_Event.blank({
-                'event_type': 'to_dog',
-                'event_name': event,
-                'event_args': GDO_Event.table().column('event_args').to_val(args),
-            }).execute_dog()
-            Application.run_coro(coro, 'IPC_DOG')
+            # Unit tests invoke IPC handlers explicitly. Do not bind a Dog
+            # coroutine to a potentially different isolated test loop.
+            return
         elif Application.IS_DOG:
             cls.send_to_web(event, args)
         elif Application.IS_HTTP:

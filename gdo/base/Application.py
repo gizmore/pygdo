@@ -3,6 +3,7 @@ import functools
 import queue
 import threading
 import time
+from collections.abc import Callable
 from asyncio import AbstractEventLoop
 from contextvars import ContextVar, Token
 
@@ -259,7 +260,55 @@ class Application:
         cls.CURRENT_USER.set(None)
         cls.set_lang_iso('en')
         cls.TASKS = []
+        cls.STORAGE.transaction_depth = 0
+        cls.STORAGE.after_commit = []
         Logger.user(None)
+
+    ###############
+    # Transaction #
+    ###############
+
+    @classmethod
+    def transaction_begin(cls):
+        """Enter a transaction scope for this application thread."""
+        depth = cls.storage('transaction_depth', 0)
+        if depth == 0:
+            cls.STORAGE.after_commit = []
+        cls.STORAGE.transaction_depth = depth + 1
+
+    @classmethod
+    def transaction_depth(cls) -> int:
+        return cls.storage('transaction_depth', 0)
+
+    @classmethod
+    def defer_after_commit(cls, callback: Callable, *args, **kwargs):
+        """Defer a side effect until the outermost transaction committed."""
+        callbacks = cls.storage('after_commit')
+        if callbacks is None:
+            callbacks = cls.STORAGE.after_commit = []
+        callbacks.append((callback, args, kwargs))
+
+    @classmethod
+    def transaction_commit(cls):
+        """Leave one transaction scope and run outermost post-commit work."""
+        depth = cls.transaction_depth()
+        if depth > 1:
+            cls.STORAGE.transaction_depth = depth - 1
+            return
+        cls.STORAGE.transaction_depth = 0
+        callbacks = cls.storage('after_commit', [])
+        cls.STORAGE.after_commit = []
+        for callback, args, kwargs in callbacks:
+            try:
+                callback(*args, **kwargs)
+            except Exception as ex:
+                Logger.exception(ex, 'Application post-commit callback failed')
+
+    @classmethod
+    def transaction_rollback(cls):
+        """Discard all deferred side effects after a transaction rollback."""
+        cls.STORAGE.transaction_depth = 0
+        cls.STORAGE.after_commit = []
 
     @classmethod
     def init_thread(cls, thread):

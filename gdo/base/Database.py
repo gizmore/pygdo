@@ -199,7 +199,11 @@ class Database(WithPygdo):
 
     def begin(self):
         Application.DB_TRANSACTIONS += 0.5 #PYPP#DELETE#
+        if self.is_in_transaction():
+            Application.transaction_begin()
+            return self
         self.get_link().start_transaction()
+        Application.transaction_begin()
         return self
 
     def is_in_transaction(self) -> bool:
@@ -207,10 +211,15 @@ class Database(WithPygdo):
 
     def commit(self):
         Application.DB_TRANSACTIONS += 0.5 #PYPP#DELETE#
+        if Application.transaction_depth() > 1:
+            Application.transaction_commit()
+            return self
         self.get_link().commit()
+        Application.transaction_commit()
         return self
 
     def rollback(self):
         Application.DB_TRANSACTIONS += 0.25 #PYPP#DELETE#
         self.get_link().rollback()
+        Application.transaction_rollback()
         return self

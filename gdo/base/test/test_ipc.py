@@ -6,6 +6,7 @@ import msgspec
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
+from gdo.base.Database import Database
 from gdo.base.IPC import IPC
 
 
@@ -65,6 +66,66 @@ class IPCWakeupTest(GDOTestCase):
             await IPC.dog_check_for_ipc()
 
         execute.assert_awaited_once()
+
+    def test_ipc_waits_for_a_transaction_commit(self):
+        db = Database('', '', '', '')
+        db.link = self.FakeLink()
+        db.link.in_transaction = True
+        with (
+            patch.object(Application, 'db', return_value=db),
+            patch.object(IPC, 'send_now') as send_now,
+        ):
+            IPC.send('base.ipc_gdo', ('gdo_user', '1', {}))
+            send_now.assert_not_called()
+            db.commit()
+        send_now.assert_called_once_with('base.ipc_gdo', ('gdo_user', '1', {}))
+
+    def test_ipc_discards_a_rolled_back_transaction(self):
+        db = Database('', '', '', '')
+        db.link = self.FakeLink()
+        db.link.in_transaction = True
+        with (
+            patch.object(Application, 'db', return_value=db),
+            patch.object(IPC, 'send_now') as send_now,
+        ):
+            IPC.send('base.ipc_gdo', ('gdo_user', '1', {}))
+            db.rollback()
+        send_now.assert_not_called()
+
+    def test_ipc_waits_for_the_outermost_nested_commit(self):
+        db = Database('', '', '', '')
+        db.link = self.FakeLink()
+        with (
+            patch.object(Application, 'db', return_value=db),
+            patch.object(IPC, 'send_now') as send_now,
+        ):
+            db.begin()
+            IPC.send('base.ipc_gdo', ('gdo_user', '1', {}))
+            db.begin()
+            db.commit()
+            send_now.assert_not_called()
+            db.commit()
+        self.assertEqual(1, db.link.commits)
+        send_now.assert_called_once_with('base.ipc_gdo', ('gdo_user', '1', {}))
+
+    class FakeLink:
+        in_transaction = False
+
+        def __init__(self):
+            self.commits = 0
+
+        def close(self):
+            pass
+
+        def start_transaction(self):
+            self.in_transaction = True
+
+        def commit(self):
+            self.in_transaction = False
+            self.commits += 1
+
+        def rollback(self):
+            self.in_transaction = False
 
 
 if __name__ == '__main__':
