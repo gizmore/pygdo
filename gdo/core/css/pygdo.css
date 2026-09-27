@@ -23,7 +23,7 @@ html {
     content: "|";
 }
 
-table .shrink {
+table .shrink, table.shrink {
     width: 1%;
 }
 

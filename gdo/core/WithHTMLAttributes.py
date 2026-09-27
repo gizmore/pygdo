@@ -27,7 +27,7 @@ class WithHTMLAttributes:
 
     def add_class(self, klass: str):
         classes = self.get_attrs().get('class', '')
-        classes = classes.split(' ')
+        classes = classes.split()
         if klass not in classes:
             classes.append(klass)
         return self.attr('class', " ".join(classes))

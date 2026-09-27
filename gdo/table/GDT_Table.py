@@ -6,6 +6,7 @@ from gdo.base.Result import Result, ResultType
 from gdo.base.Trans import t
 from gdo.base.WithName import WithName
 from gdo.core.GDT_Template import GDT_Template
+from gdo.core.WithHTMLAttributes import WithHTMLAttributes
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gdo.table.MethodTable import MethodTable
@@ -17,7 +18,7 @@ class TableMode(Enum):
     CARDS = 3
 
 
-class GDT_Table(WithName, GDT):
+class GDT_Table(WithHTMLAttributes, WithName, GDT):
     _table_result: Result
     _table_method: 'MethodTable'
     _table_mode: TableMode
