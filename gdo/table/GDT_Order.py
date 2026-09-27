@@ -22,6 +22,15 @@ class GDT_Order(WithHREF, GDT_String):
         else:
             return ''
 
+    def display_table_order_link(self, gdt: GDT, direction: str) -> str:
+        """Render one order direction for themes that place links separately."""
+        if not gdt.is_orderable():
+            return ''
+        icon = 'arrow_up' if direction == 'ASC' else 'arrow_down'
+        selected = ' link-warning' if self.html_selected(gdt, direction) else ''
+        return (f'<a class="gdt-order-link{selected}" href="{self.href_order(gdt, direction)}" '
+                f'rel="nofollow">{GDT_Icon(icon).render()}</a>')
+
     def order_query(self, query: Query):
         vals = self.get_val()
         if vals is not None:
