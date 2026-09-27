@@ -6,6 +6,8 @@ filtered = method.gdo_filtered()
 filter_field = method.table_filter_field() if filtered else None
 searched = method.gdo_searched()
 search_field = method.table_search_field() if searched else None
+render_pagination = method.gdo_render_pagination()
+page_menu_html = method.get_page_menu().render_html() if render_pagination else ''
 %>
 <a name="<%=field._name%>"></a>
 
@@ -18,10 +20,14 @@ if searched:
     form.add_field(search_field)
     form.actions().add_field(GDT_Submit())
     write(form.render_html())
-
 %>
 
+<% if method.gdo_render_pagination_top(): %>
+<%=page_menu_html%>
+<% : %>
+
 <table id="<%=field._name%>">
+<% if method.gdo_render_table_headers(): %>
     <thead>
     <tr>
     <%
@@ -36,6 +42,7 @@ if searched:
     %>
     </tr>
     </thead>
+<% : %>
     <tbody>
     <%
     for gdo in result:
@@ -60,4 +67,8 @@ if searched:
 
 <% if filtered or searched: %>
     <p class="gdt-table-reset"><a class="btn" href="<%=method.table_reset_href()%>"><%=t('btn_clear_table_filters')%></a></p>
+<% : %>
+
+<% if method.gdo_render_pagination_bottom(): %>
+<%=page_menu_html%>
 <% : %>

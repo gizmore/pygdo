@@ -8,6 +8,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.form.GDT_CSRF import GDT_CSRF
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
+from gdo.table.MethodTable import MethodTable
 from gdotest.TestUtil import web_gizmore, GDOTestCase
 
 
@@ -27,6 +28,15 @@ class FormTestCase(GDOTestCase):
         form.actions().add_field(GDT_Submit())
         tpl = form.render_html()
         self.assertIn('<form', tpl, 'check if form somewhat renders')
+
+    def test_tables_render_headers_by_default(self):
+        self.assertTrue(MethodTable().gdo_render_table_headers())
+
+    def test_tables_render_pagination_by_default(self):
+        table = MethodTable()
+        self.assertTrue(table.gdo_render_pagination())
+        self.assertTrue(table.gdo_render_pagination_top())
+        self.assertTrue(table.gdo_render_pagination_bottom())
 
 
 if __name__ == '__main__':

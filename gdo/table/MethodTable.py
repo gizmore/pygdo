@@ -113,6 +113,10 @@ class MethodTable(WithGDO, MethodForm):
     def gdo_table_headers(self) -> list[GDT]:
         return list(filter(lambda gdt: not gdt.is_hidden(), self.gdo_table().columns().values()))
 
+    def gdo_render_table_headers(self) -> bool:
+        """Whether the HTML table should render its column-label row."""
+        return True
+
     @lru_cache(maxsize=None)
     def _table_headers(self) -> list[GDT]:
         return self.gdo_table_headers()
@@ -142,6 +146,15 @@ class MethodTable(WithGDO, MethodForm):
 
     def gdo_paginated(self) -> bool:
         return True
+
+    def gdo_render_pagination(self) -> bool:
+        return self.gdo_paginated()
+
+    def gdo_render_pagination_top(self) -> bool:
+        return self.gdo_render_pagination()
+
+    def gdo_render_pagination_bottom(self) -> bool:
+        return self.gdo_render_pagination()
 
     def get_page_num(self) -> int:
         return self.param_value(self.gdo_paginate_name())
