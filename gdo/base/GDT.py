@@ -317,6 +317,10 @@ class GDT(WithSerialization):
     def html_class(self):
         return self.__class__.__name__.lower().replace('_', '-')
 
+    def html_cell_class(self) -> str:
+        """Return optional CSS classes for this field's table cells."""
+        return ''
+
     def filter_type(self) -> str:
         return 'text'
 

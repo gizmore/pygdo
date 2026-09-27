@@ -1,4 +1,5 @@
 from gdo.base.Trans import t
+from gdo.base.Util import module_enabled
 from gdo.base.util.href import href
 from gdo.base.Render import Mode
 from gdo.core.GDO_User import GDO_User
@@ -33,11 +34,17 @@ class GDT_ProfileLink(GDT_Link):
         return self
 
     def with_avatar(self, with_avatar: bool = True):
-        self._with_avatar = with_avatar
+        if with_avatar and module_enabled('avatar'):
+            self._with_avatar = with_avatar
+        else:
+            self._with_avatar = False
         return self
 
     def render_label(self, mode: Mode = Mode.render_html) -> str:
         return t('profile')
+
+    def html_cell_class(self) -> str:
+        return 'shrink'
 
     def render_irc(self) -> str:
         """Chat cannot use an HTML profile URL; show the linked user name."""

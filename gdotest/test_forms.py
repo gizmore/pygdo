@@ -8,6 +8,7 @@ from gdo.base.ModuleLoader import ModuleLoader
 from gdo.form.GDT_CSRF import GDT_CSRF
 from gdo.form.GDT_Form import GDT_Form
 from gdo.form.GDT_Submit import GDT_Submit
+from gdo.base.GDT import GDT
 from gdo.table.MethodTable import MethodTable
 from gdotest.TestUtil import web_gizmore, GDOTestCase
 
@@ -37,6 +38,9 @@ class FormTestCase(GDOTestCase):
         self.assertTrue(table.gdo_render_pagination())
         self.assertTrue(table.gdo_render_pagination_top())
         self.assertTrue(table.gdo_render_pagination_bottom())
+
+    def test_table_cells_have_no_class_by_default(self):
+        self.assertEqual('', GDT().html_cell_class())
 
 
 if __name__ == '__main__':

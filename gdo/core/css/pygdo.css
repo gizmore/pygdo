@@ -22,3 +22,11 @@ html {
 .gdt-divider.gdt-horizontal:BEFORE {
     content: "|";
 }
+
+table .shrink {
+    width: 1%;
+}
+
+table .nowrap {
+    white-space: nowrap;
+}

@@ -9,6 +9,7 @@ from gdo.core.GDO_Session import GDO_Session
 from gdo.core.GDO_User import GDO_User
 from gdo.user.module_user import module_user
 from gdo.user.GDT_Level import GDT_Level
+from gdo.user.GDT_ProfileLink import GDT_ProfileLink
 from gdotest.TestUtil import GDOTestCase, install_module, web_gizmore, web_plug
 
 
@@ -47,6 +48,9 @@ class UserRankingTest(GDOTestCase):
 
     def test_empty_level_renders_as_placeholder_in_a_table(self):
         self.assertEqual('---', GDT_Level('level').val(None).render(Mode.render_cell))
+
+    def test_profile_links_use_shrink_table_cells(self):
+        self.assertEqual('shrink', GDT_ProfileLink().html_cell_class())
 
 
 if __name__ == '__main__':

@@ -11,6 +11,9 @@ from gdo.core.GDT_Object import GDT_Object
 from gdo.ui.GDT_Link import GDT_Link
 
 from typing import TYPE_CHECKING
+
+from gdo.user.GDT_ProfileLink import GDT_ProfileLink
+
 if TYPE_CHECKING:
     from gdo.core.GDO_Channel import GDO_Channel
 
@@ -139,7 +142,11 @@ class GDT_User(GDT_Object):
 
     def render_html(self) -> str:
         if user := self.get_gdo():
-            name = user.render_name()
-            profile_id = f'{user.get_id()}-{user.get_name_sid()}'
-            return GDT_Link().text_raw(name).href(href('user', 'profile', f'&for={profile_id}')).render()
+            return GDT_ProfileLink().user(user).with_avatar().render_html()
         return Render.italic(t('none'))
+
+    def render_cell(self):
+        return self.render_html()
+
+    def html_cell_class(self) -> str:
+        return 'shrink'

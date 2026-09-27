@@ -32,7 +32,10 @@ if searched:
     <tr>
     <%
     for gdt in method.gdo_table_headers():
-        write('<th>')
+        write('<th')
+        if cell_class := gdt.html_cell_class():
+            write(f' class="{cell_class}"')
+        write('>')
         write(gdt.render_label())
         if ordered:
             write(order_field.display_table_order(gdt))
@@ -49,7 +52,10 @@ if searched:
         write('<tr>')
         for gdt in method._table_headers():
             func = f'render_{gdt.get_name()}'
-            write('<td>')
+            write('<td')
+            if cell_class := gdt.html_cell_class():
+                write(f' class="{cell_class}"')
+            write('>')
             if hasattr(method, func):
                 write(getattr(method, func)(gdt.gdo(gdo), gdo))
             else:
