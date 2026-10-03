@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
+from gdo.core.connector.Web import Web
 from gdo.date.GDO_Timezone import GDO_Timezone
 from gdo.date.GDT_Timezone import GDT_Timezone
 from gdo.language.GDT_Language import GDT_Language
@@ -47,6 +48,17 @@ class AccountTest(GDOTestCase):
         self.assertIn('Language', out, 'Language module not shown in all_settings().')
         self.assertIn('Connect another account', out, 'Account-connect link missing from user settings.')
         self.assertIn('user.connect', out, 'Account-connect URL missing from user settings.')
+
+    async def test_04b_linked_accounts_cards_and_profile_link(self):
+        master = web_gizmore()
+        linked = await Web.get_server().get_or_create_user('linked-account-card-test')
+        linked.save_val('user_link', master.get_id())
+        route = f'account.linked.user.{master.get_id()}-{master.get_name()}.html'
+        out = web_plug(route).user('gizmore').exec()
+        self.assertIn(master.get_name(), out)
+        self.assertIn(linked.get_name(), out)
+        profile = web_plug(f'user.profile.for.{master.get_id()}-{master.get_name()}.html').user('gizmore').exec()
+        self.assertIn(route, profile)
 
     def test_05_render_single_settings(self):
         out = web_plug('login.form.html').user('gizmore').exec()

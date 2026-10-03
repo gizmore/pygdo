@@ -1,5 +1,12 @@
 module_account = "Account"
 link_settings = "Settings"
+linked_accounts = "Linked accounts"
+
+##########
+# linked #
+##########
+mt_account_linked = "%s's linked accounts"
+md_account_linked = "Connector accounts linked to %s."
 
 ##################
 # delete_account #

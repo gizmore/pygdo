@@ -4,6 +4,6 @@ result = method.get_table_result()
 <div class="cards">
     <%
     for gdo in result:
-        write(gdo.render_card())
+        write(method.render_gdo(gdo, Mode.render_html))
     %>
 </div>
