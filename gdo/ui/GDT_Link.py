@@ -38,6 +38,10 @@ class GDT_Link(WithHREF, WithTitle, WithText, GDT_String):
     def render_cell(self) -> str:
         return self.render_html()
 
+    def html_cell_class(self) -> str:
+        """Make a table link occupy its whole cell as the click target."""
+        return 'full-click-column'
+
     def render_card(self) -> str:
         return self.render_html()
 

@@ -208,6 +208,8 @@ class GDT_String(WithCompletion, GDT_Field):
         return tpl('table', 'filter_string.html', vals)
 
     def html_readonly(self) -> str:
+        if self.is_disabled():
+            return ' disabled="disabled"'
         if not self.is_writable():
             return ' readonly="readonly"'
         return ''
