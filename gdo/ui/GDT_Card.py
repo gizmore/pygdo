@@ -60,6 +60,7 @@ class GDT_Card(WithImage, WithGDO, WithText, WithTitle, GDT):
 
     def render_text(self, mode: Mode = Mode.render_html) -> str:
         return ' | '.join(filter(None, (
+            self.render_title(),
             self.render_text_section(self._header, mode),
             self.render_text_section(self._content, mode),
             self.render_text_section(self._footer, mode),

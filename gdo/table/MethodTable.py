@@ -1,7 +1,7 @@
 import functools
 from functools import lru_cache
 from typing import Iterator
-from urllib.parse import urlencode
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from gdo.base.Exceptions import GDOException
 from gdo.base.GDO import GDO
@@ -66,23 +66,21 @@ class MethodTable(WithGDO, MethodForm):
         return self.parameter(self.gdo_search_name())
 
     def table_reset_href(self) -> str:
-        """Return this method route without its table state.
-
-        Keep ordinary method parameters intact while intentionally dropping the
-        table's page, order, filter and full-text search parameters.
-        """
-        options = []
-        positionals = []
-        for gdt in self.gdo_parameters():
-            value = self.parameter(gdt.get_name()).get_val()
-            if value is None or value == '':
-                continue
-            values = value if isinstance(value, list) else [value]
-            if gdt.is_positional():
-                positionals.extend(values)
-            else:
-                options.extend((gdt.get_name(), value) for value in values)
-        return self.href(urlencode(options, doseq=True), positional=positionals)
+        """Return the form URL without this table's state parameters."""
+        href = self.get_form().get_href()
+        parts = urlsplit(href)
+        table_parameters = {
+            self.gdo_paginate_name(), self.gdo_order_name(),
+            self.gdo_filter_name(), self.gdo_search_name(),
+        }
+        query = [
+            (key, value) for key, value in parse_qsl(parts.query, keep_blank_values=True)
+            if key not in table_parameters
+        ]
+        return urlunsplit((
+            parts.scheme, parts.netloc, parts.path,
+            urlencode(query, doseq=True), parts.fragment,
+        ))
 
     def table_paginate_field(self) -> GDT_PageNum:
         return self.parameter(self.gdo_paginate_name())
