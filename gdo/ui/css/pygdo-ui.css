@@ -12,3 +12,61 @@
     margin-left: 4px;
     margin-right: 4px;
 }
+
+/* Shared card treatment. Individual modules can add a card class for details. */
+.gdt-card {
+    overflow: hidden;
+    border-color: var(--bs-border-color, #dee2e6);
+    box-shadow: 0 0.125rem 0.5rem rgb(0 0 0 / 6%);
+}
+
+.gdt-card > .row > [class*="col-"] {
+    min-width: 0;
+}
+
+.gdt-card .card-body {
+    padding: 1.25rem;
+}
+
+.gdt-card .gdt-card-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.875rem;
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+.gdt-card .card-title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.gdt-card .card-title + .card-subtitle {
+    margin-top: 0.35rem;
+}
+
+.gdt-card .card-subtitle {
+    line-height: 1.45;
+}
+
+.gdt-card .text {
+    line-height: 1.55;
+}
+
+.gdt-card .card-footer {
+    margin: 1.25rem -1.25rem -1.25rem;
+    padding: 0.75rem 1.25rem;
+    background: transparent;
+    border-top-color: var(--bs-border-color, #dee2e6);
+}
+
+@media (max-width: 575.98px) {
+    .gdt-card .card-body {
+        padding: 1rem;
+    }
+
+    .gdt-card .card-footer {
+        margin: 1rem -1rem -1rem;
+        padding: 0.75rem 1rem;
+    }
+}

@@ -1,4 +1,4 @@
-<div class="card mb-3 gdt-card">
+<div class="card mb-3 gdt-card <%=field.get_attrs().get('class', '')%>">
   <div class="row g-0">
     <% if field.has_image(): %>
       <div class="col-md-4">
@@ -7,11 +7,17 @@
     <% : %>
     <div class="<%='col-md-8' if field.has_image() else 'col-12'%>">
       <div class="card-body">
+        <% if field.has_title() or field.get_header().get_fields(): %>
+          <div class="gdt-card-header">
+        <% : %>
         <% if field.has_title(): %>
-          <h5 class="card-title"><%=field.render_title()%></h5>
+            <h5 class="card-title"><%=field.render_title()%></h5>
         <% : %>
         <% if field.get_header().get_fields(): %>
-          <div class="card-subtitle mb-2 text-muted"><%=field.get_header().render(Mode.render_card)%></div>
+            <div class="card-subtitle text-muted"><%=field.get_header().render(Mode.render_card)%></div>
+        <% : %>
+        <% if field.has_title() or field.get_header().get_fields(): %>
+          </div>
         <% : %>
         <div class="text">
           <%=field.get_content().render(Mode.render_card)%>

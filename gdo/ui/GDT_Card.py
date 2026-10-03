@@ -5,6 +5,7 @@ from gdo.core.GDT_Container import GDT_Container
 from gdo.core.GDT_Creator import GDT_Creator
 from gdo.core.GDT_Field import GDT_Field
 from gdo.core.GDT_Template import GDT_Template
+from gdo.core.WithHTMLAttributes import WithHTMLAttributes
 from gdo.core.WithGDO import WithGDO
 from gdo.date.GDT_Created import GDT_Created
 from gdo.ui.WithText import WithText
@@ -12,7 +13,7 @@ from gdo.ui.WithTitle import WithTitle
 from gdo.ui.WithImage import WithImage
 
 
-class GDT_Card(WithImage, WithGDO, WithText, WithTitle, GDT):
+class GDT_Card(WithHTMLAttributes, WithImage, WithGDO, WithText, WithTitle, GDT):
     _image: GDT
     _header: GDT_Container
     _content: GDT_Container

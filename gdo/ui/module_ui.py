@@ -32,6 +32,7 @@ class module_ui(GDO_Module):
 
     def gdo_load_scripts(self, page: 'GDT_Page'):
         self.add_js('js/pygdo-ui.js')
+        self.add_css('css/pygdo-ui.css')
 
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         if self.get_config_value('scroll_to_top'):
