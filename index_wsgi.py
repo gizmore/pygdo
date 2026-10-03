@@ -274,6 +274,13 @@ def pygdo_application(environ, start_response):
             except Exception as ex:
                 result = GDT_Error.from_exception(ex, method.gdo_module().render_name())
 
+            # ``aiorun()`` executes the method in a separate asyncio task.
+            # ContextVar changes made by login/logout therefore stay in that
+            # task, while this WSGI request continues in its original context.
+            # The session is authoritative after the method ran, so restore
+            # the rendering context before building sidebars and core JS.
+            Application.set_current_user(session.get_user())
+
             if type(result) is GDT_FileOut:
                 session.save()
                 headers = Application.get_headers()
