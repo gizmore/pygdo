@@ -67,6 +67,11 @@ class GDO_Server(GDO):
     def get_by_connector(cls, name: str):
         return cls.table().get_by_vals({"serv_connector": name})
 
+    @classmethod
+    def get_by_name_or_connector(cls, name: str):
+        """Resolve a server name first, then a connector name."""
+        return cls.table().get_by_vals({'serv_name': name}) or cls.get_by_connector(name)
+
     def gdo_persistent(self) -> bool:
         return False
 

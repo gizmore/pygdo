@@ -330,10 +330,11 @@ class App:
         print("All Done!")
 
     async def admin(self):
-        parser = argparse.ArgumentParser(description='Create / assign an admin user for a connector (web by default).'
-                                                     'Example: ./gdo_adm.sh admin gizmore 11111111 gizmore@gizmore.org')
-        parser.add_argument('--connector', '-c', default='bash')
-        parser.add_argument('--server', '-s' , default=None)
+        parser = argparse.ArgumentParser(
+            description='Create / assign an admin user for a server or connector. '
+                        'Example: ./gdo_adm.sh admin web gizmore 11111111 gizmore@gizmore.org'
+        )
+        parser.add_argument('server', help='server name or connector name')
         parser.add_argument('username')
         parser.add_argument('password')
         parser.add_argument('email', nargs='?')
@@ -343,10 +344,7 @@ class App:
         loader.load_modules_db()
         loader.init_modules(False, True)
 
-        if args.server:
-            server = GDO_Server.table().get_by_id(args.server)
-        else:
-            server = GDO_Server.get_by_connector(args.connector)
+        server = GDO_Server.get_by_name_or_connector(args.server)
 
         if not server:
             err(f'Unknown server')

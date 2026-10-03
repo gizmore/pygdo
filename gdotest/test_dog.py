@@ -59,6 +59,11 @@ class DogTestCase(GDOTestCase):
         servers = GDO_Server.table().all()
         self.assertGreater(len(servers), 1, "Cannot get servers.")
 
+    async def test_03b_lookup_server_by_name_or_connector(self):
+        web = Web.get_server()
+        self.assertEqual(web.get_id(), GDO_Server.get_by_name_or_connector(web.get_name()).get_id())
+        self.assertEqual(web.get_id(), GDO_Server.get_by_name_or_connector(web.get_connector_name()).get_id())
+
     async def test_04_server_status(self):
         web = Web.get_server()
         out = cli_plug(cli_gizmore(), f"$server {web.get_id()} status")
