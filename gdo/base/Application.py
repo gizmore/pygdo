@@ -105,6 +105,12 @@ class Application:
         cls.IPC_TS = cls.TIME
 
     @classmethod
+    def init_test(cls, path: str):
+        """Initialize an application against an explicitly isolated test config."""
+        cls.IS_TEST = True
+        return cls.init(path)
+
+    @classmethod
     def file_path(cls, path: str = ''):
         return os.path.join(cls.PATH, path)
 
