@@ -11,6 +11,10 @@ class SpanTest(GDOTestCase):
         pre = GDT_PRE().add_field(GDT_HTML().html('Language README'))
         self.assertEqual('<pre>Language README</pre>', pre.render_html())
 
+    def test_html_renders_text_not_an_object_identifier_as_json(self):
+        html = GDT_HTML().html('<b>Readable</b>')
+        self.assertEqual('Readable', html.render_json())
+
 
 if __name__ == '__main__':
     unittest.main()

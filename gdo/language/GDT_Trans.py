@@ -9,3 +9,6 @@ class GDT_Trans(WithText, GDT):
     """
     def render(self, mode: Mode = Mode.render_html):
         return self.render_text(mode)
+
+    def render_json(self):
+        return self.render_text(Mode.render_json)

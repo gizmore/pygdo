@@ -3,6 +3,7 @@ from typing import Iterator
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Render import Mode
+from gdo.core.GDT_Field import GDT_Field
 
 
 class WithFields:
@@ -63,8 +64,29 @@ class WithFields:
 
     def render_json(self):
         out = {}
-        for gdt in self.all_fields():
-            out.update(gdt.render_json())
+        for gdt in self.get_fields():
+            # ``render_json`` bypasses ``Method.render``.  A container may
+            # contain a method (for example an overview embedding tables),
+            # whose result must be rendered in JSON mode rather than reduced
+            # to the method name.
+            value = gdt.render(Mode.render_json)
+            if isinstance(value, dict):
+                # Methods and explicitly named composite fields own a JSON
+                # object.  Keeping that object under their name prevents two
+                # embedded tables from both overwriting the generic ``table``
+                # key in their parent container.
+                if not isinstance(gdt, GDT_Field) and type(gdt).get_name is not GDT.get_name:
+                    out[gdt.get_name()] = value
+                    continue
+                for key, item in value.items():
+                    # Anonymous display fields such as links have no stable
+                    # field name.  JSON object keys cannot be ``None``.
+                    out[key or gdt.get_name() or gdt.__class__.__name__] = item
+            else:
+                # Fields normally provide a name/value mapping, but methods,
+                # display snippets and other GDTs may render a scalar.
+                # Preserve them instead of assuming ``dict.update(value)``.
+                out[gdt.get_name() or gdt.__class__.__name__] = value
         return out
 
     def render_fields(self, mode: Mode = Mode.render_html) -> str:

@@ -63,9 +63,15 @@ class GDT_Message(GDT_Composite):
     ##########
 
     def render(self, mode: Mode = Mode.render_html):
+        if mode == Mode.render_json:
+            return self.render_json()
         if mode in Mode.explicit():
             return self.get_rendered(mode)
         return self.render_gdt(mode)
+
+    def render_json(self):
+        """Expose the message body, not an editor-specific rendered cache key."""
+        return self.get_rendered(Mode.render_txt)
 
     def render_form(self):
         return GDT_Template.python('message', 'form_message.html', {"field": self, "input": self.get_input_column()})
