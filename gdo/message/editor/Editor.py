@@ -18,6 +18,16 @@ class Editor:
         return cls.filter_html(input)
 
     @classmethod
+    def from_html(cls, html: str) -> str:
+        """Serialize canonical HTML for this editor's input field.
+
+        HTML is currently the built-in editor, but keeping this conversion at
+        the editor boundary means PM storage remains correct when other
+        editors are added later.
+        """
+        return cls.filter_html(html)
+
+    @classmethod
     def filter_html(cls, html: str) -> str:
         purifier = cls.get_purifier()
         return purifier.feed(html) if html else ''
@@ -32,6 +42,13 @@ class Editor:
             'p': [],
             'b': [],
             'i': [],
+            'u': [],
+            's': [],
+            'strike': [],
+            'del': [],
+            'br': [],
+            'hr': [],
+            'pre': [],
             'h1': [],
             'h2': [],
             'h3': [],

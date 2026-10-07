@@ -25,6 +25,7 @@ class Message(WithEnv):
     _method: Method
     _message: str
     _result: str
+    _result_mode: Mode
     _thread_user: 'GDO_User'  # For chatgpt
     _gdt_result: GDT  # For chatgpt
     _delivered: bool
@@ -42,6 +43,9 @@ class Message(WithEnv):
         self._env_channel = None
         self._env_session = None
         self._result = ''
+        # ``_env_mode`` describes the inbound command.  Result text has its
+        # own mode because it may be routed to a different connector later.
+        self._result_mode = Mode.render_txt
         self._gdt_result = None
         self._delivered = False
         self.__class__.CURRENT = self
@@ -51,7 +55,7 @@ class Message(WithEnv):
 
     def message_copy(self) -> 'Message':
         copy = (Message(self._message, self._env_mode).env_copy(self).
-                result(self._result).result_gdt(self._gdt_result).
+                result(self._result, self._result_mode).result_gdt(self._gdt_result).
                 comrade(self._thread_user).no_sender_prefix(self._no_sender_prefix))
         copy._env_reply_to = self._env_reply_to
         copy._reply_privately = self._reply_privately
@@ -62,8 +66,9 @@ class Message(WithEnv):
         self._message = text
         return self
 
-    def result(self, result: str):
+    def result(self, result: str, mode: Mode = Mode.render_txt):
         self._result = result
+        self._result_mode = mode
         self._delivered = False
         return self
 
@@ -168,6 +173,7 @@ class Message(WithEnv):
         # one-shot state, so a second render in ``deliver`` can lose a
         # response such as BlackJack's ``self.msg(...); return self.empty()``.
         self._result = self.render_response(self._env_server.get_render_mode())
+        self._result_mode = self._env_server.get_render_mode()
         if not Application.IS_HTTP:
             self._env_session.save()
         await self.deliver()

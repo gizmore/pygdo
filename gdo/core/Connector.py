@@ -166,13 +166,28 @@ class Connector:
             self._next_connect_time = Application.TIME
         return self
 
+    def render_outgoing(self, msg: Message):
+        """Render a message only when it crosses a connector format boundary."""
+        destination = self.get_render_mode()
+        source = msg._result_mode
+        if source == destination:
+            return
+        if msg._gdt_result:
+            msg._result = msg.render_response(destination)
+        else:
+            from gdo.base.Render import Render
+            msg._result = Render.convert_text(msg._result, source, destination)
+        msg._result_mode = destination
+
     async def send_to_channel(self, msg: Message, with_events: bool=True):
+        self.render_outgoing(msg)
         await self.gdo_send_to_channel(msg)
         msg._env_user = self.gdo_get_dog_user()
         if with_events:
             await Application.EVENTS.publish('msg_sent', msg)
 
     async def send_to_user(self, msg: Message, with_events: bool=True, notice: bool=False):
+        self.render_outgoing(msg)
         msg._env_target_user = msg._env_user
         await self.gdo_send_to_user(msg, notice)
         msg._env_user = self.gdo_get_dog_user()

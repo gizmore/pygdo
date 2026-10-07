@@ -2,6 +2,7 @@ from gdo.base.GDO import GDO
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.base.Message import Message
+from gdo.base.Render import Mode
 from gdo.base.Method import Method
 from gdo.base.Trans import tiso
 from gdo.core.GDO_Method import GDO_Method
@@ -73,18 +74,18 @@ class GDO_Channel(GDO):
             query.where(f'chan_server={server.get_id()}')
         return query.exec()
 
-    async def send(self, message: str):
+    async def send(self, message: str, source_mode: Mode = Mode.render_txt):
         if Application.IS_HTTP:
             pass
             # GDO_Event.blank().insert()
         else:
             server = self.get_server()
             conn = server.get_connector()
-            msg = Message(message, conn.get_render_mode())
+            msg = Message(message, source_mode)
             msg.env_user(GDO_User.system(), True)
             # System is the internal routing identity for automated notices,
             # not a conversational author to expose in channel output.
-            msg.env_server(server).env_channel(self).result(message).no_sender_prefix()
+            msg.env_server(server).env_channel(self).result(message, source_mode).no_sender_prefix()
             await conn.send_to_channel(msg)
 
     async def send_text(self, key: str, args: tuple[str|int|float,...]):

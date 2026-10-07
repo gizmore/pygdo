@@ -1,5 +1,7 @@
 from enum import Enum
 from functools import lru_cache
+from html import escape
+import re
 
 from gdo.base.WithPygdo import WithPygdo
 
@@ -59,6 +61,81 @@ class Render(WithPygdo):
     Knows underline, bold, italic, green and red.
     Knows all the rendering modes.
     """
+
+    _IRC_COLOR = re.compile(r'\x03\d{0,2}(?:,\d{1,2})?')
+
+    @classmethod
+    def convert_text(cls, text: str, source: Mode, destination: Mode) -> str:
+        """Convert text through a connector-neutral GDT message tree."""
+        return cls.to_dest(cls.to_gdt(text, source), destination)
+
+    @classmethod
+    def to_html(cls, text: str, source: Mode = Mode.render_html) -> str:
+        """Normalize a rendered/input dialect into canonical HTML."""
+        text = text or ''
+        if source == Mode.render_irc:
+            return cls._irc_to_html(text)
+        if source in (
+            Mode.render_html, Mode.render_cell, Mode.render_form,
+            Mode.render_list, Mode.render_card,
+        ):
+            return text
+        # Telegram inbound messages, CLI text, and translations are text,
+        # even when their respective output connectors may render HTML.
+        return escape(text, quote=False)
+
+    @classmethod
+    def from_html(cls, html: str, destination: Mode) -> str:
+        """Compatibility wrapper for HTML -> GDT -> destination rendering."""
+        return cls.to_dest(cls.to_gdt(html), destination)
+
+    @classmethod
+    def to_gdt(cls, text: str, source: Mode = Mode.render_html):
+        """Parse input from ``source`` into the canonical Message GDT tree."""
+        from gdo.message.editor.Editor import Editor
+        return Editor.parse_tree(cls.to_html(text, source))
+
+    @classmethod
+    def irc_to_gdt(cls, text: str):
+        """Parse IRC control codes into a connector-neutral GDT tree."""
+        return cls.to_gdt(text, Mode.render_irc)
+
+    @classmethod
+    def to_dest(cls, gdt, destination: Mode) -> str:
+        """Render a Message GDT tree for the receiving connector."""
+        return gdt.render(destination)
+
+    @classmethod
+    def _irc_to_html(cls, text: str) -> str:
+        """Translate common IRC style toggles into canonical HTML."""
+        out: list[str] = []
+        tags = {'\x02': 'b', '\x1d': 'i', '\x1f': 'u', '\x1e': 's'}
+        open_tags: list[str] = []
+        index = 0
+        while index < len(text):
+            char = text[index]
+            if char == '\x0f':
+                for tag in reversed(open_tags):
+                    out.append(f'</{tag}>')
+                open_tags.clear()
+            elif char in tags:
+                tag = tags[char]
+                if tag in open_tags:
+                    out.append(f'</{tag}>')
+                    open_tags.remove(tag)
+                else:
+                    out.append(f'<{tag}>')
+                    open_tags.append(tag)
+            elif char == '\x03':
+                match = cls._IRC_COLOR.match(text, index)
+                if match:
+                    index = match.end() - 1
+            else:
+                out.append(escape(char, quote=False))
+            index += 1
+        for tag in reversed(open_tags):
+            out.append(f'</{tag}>')
+        return ''.join(out)
 
     @classmethod
     def green(cls, s: str, mode: Mode = None) -> str:

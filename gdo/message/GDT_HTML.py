@@ -44,3 +44,8 @@ class GDT_HTML(GDT):
 
     def render_irc(self) -> str:
         return self.render_txt()
+
+    def render_telegram(self) -> str:
+        # ``text()`` stores escaped HTML.  Telegram parses output as HTML, so
+        # retain that escape sequence instead of unescaping it via render_txt.
+        return self._html

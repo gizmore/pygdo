@@ -13,6 +13,7 @@ from gdo.base.Application import Application
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
 from gdo.base.Message import Message
+from gdo.base.Render import Mode
 from gdo.base.Trans import tusr
 from gdo.core.Connector import Connector
 from gdo.core.GDO_User import GDO_User
@@ -279,7 +280,9 @@ class GDO_Server(GDO):
         from gdo.base.Trans import Trans
         with Trans.message_context(self):
             text = tusr(user, key, args)
-        message = Message(text, Application.get_mode())
+        # Translations are plain source text.  The receiving connector turns
+        # them into its own format immediately before delivery.
+        message = Message(text, Mode.render_txt)
         message.env_user(user, True).env_server(self).env_channel(None)
         message._mira_reply = mira_reply
         await self.get_connector().send_to_user(message.result(text), True, notice)
