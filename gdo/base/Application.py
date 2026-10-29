@@ -368,11 +368,15 @@ class Application:
 
     @classmethod
     def get_headers(cls):
+        if cls.IS_HTTP and getattr(cls, 'EVENTS', None):
+            cls.EVENTS.publish_sync('http_response_headers')
         headers_dict = cls.storage('headers', {})
         return [(key.lower(), value) for key, value in headers_dict.items()]
 
     @classmethod
     def get_headers_asgi(cls):
+        if cls.IS_HTTP and getattr(cls, 'EVENTS', None):
+            cls.EVENTS.publish_sync('http_response_headers')
         headers_dict = cls.storage('headers', {})
         return [(key.lower().encode(), value.encode()) for key, value in headers_dict.items()]
 
