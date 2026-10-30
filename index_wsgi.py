@@ -2,7 +2,7 @@ import os.path
 import asyncio
 import time
 from io import BytesIO
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, quote, unquote
 from multipart import MultipartParser
 
 from gdo.base.IPC import IPC
@@ -183,8 +183,20 @@ def pygdo_application(environ, start_response):
             #del qs['_lang']
 
         path = Application.file_path(url)
+        seo_url = url
 
-        if file := GDO_SeoFile.get_by_url(url):
+        # Decode only for an actual static file. Method routes must retain
+        # encoded separators until ParseArgs has split their components.
+        decoded_url = unquote(url)
+        if decoded_url != url and '\\' not in decoded_url and not any(part in ('.', '..') for part in decoded_url.split('/')):
+            decoded_path = Application.file_path(decoded_url)
+            root = os.path.realpath(Application.file_path())
+            if os.path.commonpath((root, os.path.realpath(decoded_path))) == root and Files.is_file(decoded_path):
+                url, path = decoded_url, decoded_path
+                args.add_arg('_url', url)
+                seo_url = quote(seo_url, safe='/%')
+
+        if file := GDO_SeoFile.get_by_url(seo_url):
             session = GDO_Session.start(False)
             user = session.get_user()
             Application.set_current_user(user)

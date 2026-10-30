@@ -96,11 +96,13 @@ class GDO_Channel(GDO):
         with Trans.message_context(self.get_server(), self):
             return tiso(self.get_lang_iso(), key, args)
 
-    async def on_user_joined(self, user: GDO_User):
+    async def on_user_joined(self, user: GDO_User, *, snapshot: bool = False):
         user_name = user.get_name()
         if user_name not in self._users:
             self._users[user_name] = user
             await Application.EVENTS.publish('user_joined_channel', user, self)
+            if not snapshot:
+                await Application.EVENTS.publish('user_joined_channel_live', user, self)
 
     async def on_user_left(self, user: GDO_User):
         user_name = user.get_name()

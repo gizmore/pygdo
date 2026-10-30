@@ -1,7 +1,7 @@
 import mimetypes
 import os
 import time
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
 from functools import lru_cache
 from os import path
 
@@ -43,7 +43,8 @@ class file_server(Method):
         if not module_enabled('file'):
             return None
         from gdo.file.GDO_SeoFile import GDO_SeoFile
-        return GDO_SeoFile.get_by_url(self.get_url())
+        url = self.get_url()
+        return GDO_SeoFile.get_by_url(url if url.isascii() else quote(url, safe='/%'))
 
     @staticmethod
     @lru_cache(maxsize=65535)
