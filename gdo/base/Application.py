@@ -280,6 +280,7 @@ class Application:
         depth = cls.storage('transaction_depth', 0)
         if depth == 0:
             cls.STORAGE.after_commit = []
+            cls.STORAGE.transaction_cache_keys = set()
         cls.STORAGE.transaction_depth = depth + 1
 
     @classmethod
@@ -302,6 +303,7 @@ class Application:
             cls.STORAGE.transaction_depth = depth - 1
             return
         cls.STORAGE.transaction_depth = 0
+        cls.STORAGE.transaction_cache_keys = set()
         callbacks = cls.storage('after_commit', [])
         cls.STORAGE.after_commit = []
         for callback, args, kwargs in callbacks:
@@ -313,8 +315,17 @@ class Application:
     @classmethod
     def transaction_rollback(cls):
         """Discard all deferred side effects after a transaction rollback."""
+        from gdo.base.Cache import Cache
+        keys = cls.storage('transaction_cache_keys', set())
         cls.STORAGE.transaction_depth = 0
         cls.STORAGE.after_commit = []
+        cls.STORAGE.transaction_cache_keys = set()
+        for table, key in keys:
+            Cache.OCACHE.get(table, {}).pop(key, None)
+        for table, key in keys:
+            # Cache.set(table, None, ...) uses the exact key "table:";
+            # remove(table, None) would instead delete the whole namespace.
+            Cache.remove(table, '' if key is None else key)
 
     @classmethod
     def init_thread(cls, thread):

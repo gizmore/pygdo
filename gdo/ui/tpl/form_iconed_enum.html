@@ -1,0 +1,9 @@
+<div class="gdt-select gdt-iconed-enum">
+    <label for="<%=field._name%>"><span data-iconed-enum-icon><%=field.render_icon(Mode.render_html)%></span><%=field.render_label()%></label>
+    <select id="<%=field._name%>" name="<%=field._name%>"<%=field.html_disabled()%><%=field.html_attrs()%>>
+        <% for key, choice in field.init_choices().items(): %>
+        <option<%=field.html_selected(key)%> value="<%=html(key)%>"<%=field.html_option_attrs(key, choice)%>><%=html(str(choice))%></option>
+        <% : %>
+    </select>
+    <% if field.has_error(): %><div class="form-field-error"><%=field.render_error()%></div><% : %>
+</div>

@@ -181,6 +181,8 @@ class Cache:
 
     @classmethod
     def update_for(cls, gdo: 'GDO') -> 'GDO':
+        if Application.transaction_depth():
+            Application.STORAGE.transaction_cache_keys.add((gdo.gdo_table_name(), gdo.get_id()))
         cls.set(gdo.gdo_table_name(), gdo.get_id(), gdo._vals)
         return cls.obj_for(gdo, after_write=True)
 #        return cls.obj_for(gdo, gdo._vals, after_write=True)
@@ -197,6 +199,8 @@ class Cache:
     def obj_search_gid(cls, gdo: 'GDO', gid: str, delete: bool = False) -> 'GDO|None':
         if gdo.gdo_cached():
             tn = gdo.gdo_table_name()
+            if delete and Application.transaction_depth():
+                Application.STORAGE.transaction_cache_keys.add((tn, gid))
             if ocached := cls.OCACHE[tn].get(gid):
                 cls.OHITS += 1 #PYPP#DELETE#
                 if delete:

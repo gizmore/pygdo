@@ -465,7 +465,14 @@ class GDO(WithName, WithBulk, GDT):
     def delete(self):
         if self.is_persisted() and self.gdo_can_persist():
             self.before_delete()
-            self.delete_query().where(self.pk_where()).exec()
+            query = self.delete_query().where(self.pk_where())
+            for gdt in self.columns().values():
+                gdt.gdo_before_delete_query(self, query)
+            self.gdo_before_delete_query(self, query)
+            result = query.exec()
+            self.gdo_after_delete_query(self, query, result)
+            for gdt in self.columns().values():
+                gdt.gdo_after_delete_query(self, query, result)
             vals = {gdt.get_name(): gdt.get_val() for gdt in self.get_pk_columns()}
             if self.gdo_cached():
                 Cache.obj_search_id(self, vals, True)

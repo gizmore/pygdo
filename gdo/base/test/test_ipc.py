@@ -1,6 +1,6 @@
 import unittest
 from gdotest.TestUtil import GDOTestCase
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import msgspec
 
@@ -107,6 +107,74 @@ class IPCWakeupTest(GDOTestCase):
             db.commit()
         self.assertEqual(1, db.link.commits)
         send_now.assert_called_once_with('base.ipc_gdo', ('gdo_user', '1', {}))
+
+    def test_rollback_invalidates_only_changed_object_keys(self):
+        db = Database('', '', '', '')
+        db.link = self.FakeLink()
+        obj = MagicMock()
+        obj.gdo_table_name.return_value = 'test_table'
+        obj.get_id.return_value = '7'
+        obj._vals = {'value': 'changed'}
+        local = {'test_table': {'7': obj, '8': 'untouched'}}
+        with patch.object(Cache, 'OCACHE', local, create=True), patch.object(Cache, 'set'), \
+             patch.object(Cache, 'obj_for', return_value=obj), patch.object(Cache, 'remove') as remove:
+            db.begin()
+            Cache.update_for(obj)
+            db.rollback()
+        self.assertEqual({'8': 'untouched'}, local['test_table'])
+        remove.assert_called_once_with('test_table', '7')
+
+    def test_commit_keeps_changed_cache_entries(self):
+        db = Database('', '', '', '')
+        db.link = self.FakeLink()
+        obj = MagicMock()
+        obj.gdo_table_name.return_value = 'test_table'
+        obj.get_id.return_value = '7'
+        obj._vals = {'value': 'committed'}
+        local = {'test_table': {'7': obj}}
+        with patch.object(Cache, 'OCACHE', local, create=True), patch.object(Cache, 'set'), \
+             patch.object(Cache, 'obj_for', return_value=obj), patch.object(Cache, 'remove') as remove:
+            db.begin()
+            Cache.update_for(obj)
+            db.commit()
+        self.assertIs(obj, local['test_table']['7'])
+        remove.assert_not_called()
+
+    def test_cache_failure_during_rollback_still_clears_transaction_state(self):
+        db = Database('', '', '', '')
+        db.link = self.FakeLink()
+        obj = MagicMock()
+        obj.gdo_table_name.return_value = 'test_table'
+        obj.get_id.return_value = '7'
+        obj._vals = {'value': 'changed'}
+        local = {'test_table': {'7': obj}}
+        with patch.object(Cache, 'OCACHE', local, create=True), patch.object(Cache, 'set'), \
+             patch.object(Cache, 'obj_for', return_value=obj), \
+             patch.object(Cache, 'remove', side_effect=RuntimeError('cache unavailable')):
+            db.begin()
+            Cache.update_for(obj)
+            Application.defer_after_commit(lambda: None)
+            with self.assertRaisesRegex(RuntimeError, 'cache unavailable'):
+                db.rollback()
+        self.assertEqual(0, Application.transaction_depth())
+        self.assertEqual([], Application.storage('after_commit'))
+        self.assertEqual({}, local['test_table'])
+
+    def test_rollback_missing_object_id_does_not_clear_namespace(self):
+        db = Database('', '', '', '')
+        db.link = self.FakeLink()
+        obj = MagicMock()
+        obj.gdo_table_name.return_value = 'test_table'
+        obj.get_id.return_value = None
+        obj._vals = {'value': 'changed'}
+        local = {'test_table': {None: obj, '8': 'untouched'}}
+        with patch.object(Cache, 'OCACHE', local, create=True), patch.object(Cache, 'set'), \
+             patch.object(Cache, 'obj_for', return_value=obj), patch.object(Cache, 'remove') as remove:
+            db.begin()
+            Cache.update_for(obj)
+            db.rollback()
+        self.assertEqual({'8': 'untouched'}, local['test_table'])
+        remove.assert_called_once_with('test_table', '')
 
     class FakeLink:
         in_transaction = False

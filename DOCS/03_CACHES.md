@@ -42,6 +42,24 @@ Redis is shared by processes, unlike `TCACHE`, `CCACHE`, `PCACHE`, `OCACHE`, and
 `MCACHE`. It is also used by IPC timestamps and other explicitly Redis-backed
 features; do not assume that every Redis key contains a GDO row.
 
+## Transactions and object caches
+
+GDO cache updates and deletions performed through `Cache.update_for()` and
+`Cache.obj_search_gid(..., delete=True)` are tracked while an application-owned
+transaction is active. On rollback, their process-local entries are evicted and
+their Redis keys are removed; a subsequent lookup reloads from the database.
+References already held by callers are not refreshed and must be discarded or
+reloaded. Outermost commit clears the tracking set without evicting the entries.
+If Redis eviction fails, rollback state is still reset and the cache error is
+propagated; shared entries may then require separate invalidation.
+An absent object ID targets the exact empty-suffix key, never the whole table
+namespace.
+
+This is rollback cleanup, not transaction isolation for the caches: updates may
+be visible in process-local or Redis caches before commit. Raw SQL changes are
+not automatically tracked. Permission-sensitive code should consult the
+authoritative database and not rely on a cached value for access decisions.
+
 ## Cache clearing
 
 - `Cache.clear_ocache()` clears only non-persistent object instances. This is

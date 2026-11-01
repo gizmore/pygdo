@@ -18,7 +18,7 @@ class GDT_Edited(GDT_Created):
 
     def gdo_before_create(self, gdo):
         if self._on_created:
-            self.gdo_before_create(gdo)
+            super().gdo_before_create(gdo)
 
     def gdo_before_update(self, gdo):
         gdo.set_val(self._name, Time.get_date())

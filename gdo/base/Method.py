@@ -409,6 +409,13 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
                 return self.empty()
             result = await self._nested_execute(self, True)
         except (GDOParamError, GDOError) as ex:
+            if tr:
+                db.rollback()
+                tr = False
+            elif db.is_in_transaction():
+                # The outer method owns this transaction and must see the
+                # failure so it can roll back instead of committing partial work.
+                raise
             err_raw(str(ex))
             return self
         except OperationalError as ex:

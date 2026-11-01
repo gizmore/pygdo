@@ -139,6 +139,12 @@ class GDT(WithSerialization):
     def gdo_after_delete(self, gdo):
         pass
 
+    def gdo_before_delete_query(self, gdo, query: 'Query'):
+        pass
+
+    def gdo_after_delete_query(self, gdo, query: 'Query', result):
+        pass
+
     def gdo_form_validated(self, form):
         pass
 
@@ -320,6 +326,14 @@ class GDT(WithSerialization):
     def html_cell_class(self) -> str:
         """Return optional CSS classes for this field's table cells."""
         return ''
+
+    def shrink(self, enabled: bool = True):
+        """Keep this field's table column as narrow as its contents allow."""
+        self._shrink = enabled
+        return self
+
+    def is_shrink(self) -> bool:
+        return getattr(self, '_shrink', False)
 
     def filter_type(self) -> str:
         return 'text'

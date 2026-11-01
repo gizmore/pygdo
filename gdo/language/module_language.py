@@ -2,6 +2,7 @@ from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.core.GDO_User import GDO_User
 from gdo.language.GDO_Language import GDO_Language
+from gdo.language.GDO_LangText import GDO_LangText
 from gdo.language.GDT_Language import GDT_Language
 from gdo.language.InstallLanguage import InstallLanguage
 
@@ -11,6 +12,9 @@ class module_language(GDO_Module):
     def __init__(self):
         super().__init__()
         self._priority = 2
+
+    def gdo_classes(self):
+        return [GDO_LangText]
 
     async def gdo_install(self):
         InstallLanguage.now()
