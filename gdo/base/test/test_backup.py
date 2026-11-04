@@ -49,6 +49,13 @@ class BackupTest(GDOTestCase):
         second = self.backup.archive(self.destination, datetime(2026, 8, 25, 12, 30, 0))
         self.assertNotEqual(first, second)
 
+    @patch.object(Backup, 'dump_database')
+    def test_can_exclude_configuration(self, dump_database):
+        dump_database.side_effect = lambda path: path.write_text('dump', encoding='utf-8')
+        archive = self.backup.archive(self.destination, include_config=False)
+        with ZipFile(archive) as zipped:
+            self.assertEqual(['database.sql', 'files/photo.txt'], sorted(zipped.namelist()))
+
     @patch('gdo.base.Backup.Mail.from_bot')
     def test_mails_archive_as_attachment(self, from_bot):
         archive = self.destination / 'pygdo-data.zip'

@@ -18,7 +18,7 @@ class Backup:
         self.files_dir = Path(files_dir).resolve()
         self.db_config = db_config
 
-    def archive(self, target_dir: str | Path, timestamp: datetime | None = None) -> Path:
+    def archive(self, target_dir: str | Path, timestamp: datetime | None = None, *, include_config: bool = True) -> Path:
         target_dir = Path(target_dir).expanduser().resolve()
         target_dir.mkdir(parents=True, exist_ok=True)
         stamp = timestamp or datetime.now()
@@ -29,7 +29,8 @@ class Backup:
             try:
                 with ZipFile(target, 'x', ZIP_DEFLATED) as archive:
                     archive.write(dump, 'database.sql')
-                    archive.write(self.config_path, 'protected/config.toml')
+                    if include_config:
+                        archive.write(self.config_path, 'protected/config.toml')
                     self._add_files(archive)
                 return target
             except Exception:

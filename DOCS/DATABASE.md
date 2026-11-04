@@ -49,6 +49,17 @@ Foreign-key and unique-constraint names remain readable where possible.  If
 MySQL's 64-character identifier limit would be exceeded, PyGDO retains a
 readable prefix and adds a stable MD5 suffix.
 
+## Local backup
+
+Run `./gdo_backup.sh` to save a MySQL dump and the configured files directory
+in a private ZIP under `protected/backup/`. Select another configuration with
+`./gdo_backup.sh --config=protected/config_test.toml`. The configuration file
+itself is not included. Keep backups private and copy them off the machine;
+test restoration separately before relying on them. Database and files are
+captured sequentially, not as one atomic snapshot. `./gdo_backup.sh --quick`
+writes only a timestamped SQL dump, without files or a ZIP. The local Mira Dog
+launcher runs a full backup before starting and aborts if it fails.
+
 ## Learning by Examples
 
 #### 1) Single Identity Cache
