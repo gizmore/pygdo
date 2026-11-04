@@ -477,6 +477,7 @@ class App:
         parser = argparse.ArgumentParser(
             description='Create a module skeleton because we are lazy. Example: ./gdo_adm.sh skel module_name. The folder gdo/module_name has to exist. Usually you clone your repo manually and then run skel on the almost empty folder.')
         parser.add_argument('modulename')
+        parser.add_argument('--yes', action='store_true', help='Skip the overwrite prompt')
         args = parser.parse_args(sys.argv[2:])
         name = args.modulename
         base = Application.file_path(f'gdo/{name}/')
@@ -486,7 +487,8 @@ class App:
             return
 
         print(f"Creating basic module_{name} structure in {base}")
-        input("This will overwrite files, ok?")
+        if not args.yes:
+            input("This will overwrite files, ok?")
 
         Files.put_contents(f"{base}__init__.py", f'from gdo.{name}.module_{name} import module_{name}\n')
         Files.put_contents(
