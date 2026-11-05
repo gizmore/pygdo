@@ -42,8 +42,9 @@ class help(Method):
         # A full command listing is noisy in a public room and may expose
         # administrative commands to bystanders.  Keep help requested from a
         # channel private to the caller as an IRC NOTICE where supported.
-        if self._message and self._message._env_channel:
-            self._message.reply_privately(notice=True)
+        message = getattr(self, '_message', None)
+        if message and message._env_channel:
+            message.reply_privately(notice=True)
         trigger = self.get_trigger()
         if trigger:
             return self.show_help_for(trigger)
