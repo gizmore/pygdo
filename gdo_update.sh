@@ -3,9 +3,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-# Update source checkouts without discarding local work. Pass a positive
-# integer to select the parallelism (default: 15). Runtime-affecting hooks
-# are deliberately opt-in via --apply.
+# Pass a positive integer to select parallelism (default: 15).
+# Runtime-affecting hooks are deliberately opt-in via --apply.
 THREADS=15
 APPLY=0
 for arg in "$@"; do
@@ -24,17 +23,6 @@ mkdir -p temp
 repo_dirs() {
 	printf '%s\0' .
 	find ./gdo -mindepth 2 -maxdepth 2 -type d -name '.git' -printf '%h\0'
-}
-
-ensure_clean() {
-	local repo_dir="$1"
-	# Runtime files (PIDs, logs, local downloads) can be untracked. Only
-	# tracked edits or staged changes could be overwritten or conflict with a
-	# fast-forward update.
-	if ! git -C "$repo_dir" diff --quiet || ! git -C "$repo_dir" diff --cached --quiet; then
-		echo "Refusing to update checkout with tracked changes: $repo_dir" >&2
-		return 1
-	fi
 }
 
 update_repo() {
@@ -60,9 +48,19 @@ update_repo() {
 
 export -f update_repo
 
-echo "Checking that every checkout is clean. No reset will be performed."
+echo "This will reset the PyGDO core and all module repositories."
+echo "Tracked and staged changes will be discarded; untracked files are not intentionally removed."
+if [[ ! -t 0 ]]; then
+	echo "Confirmation requires an interactive terminal; update cancelled." >&2
+	exit 1
+fi
+read -r -p "Type RESET to continue: " confirmation
+if [[ "$confirmation" != RESET ]]; then
+	echo "Update cancelled."
+	exit 1
+fi
 while IFS= read -r -d '' repo_dir; do
-	ensure_clean "$repo_dir"
+	git -C "$repo_dir" reset --hard
 done < <(repo_dirs)
 
 echo "Updating the main PyGDO repository and extension modules."
