@@ -5,6 +5,7 @@ import os
 import re
 import socket
 import stat
+import subprocess
 import sys
 import tempfile
 import tomllib
@@ -15,6 +16,38 @@ PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
 from gdo.base.Backup import Backup
+
+
+def private_backup_directory(target: Path) -> bool:
+    if not stat.S_IMODE(target.stat().st_mode) & 0o077:
+        return True
+    try:
+        result = subprocess.run(['getfacl', '-cp', str(target)], check=True,
+                                capture_output=True, text=True)
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    required = {'user::', 'group::', 'other::'}
+    for line in result.stdout.splitlines():
+        entry = line.split('#', 1)[0].strip()
+        if not entry:
+            continue
+        if entry.startswith('default:'):
+            entry = entry[len('default:'):]
+        parts = entry.split(':')
+        if len(parts) != 3:
+            return False
+        kind, name, permissions = parts
+        if not line.startswith('default:'):
+            required.discard(f'{kind}:{name}:')
+        if kind == 'user' and name not in ('', 'mira'):
+            return False
+        if kind == 'group' and (name or permissions != '---'):
+            return False
+        if kind == 'other' and permissions != '---':
+            return False
+        if kind not in ('user', 'group', 'other', 'mask'):
+            return False
+    return not required
 
 
 def quick_backup(backup: Backup, target: Path) -> Path:
@@ -66,7 +99,7 @@ def main() -> int:
         target.mkdir(mode=0o700, parents=True, exist_ok=True)
         if files is not None and target.resolve().is_relative_to(files.resolve()):
             raise ValueError('backup directory must be outside the files directory')
-        if stat.S_IMODE(target.stat().st_mode) & 0o077:
+        if not private_backup_directory(target):
             raise ValueError('backup directory must not be accessible by group or others')
         backup = Backup(config_path, files if files is not None else PROJECT, db)
         output = quick_backup(backup, target) if args.quick else backup.archive(target, include_config=False)

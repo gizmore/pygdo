@@ -12,6 +12,21 @@ SPEC.loader.exec_module(backup_cli)
 
 
 class BackupCLITest(unittest.TestCase):
+    def test_acl_allows_only_mira_and_denies_group_and_others(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            target.chmod(0o770)
+            good = 'user::rwx\nuser:mira:rwx\ngroup::---\nmask::rwx\nother::---\n'
+            with patch.object(backup_cli.subprocess, 'run') as run:
+                run.return_value.stdout = good
+                self.assertTrue(backup_cli.private_backup_directory(target))
+                run.return_value.stdout = good.replace('group::---', 'group::r-x')
+                self.assertFalse(backup_cli.private_backup_directory(target))
+                run.return_value.stdout = good + 'user:someone:r--\n'
+                self.assertFalse(backup_cli.private_backup_directory(target))
+                run.return_value.stdout = ''
+                self.assertFalse(backup_cli.private_backup_directory(target))
+
     def test_selected_config_is_used_without_archiving_config(self):
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp)
