@@ -13,6 +13,7 @@ Ideas are invitations to explore, not commitments. Promote an idea to
 - Add `$core.genhelp` to generate a `HELP.md` overview from all methods' help
   content. Scope, language, permissions, and output location remain to be
   decided.
+- Send an email to the configured `mail.errors_to` recipients when an error occurs.
 - Translation provider interface: start with the keyless Google endpoint, then
   make other providers or local models swappable without changing methods.
 - Preserve original text, source language, target language, and provider in
