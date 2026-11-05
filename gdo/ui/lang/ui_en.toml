@@ -6,3 +6,4 @@ bg_color = "Background Color"
 fg_color = "Foreground Color"
 
 no_alt_text_an_image = "An image"
+err_css_length = "Enter a CSS length using px or %, for example 20px or 50%."
