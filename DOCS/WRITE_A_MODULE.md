@@ -48,3 +48,20 @@ git -C gdo/<module_name> diff --check
 
 Commit a coherent change first. Push only after reviewing the commit and
 deciding it should be published.
+
+## Working across teams
+
+Each module is an independent repository with its own maintainers. To work on
+another team's module, use your team's fork and a feature branch. Keep the
+original repository as the upstream reference; coordinate the intended change
+and review with its maintainers before asking them to integrate it. A fork
+does not give write access to upstream. Teams may also send a change request
+directly to the maintainers when that is the agreed workflow.
+
+Check the module's license and review the changes and tests before sharing.
+After the maintainers accept a contribution, update your fork from upstream
+without discarding work in progress. For `gdo_sync.sh`, `--owner=<git-username>`
+selects repositories by their `origin` push owner; its default is `gizmore`.
+It commits and pushes selected repositories, so inspect their status and push
+destinations first. Central module-provider mappings are maintained by the core
+team; ask them to register a new module after its repository is available.
