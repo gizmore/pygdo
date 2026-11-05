@@ -276,6 +276,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return self._parameters
 
     def init_parameter(self, gdt: GDT) -> GDT:
+        if hasattr(gdt, 'server_context'):
+            gdt.server_context(self._env_server)
         val = None
         self._parameters[gdt.get_name()] = gdt
         if gdt.is_positional():

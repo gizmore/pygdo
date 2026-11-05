@@ -8,6 +8,12 @@ class WithObject:
     _table: GDO
     _on_delete: str
     _default_random: bool
+    _lax_server: bool = False
+
+    def lax_server(self, lax: bool = True):
+        """Treat exact matches on different servers equally when resolving names."""
+        self._lax_server = lax
+        return self
 
     def table(self, gdo: GDO):
         self._table = gdo

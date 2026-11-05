@@ -17,3 +17,8 @@ msg_tcpauth_success = "TCP authentication successful as %s."
 ########
 mt_net_wget = "wget"
 md_net_wget = "Request a page via this PyGDO server."
+tt_wget_url = "HTTP(S) URL; authenticated owners may also read a local UTF-8 file URL."
+err_wget_file_owner = "Local file URLs require an authenticated owner."
+err_wget_file_get = "Local files only support GET."
+err_wget_file_size = "Local text files are limited to 16384 bytes."
+err_wget_file_read = "Cannot read the local UTF-8 regular file."
