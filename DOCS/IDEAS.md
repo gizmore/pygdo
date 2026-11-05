@@ -10,6 +10,9 @@ There is an old [list of ideas in phpgdo7](http://github.com/gizmore/phpgdo/blob
 Ideas are invitations to explore, not commitments. Promote an idea to
 [`TODO.md`](./TODO.md) only when its next action and owner are clear.
 
+- Add `$core.genhelp` to generate a `HELP.md` overview from all methods' help
+  content. Scope, language, permissions, and output location remain to be
+  decided.
 - Translation provider interface: start with the keyless Google endpoint, then
   make other providers or local models swappable without changing methods.
 - Preserve original text, source language, target language, and provider in
