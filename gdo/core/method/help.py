@@ -1,7 +1,7 @@
 import re
 
 from gdo.base.Application import Application
-from gdo.base.Exceptions import GDOParamError
+from gdo.base.Exceptions import GDODBException, GDOParamError
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
@@ -79,7 +79,7 @@ class help(Method):
                 # of aborting the complete command list.
                 try:
                     allowed = method.has_permission(self._env_user, False)
-                except GDOParamError:
+                except (GDOParamError, GDODBException):
                     allowed = False
                 if allowed:
                     trigger_colored = 'green'
