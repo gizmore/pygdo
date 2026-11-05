@@ -35,6 +35,9 @@
 4. Add a pure unit test for parsing/logic before an integration test.
 5. Add a command method only after its argument shape and output are clear.
 
+For work that must run in the Dog process, split the public command from an
+internal IPC handler; see [Methods: Running work in Dog through IPC](METHODS.md#running-work-in-dog-through-ipc).
+
 ## Verify and publish
 
 ```bash
