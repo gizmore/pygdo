@@ -12,6 +12,8 @@ not an idea to discuss.
 
 ## Next
 
+- Deliver Mira's asynchronous Bash replies to the active PyGDO REPL and test
+  the reply path without disrupting interactive input.
 - Add provider-independent translation errors, rate-limit handling, and a
   documented provider boundary to `gtranslate`.
 - Make new-module setup consistently include tests, language files, and safe
