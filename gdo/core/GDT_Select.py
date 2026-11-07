@@ -101,8 +101,9 @@ class GDT_Select(GDT_ComboBox):
     def render_suggestion(self) -> str:
         self.init_choices()
         keys = self._choices.keys()
-        examples = list(keys)[0:5]
-        if len(keys) > 5:
+        limit = 50 if self._errorhint_all else 5
+        examples = list(keys)[:limit]
+        if len(keys) > limit:
             examples.append('...')
         return ", ".join(examples)
 
