@@ -5,6 +5,10 @@ not an idea to discuss.
 
 ## Now
 
+- Verify `$remixes.sid` end to end with an isolated module/schema installation:
+  session search and selection, SID playback through the configured sink,
+  play counter and likes; no real audio or database integration has yet been
+  confirmed.
 - Complete the `gtranslate` module surface: decide command syntax, validate
   language arguments, render a useful translated response, and test it across
   CLI/web transports.
