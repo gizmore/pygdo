@@ -17,6 +17,17 @@ class GDT_Language(GDT_ObjectSelect):
         self.case_s()
         self.ascii()
         self._supported = False
+        self._audio_langs = False
+
+    def audiolangs(self, enabled: bool = True):
+        """Restrict choices to languages supported by the speech backend."""
+        self._audio_langs = enabled
+        return self
+
+    @staticmethod
+    def _audio_codes():
+        from gdo.audio.language import VOICES
+        return tuple(VOICES)
 
     def supported(self, supported: bool = True):
         self._supported = supported
@@ -25,13 +36,16 @@ class GDT_Language(GDT_ObjectSelect):
     def gdo_query(self) -> Query:
         query = super().gdo_query()
         if self._supported: query.where('lang_supported')
+        if self._audio_langs:
+            codes = ', '.join("'" + code + "'" for code in self._audio_codes())
+            query.where(f'lang_iso IN ({codes})' if codes else '1=0')
         return query
 
     def to_value(self, val: str):
         if val is None:
             return None
         language = self._table.get_by_id(val.lower())
-        if language and (not self._supported or language.gdo_val('lang_supported') == '1'):
+        if language and (not self._supported or language.gdo_val('lang_supported') == '1') and (not self._audio_langs or val.lower() in self._audio_codes()):
             return language
         return None
 

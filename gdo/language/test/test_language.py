@@ -31,6 +31,14 @@ class LanguageTest(GDOTestCase):
         self.assertEqual(t('l_de'), field.render_txt())
         self.assertEqual(t('l_de'), field.render_cli())
 
+    def test_audio_languages_filter(self):
+        from gdo.audio.language import VOICES
+        field = GDT_Language('language').audiolangs()
+        for iso in VOICES:
+            with self.subTest(iso=iso):
+                self.assertIsNotNone(field.to_value(iso))
+        self.assertIsNone(field.to_value('fr'))
+
 
 if __name__ == '__main__':
     unittest.main()
