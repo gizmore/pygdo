@@ -10,6 +10,11 @@ There is an old [list of ideas in phpgdo7](http://github.com/gizmore/phpgdo/blob
 Ideas are invitations to explore, not commitments. Promote an idea to
 [`TODO.md`](./TODO.md) only when its next action and owner are clear.
 
+- Public interfaith text explorer: publish HTML editions of religious texts with
+  stable passage anchors and sourced cross-links between traditions. Explain
+  both parallels and differences without implying that passages are equivalent.
+  Select the initial texts and languages, and verify publication rights for
+  each source edition and translation before including it.
 - Add `$core.genhelp` to generate a `HELP.md` overview from all methods' help
   content. Scope, language, permissions, and output location remain to be
   decided.
