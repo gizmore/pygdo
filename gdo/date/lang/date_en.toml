@@ -1,6 +1,10 @@
 module_date = "Date"
 
 timezone = "Timezone"
+mt_date_time = "Current time"
+md_date_time = "Show your local time, timezone and Unix timestamp."
+date_time_result = "%s | %s (UTC%s) | Unix %s"
+date_timezone_unavailable = "Your timezone is not configured."
 
 ################
 # Date Formats #
