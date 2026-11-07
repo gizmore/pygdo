@@ -21,7 +21,14 @@ while IFS= read -r -d '' gitdir; do
 		fi
 	fi
 	[ -z "$status" ] && [ -z "$sync" ] && [ -z "$branch_note" ] && continue
-	printf '%s\n%s\n' "--------------------------------" "$repo"
+	remote="$(git -c safe.directory="$repo_path" -C "$repo_path" remote get-url origin 2>/dev/null)"
+	maintainer="unknown"
+	case "$remote" in
+		git@github.com:*/*) maintainer="${remote#git@github.com:}"; maintainer="${maintainer%%/*}" ;;
+		https://github.com/*/*) maintainer="${remote#https://github.com/}"; maintainer="${maintainer%%/*}" ;;
+		ssh://git@github.com/*/*) maintainer="${remote#ssh://git@github.com/}"; maintainer="${maintainer%%/*}" ;;
+	esac
+	printf '%s\n%s (GitHub owner: %s)\n' "--------------------------------" "$repo" "$maintainer"
 	[ -n "$status" ] && printf '%s\n' "$status"
 	[ -n "$sync" ] && printf '%s\n' "$sync"
 	[ -n "$branch_note" ] && printf '%s\n' "$branch_note"
