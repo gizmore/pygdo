@@ -22,6 +22,8 @@ class WithPermissionCheck:
     CACHE: dict[Type['WithPermissionCheck'],dict['GDO_User',bool]] = {}
 
     def has_permission(self, user: 'GDO_User', display_error: bool = True) -> bool:
+        if (self.gdo_user_permission() or self.gdo_needs_authentication()) and not user.is_system() and not user.is_authenticated():
+            return False if not display_error else self.err_not_authenticated()
         # A cached permission never substitutes for a current balance check.
         if not self.has_price_permission(user, display_error):
             return False

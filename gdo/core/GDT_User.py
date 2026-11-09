@@ -98,7 +98,24 @@ class GDT_User(GDT_Object):
             query.where(f"(user_displayname LIKE '%{val}%' OR user_name LIKE '%{val}%')")
         return self.scope_server(query, val_serv).limit(16)
 
+    def query_completion_users(self, value: str) -> list[GDO]:
+        from gdo.core.GDO_Server import GDO_Server
+        name, separator, server_prefix = value.partition('{')
+        query = self._table.select()
+        if separator:
+            prefix = server_prefix.rstrip('}').casefold()
+            servers = GDO_Server.table().select().exec().fetch_all()
+            ids = [int(server.get_id()) for server in servers
+                   if server.get_name().casefold().startswith(prefix)
+                   or str(server.get_id()).startswith(prefix)]
+            if not ids:
+                return []
+            query.where(f"user_server IN ({','.join(map(str, ids))})")
+        return self.query_gdos_query(name, query).limit(50).exec().fetch_all()
+
     def query_gdos(self, val: str) -> list[GDO]:
+        if '{' in val and not val.endswith('}'):
+            return self.query_completion_users(val)
         user_id = val if val.isnumeric() else Strings.regex_first(r'^(\d+)-', val)
         if user_id:
             val_serv = Strings.regex_first(r'{([^{}]+)}$', StringsUtil.utf8deobfuscate(val))

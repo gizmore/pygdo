@@ -5,8 +5,11 @@ from gdo.core.GDT_User import GDT_User
 
 class user_completion(MethodCompletion):
 
+    def completion_users(self, value: str):
+        return GDT_User('user').query_completion_users(value)
+
     def gdo_completion_items(self) -> list[dict[str, str]]:
-        users = GDT_User('user').query_gdos(self.get_query())
+        users = self.completion_users(self.get_query())
         results = []
         for user in users:
             result = {

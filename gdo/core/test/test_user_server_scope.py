@@ -34,6 +34,9 @@ class FakeQuery:
                 users = [u for u in users if u.get_server_id() == server.group(1)]
             elif uid:
                 users = [u for u in users if u.get_id() == uid.group(1)]
+            elif match := re.fullmatch(r'user_server IN \(([^)]+)\)', condition):
+                ids = match.group(1).split(',')
+                users = [u for u in users if u.get_server_id() in ids]
             elif 'user_displayname' in condition:
                 value = re.search(r"user_displayname(?:=| LIKE )'([^']*)'", condition).group(1)
                 if value.startswith('%'):
@@ -103,3 +106,26 @@ class ScopedUserTest(unittest.TestCase):
             self.assertEqual(field.query_gdos('tina-chan{rizon}'), [self.remote])
         self.assertEqual(field.query_gdos('2'), [self.remote])
         self.assertEqual(field.same_server().query_gdos('2'), [])
+
+    def test_completion_accepts_unfinished_server_suffix(self):
+        from gdo.core.method.user_completion import user_completion
+        rizon = MagicMock()
+        rizon.get_id.return_value = '20'
+        rizon.get_name.return_value = 'rizon'
+        web = MagicMock()
+        web.get_id.return_value = '10'
+        web.get_name.return_value = 'web'
+        servers = MagicMock()
+        servers.select.return_value.exec.return_value.fetch_all.return_value = [web, rizon]
+        completion = user_completion()
+        with patch('gdo.core.GDO_Server.GDO_Server.table', return_value=servers):
+            self.assertEqual(completion.completion_users('tina-chan{riz'), [self.remote])
+            self.assertEqual(completion.completion_users('tina-chan{rizon}'), [self.remote])
+            self.assertEqual(completion.completion_users('tina-chan{nope'), [])
+            self.assertEqual(completion.completion_users('tina-chan{'), [self.local, self.remote, self.local_other])
+            self.assertEqual(GDT_User('to').query_gdos('tina-chan{riz'), [self.remote])
+
+    def test_completion_lists_cross_server_matches_without_suffix(self):
+        from gdo.core.method.user_completion import user_completion
+        self.assertEqual(user_completion().completion_users('tina-chan'),
+                         [self.local, self.remote, self.local_other])
