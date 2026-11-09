@@ -14,6 +14,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.Render import Mode
+from copy import copy
 from gdo.base.WithEnv import WithEnv
 from gdo.base.Parser import Parser
 
@@ -48,6 +49,8 @@ class Message(WithEnv):
         self._result_mode = Mode.render_txt
         self._gdt_result = None
         self._delivered = False
+        # Only a trusted connector may set this for its own inbound message.
+        self._platform_authenticated = None
         self.__class__.CURRENT = self
 
     def get_connector(self) -> 'Connector':
@@ -65,6 +68,13 @@ class Message(WithEnv):
     def message(self, text: str):
         self._message = text
         return self
+
+    def effective_message_user(self, origin):
+        user = origin.get_effective_user()
+        if self._platform_authenticated is not None:
+            user = copy(user)
+            user._authenticated = self._platform_authenticated
+        return user
 
     def result(self, result: str, mode: Mode = Mode.render_txt):
         self._result = result
@@ -125,7 +135,9 @@ class Message(WithEnv):
                 if self._env_user.get_setting_value('ignore'):
                     return
                 self._env_reply_to = self._env_user
-                self._env_user = self._env_user.get_effective_user()
+                # Keep platform authentication local to this message; never
+                # authenticate cached accounts across linked networks.
+                self._env_user = self.effective_message_user(self._env_user)
                 Application.set_current_user(self._env_user)
             await Application.EVENTS.publish('new_message', self)
             trigger = self._env_server.get_trigger()

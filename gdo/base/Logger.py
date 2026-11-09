@@ -79,6 +79,11 @@ class Logger:
         sys.stderr.write(stack + "\n")
         cls.write('exception.log', str(ex), False)
         cls.write('exception.log', stack, False)
+        try:
+            from gdo.base.ErrorMail import report_exception
+            report_exception(ex)
+        except Exception as mail_error:
+            sys.stderr.write(f'Error-mail setup failed ({type(mail_error).__name__}).\n')
 
     @classmethod
     def write(cls, path: str, content: str, user_log: bool = True):

@@ -18,7 +18,13 @@ Ideas are invitations to explore, not commitments. Promote an idea to
 - Add `$core.genhelp` to generate a `HELP.md` overview from all methods' help
   content. Scope, language, permissions, and output location remain to be
   decided.
-- Send an email to the configured `mail.errors_to` recipients when an error occurs.
+- Exception email notifications are opt-in via `mail.errors_to` (empty by default).
+  Centrally logged exceptions and unhandled CLI/asyncio exceptions trigger a
+  best-effort SMTP notification when `mail.debug = 0`. The notification includes
+  exception type, time, host, PID and stack locations, but deliberately omits
+  exception messages, source lines and local variables, which can contain
+  credentials or private data. Handled exceptions that are never logged are not
+  intercepted. Delivery failures do not produce further error emails.
 - Translation provider interface: start with the keyless Google endpoint, then
   make other providers or local models swappable without changing methods.
 - Preserve original text, source language, target language, and provider in

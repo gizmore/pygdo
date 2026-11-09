@@ -96,7 +96,7 @@ class Config:
             cls.data_str('mail.imap_user', ''),
             cls.data_str('mail.imap_pass', ''),
             cls.data_str('mail.imap_sent_folder', 'Sent'),
-            cls.data_str('mail.errors_to', 'errors@pygdo.com'),
+            cls.data_str('mail.errors_to', ''),
         ]
         dic = {}
         for gdt in lst:

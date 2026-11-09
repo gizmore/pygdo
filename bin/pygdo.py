@@ -178,8 +178,23 @@ async def launcher(line: str = None, config: str = 'protected/config.toml'):
     sys.path.append(parent_dir)
     from gdo.base.Application import Application
     Application.LOOP = asyncio.get_running_loop()
+    def report_async_error(loop, context):
+        error = context.get('exception')
+        if isinstance(error, Exception):
+            try:
+                from gdo.base.Logger import Logger
+                Logger.exception(error, 'Unhandled asyncio task exception')
+            except Exception:
+                pass
+        loop.default_exception_handler(context)
+    Application.LOOP.set_exception_handler(report_async_error)
     await pygdo(line, config)
 
 
 if __name__ == '__main__':
-    asyncio.run(launcher())
+    try:
+        asyncio.run(launcher())
+    except Exception as ex:
+        from gdo.base.Logger import Logger
+        Logger.exception(ex, 'Unhandled CLI exception')
+        raise
