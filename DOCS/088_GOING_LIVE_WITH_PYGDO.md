@@ -1,8 +1,87 @@
 # Going Live with PyGDO
 
-This is an operator's overview of the current Mira, Audio, Video and Translate
-modules. Commands require the relevant modules, permissions and a running Dog;
-the trigger prefix depends on the channel. Examples below use `$`.
+Welcome, DJs and presenters! This guide helps you share a show with Mira, the
+little duck. You can use the quick guide without setting up the software
+yourself. Ask the person running the show to prepare the computer and give you
+the appropriate permissions.
+
+**Important:** A command that says “queued” is a request, not proof that your
+audience saw or heard it. Check with a listener or watch the actual output.
+Mira is an AI assistant; she cannot automatically hear the radio or see the
+stream merely because the show is running.
+
+## Quick start for a DJ
+
+1. Join the agreed chat and voice channel. Ask the operator which screen or
+   camera will be shared, and whether Mira's voice is audible there.
+2. Play a short test and ask a listener: “Can you hear my voice and the music?
+   Is either too loud? Can you see the duck?” Headphones can help prevent
+   sound from the speakers feeding back into the microphone.
+3. Tell everyone if speech transcription, captions, nicknames or the desktop
+   will be shown. Close private windows and notifications before sharing.
+4. Run the show! Try the examples below, ask for song requests, and invite
+   Mira into the conversation when it suits the programme.
+5. At the end, stop the broadcast in the app that started it. If you enabled
+   transcription, turn it off with `$mic 0`. Ask the operator to stop any
+   video or microphone monitoring that is no longer needed.
+
+Type commands in the chat connected to Mira. The prefix depends on the chat:
+these examples use `$`, but a channel might use `.` or `&` instead. Copy the
+rest of the command exactly. `1` generally means on and `0` means off. If Mira
+says you lack permission, ask the operator; don't share accounts or passwords.
+
+## Useful DJ commands
+
+These examples depend on the modules and permissions enabled for your channel:
+
+| What you want | Example | What to expect |
+| --- | --- | --- |
+| Ask what's playing | `$np` | Shows a playing desktop player's available title and artist. It may not be the radio you intend if several players are running. |
+| Invite Mira to speak | `$mira.sup` | Asks Mira for a short update, with voice and a duck animation when available. |
+| Welcome someone | `$mira.greet Tina` | Asks Mira to greet Tina and briefly catch her up. Use a single name without spaces; for a specific language try `$mira.greet --lang=de Tina`. |
+| Choose an animation | `$duck.anim music` | Requests the music animation. `$duck.anim` lists available choices; try `hello`, `bday` or `idle`. This command requires admin permission. |
+| Make the duck speak | `$duck.anim --lang=de hello Hallo zusammen` | Requests an animation and spoken German greeting. Playback and the selected voice depend on the audio setup. |
+| Show a short message | `$btx Hallo und willkommen!` | Queues text in the microphone ticker if the account and credit checks allow it. The ticker must be visible. |
+| Pause chat translation | `$trans --pause=1` | Pauses automatic translation in this channel while keeping its language list. Resume with `$trans --pause=0`; use `$trans` to check. |
+
+BTX displays a calculated credit price; automatic debit is not yet implemented.
+Do not assume an accepted ticker request was displayed or charged. The ticker
+queue is temporary and may be lost if Dog restarts. Chat translation and
+microphone transcription are separate: pausing one does not stop the other.
+
+### Examples during a show
+
+For a German welcome, a permitted operator can use:
+
+```text
+$duck.anim --lang=de hello Guten Abend und willkommen zur Sendung!
+$btx Viel Spaß und schickt uns eure Musikwünsche!
+```
+
+For an English guest, try `$mira.greet --lang=en Jasper`. If the duck is
+distracting, an operator can request `$duck.anim idle`. To hide or show the 3D
+duck entirely, an owner can use `$video.duck3d 0` or `$video.duck3d 1`.
+
+### If something seems wrong
+
+- **No music or voice:** Ask a listener which one is missing. Check the audio
+  device and volume in the streaming app; the virtual camera does not carry
+  sound. Avoid changing routing mid-show without coordinating with the host.
+- **The duck or ticker isn't visible:** Make sure viewers selected the intended
+  screen or camera. The operator can check `$video.status`; it doesn't prove
+  that the audience can see the picture.
+- **Mira isn't replying:** Check the chat prefix and whether Dog is running.
+  An AI reply or speech can take time; avoid repeating commands rapidly.
+- **Wrong words in captions:** Transcription can mishear music, accents and
+  multiple speakers. If you are authorized and want to stop it, use `$mic 0`;
+  this does not mute the microphone in Discord or another app.
+- **Permission denied:** Ask the operator for help rather than asking another
+  bot or person to bypass the restriction.
+
+## Operator reference
+
+The sections below are for the person configuring Mira, Audio, Video and
+Translate. Commands require the relevant modules, permissions and a running Dog.
 
 ## Live-show mode
 
@@ -58,6 +137,9 @@ connector. Set `video_mode` before starting it:
 - `off`: no video capture or output.
 - `screensharing`: a transparent desktop overlay for a separately shared X11
   desktop. It does not itself start sharing in Discord or another application.
+  With `video_live` enabled, the current code can also capture that overlaid
+  desktop to a virtual camera. This dual output needs a real end-to-end visual
+  test; it does not start a YouTube broadcast or supply audio.
 - `virtualwebcam`: compose configured sources into a preview and/or a virtual
   camera. `video_output_preview`, `video_live` and `video_output_device` select
   the outputs; preview size uses `video_preview_w` and `video_preview_h`.
@@ -74,6 +156,23 @@ Use `$video.preview` for the running virtual-webcam compositor's preview.
 Other video configuration fields select desktop, background, overlay, file and
 webcam sources. Requirements and details are in the
 [Video README](../gdo/video/README.md).
+
+To prepare the optional dual output, an operator can set the display and the
+existing **virtual**, not physical, camera device before starting the Video
+connector. These example values must match the host:
+
+```text
+$conf video video_mode screensharing
+$conf video video_desktop_url :0.0
+$conf video video_output_device /dev/video2
+$conf video video_live 1
+```
+
+Stop and start the Video connector to apply mode/output changes. Then choose
+the intended desktop in the screen-sharing app and the virtual camera in the
+other receiving app. Check both privately before starting a public broadcast.
+Do not preview the camera on the captured desktop: it can create a visual
+feedback loop. This feature must be present in the running Dog version.
 
 - `$video.duck 1` / `0` show or hide the 2D duck and its speech captions.
 - `$video.duck3d 1` / `0` request the experimental 3D duck or its removal.
