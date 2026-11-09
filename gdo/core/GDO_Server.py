@@ -213,13 +213,21 @@ class GDO_Server(GDO):
         if not channel:
             creator = creator or GDO_User.current()
             creator = GDO_User.system() if not creator.is_persisted() else creator
+            # A cached user may have been deleted or its creation rolled back.
+            # Check the actual row, not just the object's persisted flag.
+            users = GDO_User.table()
+            creator_id = creator.get_id()
+            if not creator_id or not users.count_where(f'user_id={users.quote(creator_id)}'):
+                creator_id = '1'
+                if not users.count_where(f'user_id={users.quote(creator_id)}'):
+                    raise RuntimeError('Cannot create channel: system user 1 is missing')
             channel = GDO_Channel.blank({
                 'chan_name': name,
                 'chan_displayname': display_name or name,
                 'chan_server': self.get_id(),
                 'chan_trigger': self.get_trigger(),
                 'chan_language': self.get_lang_iso(),
-                'chan_creator': creator.get_id(),
+                'chan_creator': creator_id,
             }).insert()
         return channel
 

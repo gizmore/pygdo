@@ -70,6 +70,8 @@ def aiorun(coro):
 def application(environ, start_response):
     loop = asyncio.new_event_loop()
     Application.LOOP = loop
+    from gdo.base.ErrorMail import install_async_exception_handler
+    install_async_exception_handler(loop)
     try:
         yield from pygdo_application(environ, start_response)
     finally:
@@ -359,6 +361,10 @@ def pygdo_application(environ, start_response):
     except GDOParamNameException as ex:
         yield error_page(ex, start_response, client_error().exception(ex), '409 User Error')
     except Exception as ex:
+        try:
+            Logger.exception(ex)
+        except Exception:
+            pass  # A broken logger must not prevent the fallback response.
         try:
             yield error_page(ex, start_response, server_error(), "500 Fatal Error", '1')
         except Exception as ex:

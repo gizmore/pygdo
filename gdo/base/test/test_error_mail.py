@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from gdo.base.Application import Application
 from gdo.base.ErrorMail import report_exception
@@ -59,6 +59,45 @@ class ErrorMailTest(unittest.TestCase):
                 patch('gdo.base.ErrorMail.report_exception') as report:
             Logger.exception(error)
         report.assert_called_once_with(error)
+
+    def test_same_exception_is_reported_at_most_once(self):
+        error = ValueError('test')
+        with patch.object(Application, 'config', side_effect=self.config()), \
+                patch('gdo.base.ErrorMail.smtplib.SMTP') as smtp:
+            self.assertTrue(report_exception(error))
+            self.assertFalse(report_exception(error))
+        smtp.assert_called_once()
+
+    def test_exception_chain_retains_types_and_locations_not_messages(self):
+        from gdo.base.ErrorMail import safe_stack
+        try:
+            try:
+                raise ValueError('inner secret')
+            except ValueError as cause:
+                raise RuntimeError('outer secret') from cause
+        except RuntimeError as error:
+            stack = safe_stack(error)
+        self.assertIn('RuntimeError', stack)
+        self.assertIn('ValueError', stack)
+        self.assertIn('test_error_mail.py', stack)
+        self.assertNotIn('secret', stack)
+
+    def test_async_handler_preserves_previous_and_does_not_install_twice(self):
+        from gdo.base.ErrorMail import install_async_exception_handler
+        loop = MagicMock()
+        previous = MagicMock()
+        loop.get_exception_handler.return_value = previous
+        install_async_exception_handler(loop)
+        handler = loop.set_exception_handler.call_args.args[0]
+        error = ValueError('test')
+        with patch('gdo.base.Logger.Logger.exception') as log:
+            handler(loop, {'exception': error})
+        log.assert_called_once_with(error, 'Unhandled asyncio task exception')
+        previous.assert_called_once_with(loop, {'exception': error})
+        loop.reset_mock()
+        loop.get_exception_handler.return_value = handler
+        install_async_exception_handler(loop)
+        loop.set_exception_handler.assert_not_called()
 
     def test_new_install_default_recipient_is_empty(self):
         from gdo.install.Config import Config

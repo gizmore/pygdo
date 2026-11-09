@@ -56,6 +56,8 @@ def display_top_malloc(snapshot, f, limit=200, key_type='lineno'):
 async def app(scope, receive, send):
     try:
         Application.LOOP = asyncio.get_running_loop()
+        from gdo.base.ErrorMail import install_async_exception_handler
+        install_async_exception_handler(Application.LOOP)
         Application.IS_HTTP = True
         Logger.init(os.path.dirname(__file__)+"/protected/logs/")
         if scope['type'] == 'lifespan':
@@ -315,6 +317,10 @@ async def app(scope, receive, send):
                 'body': out.encode(),
             })
         except Exception as ex4:
+            try:
+                Logger.exception(ex4, 'ASGI error handler failed')
+            except Exception:
+                pass
             trace = Logger.traceback(ex4)
             try:
                 await send({

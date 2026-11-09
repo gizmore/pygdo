@@ -177,17 +177,9 @@ async def launcher(line: str = None, config: str = 'protected/config.toml'):
     parent_dir = os.path.dirname(os.path.abspath(__file__ + "/../"))
     sys.path.append(parent_dir)
     from gdo.base.Application import Application
+    from gdo.base.ErrorMail import install_async_exception_handler
     Application.LOOP = asyncio.get_running_loop()
-    def report_async_error(loop, context):
-        error = context.get('exception')
-        if isinstance(error, Exception):
-            try:
-                from gdo.base.Logger import Logger
-                Logger.exception(error, 'Unhandled asyncio task exception')
-            except Exception:
-                pass
-        loop.default_exception_handler(context)
-    Application.LOOP.set_exception_handler(report_async_error)
+    install_async_exception_handler(Application.LOOP)
     await pygdo(line, config)
 
 

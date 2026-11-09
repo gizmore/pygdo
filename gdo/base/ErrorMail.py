@@ -11,6 +11,43 @@ from email.message import EmailMessage
 from email.utils import getaddresses, parseaddr
 
 _state = threading.local()
+_reported_lock = threading.Lock()
+
+
+def install_async_exception_handler(loop):
+    """Report unhandled task exceptions while preserving the loop's handler."""
+    previous = loop.get_exception_handler()
+    if getattr(previous, '_pygdo_error_mail_handler', False) is True:
+        return
+
+    def handler(active_loop, context):
+        error = context.get('exception')
+        if isinstance(error, Exception):
+            try:
+                from gdo.base.Logger import Logger
+                Logger.exception(error, 'Unhandled asyncio task exception')
+            except Exception:
+                pass
+        if previous:
+            previous(active_loop, context)
+        else:
+            active_loop.default_exception_handler(context)
+
+    handler._pygdo_error_mail_handler = True
+    loop.set_exception_handler(handler)
+
+
+def safe_stack(error):
+    """Preserve chained exception locations without rendering values/locals."""
+    entries, seen = [], set()
+    current = error
+    while current is not None and id(current) not in seen and len(entries) < 8:
+        seen.add(id(current))
+        frames = traceback.extract_tb(current.__traceback__)
+        locations = '\n'.join(f'  {frame.filename}:{frame.lineno} in {frame.name}' for frame in frames)
+        entries.append(f'{type(current).__module__}.{type(current).__qualname__}\n{locations or "  unavailable"}')
+        current = current.__cause__ or (None if current.__suppress_context__ else current.__context__)
+    return '\nCaused by / during handling:\n'.join(entries)
 
 
 def report_exception(error):
@@ -27,14 +64,25 @@ def report_exception(error):
     if not recipients or str(Application.config('mail.debug', '1')) != '0':
         return False
 
+    # The same exception can be logged at several stack boundaries (for
+    # example ASGI plus its error renderer). Attempt at most one email per
+    # exception object; never retry via a nested logging failure.
+    with _reported_lock:
+        if getattr(error, '_pygdo_error_mail_reported', False):
+            return False
+        try:
+            error._pygdo_error_mail_reported = True
+        except (AttributeError, TypeError):
+            # Unusual immutable exception types cannot carry the marker.
+            pass
+
     # Do not include exception messages, source lines, request data, or locals:
     # they can contain SQL, credentials, tokens, or private conversation text.
-    frames = traceback.extract_tb(error.__traceback__)
-    stack = '\n'.join(f'  {frame.filename}:{frame.lineno} in {frame.name}' for frame in frames)
+    stack = safe_stack(error)
     body = (f'Time: {datetime.now(timezone.utc).isoformat()}\n'
             f'Host: {socket.gethostname()}\nPID: {os.getpid()}\n'
             f'Exception: {type(error).__module__}.{type(error).__qualname__}\n'
-            f'Python: {sys.version.split()[0]}\n\nStack (no source or locals):\n{stack or "  unavailable"}\n')
+            f'Python: {sys.version.split()[0]}\n\nStack (no source or locals):\n{stack}\n')
     try:
         _state.sending = True
         sender = parseaddr(str(Application.config('mail.sender', '')))[1]
