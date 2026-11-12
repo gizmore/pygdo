@@ -143,6 +143,7 @@ class IconUTF8(IconProvider):
             'whatsapp': '📱',
             'work': '👷',
             'write': '✎',
+            'youtube': '▶',
         }
 
     @classmethod
