@@ -1,7 +1,9 @@
-import traceback
+import sys
 
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.base.Method import Method
+from gdo.base.Util import html
 from gdo.ui.GDT_Error import GDT_Error
 
 
@@ -12,7 +14,7 @@ class server_error(Method):
         return ""
 
     def gdo_execute(self) -> GDT:
-        from gdo.base import module_base
-        if module_base.instance().cfg_500_mails():
-            pass
-        return GDT_Error().text_raw(traceback.format_exc())
+        exception = sys.exception()
+        if exception is None:
+            return GDT_Error().text_raw('Internal server error.')
+        return GDT_Error().text_raw(f'<pre>{html(Logger.traceback(exception, show_locals=False))}</pre>')

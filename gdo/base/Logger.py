@@ -120,8 +120,8 @@ class Logger:
                 cls.LINES_WRITTEN += 1  #PYPP#DELETE#
 
     @classmethod
-    def traceback(cls, ex) -> str:
-        tb = Traceback.from_exception(type(ex), ex, ex.__traceback__, show_locals=True)
+    def traceback(cls, ex, show_locals: bool = True) -> str:
+        tb = Traceback.from_exception(type(ex), ex, ex.__traceback__, show_locals=show_locals)
         c = Console(record=True, width=120)
         c.print(tb)
         return c.export_text()
