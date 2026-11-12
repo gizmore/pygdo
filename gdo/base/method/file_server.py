@@ -77,7 +77,8 @@ class file_server(Method):
             ext = Strings.rsubstr_from(url, '.', '')
             if ext in ('js', 'css'):
                 return True
-        if 'secret' in url:
+        # Configuration and secret files must not be exposed as static files.
+        if 'secret' in url.lower() or url.lower().endswith('.toml'):
             return True
         if not module_config_value('base', 'serve_dot_files'):
             file = Strings.rsubstr_from(url, '/', url)

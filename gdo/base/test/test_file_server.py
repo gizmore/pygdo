@@ -32,9 +32,19 @@ class FileServerTest(GDOTestCase):
             '../protected/config.toml',
             '%2e%2e/protected/config.toml',
             'files\\gdo_file\\1',
+            'gdo/example/settings.toml',
+            'gdo/example/SETTINGS.TOML',
+            'gdo/example/settings%2Etoml',
+            'gdo/example/secret_key',
+            'gdo/example/Secret_key',
         ):
             with self.subTest(url=url):
                 self.assertTrue(file_server.is_forbidden(url))
+
+    @patch('gdo.base.method.file_server.module_config_value', return_value=False)
+    @patch.object(Application, 'config', return_value=DIRS)
+    def test_allows_non_sensitive_file(self, _config, _module_config):
+        self.assertFalse(file_server.is_forbidden('gdo/example/image.png'))
 
 
 if __name__ == '__main__':
