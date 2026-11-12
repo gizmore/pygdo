@@ -47,7 +47,7 @@ class CoreTestCase(GDOTestCase):
     async def test_03_path(self):
         gdt = GDT_Path('file').initial('DOCS').existing_dir()
         self.assertIsNotNone(gdt.validated(), "Checking GDT_File for an existing dir fails.")
-        gdt = GDT_Path('file').initial('DOCS/README.md').existing_file()
+        gdt = GDT_Path('file').initial('README.md').existing_file()
         self.assertIsNotNone(gdt.validated(), "Checking GDT_File for an existing dir fails.")
         gdt = GDT_Path('file').initial('DOCS/README_NOT.md').existing_file()
         self.assertIsNone(gdt.validated(), "Checking GDT_File for an existing file should fail.")
