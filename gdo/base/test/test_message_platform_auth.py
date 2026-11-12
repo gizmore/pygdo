@@ -6,6 +6,15 @@ from gdo.base.Render import Mode
 
 
 class MessagePlatformAuthTest(unittest.TestCase):
+    def test_platform_identity_requires_a_trusted_positive_integer(self):
+        for sender_id, trusted, expected in ((7, True, True), (7, False, False),
+                                             (True, True, False), (0, True, False),
+                                             ('7', True, False), (None, True, False)):
+            with self.subTest(sender_id=sender_id, trusted=trusted):
+                message = Message('hello', Mode.render_txt)
+                self.assertIs(message, message.platform_identity(sender_id, trusted))
+                self.assertEqual(expected, message._platform_authenticated)
+
     def test_authentication_is_scoped_to_effective_user_copy(self):
         origin = MagicMock()
         effective = MagicMock()

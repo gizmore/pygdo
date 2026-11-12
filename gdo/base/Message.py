@@ -76,6 +76,12 @@ class Message(WithEnv):
             user._authenticated = self._platform_authenticated
         return user
 
+    def platform_identity(self, sender_id, trusted=True):
+        """Scope a verified platform sender's authentication to this message."""
+        self._platform_authenticated = bool(trusted and isinstance(sender_id, int)
+                                            and not isinstance(sender_id, bool) and sender_id > 0)
+        return self
+
     def result(self, result: str, mode: Mode = Mode.render_txt):
         self._result = result
         self._result_mode = mode
