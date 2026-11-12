@@ -374,6 +374,7 @@ class App:
             Application.db().query(f"DROP DATABASE IF EXISTS {Application.db().db_name}")
             Application.db().query(f"CREATE DATABASE {Application.db().db_name}")
             print("Wiping all modules...")
+            Files.empty_dir(Application.files_path())
         elif args.module:
             loader = ModuleLoader.instance()
             wanted = loader.load_modules_fs(args.module, False)
@@ -400,7 +401,6 @@ class App:
         else:
             parser.print_help()
             return
-        Files.empty_dir(Application.files_path())
         await clear_cache().gdo_execute()
         print("All Done!")
 
