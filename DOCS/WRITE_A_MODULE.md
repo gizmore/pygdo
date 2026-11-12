@@ -12,7 +12,7 @@
 
    `skel` deliberately overwrites core files after an interactive prompt. Run
    it before custom code, or commit first and merge the generated structure.
-   When `gdo_adm.sh` still uses system Python, activate `.venv` first.
+   Ensure `python3` resolves to an interpreter with the required PyGDO dependencies.
 
 ## Module layout
 
@@ -42,7 +42,7 @@ internal IPC handler; see [Methods: Running work in Dog through IPC](METHODS.md#
 
 ```bash
 # Run a targeted test from pygdo/
-.venv/bin/python -m unittest gdo.<module_name>.test.test_<module_name>
+python3 -m unittest gdo.<module_name>.test.test_<module_name>
 
 # Inspect before sharing
 git -C gdo/<module_name> status --short

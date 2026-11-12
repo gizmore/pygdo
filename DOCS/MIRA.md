@@ -8,7 +8,7 @@ repositories, and publication decisions.
 ## Operating context
 
 - Primary development host: Mogwai, `/home/gizmore/www`.
-- PyGDO entry point: `pygdo/`; its virtual environment is `pygdo/.venv`.
+- PyGDO entry point: `pygdo/`; use `python3` from the configured PATH.
 - Project orientation is kept privately in `/home/mira/.pygdo/` as
   `MEMORY.md`, `AXIOMS.md`, and `DAILY_ROUTINE_MIRA.md`; concrete code history
   belongs in Git.
