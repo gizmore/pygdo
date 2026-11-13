@@ -11,6 +11,7 @@ from gdo.base.Application import Application
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException, GDOParamNameException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.GDT_RawResponse import GDT_RawResponse
 from gdo.base.Logger import Logger
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
@@ -294,6 +295,13 @@ def pygdo_application(environ, start_response):
             # The session is authoritative after the method ran, so restore
             # the rendering context before building sidebars and core JS.
             Application.set_current_user(session.get_user())
+
+            if isinstance(result, GDT_RawResponse):
+                session.save()
+                body = result.prepare()
+                start_response(Application.get_status(), Application.get_headers())
+                yield body
+                return
 
             if type(result) is GDT_FileOut:
                 session.save()

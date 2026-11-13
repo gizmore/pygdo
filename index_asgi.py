@@ -11,6 +11,7 @@ from gdo.base.Cache import Cache
 from gdo.base.Exceptions import GDOModuleException, GDOMethodException
 from gdo.base.GDO import GDO
 from gdo.base.GDT import GDT
+from gdo.base.GDT_RawResponse import GDT_RawResponse
 from gdo.base.IPC import IPC
 from gdo.base.Logger import Logger
 from gdo.base.ModuleLoader import ModuleLoader
@@ -218,6 +219,14 @@ async def app(scope, receive, send):
                 result = await method.execute()
                 while asyncio.iscoroutine(result):
                     result = await result
+
+                if isinstance(result, GDT_RawResponse):
+                    session.save()
+                    body = result.prepare()
+                    await send({'type': 'http.response.start', 'status': Application.get_status_code(),
+                                'headers': Application.get_headers_asgi()})
+                    await send({'type': 'http.response.body', 'body': body, 'more_body': False})
+                    return
 
                 if type(result) is GDT_FileOut:
                     session.save()
