@@ -1,4 +1,5 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from gdo.base.Application import Application
@@ -26,6 +27,7 @@ class ErrorMailTest(unittest.TestCase):
             raise ValueError('password=secret')
         except ValueError as error:
             with patch.object(Application, 'config', side_effect=self.config()), \
+                    patch('gdo.base.ErrorMail.request_context', return_value=('https://example.test/core.test.[redacted]', 'Mira')), \
                     patch('gdo.base.ErrorMail.smtplib.SMTP') as smtp:
                 self.assertTrue(report_exception(error))
         client = smtp.return_value.__enter__.return_value
@@ -34,8 +36,38 @@ class ErrorMailTest(unittest.TestCase):
         body = message.get_body(preferencelist=('plain',)).get_content()
         self.assertIn('test_error_mail.py', body)
         self.assertIn('test_send_includes_stack', body)
+        self.assertIn('URL: https://example.test/core.test.[redacted]', body)
+        self.assertIn('User: Mira', body)
         self.assertNotIn('secret', body)
         client.starttls.assert_called_once()
+
+    def test_request_context_redacts_query_and_path_arguments(self):
+        from gdo.base.ErrorMail import request_context
+        env = {'REQUEST_URI': '/app/core.login.password.secret.html?token=secret'}
+        user = MagicMock()
+        user.get_name.return_value = 'Mira\nInjected'
+        with patch.object(Application, 'IS_HTTP', True), \
+             patch.object(Application, 'STORAGE', SimpleNamespace(environ=env)), \
+             patch.object(Application, 'PROTOCOL', 'https'), \
+             patch.object(Application, 'domain', return_value='example.test'), \
+             patch.object(Application, 'web_root', return_value='/app/'), \
+             patch.object(Application, 'get_current_user', return_value=user):
+            url, name = request_context()
+            self.assertEqual('https://example.test/app/core.login.[redacted]', url)
+            self.assertEqual('MiraInjected', name)
+            env['REQUEST_URI'] = '/secret/file.txt?token=secret'
+            self.assertNotIn('secret', request_context()[0])
+
+    def test_request_context_without_http_or_user(self):
+        from gdo.base.ErrorMail import request_context
+        with patch.object(Application, 'IS_HTTP', False):
+            self.assertEqual(('unavailable', 'unavailable'), request_context())
+        with patch.object(Application, 'IS_HTTP', True), \
+             patch.object(Application, 'STORAGE', SimpleNamespace(environ={'path': '/'})), \
+             patch.object(Application, 'PROTOCOL', 'https'), \
+             patch.object(Application, 'domain', return_value='example.test'), \
+             patch.object(Application, 'get_current_user', return_value=None):
+            self.assertEqual(('https://example.test/', 'unavailable'), request_context())
 
     def test_debug_and_header_injection_do_not_send(self):
         for values in ({'mail.debug': '1'}, {'mail.errors_to': 'x@example.test\nBcc: evil@example.test'}):

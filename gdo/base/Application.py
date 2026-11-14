@@ -240,6 +240,7 @@ class Application:
     def init_asgi(cls, scope):
         cls.ASGI = True
         cls.IS_HTTP = True
+        cls.CURRENT_USER.set(None)
         cls.STORAGE.request_method = scope['method']
         cls.STORAGE.environ = scope
         cls.STORAGE.environ['headers'] = cls.asgi_headers(scope)

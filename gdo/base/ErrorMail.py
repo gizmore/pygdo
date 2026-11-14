@@ -1,5 +1,6 @@
 """Best-effort, opt-in exception notifications without local variables."""
 import os
+import re
 import smtplib
 import socket
 import ssl
@@ -9,6 +10,7 @@ import traceback
 from datetime import datetime, timezone
 from email.message import EmailMessage
 from email.utils import getaddresses, parseaddr
+from urllib.parse import urlsplit
 
 _state = threading.local()
 _reported_lock = threading.Lock()
@@ -50,6 +52,44 @@ def safe_stack(error):
     return '\nCaused by / during handling:\n'.join(entries)
 
 
+def request_context():
+    """Return a redacted request route and identity, never URL parameters."""
+    from gdo.base.Application import Application
+
+    if not Application.IS_HTTP:
+        return 'unavailable', 'unavailable'
+    try:
+        env = Application.STORAGE.environ
+        uri = env.get('REQUEST_URI') or env.get('PATH_INFO') or env.get('path') or ''
+        path = urlsplit(uri).path
+        # PyGDO puts method arguments in dot-separated path segments as well as
+        # queries. Keep only the route, never positional or named arguments.
+        name = path.rsplit('/', 1)[-1]
+        parts = name.split('.')
+        prefix = path.rsplit('/', 1)[0]
+        root = Application.web_root().rstrip('/')
+        if (prefix == root and len(parts) >= 3 and
+                all(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', p) for p in parts[:2])):
+            route = f'{prefix}/{parts[0]}.{parts[1]}.[redacted]'
+        elif path == '/':
+            route = '/'
+        else:
+            route = '[path redacted]'
+        # Host is configured by the administrator, not taken from a Host header.
+        domain = str(Application.domain())
+        scheme = Application.PROTOCOL if Application.PROTOCOL in ('http', 'https') else ''
+        url = f'{scheme}://{domain}{route}' if scheme and re.fullmatch(r'[A-Za-z0-9.:-]+', domain) else route
+    except Exception:
+        url = 'unavailable'
+    try:
+        user = Application.get_current_user()
+        name = user.get_name() if user else None
+        username = re.sub(r'[\x00-\x1f\x7f]', '', str(name))[:192] if name else 'unavailable'
+    except Exception:
+        username = 'unavailable'
+    return url, username
+
+
 def report_exception(error):
     from gdo.base.Application import Application
 
@@ -76,11 +116,13 @@ def report_exception(error):
             # Unusual immutable exception types cannot carry the marker.
             pass
 
-    # Do not include exception messages, source lines, request data, or locals:
+    # Do not include exception messages, source lines, URL arguments, or locals:
     # they can contain SQL, credentials, tokens, or private conversation text.
     stack = safe_stack(error)
+    url, username = request_context()
     body = (f'Time: {datetime.now(timezone.utc).isoformat()}\n'
             f'Host: {socket.gethostname()}\nPID: {os.getpid()}\n'
+            f'URL: {url}\nUser: {username}\n'
             f'Exception: {type(error).__module__}.{type(error).__qualname__}\n'
             f'Python: {sys.version.split()[0]}\n\nStack (no source or locals):\n{stack}\n')
     try:
