@@ -9,13 +9,42 @@ from gdo.base.Util import Files
 from gdo.core.GDO_File import GDO_File
 from gdo.core.GDT_Path import GDT_Path
 from gdo.table.MethodTable import MethodTable
+import os
 from os import walk
+from urllib.parse import unquote
 
 from gdo.ui.GDT_Icon import GDT_Icon
 from gdo.ui.GDT_Link import GDT_Link
 
 
 class dir_server(MethodTable):
+
+    def gdo_needs_authentication(self) -> bool:
+        return False
+
+    @staticmethod
+    def is_forbidden(url: str) -> bool:
+        url = unquote(url).lstrip('/')
+        if '\\' in url or any(part in ('.', '..') for part in url.split('/')):
+            return True
+        root = os.path.realpath(Application.file_path())
+        target = os.path.realpath(os.path.join(root, url))
+        try:
+            if os.path.commonpath((root, target)) != root:
+                return True
+            for name in ('temp', 'protected'):
+                private = os.path.realpath(os.path.join(root, name))
+                if os.path.commonpath((private, target)) == private:
+                    return True
+        except ValueError:
+            return True
+        return False
+
+    def gdo_execute(self) -> GDT:
+        if self.is_forbidden(self.param_val('_url')):
+            Application.status('403 Forbidden')
+            return self.err('err_file_forbidden')
+        return super().gdo_execute()
 
     @classmethod
     def gdo_trigger(cls) -> str:
@@ -55,6 +84,8 @@ class dir_server(MethodTable):
         files = []
         for dir_name in sorted(dirnames):
             dir_path = f"{root}/{dir_name}"
+            if os.path.islink(dir_path) or self.is_forbidden(f"{self.get_path()}/{dir_name}"):
+                continue
             files.append(GDO_File.blank({
                 'file_name': dir_name,
                 'file_size': Files.dir_size_recursive(dir_path),
@@ -62,6 +93,8 @@ class dir_server(MethodTable):
             }))
         for file_name in sorted(filenames):
             file_path = f"{root}/{file_name}"
+            if os.path.islink(file_path) or self.is_forbidden(f"{self.get_path()}/{file_name}"):
+                continue
             files.append(GDO_File.blank({
                 'file_name': file_name,
                 'file_size': Files.size(file_path),
