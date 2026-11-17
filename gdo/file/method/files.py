@@ -7,6 +7,9 @@ from gdo.ui.GDT_Link import GDT_Link
 
 class files(MethodQueryTable):
 
+    def gdo_needs_authentication(self) -> bool:
+        return True
+
     def gdo_table(self) -> GDO:
         return GDO_File.table()
 

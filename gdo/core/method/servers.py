@@ -9,6 +9,9 @@ from gdo.table.MethodQueryTable import MethodQueryTable
 
 class servers(MethodQueryTable):
 
+    def gdo_needs_authentication(self) -> bool:
+        return True
+
     @classmethod
     def gdo_trigger(cls) -> str:
         return "servers"

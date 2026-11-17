@@ -29,6 +29,10 @@ class MethodTable(WithGDO, MethodForm):
 
     _curr_table_row_id: int
 
+    def gdo_needs_authentication(self) -> bool:
+        """Table views are public unless a subclass restricts access."""
+        return False
+
     def __init__(self):
         super().__init__()
         self._curr_table_row_id = 0
