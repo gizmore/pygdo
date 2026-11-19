@@ -10,6 +10,23 @@ There is an old [list of ideas in phpgdo7](http://github.com/gizmore/phpgdo/blob
 Ideas are invitations to explore, not commitments. Promote an idea to
 [`TODO.md`](./TODO.md) only when its next action and owner are clear.
 
+- Guest analytics: less tracking can also mean less work on the request path.
+  Consider whether a guest-online count or page counter is useful before adding
+  per-request writes. A page count measures requests, not unique people, and
+  may include refreshes and bots. Counts based on IP addresses merge visitors
+  behind a shared network and can double-count changing addresses.
+  `GDO_Session` initially sends the same placeholder cookie to everyone; a
+  unique persisted session can be created when it is returned, so the
+  placeholder alone cannot count guests. `sess_time` is an edited timestamp,
+  not a verified per-request last-seen time; `edit_on_created(True)` can also
+  initialize it on creation. Session cleanup already uses this field.
+  One possible design is to count validated anonymous sessions in a short
+  active window, with throttled activity updates and a cached aggregate; an
+  ephemeral Redis implementation is another option. Define the window and
+  failure behavior, avoid storing session credentials or unnecessary IPs, and
+  benchmark the request-path and storage costs before choosing. These are
+  design ideas, not measured performance results; the current page-counter
+  implementation has not been verified here.
 - Public interfaith text explorer: publish HTML editions of religious texts with
   stable passage anchors and sourced cross-links between traditions. Explain
   both parallels and differences without implying that passages are equivalent.

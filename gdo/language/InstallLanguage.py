@@ -28,7 +28,7 @@ class InstallLanguage:
         ['Czech', 'Čeština', 'cze', 'cs', False],
         ['Danish', 'dansk', 'dan', 'da', False],
         ['Finnish', 'suomi', 'fin', 'fi', False],
-        ['Swedish', 'svenska', 'swe', 'sv', False],
+        ['Swedish', 'svenska', 'swe', 'sv', True],
         ['Hungarian', 'magyar', 'hun', 'hu', False],
         ['Icelandic', 'Íslenska', 'ice', 'is', False],
         ['Hindi', 'हिन्दी / हिंदी', 'hin', 'hi', False],
