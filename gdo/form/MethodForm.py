@@ -87,6 +87,7 @@ class MethodForm(Method):
         return form
 
     def form_invalid(self):
+        if Application.IS_HTTP: Application.status('409 Conflict')
         form = self.get_form()
         errors = []
         for gdt in form.all_fields():
