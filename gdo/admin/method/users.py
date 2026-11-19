@@ -11,6 +11,11 @@ from gdo.ui.GDT_Link import GDT_Link
 from gdo.base.util.href import href
 
 
+def setting_identifier(name: str) -> str:
+    """Quote a registered setting name when used as an SQL identifier."""
+    return '`' + name.replace('`', '``') + '`'
+
+
 class GDT_EditUser(GDT_Link):
     """An action column; it must never become part of SQL filtering/sorting."""
 
@@ -49,7 +54,7 @@ class users(MethodQueryTable):
             render_cell = field.render_cell
             filter_query = field.gdo_filter_query
             search_query = field.gdo_search_query
-            column = f'setting_{name}.uset_val'
+            column = f'user_settings.{setting_identifier(name)}'
 
             def render_setting_cell(field=field, render_cell=render_cell) -> str:
                 return render_cell() if field.get_val() is not None else '---'
@@ -107,8 +112,17 @@ class users(MethodQueryTable):
 
     def gdo_table_query(self) -> Query:
         query = super().gdo_table_query().only_select('gdo_user.*')
-        for gdt in self.setting_fields():
-            GDO_User.join_setting(query, gdt.get_name())
+        fields = self.setting_fields()
+        if fields:
+            columns = []
+            for field in fields:
+                name = field.get_name()
+                identifier = setting_identifier(name)
+                columns.append(f'MAX(CASE WHEN uset_key={GDT.quote(name)} THEN uset_val END) AS {identifier}')
+                query.select(f'user_settings.{identifier} AS {identifier}')
+            query.join('LEFT JOIN (SELECT uset_user, ' + ', '.join(columns) +
+                       ' FROM gdo_usersetting GROUP BY uset_user) user_settings '
+                       'ON user_settings.uset_user=gdo_user.user_id')
         return query
 
     def gdo_table_search_query(self, query: Query, term: str):

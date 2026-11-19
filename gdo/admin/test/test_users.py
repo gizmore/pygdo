@@ -24,15 +24,16 @@ class AdminUsersTest(GDOTestCase):
         loader.init_modules(True, True)
         install_module('admin')
 
-    def test_joins_every_registered_user_setting(self):
+    def test_joins_every_registered_user_setting_once(self):
         method = users()
         query = method.gdo_table_query()
         self.assertTrue(query._columns.startswith('gdo_user.*'))
         for key, field in GDT_UserSetting.KNOWN.items():
             if not isinstance(field, GDT_Field) or field.is_secret():
-                self.assertNotIn(f'setting_{key}.uset_val as {key}', query._columns)
+                self.assertNotIn(f'user_settings.`{key}` AS `{key}`', query._columns)
                 continue
-            self.assertIn(f'setting_{key}.uset_val as {key}', query._columns)
+            self.assertIn(f'user_settings.`{key}` AS `{key}`', query._columns)
+        self.assertEqual(1, query._join.count('JOIN'))
 
     def test_admin_permission_is_required(self):
         self.assertEqual('admin', users().gdo_user_permission())
@@ -85,13 +86,13 @@ class AdminUsersTest(GDOTestCase):
         field = next(field for field in users().setting_fields() if field.get_name() == 'last_activity')
         query = Query().select().table('gdo_user')
         field.val({'date_from': '2026-08-26'}).gdo_filter_query(GDO_User.table(), query)
-        self.assertIn("setting_last_activity.uset_val>='2026-08-26 00:00:00'", query._where)
+        self.assertIn("user_settings.`last_activity`>='2026-08-26 00:00:00'", query._where)
 
     def test_object_setting_filters_do_not_join_a_nonexistent_user_column(self):
         field = next(field for field in users().setting_fields() if field.get_name() == 'creator')
         query = Query().select().table('gdo_user')
         field.val('giz').gdo_filter_query(GDO_User.table(), query)
-        self.assertIn('setting_creator.uset_val IN (SELECT user_id FROM gdo_user', query._where)
+        self.assertIn('user_settings.`creator` IN (SELECT user_id FROM gdo_user', query._where)
 
 
 
