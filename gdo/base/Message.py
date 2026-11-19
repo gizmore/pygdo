@@ -138,7 +138,7 @@ class Message(WithEnv):
                 # account before linked-account resolution. Service bots still
                 # participate in presence, but their automated notices and
                 # messages never enter chat, translation, or Mira consumers.
-                if self._env_user.get_setting_value('ignore'):
+                if self._env_user.get_setting_value('is_ignored'):
                     return
                 self._env_reply_to = self._env_user
                 # Keep platform authentication local to this message; never

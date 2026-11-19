@@ -30,3 +30,4 @@ md_user_unlink = "Remove this connector account's link to its connected account.
 err_user_unlink_not_linked = "This connector account is not linked."
 err_user_unlink_confirm = "Refusing to unlink without --confirm=1."
 msg_user_unlinked = "%s is no longer linked to %s."
+is_ignored = "Ignore messages from this account"

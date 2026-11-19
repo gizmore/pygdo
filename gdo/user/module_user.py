@@ -61,7 +61,7 @@ class module_user(GDO_Module):
         return [
             # Connector/service accounts can remain known for presence while
             # their automated chatter is excluded from message consumers.
-            GDT_Bool('ignore').not_null().initial('0'),
+            GDT_Bool('is_ignored').not_null().initial('0'),
             GDT_Timestamp('last_activity'),
             GDT_Level('level').initial('0'),
             GDT_UInt('profile_views').initial('0'),

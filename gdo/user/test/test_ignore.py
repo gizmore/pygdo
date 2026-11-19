@@ -29,12 +29,12 @@ class IgnoreUserTest(GDOTestCase):
             seen.append(message)
 
         Application.EVENTS.subscribe('new_message', on_message)
-        self.user.save_setting('ignore', '1')
+        self.user.save_setting('is_ignored', '1')
         message = Message('startup notice', Mode.render_cli).env_user(self.user).env_server(self.server)
         await message.execute()
         self.assertEqual([], seen)
 
-        self.user.save_setting('ignore', '0')
+        self.user.save_setting('is_ignored', '0')
         message = Message('ordinary message', Mode.render_cli).env_user(self.user).env_server(self.server)
         await message.execute()
         self.assertEqual(1, len(seen))
