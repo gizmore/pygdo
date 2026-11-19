@@ -13,6 +13,10 @@ class SkeletonConfirmationTest(unittest.IsolatedAsyncioTestCase):
             files.is_dir.return_value = True
             await App().skel()
             self.assertTrue(files.put_contents.called)
+            files.put_contents.assert_any_call(
+                '/tmp/skel-test/__init__.py',
+                'from gdo.video.module_video import module_video\n',
+            )
 
     async def test_without_yes_still_prompts_before_writing(self):
         with patch('sys.argv', ['gdoadm.py', 'skel', 'video']), \
