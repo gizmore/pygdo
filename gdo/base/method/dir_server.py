@@ -109,7 +109,10 @@ class dir_server(MethodTable):
 
     def render_file_name(self, gdt: GDT, gdo: GDO):
         path = self.get_path().rstrip('/')
-        return GDT_Link().href("/" + path + "/" + gdt.get_val()).text_raw(gdt.get_val()).render(Mode.render_html)
+        link = GDT_Link().href("/" + path + "/" + gdt.get_val()).text_raw(gdt.get_val())
+        if not Files.is_dir(os.path.join(self.get_dir(), gdt.get_val())):
+            link.nofollow()
+        return link.render(Mode.render_html)
 
     def render_file_icon(self, gdt: GDT_Icon, gdo: GDO_File):
         path = self.get_dir() + "/" + gdo.get_name()

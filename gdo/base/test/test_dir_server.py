@@ -8,6 +8,27 @@ from gdo.base.method.dir_server import dir_server
 
 
 class DirectoryServerTest(unittest.TestCase):
+    def test_file_links_are_nofollow_but_directories_are_not(self):
+        method = dir_server.__new__(dir_server)
+        field = MagicMock()
+        field.get_val.return_value = 'entry'
+        link = MagicMock()
+        link.href.return_value = link
+        link.text_raw.return_value = link
+        with patch.object(dir_server, 'get_path', return_value='public'), \
+             patch.object(dir_server, 'get_dir', return_value='/public'), \
+             patch('gdo.base.method.dir_server.GDT_Link', return_value=link), \
+             patch('gdo.base.method.dir_server.Files.is_dir', return_value=False):
+            method.render_file_name(field, None)
+            link.nofollow.assert_called_once_with()
+        link.reset_mock()
+        with patch.object(dir_server, 'get_path', return_value='public'), \
+             patch.object(dir_server, 'get_dir', return_value='/public'), \
+             patch('gdo.base.method.dir_server.GDT_Link', return_value=link), \
+             patch('gdo.base.method.dir_server.Files.is_dir', return_value=True):
+            method.render_file_name(field, None)
+            link.nofollow.assert_not_called()
+
     def test_forbidden_request_returns_403_before_listing(self):
         method = dir_server.__new__(dir_server)
         with patch.object(dir_server, 'param_val', return_value='protected/logs'), \
