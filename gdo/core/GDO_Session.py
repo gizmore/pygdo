@@ -38,7 +38,7 @@ class GDO_Session(GDO):
         Start a HTTP session.
         :param create_session: If False, do not create a session, only load an existing one. If True, turn  16 byte cookie into real session and save.
         """
-        cookie = Application.get_cookie(cls.COOKIE_NAME)
+        cookie = Application.get_cookie(Application.config('sess.name', cls.COOKIE_NAME) or cls.COOKIE_NAME)
         if cookie == cls.DEFAULT_COOKIE:
             instance = cls.blank({
                 'sess_token': GDT_Token.random(),
@@ -63,7 +63,7 @@ class GDO_Session(GDO):
         # secure = ' Secure;'
         secure = ''
         same_site = f" SameSite={Application.config('sess.same_site', 'lax')};"
-        Application.header('Set-Cookie', f"{cls.COOKIE_NAME}={cookie}; Path=/;{http_only}{secure}{same_site}")
+        Application.header('Set-Cookie', f"{Application.config('sess.name', cls.COOKIE_NAME) or cls.COOKIE_NAME}={cookie}; Path=/;{http_only}{secure}{same_site}")
 
     @classmethod
     def blank_error(cls):
