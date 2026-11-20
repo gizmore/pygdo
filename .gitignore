@@ -13,6 +13,7 @@ __pycache__/
 /**/node_modules/
 /yarn.lock
 *.pclprof
+*.pid
 test.py
 /assets/
 /assets_test/
