@@ -87,4 +87,6 @@ class GDT_PageMenu(WithLabel, GDT_Bar):
 
 
     def render_html(self, mode: Mode = Mode.render_html):
+        if self.num_pages() <= 1:
+            return ''
         return GDT_Template().template('table', 'page_menu.html', {'field': self, 'mode': mode}).render_html(mode)
