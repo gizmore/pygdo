@@ -215,7 +215,7 @@ class ModuleLoader:
             try:
                 methods = module.get_method_klasses()
             except Exception as ex:
-                Logger.exception(ex, f'Error loading methods for module {module.get_name()}.')
+                Logger.exception(ex, f'Error loading methods for module {module.get_name}.')
                 continue
             for method in methods.values():
                 try:
