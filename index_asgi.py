@@ -180,9 +180,9 @@ async def app(scope, receive, send):
                     server = user.get_server()
                     channel = None
                     # args = ParseArgs()
-                    args.add_path_vars(url)
-                    args.add_get_vars(qs)
                     try:
+                        args.add_path_vars(url)
+                        args.add_get_vars(qs)
                         method = args.get_method()
                         await IPC.web_check_for_ipc()
                     except (GDOModuleException, GDOMethodException):

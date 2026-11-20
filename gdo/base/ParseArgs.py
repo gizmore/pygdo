@@ -48,17 +48,14 @@ class ParseArgs(WithPygdo):
     #############
 
     def add_path_vars(self, url: str):
-        try:
-            if not url:
-                return
-            parts = url.lstrip('/').split('.')
-            if len(parts) < 3:
-                raise ValueError('A web route needs module, method and extension.')
-            self.module, self.method = parts[:2]
-            self.mode = unquote(parts[-1])
-            self._web_path_values = [unquote(part) for part in parts[2:-1]]
-        except Exception as ex:
-            Logger.exception(ex, "add_path_vars() failed")
+        if not url:
+            return
+        parts = url.lstrip('/').split('.')
+        if len(parts) < 3 or not parts[0] or not parts[1] or not parts[-1]:
+            raise GDOModuleException('')
+        self.module, self.method = parts[:2]
+        self.mode = unquote(parts[-1])
+        self._web_path_values = [unquote(part) for part in parts[2:-1]]
 
     def resolve_web_path_args(self, method: 'Method'):
         """Split route values into positional values and named option pairs."""
