@@ -1,6 +1,9 @@
 "%s" = "%s" # Do not delete :)
 module_base = "Base"
 msg_backup_completed = "Backup %s has been created."
+msg_backup_now_created = "Private data backup created: %s"
+mt_base_backup_make_now = "Create data backup now"
+md_base_backup_make_now = "Create a private database, active configuration and files backup immediately."
 msg_backup_mailed = "Backup %s has been sent to %s."
 msg_backup_mailed_deleted = "The backup has been sent to %s and deleted locally."
 

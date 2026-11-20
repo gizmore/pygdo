@@ -6,9 +6,14 @@ from gdo.base.Util import gdo_print
 from gdo.core.Connector import Connector
 from gdo.core.GDO_Server import GDO_Server
 from gdo.base.Application import Application
+from gdo.base.Cache import Cache
 
 
 class Bash(Connector):
+
+    @staticmethod
+    def repl_channel(user_id) -> str:
+        return f"pygdo:repl:{Application.config('core.env')}:{user_id}"
 
     def render_user_connect_help(self) -> str:
         return t('help_bash_connector')
@@ -38,6 +43,12 @@ class Bash(Connector):
                 GDOTestCase.MESSAGES[uid] = []
             GDOTestCase.MESSAGES[uid].append(msg._result)
         #PYPP#END#
+        # Replies sent by another process need a route back to the active REPL.
+        # Direct commands inside the REPL retain their normal local output.
+        if (not getattr(Application, 'IS_REPL', False)
+                and not getattr(Application, 'IS_LOCAL_CLI_COMMAND', False) and Cache.RCACHE):
+            if Cache.RCACHE.publish(self.repl_channel(msg._env_user.get_id()), msg._result):
+                return
         gdo_print(msg._result)
 
     def gdo_handle_message(self, message: Message):

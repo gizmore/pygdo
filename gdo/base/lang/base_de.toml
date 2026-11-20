@@ -1,6 +1,9 @@
 "%s" = "%s" # Nicht löschen :)
 module_base = "Basis"
 msg_backup_completed = "Backup %s wurde erstellt."
+msg_backup_now_created = "Privates Datenbackup erstellt: %s"
+mt_base_backup_make_now = "Datenbackup sofort erstellen"
+md_base_backup_make_now = "Datenbank, aktive Konfiguration und Dateien sofort privat sichern."
 msg_backup_mailed = "Backup %s wurde an %s versandt."
 msg_backup_mailed_deleted = "Das Backup wurde an %s versandt und lokal gelöscht."
 

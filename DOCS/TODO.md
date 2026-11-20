@@ -16,6 +16,8 @@ not an idea to discuss.
 
 ## Next
 
+- Explore a generated summary email newsletter; define its sources, recipient
+  opt-in and privacy rules before building or sending it.
 - Deliver Mira's asynchronous Bash replies to the active PyGDO REPL and test
   the reply path without disrupting interactive input.
 - Add provider-independent translation errors, rate-limit handling, and a

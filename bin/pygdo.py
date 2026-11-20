@@ -119,7 +119,11 @@ async def process_line(line: str) -> None:
                 if txt2:
                     message._result += "\n"
                 message._result += txt1
-            await message.deliver()
+            Application.IS_LOCAL_CLI_COMMAND = True
+            try:
+                await message.deliver()
+            finally:
+                Application.IS_LOCAL_CLI_COMMAND = False
             method._env_session.save()
     except (GDOParamError, GDOModuleException, GDOError) as ex:
         print(Render.red(str(ex), Mode.render_cli))
@@ -135,6 +139,9 @@ async def repl():
     from gdo.base.Exceptions import GDOModuleException, GDOError
     from gdo.base.Util import CLI
     from gdo.base.IPC import IPC
+    from gdo.base.Cache import Cache
+    from gdo.base.Util import gdo_print
+    from gdo.core.connector.Bash import Bash
     global RUNNING
     asyncio.create_task(event_pump())
     # thread = ConsoleThread()
@@ -142,6 +149,20 @@ async def repl():
     if not sys.stdin.isatty():
         print("Terminal is no tty.")
     user = await CLI.get_current_user()
+    Application.IS_REPL = True
+    subscriber = Cache.RCACHE.pubsub(ignore_subscribe_messages=True) if Cache.RCACHE else None
+    if subscriber:
+        subscriber.subscribe(Bash.repl_channel(user.get_id()))
+
+    async def receive_replies():
+        while RUNNING:
+            event = subscriber.get_message(timeout=0)
+            if event and event.get('type') == 'message':
+                data = event['data']
+                gdo_print(data.decode('utf-8', errors='replace') if isinstance(data, bytes) else str(data))
+            await asyncio.sleep(0.2)
+
+    receiver = asyncio.create_task(receive_replies()) if subscriber else None
     IPC.send('base.dogpid_update')
     if RUNNING == 2:
         signal.signal(signal.SIGUSR1, handler=handle_sigusr1)
@@ -165,6 +186,15 @@ async def repl():
                 from gdo.base.Logger import Logger
                 Logger.exception(ex)
         RUNNING = 0
+        if receiver:
+            receiver.cancel()
+            try:
+                await receiver
+            except asyncio.CancelledError:
+                pass
+        if subscriber:
+            subscriber.close()
+        Application.IS_REPL = False
         # Thread.join()
 
 async def launcher(line: str = None, config: str = 'protected/config.toml'):
