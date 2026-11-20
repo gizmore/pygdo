@@ -41,7 +41,7 @@ class ErrorMailTest(unittest.TestCase):
         self.assertNotIn('secret', body)
         client.starttls.assert_called_once()
 
-    def test_request_context_redacts_query_and_path_arguments(self):
+    def test_request_context_includes_path_without_query(self):
         from gdo.base.ErrorMail import request_context
         env = {'REQUEST_URI': '/app/core.login.password.secret.html?token=secret'}
         user = MagicMock()
@@ -53,10 +53,10 @@ class ErrorMailTest(unittest.TestCase):
              patch.object(Application, 'web_root', return_value='/app/'), \
              patch.object(Application, 'get_current_user', return_value=user):
             url, name = request_context()
-            self.assertEqual('https://example.test/app/core.login.[redacted]', url)
+            self.assertEqual('https://example.test/app/core.login.password.secret.html', url)
             self.assertEqual('MiraInjected', name)
             env['REQUEST_URI'] = '/secret/file.txt?token=secret'
-            self.assertNotIn('secret', request_context()[0])
+            self.assertEqual('https://example.test/secret/file.txt', request_context()[0])
 
     def test_request_context_without_http_or_user(self):
         from gdo.base.ErrorMail import request_context

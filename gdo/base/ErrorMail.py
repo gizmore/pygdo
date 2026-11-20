@@ -1,5 +1,6 @@
 """Best-effort, opt-in exception notifications without local variables."""
 import os
+import io
 import re
 import smtplib
 import socket
@@ -11,6 +12,9 @@ from datetime import datetime, timezone
 from email.message import EmailMessage
 from email.utils import getaddresses, parseaddr
 from urllib.parse import urlsplit
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
 
 _state = threading.local()
 _reported_lock = threading.Lock()
@@ -40,20 +44,25 @@ def install_async_exception_handler(loop):
 
 
 def safe_stack(error):
-    """Preserve chained exception locations without rendering values/locals."""
-    entries, seen = [], set()
+    """Render chained exception locations with Rich, without values or locals."""
+    output = io.StringIO()
+    console = Console(file=output, width=120, color_system=None, force_terminal=False)
+    seen = set()
     current = error
-    while current is not None and id(current) not in seen and len(entries) < 8:
+    while current is not None and id(current) not in seen and len(seen) < 8:
         seen.add(id(current))
         frames = traceback.extract_tb(current.__traceback__)
-        locations = '\n'.join(f'  {frame.filename}:{frame.lineno} in {frame.name}' for frame in frames)
-        entries.append(f'{type(current).__module__}.{type(current).__qualname__}\n{locations or "  unavailable"}')
+        locations = '\n'.join(f'{frame.filename}:{frame.lineno} in {frame.name}' for frame in frames)
+        name = f'{type(current).__module__}.{type(current).__qualname__}'
+        console.print(Panel(Text(locations or 'unavailable'), title=Text(name), expand=False))
         current = current.__cause__ or (None if current.__suppress_context__ else current.__context__)
-    return '\nCaused by / during handling:\n'.join(entries)
+        if current is not None and id(current) not in seen and len(seen) < 8:
+            console.print('Caused by / during handling:')
+    return output.getvalue().rstrip()
 
 
 def request_context():
-    """Return a redacted request route and identity, never URL parameters."""
+    """Return the request path and identity, without query or fragment."""
     from gdo.base.Application import Application
 
     if not Application.IS_HTTP:
@@ -62,19 +71,7 @@ def request_context():
         env = Application.STORAGE.environ
         uri = env.get('REQUEST_URI') or env.get('PATH_INFO') or env.get('path') or ''
         path = urlsplit(uri).path
-        # PyGDO puts method arguments in dot-separated path segments as well as
-        # queries. Keep only the route, never positional or named arguments.
-        name = path.rsplit('/', 1)[-1]
-        parts = name.split('.')
-        prefix = path.rsplit('/', 1)[0]
-        root = Application.web_root().rstrip('/')
-        if (prefix == root and len(parts) >= 3 and
-                all(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', p) for p in parts[:2])):
-            route = f'{prefix}/{parts[0]}.{parts[1]}.[redacted]'
-        elif path == '/':
-            route = '/'
-        else:
-            route = '[path redacted]'
+        route = re.sub(r'[\x00-\x1f\x7f]', '', path) or '/'
         # Host is configured by the administrator, not taken from a Host header.
         domain = str(Application.domain())
         scheme = Application.PROTOCOL if Application.PROTOCOL in ('http', 'https') else ''
@@ -116,7 +113,7 @@ def report_exception(error):
             # Unusual immutable exception types cannot carry the marker.
             pass
 
-    # Do not include exception messages, source lines, URL arguments, or locals:
+    # Do not include exception messages, source lines, query strings, or locals:
     # they can contain SQL, credentials, tokens, or private conversation text.
     stack = safe_stack(error)
     url, username = request_context()
