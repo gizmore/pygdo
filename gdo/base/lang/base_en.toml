@@ -72,6 +72,7 @@ md_base_file_server = "Download a file from this website."
 #############
 mt_base_dir_server = "Directory"
 md_base_dir_server = "List a directory on this server."
+dir_markdown_preview = "View"
 
 #############
 # not_found #

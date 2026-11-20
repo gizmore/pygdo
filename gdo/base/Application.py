@@ -34,6 +34,7 @@ class Application:
     IS_DOG = None
     IS_TEST = False
     LOOP: AbstractEventLoop = None
+    REQUEST_LOOP: ContextVar = ContextVar('request_loop', default=None)
     TASKS = []
     ASGI = False
     LOADER: 'ModuleLoader'
@@ -485,11 +486,12 @@ class Application:
 
     @classmethod
     def run_coro(cls, coro, name: str):
-        if cls.LOOP.is_running():
-            task = cls.LOOP.create_task(coro, name=name or str(coro))
+        loop = cls.REQUEST_LOOP.get() or cls.LOOP
+        if loop.is_running():
+            task = loop.create_task(coro, name=name or str(coro))
             cls.TASKS.append(task)
         else:
-            cls.LOOP.run_until_complete(coro)
+            loop.run_until_complete(coro)
 
     @classmethod
     def clear_assets(cls):

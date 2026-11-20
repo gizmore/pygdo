@@ -9,10 +9,31 @@ from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
+from gdo.base.GDT_RawResponse import GDT_RawResponse
 from gdo.base.Util import hdr, Files, msg, module_config_value, module_enabled, Strings
 from gdo.core.GDT_String import GDT_String
+from gdo.core.GDT_Bool import GDT_Bool
 from gdo.file.GDT_FileOut import GDT_FileOut
 from gdo.message.GDT_HTML import GDT_HTML
+
+MARKDOWN_PREVIEW_STYLE = '''
+:root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+body { max-width: 54rem; margin: 3rem auto; padding: 0 1.5rem 4rem;
+       line-height: 1.7; overflow-wrap: break-word; }
+h1, h2, h3 { line-height: 1.25; margin-top: 1.8em; }
+h1 { font-size: 2.2rem; border-bottom: 2px solid #568c79; padding-bottom: .35em; }
+h2 { border-bottom: 1px solid #8886; padding-bottom: .3em; }
+a { color: #18775c; text-underline-offset: .18em; }
+pre, code { font-family: ui-monospace, monospace; background: #8882; border-radius: .3rem; }
+code { padding: .12em .3em; }
+pre { padding: 1rem; overflow-x: auto; }
+pre code { padding: 0; background: transparent; }
+blockquote { border-left: .25rem solid #568c79; margin-left: 0; padding-left: 1rem; color: #777; }
+img { max-width: 100%; height: auto; }
+table { border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { border: 1px solid #8886; padding: .4rem .7rem; }
+@media (prefers-color-scheme: dark) { a { color: #7cdbb4; } blockquote { color: #bbb; } }
+'''
 
 
 class file_server(Method):
@@ -25,6 +46,7 @@ class file_server(Method):
     def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_String('_url').not_null(),
+            GDT_Bool('render_md').initial('0'),
         ]
 
     @classmethod
@@ -105,6 +127,18 @@ class file_server(Method):
         if not os.path.isfile(file_path):
             Application.status('404 Not Found')
             return self.err('err_file_not_found')
+        if (self.param_val('render_md') == '1' and self.get_url().lower().endswith('.md')
+                and module_enabled('markdown')):
+            from gdo.markdown.MDConvert import MDConvert
+            with open(file_path, encoding='utf-8', errors='replace') as source:
+                text = source.read()
+                rendered = MDConvert(text).to_html(text)
+            Application.header('X-Content-Type-Options', 'nosniff')
+            body = ('<!doctype html><html><head><meta charset="utf-8">'
+                    '<meta name="viewport" content="width=device-width, initial-scale=1">'
+                    '<style>' + MARKDOWN_PREVIEW_STYLE + '</style></head><body>'
+                    + rendered + '</body></html>').encode('utf-8')
+            return GDT_RawResponse(body, 'text/html; charset=UTF-8')
         if self.check_etag(file_path):
             Application.status("304 Not Modified")
             return self.empty()

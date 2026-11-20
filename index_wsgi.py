@@ -1,6 +1,6 @@
 import os.path
 import asyncio
-import time
+from contextvars import copy_context
 from io import BytesIO
 from urllib.parse import parse_qs, quote, unquote
 from multipart import MultipartParser
@@ -62,22 +62,36 @@ def display_top_malloc(snapshot, f, limit=200, key_type='lineno'):
 
 def aiorun(coro):
     while asyncio.iscoroutine(coro):
-        if not Application.LOOP.is_running():
-            coro = Application.LOOP.run_until_complete(coro)
-        else:
-            time.sleep(0.000025)
+        loop = Application.REQUEST_LOOP.get()
+        coro = loop.run_until_complete(coro)
     return coro
 
 def application(environ, start_response):
-    loop = asyncio.new_event_loop()
-    Application.LOOP = loop
-    from gdo.base.ErrorMail import install_async_exception_handler
-    install_async_exception_handler(loop)
+    # A response may be streamed and interleaved with another request on the
+    # same thread. Resume its generator in its own context on every iteration.
+    context = copy_context()
+    response = _application(environ, start_response)
     try:
+        while True:
+            try:
+                chunk = context.run(next, response)
+            except StopIteration:
+                return
+            yield chunk
+    finally:
+        context.run(response.close)
+
+def _application(environ, start_response):
+    loop = asyncio.new_event_loop()
+    token = Application.REQUEST_LOOP.set(loop)
+    try:
+        from gdo.base.ErrorMail import install_async_exception_handler
+        install_async_exception_handler(loop)
         yield from pygdo_application(environ, start_response)
     finally:
         if not loop.is_closed():
             loop.close()
+        Application.REQUEST_LOOP.reset(token)
 
 def pygdo_application(environ, start_response):
     """
@@ -113,9 +127,7 @@ def pygdo_application(environ, start_response):
             loader.init_modules(True, True)
             from gdo.base.Trans import Trans
             Application.is_http(True)
-            while Application.LOOP.is_running():
-                time.sleep(0.000025)
-            Application.LOOP.run_until_complete(IPC.web_register_ipc())
+            aiorun(IPC.web_register_ipc())
             FRESH = False
             #PYPP#START#
             if Application.config('debug.profiler') == '1':
@@ -203,9 +215,14 @@ def pygdo_application(environ, start_response):
             session = GDO_Session.start(False)
             user = session.get_user()
             Application.set_current_user(user)
-            method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_file().get_short_path()).explicitly_allowed()
+            method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_file().get_short_path()).input('render_md', qs.get('render_md', ['0'])[0]).explicitly_allowed()
             gdt = method.execute()
             gdt = aiorun(gdt)
+            if isinstance(gdt, GDT_RawResponse):
+                body = gdt.prepare()
+                start_response(Application.get_status(), Application.get_headers())
+                yield body
+                return
             if isinstance(gdt, GDT_FileOut):
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)
@@ -219,9 +236,14 @@ def pygdo_application(environ, start_response):
         if Files.is_file(path):
             session = GDO_Session.start(False)
             user = session.get_user()
-            method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session)
+            method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session).input('render_md', qs.get('render_md', ['0'])[0])
             gdt = method.execute()
             gdt = aiorun(gdt)
+            if isinstance(gdt, GDT_RawResponse):
+                body = gdt.prepare()
+                start_response(Application.get_status(), Application.get_headers())
+                yield body
+                return
             if isinstance(gdt, GDT_FileOut):
                 headers = Application.get_headers()
                 start_response(Application.get_status(), headers)

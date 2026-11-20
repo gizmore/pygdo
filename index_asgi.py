@@ -123,10 +123,15 @@ async def app(scope, receive, send):
                 session = GDO_Session.start(False)
                 user = session.get_user()
                 Application.set_current_user(user)
-                method = file_server().env_server(user.get_server()).env_user(user).input('_url', url)
+                method = file_server().env_server(user.get_server()).env_user(user).input('_url', url).input('render_md', qs.get('render_md', ['0'])[0])
                 gdt = await method.execute()
                 while iscoroutine(gdt):
                     gdt = await gdt
+                if isinstance(gdt, GDT_RawResponse):
+                    body = gdt.prepare()
+                    await send({'type': 'http.response.start', 'status': Application.get_status_code(), 'headers': Application.get_headers_asgi()})
+                    await send({'type': 'http.response.body', 'body': body})
+                    return
                 await send({
                     'type': 'http.response.start',
                     'status': Application.get_status_code(),
@@ -145,10 +150,15 @@ async def app(scope, receive, send):
                 session = GDO_Session.start(False)
                 user = session.get_user()
                 Application.set_current_user(user)
-                method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_path())
+                method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_path()).input('render_md', qs.get('render_md', ['0'])[0])
                 gdt = await method.execute()
                 while iscoroutine(gdt):
                     gdt = await gdt
+                if isinstance(gdt, GDT_RawResponse):
+                    body = gdt.prepare()
+                    await send({'type': 'http.response.start', 'status': Application.get_status_code(), 'headers': Application.get_headers_asgi()})
+                    await send({'type': 'http.response.body', 'body': body})
+                    return
                 await send({
                     'type': 'http.response.start',
                     'status': Application.get_status_code(),

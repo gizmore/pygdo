@@ -5,13 +5,14 @@ from gdo.base.Render import Mode
 from gdo.base.Result import Result
 from gdo.base.ResultArray import ResultArray
 from gdo.base.Trans import t
-from gdo.base.Util import Files
+from gdo.base.Util import Files, module_enabled
 from gdo.core.GDO_File import GDO_File
 from gdo.core.GDT_Path import GDT_Path
 from gdo.table.MethodTable import MethodTable
 import os
 from os import walk
 from urllib.parse import unquote
+from urllib.parse import quote
 
 from gdo.ui.GDT_Icon import GDT_Icon
 from gdo.ui.GDT_Link import GDT_Link
@@ -72,6 +73,7 @@ class dir_server(MethodTable):
         return [
             GDT_Icon('file_icon'),
             t.column('file_name'),
+            GDT_Icon('file_preview').shrink(),
             t.column('file_mime'),
             t.column('file_size'),
         ]
@@ -113,6 +115,16 @@ class dir_server(MethodTable):
         if not Files.is_dir(os.path.join(self.get_dir(), gdt.get_val())):
             link.nofollow()
         return link.render(Mode.render_html)
+
+    def render_file_preview(self, gdt: GDT_Icon, gdo: GDO_File):
+        name = gdo.get_name()
+        if name.lower().endswith('.md') and not Files.is_dir(os.path.join(self.get_dir(), name)) and module_enabled('markdown'):
+            path = self.get_path().rstrip('/')
+            url = '/' + quote(path, safe='/') + '/' + quote(name, safe='') + '?render_md=1'
+            preview = (GDT_Link().href(url).text_raw('').icon('eye', 'dir_markdown_preview')
+                       .attr('aria-label', t('dir_markdown_preview')).nofollow())
+            return preview.render(Mode.render_html)
+        return ''
 
     def render_file_icon(self, gdt: GDT_Icon, gdo: GDO_File):
         path = self.get_dir() + "/" + gdo.get_name()
