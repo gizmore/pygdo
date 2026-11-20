@@ -174,4 +174,8 @@ class GDT_Timestamp(GDT_String):
         return self.render_format(Time.FMT_AGO)
 
     def render_card(self) -> str:
-        return f'<p>{self.render_card_label()}: {self.render_format(Time.FMT_BOTH_FULL)}</p>'
+        if self.get_val() is None:
+            return f'<p>{self.render_card_label()}: ---</p>'
+        date = self.render_format(Time.FMT_LONG)
+        age = self.render_format(Time.FMT_AGO)
+        return f'<p>{self.render_card_label()}: {date} (<span class="ago"{self.html_attrs()}>{age}</span>)</p>'
