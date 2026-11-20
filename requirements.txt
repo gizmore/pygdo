@@ -28,5 +28,6 @@ rcssmin
 rich
 tomlkit
 typing_extensions
+tzdata
 websocket-server
 yappi
