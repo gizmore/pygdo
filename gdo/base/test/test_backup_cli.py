@@ -42,7 +42,7 @@ class BackupCLITest(unittest.TestCase):
             self.assertEqual('test', backup.call_args.args[2]['name'])
             self.assertEqual(project / 'uploads', backup.call_args.args[1])
             backup.return_value.archive.assert_called_once_with(
-                project / 'protected' / 'backup', include_config=False)
+                    project / 'protected' / 'backup', include_config=False, source_root=project)
             self.assertEqual(0o700, (project / 'protected' / 'backup').stat().st_mode & 0o777)
 
     def test_missing_config_fails(self):

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import os
+import stat
 import subprocess
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from zipfile import ZIP_DEFLATED, ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from gdo.mail.Mail import Mail
 
@@ -18,7 +19,7 @@ class Backup:
         self.files_dir = Path(files_dir).resolve()
         self.db_config = db_config
 
-    def archive(self, target_dir: str | Path, timestamp: datetime | None = None, *, include_config: bool = True) -> Path:
+    def archive(self, target_dir: str | Path, timestamp: datetime | None = None, *, include_config: bool = True, source_root: Path | None = None) -> Path:
         target_dir = Path(target_dir).expanduser().resolve()
         target_dir.mkdir(parents=True, exist_ok=True)
         stamp = timestamp or datetime.now()
@@ -32,6 +33,8 @@ class Backup:
                     if include_config:
                         archive.write(self.config_path, 'protected/config.toml')
                     self._add_files(archive)
+                    if source_root is not None:
+                        self._add_tracked_source(archive, source_root)
                 return target
             except Exception:
                 target.unlink(missing_ok=True)
@@ -73,3 +76,33 @@ class Backup:
         for path in self.files_dir.rglob('*'):
             if path.is_file() and not path.is_symlink():
                 archive.write(path, str(Path('files') / path.relative_to(self.files_dir)))
+
+    @staticmethod
+    def _add_tracked_source(archive: ZipFile, source_root: Path):
+        """Archive working-tree versions of tracked root and module files."""
+        root = source_root.resolve()
+        modules = root / 'gdo'
+        repos = [root]
+        if modules.is_dir():
+            repos.extend(sorted(p for p in modules.iterdir()
+                                if p.is_dir() and not p.is_symlink() and (p / '.git').exists()))
+        for repo in repos:
+            result = subprocess.run(
+                ['git', '-c', f'safe.directory={repo}', '-C', str(repo), 'ls-files', '-z', '--cached'],
+                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            )
+            for entry in dict.fromkeys(result.stdout.split(b'\0')):
+                if not entry:
+                    continue
+                path = repo / os.fsdecode(entry)
+                name = (Path('source') / path.relative_to(root)).as_posix()
+                # Do not dereference links into private or external trees.
+                if path.is_symlink():
+                    info = ZipInfo(name)
+                    info.create_system = 3
+                    info.external_attr = (stat.S_IFLNK | 0o777) << 16
+                    archive.writestr(info, os.readlink(path))
+                elif path.is_file() and path.resolve().is_relative_to(root):
+                    archive.write(path, name)
+                elif path.exists() and not path.is_dir():
+                    raise ValueError('unsupported tracked file')

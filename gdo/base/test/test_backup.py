@@ -1,4 +1,5 @@
 import tempfile
+import subprocess
 import unittest
 from gdotest.TestUtil import GDOTestCase
 from datetime import datetime
@@ -55,6 +56,27 @@ class BackupTest(GDOTestCase):
         archive = self.backup.archive(self.destination, include_config=False)
         with ZipFile(archive) as zipped:
             self.assertEqual(['database.sql', 'files/photo.txt'], sorted(zipped.namelist()))
+
+    @patch.object(Backup, 'dump_database')
+    def test_includes_tracked_working_tree_from_root_and_module(self, dump_database):
+        dump_database.side_effect = lambda path: path.write_text('dump', encoding='utf-8')
+        root = Path(self.temp.name) / 'project'
+        module = root / 'gdo' / 'example'
+        module.mkdir(parents=True)
+        for repo in (root, module):
+            subprocess.run(['git', 'init', '-q', str(repo)], check=True)
+        (root / 'main.py').write_text('first', encoding='utf-8')
+        (module / 'module.py').write_text('module', encoding='utf-8')
+        subprocess.run(['git', '-C', str(root), 'add', 'main.py'], check=True)
+        subprocess.run(['git', '-C', str(module), 'add', 'module.py'], check=True)
+        (root / 'main.py').write_text('modified', encoding='utf-8')
+        (module / 'private.txt').write_text('untracked', encoding='utf-8')
+        archive = self.backup.archive(self.destination, source_root=root)
+        with ZipFile(archive) as zipped:
+            self.assertEqual(b'modified', zipped.read('source/main.py'))
+            self.assertEqual(b'module', zipped.read('source/gdo/example/module.py'))
+            self.assertNotIn('source/gdo/example/private.txt', zipped.namelist())
+            self.assertFalse(any('/.git/' in name for name in zipped.namelist()))
 
     @patch('gdo.base.Backup.Mail.from_bot')
     def test_mails_archive_as_attachment(self, from_bot):

@@ -102,7 +102,7 @@ def main() -> int:
         if not private_backup_directory(target):
             raise ValueError('backup directory must not be accessible by group or others')
         backup = Backup(config_path, files if files is not None else PROJECT, db)
-        output = quick_backup(backup, target) if args.quick else backup.archive(target, include_config=False)
+        output = quick_backup(backup, target) if args.quick else backup.archive(target, include_config=False, source_root=PROJECT)
         print(f'Backup created: {output}')
         return 0
     except Exception as error:
