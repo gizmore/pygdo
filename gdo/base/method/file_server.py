@@ -120,6 +120,11 @@ class file_server(Method):
         return Application.get_client_header('HTTP_IF_NONE_MATCH') == etag
 
     def gdo_execute(self) -> GDT:
+        # A public SEO or explicitly allowed file route must not bypass this
+        # path rule; challenge secrets are never served by these routes.
+        if 'secret' in unquote(self.get_url()).lower():
+            Application.status('403 Forbidden')
+            return self.err('err_file_forbidden')
         if not self.get_seo_file() and not hasattr(self, '_explicitly_allowed') and file_server.is_forbidden(self.get_url()):
             Application.status('403 Forbidden')
             return self.err('err_file_forbidden')

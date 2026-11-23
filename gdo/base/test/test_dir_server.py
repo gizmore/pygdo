@@ -80,6 +80,7 @@ class DirectoryServerTest(unittest.TestCase):
                 for path in ('', 'public', 'temperature', 'protectedness'):
                     self.assertFalse(dir_server.is_forbidden(path), path)
                 for path in ('temp', 'temp/cache', 'protected', 'protected/logs',
+                             'public/secret', 'public/MySecret/file', 'public/%73ecret/image',
                              'public/../protected', '%2e%2e/protected',
                              'public\\..\\protected', 'public/link', 'public/outside'):
                     self.assertTrue(dir_server.is_forbidden(path), path)

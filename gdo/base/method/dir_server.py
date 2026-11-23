@@ -26,7 +26,7 @@ class dir_server(MethodTable):
     @staticmethod
     def is_forbidden(url: str) -> bool:
         url = unquote(url).lstrip('/')
-        if '\\' in url or any(part in ('.', '..') for part in url.split('/')):
+        if 'secret' in url.lower() or '\\' in url or any(part in ('.', '..') for part in url.split('/')):
             return True
         root = os.path.realpath(Application.file_path())
         target = os.path.realpath(os.path.join(root, url))

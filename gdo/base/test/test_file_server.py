@@ -41,6 +41,7 @@ class FileServerTest(GDOTestCase):
             'gdo/example/settings%2Etoml',
             'gdo/example/secret_key',
             'gdo/example/Secret_key',
+            'gdo/example/%73ecret/image.png',
         ):
             with self.subTest(url=url):
                 self.assertTrue(file_server.is_forbidden(url))
@@ -49,6 +50,17 @@ class FileServerTest(GDOTestCase):
     @patch.object(Application, 'config', return_value=DIRS)
     def test_allows_non_sensitive_file(self, _config, _module_config):
         self.assertFalse(file_server.is_forbidden('gdo/example/image.png'))
+
+    def test_secret_path_cannot_bypass_through_explicit_or_seo_route(self):
+        method = file_server.__new__(file_server)
+        method._explicitly_allowed = True
+        with patch.object(method, 'get_url', return_value='public/%73ecret/image.png'), \
+             patch.object(method, 'get_seo_file') as seo, \
+             patch.object(method, 'err', return_value='forbidden'), \
+             patch.object(Application, 'status') as status:
+            self.assertEqual('forbidden', method.gdo_execute())
+        status.assert_called_once_with('403 Forbidden')
+        seo.assert_not_called()
 
     def test_markdown_preview_is_optional(self):
         with tempfile.TemporaryDirectory() as directory:
