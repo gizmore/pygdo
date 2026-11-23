@@ -1,11 +1,24 @@
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from gdo.base.Application import Application
 from gdo.table.GDT_PageMenu import GDT_PageMenu
+from gdo.core.GDT_Template import Templite
 
 
 class PageMenuTest(unittest.TestCase):
+    def test_cards_render_pagination_around_results(self):
+        method = MagicMock()
+        method.get_table_result.return_value = ['video']
+        method.get_page_menu.return_value.render_html.return_value = '<nav>pages</nav>'
+        method.render_gdo.return_value = '<article>video</article>'
+        template = Templite(str(Path(__file__).resolve().parents[1] / 'tpl' / 'cards.html'), caching=False)
+        rendered = template.render(method=method)
+        self.assertEqual(2, rendered.count('<nav>pages</nav>'))
+        self.assertLess(rendered.index('<nav>pages</nav>'), rendered.index('<article>'))
+        self.assertLess(rendered.index('<article>'), rendered.rindex('<nav>pages</nav>'))
+
     def test_empty_and_single_page_have_no_html(self):
         method = MagicMock()
         method.get_page_num.return_value = 1

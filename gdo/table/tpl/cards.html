@@ -1,9 +1,16 @@
 <%
 result = method.get_table_result()
+page_menu_html = method.get_page_menu().render_html() if method.gdo_render_pagination() else ''
 %>
+<% if method.gdo_render_pagination_top(): %>
+<%=page_menu_html%>
+<% : %>
 <div class="cards">
     <%
     for gdo in result:
         write(method.render_gdo(gdo, Mode.render_html))
     %>
 </div>
+<% if method.gdo_render_pagination_bottom(): %>
+<%=page_menu_html%>
+<% : %>
