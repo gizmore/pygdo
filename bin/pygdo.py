@@ -2,8 +2,10 @@ import argparse
 import asyncio
 import functools
 import os
+import pwd
 import sys
 import signal
+from copy import copy
 from asyncio.exceptions import CancelledError
 from threading import Thread
 
@@ -75,13 +77,24 @@ async def get_parser():
     from gdo.base.Render import Mode
     from gdo.base.Util import CLI
     from gdo.core.GDO_Session import GDO_Session
-    user = await CLI.get_current_user()
-    server = user.get_server()
+    origin = await CLI.get_current_user()
+    server = origin.get_server()
     channel = None
     if getattr(Application.STORAGE, 'cli_channel_mode', True):
-        channel = server.get_or_create_channel(user.gdo_val('user_name'))
-    session = GDO_Session.for_user(user)
+        channel = server.get_or_create_channel(origin.gdo_val('user_name'))
+    session = GDO_Session.for_user(origin)
+    user = cli_effective_user(origin)
+    Application.set_current_user(user)
     return Parser(Mode.render_cli, user, server, channel, session)
+
+
+def cli_effective_user(origin):
+    """Only inherit linked-account authority for the real local identity."""
+    if origin.get_name() != pwd.getpwuid(os.geteuid()).pw_name:
+        return origin
+    user = copy(origin.get_effective_user())
+    user._authenticated = origin.is_authenticated()
+    return user
 
 
 async def process_line(line: str) -> None:
@@ -103,6 +116,7 @@ async def process_line(line: str) -> None:
         line = message._message
         if line.startswith(trigger):
             method = parser.parse_line(line[1:])
+            method.env_reply_to(user)
             Application.fresh_page().method(method)
             gdt = method.execute()
             while asyncio.iscoroutine(gdt):
