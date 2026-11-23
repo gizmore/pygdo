@@ -11,10 +11,10 @@ This page describes differences from other frameworks you may be used to.
 - There are no special webserver rules for assets.
   Every request is piped through index.py, protecting your files to the max.
 
-- There is no webpack or similar. All assets are used in their dev version from source.
-  However, there is a [minify](https://github.com/gizmore/pygdo-minifier) module
-  that bundles **all** assets into a single file with the press of F5.
-  Without that module, debugging is a real joy. Sadly no typescript.
+- There is no webpack or similar. Assets can be used in their dev version from source.
+  The optional [bundler](https://github.com/gizmore/pygdo-bundler) module combines
+  and minifies local JavaScript and CSS assets; external assets remain separate.
+  Without it, debugging is a real joy. Sadly no typescript.
 
 
 ## Type System
