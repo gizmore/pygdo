@@ -44,6 +44,7 @@ class IconUTF8(IconProvider):
             'construction': '🚧',
             'country': '⚑',
             'check': '✔',
+            'clock': '🕒',
             'color': '🎡',
             'copyright': '©',
             'crack': '🧨',

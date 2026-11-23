@@ -13,6 +13,7 @@ class GDT_Duration(GDT_String):
 
     def __init__(self, name):
         super().__init__(name)
+        self.icon('clock')
         self._units = 2
         self._with_millis = False
         self._min = 0.0
@@ -42,6 +43,8 @@ class GDT_Duration(GDT_String):
         return Time.human_to_seconds(val)
 
     def render(self, mode: Mode = Mode.render_html):
+        if mode == Mode.render_form:
+            return super().render(mode)
         return Time.human_duration(self.get_value(), self._units)
 
     def validate(self, val: str|None) -> bool:
