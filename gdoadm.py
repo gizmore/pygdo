@@ -151,7 +151,7 @@ class App:
     WSGIScriptReloading On
     WSGIProcessGroup pygdo
     WSGIDaemonProcess pygdo user={user} group={user} threads=5 python-home={python_home} home={pygdo_home}
-    WSGIScriptAlias / {pygdo_home}index.py  process-group=pygdo application-group=%{GLOBAL}
+    WSGIScriptAlias / {pygdo_home}index_wsgi.py  process-group=pygdo application-group=%{GLOBAL}
     AllowEncodedSlashes NoDecode
     DocumentRoot "{pygdo_home}"
     <Directory "{pygdo_home}">

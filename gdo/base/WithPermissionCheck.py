@@ -103,6 +103,18 @@ class WithPermissionCheck:
         return False
 
     def err_not_authenticated(self):
+        if Application.IS_HTTP and module_enabled('register'):
+            from gdo.register.module_register import module_register
+            from gdo.ui.GDT_Link import GDT_Link
+            back_to = f"&_back_to={urlencode(Application.current_href())}"
+            login = GDT_Link().text('link_login_before_continue').href(href('login', 'form', back_to)).render() if module_enabled('login') else ''
+            signup = GDT_Link().text('link_signup_before_continue').href(href('register', 'form', back_to)).render()
+            if module_register.instance().cfg_guest_signup():
+                guest = GDT_Link().text('link_continue_as_guest').href(href('register', 'guest', back_to)).render()
+                self.err('err_auth_signup_guest', (login, signup, guest))
+            else:
+                self.err('err_auth_signup', (login, signup))
+            return False
         self.err('err_not_authenticated')
         return False
 
