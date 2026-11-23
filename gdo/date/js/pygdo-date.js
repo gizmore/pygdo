@@ -66,6 +66,13 @@ window.gdo.date = {
             const ago = window.gdo.lang.ago ? ` ${gdo.t('ago')}` : '';
             tse.textContent = window.gdo.date.humanDuration(t, 2, false) + ago;
         }
+        for (const element of document.querySelectorAll('.gdt-duration-countdown[data-countdown-until]')) {
+            const remaining = Math.max(0, Math.ceil(Number(element.dataset.countdownUntil) - Date.now() / 1000));
+            const units = Number(element.dataset.countdownUnits);
+            if (!Number.isFinite(remaining) || !Number.isInteger(units) || units < 1) continue;
+            element.textContent = remaining === 0 ? element.dataset.countdownEnded
+                : window.gdo.date.humanDuration(remaining, units, false);
+        }
     },
 
 };
