@@ -7,6 +7,15 @@ from gdo.base.Application import Application
 
 
 class WSGILoopTest(unittest.TestCase):
+    def test_multipart_detection_handles_missing_content_type(self):
+        self.assertFalse(index_wsgi.is_multipart_post({'REQUEST_METHOD': 'POST'}))
+        self.assertFalse(index_wsgi.is_multipart_post({
+            'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': 'application/x-www-form-urlencoded'}))
+        self.assertTrue(index_wsgi.is_multipart_post({
+            'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': 'multipart/form-data; boundary=test'}))
+        self.assertFalse(index_wsgi.is_multipart_post({
+            'REQUEST_METHOD': 'GET', 'CONTENT_TYPE': 'multipart/form-data; boundary=test'}))
+
     def test_interleaved_requests_keep_independent_loops(self):
         async def answer():
             return b'ok'

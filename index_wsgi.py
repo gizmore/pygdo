@@ -33,6 +33,10 @@ FRESH = True
 SIDEBARS = False
 REQUEST_COUNT = 0
 
+def is_multipart_post(environ):
+    return (environ['REQUEST_METHOD'] == 'POST' and
+            environ.get('CONTENT_TYPE', '').startswith('multipart/form-data'))
+
 def display_top_malloc(snapshot, f, limit=200, key_type='lineno'):
     import tracemalloc, linecache
     # snapshot = snapshot.filter_traces((
@@ -283,7 +287,7 @@ def pygdo_application(environ, start_response):
             if not method:
                 method = not_found().env_server(server).env_user(session.get_user())
 
-            if environ['REQUEST_METHOD'] == 'POST' and environ['CONTENT_TYPE'].startswith('multipart/form-data'):
+            if is_multipart_post(environ):
                     ctype = environ.get('CONTENT_TYPE', '')
                     length = int(environ.get('CONTENT_LENGTH', 0))
                     body = environ['wsgi.input'].read(length)
