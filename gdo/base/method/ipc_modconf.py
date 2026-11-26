@@ -32,7 +32,7 @@ class ipc_modconf(Method):
         module = self.get_module()
         key = self.param_val('key')
         val = self.param_val('value')
-        gdt = module._module_config.get(key)
-        if gdt.validate(val):
+        gdt = module.module_config().get(key)
+        if gdt is not None and gdt.validate(val):
             await module.save_config_val(key, val)
         return self.empty()
