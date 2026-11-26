@@ -3,6 +3,7 @@ from datetime import datetime
 
 from gdo.base.Application import Application
 from gdo.base.GDT import GDT
+from gdo.base.Trans import t
 from gdo.base.Util import Strings
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Template import tpl
@@ -154,6 +155,11 @@ class GDT_Timestamp(GDT_String):
             return '---'
         if format == Time.FMT_BOTH_FULL:
             return f'{self.render_format(Time.FMT_LONG)} ({self.render_format(Time.FMT_AGO)})'
+        if format == Time.FMT_BOTH_MINUTE:
+            delta = Time.get_time_ago(val)
+            relative = Time.human_duration(abs(delta))
+            label = t('date_relative_future' if delta < 0 else 'date_relative_past', (relative,))
+            return f'{self.render_format(Time.FMT_SHORT)} ({label})'
         if format == Time.FMT_AGO:
             self.attr('title', Time.display_date(val))
             self.attr('gdo-ts', str(Time.get_time(val)))
