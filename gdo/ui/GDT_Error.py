@@ -45,5 +45,5 @@ class GDT_Error(GDT_Panel):
         Logger.exception(ex)
         text = html(str(ex))
         if not tb:
-            tb = Logger.traceback(ex)
+            tb = Logger.traceback(ex, show_locals=False)
         return cls().trace().title_raw(sitename() + " " + title).text_raw(f"<pre>{text}\n\n{tb}</pre>\n", False)

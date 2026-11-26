@@ -144,7 +144,7 @@ class GDO(WithName, WithBulk, GDT):
         hash_me = hashlib.sha256()
         for gdt in self.columns().values():
             val = gdt.gdo(self).get_val()
-            hash_me.update(val.encode() if val is not None else b'')
+            hash_me.update(val if isinstance(val, bytes) else val.encode() if val is not None else b'')
         return hash_me.hexdigest()[0:self.HASH_LENGTH]
 
     def render_name(self):
