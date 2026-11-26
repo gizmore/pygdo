@@ -86,4 +86,3 @@ class SetCliResolutionTest(unittest.TestCase):
         with patch('gdo.account.method.set_cli.GDO_UserSetting.setting_column', return_value=setting):
             set_cli.gdo_execute(method)
         method._env_user.save_setting.assert_called_once_with('choice', 'de')
-
