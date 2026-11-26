@@ -96,6 +96,7 @@ class Application:
             from gdo.install.Config import Config
             cls.CONFIG = Config.defaults()
         cls.config.cache_clear()
+        cls.init_log_directory()
         from gdo.base.Cache import Cache
         Cache.init(int(cls.config('redis.enabled', '0')),
                    cls.config('redis.host', 'localhost'),
@@ -104,6 +105,14 @@ class Application:
                    cls.config('redis.uds', ''),
                    int(cls.config('redis.zlib_level', -1)))
         cls.IPC_TS = cls.TIME
+
+    @classmethod
+    def init_log_directory(cls):
+        """Switch from the bootstrap logger to the configured instance directory."""
+        directory = cls.config('dir.logs', 'protected/logs/')
+        if not isinstance(directory, str) or not directory.strip():
+            raise ValueError('dir.logs must be a nonempty directory path')
+        Logger.init(os.path.join(cls.PATH, directory, ''))
 
     @classmethod
     def init_test(cls, path: str):

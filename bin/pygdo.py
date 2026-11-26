@@ -29,7 +29,6 @@ async def pygdo(line: str = None, config: str = 'protected/config.toml'):
     from gdo.base.Application import Application
     from gdo.base.ModuleLoader import ModuleLoader
     from gdo.base.Util import Files
-    from gdo.base.Logger import Logger
 
     parser = argparse.ArgumentParser(description='Run a pygdo command or the pygdo repl interpreter.')
     parser.add_argument('--test', action='store_true')
@@ -38,7 +37,6 @@ async def pygdo(line: str = None, config: str = 'protected/config.toml'):
     args, rest = parser.parse_known_args(sys.argv[1:])
 
     Application.IS_DOG = True
-    Logger.init(os.path.dirname(__file__)+"/../protected/logs/")
     Application.init(os.path.dirname(__file__) + "/../", args.config)
     Application.init_common()
     loader = ModuleLoader.instance()
