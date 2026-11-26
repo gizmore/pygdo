@@ -1,0 +1,111 @@
+[1mdiff --git a/gdo/base/test/test_backup_pygdo_script.py b/gdo/base/test/test_backup_pygdo_script.py[m
+[1mindex 1e098d1..86aa815 100644[m
+[1m--- a/gdo/base/test/test_backup_pygdo_script.py[m
+[1m+++ b/gdo/base/test/test_backup_pygdo_script.py[m
+[36m@@ -6,51 +6,76 @@[m [mimport unittest[m
+ import zipfile[m
+ from pathlib import Path[m
+ [m
+[32m+[m[32mWORKSPACE = Path(__file__).resolve().parents[4][m
+ [m
+[31m-SCRIPT = Path(__file__).resolve().parents[4] / 'gdo_backup_pygdo.sh'[m
+ [m
+[31m-[m
+[31m-@unittest.skipUnless(SCRIPT.is_file(), 'workspace backup script is not present')[m
+[32m+[m[32m@unittest.skipUnless((WORKSPACE / 'gdo_backup_pygdo.py').is_file(), 'backup helper unavailable')[m
+ class PyGDOBackupScriptTest(unittest.TestCase):[m
+[31m-    def test_ignored_and_module_files_are_archived(self):[m
+[32m+[m[32m    def git(self, directory, *args):[m
+[32m+[m[32m        subprocess.run(['git', '-C', str(directory), *args], check=True, capture_output=True)[m
+[32m+[m
+[32m+[m[32m    def test_repository_selection_and_ignored_files(self):[m
+         with tempfile.TemporaryDirectory() as tmp:[m
+             root = Path(tmp)[m
+[31m-            script = root / SCRIPT.name[m
+[31m-            shutil.copyfile(SCRIPT, script)[m
+[31m-            for name in ('pygdo/protected/secret.toml', 'pygdo/gdo/example/.gitignore',[m
+[31m-                         'pygdo/gdo/example/ignored.txt', 'pygdo/gdo/codegeex/local.py',[m
+[31m-                         'pygdo/files/git_repo/project/config', 'pygdo/files/other/git_keep/data',[m
+[31m-                         'pygdo/files/git_notes.txt'):[m
+[31m-                path = root / name[m
+[32m+[m[32m            for name in ('gdo_backup_pygdo.sh', 'gdo_backup_pygdo.py'):[m
+[32m+[m[32m                shutil.copyfile(WORKSPACE / name, root / name)[m
+[32m+[m[32m            project = root / 'pygdo'[m
+[32m+[m[32m            project.mkdir()[m
+[32m+[m[32m            self.git(project, 'init', '-q')[m
+[32m+[m[32m            (project / '.gitignore').write_text('/gdo/*\n/protected/\n/files/\n')[m
+[32m+[m[32m            (project / 'source.py').write_text('tracked')[m
+[32m+[m[32m            (project / 'untracked.py').write_text('not ignored')[m
+[32m+[m[32m            self.git(project, 'add', '.gitignore', 'source.py')[m
+[32m+[m[32m            self.git(project, 'update-index', '--add', '--cacheinfo',[m
+[32m+[m[32m                     '160000,1111111111111111111111111111111111111111,vendor')[m
+[32m+[m[32m            (project / 'vendor').mkdir()[m
+[32m+[m[32m            (project / 'vendor' / 'secret').write_text('submodule')[m
+[32m+[m[32m            for rel in ('protected/secret', 'files/git_repo/private', 'files/other'):[m
+[32m+[m[32m                path = project / rel[m
+                 path.parent.mkdir(parents=True, exist_ok=True)[m
+[31m-                path.write_text('example', encoding='utf8')[m
+[31m-            (root / 'pygdo' / 'external-link').symlink_to('/outside/private')[m
+[32m+[m[32m                path.write_text('ignored')[m
+[32m+[m[32m            for name, origin in (('own', 'https://github.com/mira-gpt/pygdo-own'),[m
+[32m+[m[32m                                 ('thirdparty', 'https://github.com/other/thirdparty')):[m
+[32m+[m[32m                repo = project / 'gdo' / name[m
+[32m+[m[32m                repo.mkdir(parents=True)[m
+[32m+[m[32m                self.git(repo, 'init', '-q')[m
+[32m+[m[32m                self.git(repo, 'remote', 'add', 'origin', origin)[m
+[32m+[m[32m                (repo / '.gitignore').write_text('ignored.txt\n')[m
+[32m+[m[32m                (repo / 'tracked.py').write_text('tracked')[m
+[32m+[m[32m                (repo / 'ignored.txt').write_text('ignored')[m
+[32m+[m[32m                (repo / 'untracked.py').write_text('not ignored')[m
+[32m+[m[32m                self.git(repo, 'add', '.gitignore', 'tracked.py')[m
+[32m+[m[32m                self.git(repo, 'update-index', '--add', '--cacheinfo',[m
+[32m+[m[32m                         '160000,1111111111111111111111111111111111111111,vendor')[m
+[32m+[m[32m                (repo / 'vendor').mkdir()[m
+[32m+[m[32m                (repo / 'vendor' / 'secret').write_text('submodule')[m
+             destination = root / 'backups'[m
+             destination.mkdir()[m
+[31m-            result = subprocess.run(['bash', str(script)], check=True, capture_output=True,[m
+[31m-                                    env={**os.environ, 'PYGDO_BACKUP_DIR': str(destination)})[m
+[31m-            self.assertIn(b'Backup created:', result.stdout)[m
+[32m+[m[32m            subprocess.run(['bash', str(root / 'gdo_backup_pygdo.sh')], check=True, capture_output=True,[m
+[32m+[m[32m                           env={**os.environ, 'PYGDO_BACKUP_DIR': str(destination)})[m
+             archives = list(destination.glob('*_pygdo.zip'))[m
+[31m-            self.assertEqual(1, len(archives))[m
+[31m-            self.assertEqual(0, archives[0].stat().st_mode & 0o077)[m
+[32m+[m[32m            self.assertEqual(len(archives), 1)[m
+[32m+[m[32m            self.assertEqual(archives[0].stat().st_mode & 0o077, 0)[m
+             with zipfile.ZipFile(archives[0]) as archive:[m
+                 names = set(archive.namelist())[m
+[31m-                self.assertIn('pygdo/protected/secret.toml', names)[m
+[31m-                self.assertIn('pygdo/gdo/example/ignored.txt', names)[m
+[31m-                self.assertIn('pygdo/gdo/codegeex/local.py', names)[m
+[31m-                self.assertNotIn('pygdo/files/git_repo/project/config', names)[m
+[31m-                self.assertIn('pygdo/files/other/git_keep/data', names)[m
+[31m-                self.assertIn('pygdo/files/git_notes.txt', names)[m
+[31m-                self.assertEqual(b'/outside/private', archive.read('pygdo/external-link'))[m
+[32m+[m[32m            self.assertTrue({'pygdo/gdo/own/tracked.py', 'pygdo/gdo/own/ignored.txt',[m
+[32m+[m[32m                             'pygdo/gdo/thirdparty/tracked.py', 'pygdo/gdo/thirdparty/ignored.txt'} <= names)[m
+[32m+[m[32m            self.assertNotIn('pygdo/source.py', names)[m
+[32m+[m[32m            self.assertNotIn('pygdo/protected/secret', names)[m
+[32m+[m[32m            self.assertFalse(any('.git/' in name or 'untracked.py' in name[m
+[32m+[m[32m                                 or 'git_repo/' in name or 'vendor/' in name for name in names))[m
+ [m
+     def test_refuses_destination_inside_source(self):[m
+         with tempfile.TemporaryDirectory() as tmp:[m
+             root = Path(tmp)[m
+[31m-            script = root / SCRIPT.name[m
+[31m-            shutil.copyfile(SCRIPT, script)[m
+[31m-            destination = root / 'pygdo' / 'backup'[m
+[31m-            destination.mkdir(parents=True)[m
+[31m-            result = subprocess.run(['bash', str(script)], capture_output=True,[m
+[32m+[m[32m            for name in ('gdo_backup_pygdo.sh', 'gdo_backup_pygdo.py'):[m
+[32m+[m[32m                shutil.copyfile(WORKSPACE / name, root / name)[m
+[32m+[m[32m            project = root / 'pygdo'[m
+[32m+[m[32m            project.mkdir()[m
+[32m+[m[32m            self.git(project, 'init', '-q')[m
+[32m+[m[32m            destination = project / 'backup'[m
+[32m+[m[32m            destination.mkdir()[m
+[32m+[m[32m            result = subprocess.run(['bash', str(root / 'gdo_backup_pygdo.sh')], capture_output=True,[m
+                                     env={**os.environ, 'PYGDO_BACKUP_DIR': str(destination)})[m
+             self.assertNotEqual(0, result.returncode)[m
+             self.assertFalse(list(destination.iterdir()))[m
