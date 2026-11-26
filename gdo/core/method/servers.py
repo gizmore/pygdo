@@ -12,6 +12,9 @@ class servers(MethodQueryTable):
     def gdo_needs_authentication(self) -> bool:
         return True
 
+    def gdo_searched(self) -> bool:
+        return False
+
     @classmethod
     def gdo_trigger(cls) -> str:
         return "servers"
