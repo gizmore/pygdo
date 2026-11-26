@@ -12,6 +12,7 @@ __pycache__/
 /node_modules/
 /**/node_modules/
 /yarn.lock
+package-lock.json
 *.pclprof
 *.pid
 test.py
