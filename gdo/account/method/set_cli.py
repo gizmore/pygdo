@@ -5,6 +5,8 @@ from gdo.core import GDT_Field
 from gdo.core.GDO_UserSetting import GDO_UserSetting
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_UserSetting import GDT_UserSetting
+from gdo.core.GDT_Select import GDT_Select
+from gdo.date.GDT_Date import GDT_Date
 
 
 class set_cli(Method):
@@ -21,7 +23,7 @@ class set_cli(Method):
 
     def gdo_execute(self) -> GDT:
         user = self._env_user
-        key = self.param_val('name')
+        key = self.param_value('name').get_name()
         value = self.param_val('value')
         gdt = GDO_UserSetting.setting_column(key, user)
         mode = self._env_mode
@@ -32,8 +34,14 @@ class set_cli(Method):
                 tooltip = f" ({gdt.get_tooltip_text()})"
             return self.reply('msg_print_cli_setting', (gdt.get_name(), Render.italic(gdt.render_val(), mode), tooltip, gdt.render_suggestion()))
         else:
-            gdt = GDO_UserSetting.setting_column(key, user)
             if gdt.is_writable():
+                gdt.reset_error()
+                if isinstance(gdt, GDT_Date) and not gdt.filter_date(value):
+                    return self.err('err_cli_invalid_date')
+                if not gdt.validate(value):
+                    return self.err('err_param', (key, gdt.render_error()))
+                if isinstance(gdt, GDT_Select):
+                    value = gdt.to_val(gdt.get_value())
                 old = gdt.render_val()
                 user.save_setting(key, value)
                 new = user.get_setting_val(key)

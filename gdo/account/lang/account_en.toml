@@ -41,6 +41,7 @@ msg_cli_settings = "Your settings: %s."
 mt_account_set_cli = "Set Setting"
 md_account_set_cli = "Set and display a setting"
 msg_print_cli_setting = "Your setting for %s is %s.%s for example: %s."
+err_cli_invalid_date = "Invalid date. Use a valid date in YYYY-MM-DD format."
 msg_set_cli_setting = "Your setting for %s changed from %s to %s."
 
 ################
