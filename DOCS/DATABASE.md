@@ -62,7 +62,8 @@ writes only a timestamped SQL dump; `--files=1 --db=0` creates a ZIP without a
 database dump. Both flags default to 1, and both cannot be 0. The source files
 in the ZIP are Git-tracked files; ignored source files are not included. The
 configured files directory excludes top-level `git_*` checkout directories. The
-local Mira Dog launcher does not run a backup automatically.
+local Mira Dog launcher does not run a backup automatically. Run or schedule
+backups separately; a successful Dog restart does not imply a fresh backup.
 
 ## Learning by Examples
 
