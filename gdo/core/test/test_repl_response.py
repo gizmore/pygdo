@@ -14,6 +14,20 @@ spec.loader.exec_module(cli)
 
 
 class ReplResponseTest(unittest.TestCase):
+    def test_ctrl_c_clears_nonempty_input(self):
+        event = MagicMock()
+        event.current_buffer.text = 'unfinished command'
+        cli.repl_key_bindings().bindings[0].handler(event)
+        event.current_buffer.reset.assert_called_once_with()
+        event.app.exit.assert_not_called()
+
+    def test_ctrl_c_exits_on_empty_input(self):
+        event = MagicMock()
+        event.current_buffer.text = ''
+        cli.repl_key_bindings().bindings[0].handler(event)
+        event.current_buffer.reset.assert_not_called()
+        event.app.exit.assert_called_once_with(exception=KeyboardInterrupt, style='class:aborting')
+
     def test_error_top_bar_appears_once_in_cli_and_other_format(self):
         page = MagicMock()
         page._top_bar.render.return_value = 'error'

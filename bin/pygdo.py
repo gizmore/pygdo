@@ -10,6 +10,7 @@ from asyncio.exceptions import CancelledError
 from threading import Thread
 
 from prompt_toolkit.history import FileHistory
+from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import PromptSession
 
@@ -143,6 +144,19 @@ def handle_sigusr1(self, event: str, args: any = None):
     from gdo.base.IPC import IPC
     asyncio.create_task(IPC.dog_execute_events(), loop=Application.LOOP)
 
+
+def repl_key_bindings():
+    bindings = KeyBindings()
+
+    @bindings.add('c-c')
+    def interrupt(event):
+        if event.current_buffer.text:
+            event.current_buffer.reset()
+        else:
+            event.app.exit(exception=KeyboardInterrupt, style='class:aborting')
+
+    return bindings
+
 async def repl():
     from gdo.base.Application import Application
     from gdo.base.Exceptions import GDOModuleException, GDOError
@@ -177,6 +191,7 @@ async def repl():
         signal.signal(signal.SIGUSR1, handler=handle_sigusr1)
     session = PromptSession(
         history=FileHistory(Application.files_path(f'repl/{user.get_name()}.txt')),
+        key_bindings=repl_key_bindings(),
     )
     with patch_stdout():
         while RUNNING:
