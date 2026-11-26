@@ -2,9 +2,6 @@ from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.core.GDO_UserSetting import GDO_UserSetting
-from gdo.core.GDT_Field import GDT_Field
-from gdo.core.GDT_String import GDT_String
-from gdo.core.GDT_UserSetting import GDT_UserSetting
 
 
 class list_cli(Method):
