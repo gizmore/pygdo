@@ -240,7 +240,7 @@ class Cache:
 
     @classmethod
     def obj_search_redis(cls, gdo: 'GDO', vals: dict, delete: bool = False) -> 'GDO':
-        if gdo.gdo_cached():
+        if gdo.gdo_cached() and cls.RCACHE:
             cn = gdo.gdo_table_name()
             cursor = 0
             while True:

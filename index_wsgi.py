@@ -37,6 +37,14 @@ def is_multipart_post(environ):
     return (environ['REQUEST_METHOD'] == 'POST' and
             environ.get('CONTENT_TYPE', '').startswith('multipart/form-data'))
 
+
+def set_request_user(user, requested_language):
+    """Restore user context, then apply a valid request-local language override."""
+    from gdo.base.Trans import Trans
+    Application.set_current_user(user)
+    if isinstance(requested_language, str) and requested_language in Trans.CACHE:
+        Application.set_lang_iso(requested_language)
+
 def display_top_malloc(snapshot, f, limit=200, key_type='lineno'):
     import tracemalloc, linecache
     # snapshot = snapshot.filter_traces((
@@ -196,10 +204,7 @@ def pygdo_application(environ, start_response):
 
         args.add_arg('_url', url)
 
-        lang = 'en'
-        if '_lang' in qs:
-            lang = qs['_lang']
-            #del qs['_lang']
+        lang = qs.get('_lang', [None])[0]
 
         path = Application.file_path(url)
         seo_url = url
@@ -218,7 +223,7 @@ def pygdo_application(environ, start_response):
         if file := GDO_SeoFile.get_by_url(seo_url):
             session = GDO_Session.start(False)
             user = session.get_user()
-            Application.set_current_user(user)
+            set_request_user(user, lang)
             method = file_server().env_server(user.get_server()).env_user(user).env_session(session).input('_url', file.get_file().get_short_path()).input('render_md', qs.get('render_md', ['0'])[0]).explicitly_allowed()
             gdt = method.execute()
             gdt = aiorun(gdt)
@@ -243,7 +248,7 @@ def pygdo_application(environ, start_response):
         if Files.is_file(path):
             session = GDO_Session.start(False)
             user = session.get_user()
-            Application.set_current_user(user)
+            set_request_user(user, lang)
             method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session).input('render_md', qs.get('render_md', ['0'])[0])
             gdt = method.execute()
             gdt = aiorun(gdt)
@@ -286,7 +291,7 @@ def pygdo_application(environ, start_response):
                 args.add_path_vars(url)
                 args.add_get_vars(qs)
                 method = args.get_method().env_user(user).env_session(session).env_server(server)
-            Application.set_current_user(user)
+            set_request_user(user, lang)
             Application.status("200 OK")
             if Application.config('log.request', '0') == '1':
                 Logger.request(url, str(qs))
@@ -326,7 +331,7 @@ def pygdo_application(environ, start_response):
             # task, while this WSGI request continues in its original context.
             # The session is authoritative after the method ran, so restore
             # the rendering context before building sidebars and core JS.
-            Application.set_current_user(session.get_user())
+            set_request_user(session.get_user(), lang)
 
             if isinstance(result, GDT_RawResponse):
                 session.save()

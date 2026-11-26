@@ -238,6 +238,7 @@ class Installer:
             module.delete()
         except Exception as ex:
             Logger.exception(ex)
+            raise
         finally:
             db.foreign_keys(True)
 

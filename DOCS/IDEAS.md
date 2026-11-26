@@ -63,3 +63,5 @@ elegant social dampening.
 
 - a place your flag service where you can mark a cracked territory with your flag :D
 
+- A translator helper to translate between dumb/disabled to easy english
+
