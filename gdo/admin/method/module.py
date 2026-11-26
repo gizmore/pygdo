@@ -82,7 +82,7 @@ class module(Method):
     async def gdo_execute(self) -> GDT:
         return GDT_Container().vertical().add_fields(
             GDT_Menu().add_fields(*self.get_module().gdo_admin_links()),
-            self.module_readme(),
-            self.module_relations(),
             await self.submethod(install),
-            await self.submethod(configure))
+            await self.submethod(configure),
+            self.module_relations(),
+            self.module_readme())
