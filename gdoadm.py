@@ -597,9 +597,7 @@ class overview(MethodForm):
         Files.create_dir(f"{base}tpl/")
         Files.touch(f"{base}requirements.txt", mode=0o644, create=True)
         Files.put_contents(f"{base}package.json", """{
-  "dependencies": {
-    "js_dependency": "^1.33.7"
-  }
+  "dependencies": {}
 }
 """)
         Files.create_dir(f"{base}test/")
