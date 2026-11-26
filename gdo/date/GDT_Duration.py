@@ -51,7 +51,7 @@ class GDT_Duration(GDT_String):
         return Time.human_to_seconds(val)
 
     def render(self, mode: Mode = Mode.render_html):
-        if mode == Mode.render_form:
+        if mode in (Mode.render_form, Mode.render_card):
             return super().render(mode)
         if hasattr(self, '_countdown_until'):
             remaining = max(0, self._countdown_until - Application.TIME)
@@ -63,6 +63,9 @@ class GDT_Duration(GDT_String):
                         f'data-countdown-units="{self._units}" data-countdown-ended="{ended}">{escape(value)}</span>')
             return value
         return Time.human_duration(self.get_value(), self._units)
+
+    def render_card(self) -> str:
+        return f'<p>{self.render_card_label()}: {self.render(Mode.render_html)}</p>'
 
     def validate(self, val: str|None) -> bool:
         if not super().validate(val):

@@ -11,7 +11,6 @@ from gdo.base.Application import Application
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
-from gdo.base.GDT_RawResponse import GDT_RawResponse
 from gdo.base.Util import hdr, Files, msg, module_config_value, module_enabled, Strings
 from gdo.core.GDT_String import GDT_String
 from gdo.core.GDT_Bool import GDT_Bool
@@ -75,6 +74,14 @@ class MarkdownMetadata(HTMLParser):
 
 
 class file_server(Method):
+
+    def gdo_render_title(self) -> str:
+        title = getattr(self, '_markdown_title', None)
+        return escape(title) if title else super().gdo_render_title()
+
+    def gdo_render_descr(self) -> str:
+        description = getattr(self, '_markdown_description', None)
+        return escape(description, quote=True) if description else super().gdo_render_descr()
 
     def explicitly_allowed(self, explicitly_allowed: bool = True):
         self._explicitly_allowed = explicitly_allowed
@@ -178,10 +185,9 @@ class file_server(Method):
                 rendered = MDConvert(text).to_html(text)
             metadata = MarkdownMetadata()
             metadata.feed(rendered)
-            title = f'<title>{escape(metadata.title)}</title>' if metadata.title else ''
-            description = (f'<meta name="description" content="{escape(metadata.description, quote=True)}">'
-                           if metadata.description else '')
-            image = ''
+            self._markdown_title = metadata.title
+            self._markdown_description = metadata.description
+            self._markdown_rendered = True
             root = os.path.realpath(Application.file_path())
             absolute = os.path.abspath(file_path)
             real = os.path.realpath(file_path)
@@ -190,13 +196,9 @@ class file_server(Method):
                     and absolute == real and os.path.commonpath((root, real)) == root):
                 from gdo.link_preview.MarkdownPreview import MarkdownPreview
                 if image_url := MarkdownPreview.for_html(rendered, MARKDOWN_PREVIEW_STYLE):
-                    image = f'<meta property="og:image" content="{escape(image_url, quote=True)}">'
+                    Application.STORAGE.meta_inline += f'<meta property="og:image" content="{escape(image_url, quote=True)}">'
             Application.header('X-Content-Type-Options', 'nosniff')
-            body = ('<!doctype html><html><head><meta charset="utf-8">'
-                    '<meta name="viewport" content="width=device-width, initial-scale=1">'
-                    + title + description + image + '<style>' + MARKDOWN_PREVIEW_STYLE + '</style></head><body>'
-                    + rendered + '</body></html>').encode('utf-8')
-            return GDT_RawResponse(body, 'text/html; charset=UTF-8')
+            return GDT_HTML().html('<article class="gdo-markdown">' + rendered + '</article>')
         if self.check_etag(file_path):
             Application.status("304 Not Modified")
             return self.empty()

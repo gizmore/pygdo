@@ -1,13 +1,14 @@
 import unittest
 import tempfile
+from types import SimpleNamespace
 from pathlib import Path
 from gdotest.TestUtil import GDOTestCase
 from unittest.mock import patch
 
 from gdo.base.Application import Application
 from gdo.base.method.file_server import MarkdownMetadata, file_server
-from gdo.base.GDT_RawResponse import GDT_RawResponse
 from gdo.file.GDT_FileOut import GDT_FileOut
+from gdo.message.GDT_HTML import GDT_HTML
 
 
 class FileServerTest(GDOTestCase):
@@ -38,23 +39,34 @@ class FileServerTest(GDOTestCase):
         self.assertIsNone(metadata.title)
         self.assertIsNone(metadata.description)
 
+    def test_markdown_tables_render_as_html(self):
+        from gdo.markdown.MDConvert import MDConvert
+        source = '| App | Role |\n| --- | --- |\n| admin | Administration |\n'
+        rendered = MDConvert(source).to_html(source)
+        self.assertIn('<table>', rendered)
+        self.assertIn('<th>App</th>', rendered)
+        self.assertIn('<td>Administration</td>', rendered)
+
     def test_public_markdown_uses_link_preview_api(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / 'README.md'
             source.write_text('# A title\n\nA paragraph.', encoding='utf-8')
             method = file_server.__new__(file_server)
+            storage = SimpleNamespace(meta_inline='')
             with patch.object(method, 'get_seo_file', return_value=None), \
                     patch.object(method, 'get_url', return_value='README.md'), \
                     patch.object(method, 'get_path', return_value=str(source)), \
                     patch.object(method, 'param_val', return_value='1'), \
                     patch.object(file_server, 'is_forbidden', return_value=False), \
                     patch.object(Application, 'file_path', return_value=directory), \
+                    patch.object(Application, 'STORAGE', storage), \
                     patch('gdo.base.method.file_server.module_enabled', return_value=True), \
                     patch.object(Application, 'header'), \
                     patch('gdo.link_preview.MarkdownPreview.MarkdownPreview.for_html',
                           return_value='https://example.test/image.png') as preview:
                 result = method.gdo_execute()
-            self.assertIn(b'<meta property="og:image" content="https://example.test/image.png">', result.body)
+            self.assertIsInstance(result, GDT_HTML)
+            self.assertIn('<meta property="og:image" content="https://example.test/image.png">', storage.meta_inline)
             preview.assert_called_once()
 
     def test_token_routed_markdown_does_not_generate_public_image(self):
@@ -72,7 +84,7 @@ class FileServerTest(GDOTestCase):
                     patch.object(Application, 'header'), \
                     patch('gdo.link_preview.MarkdownPreview.MarkdownPreview.for_html') as preview:
                 result = method.gdo_execute()
-            self.assertNotIn(b'og:image', result.body)
+            self.assertIsInstance(result, GDT_HTML)
             preview.assert_not_called()
 
     @patch('gdo.base.method.file_server.module_config_value', return_value=False)
@@ -122,16 +134,15 @@ class FileServerTest(GDOTestCase):
                  patch.object(method, 'get_path', return_value=str(path)), \
                  patch.object(method, 'param_val', return_value='1'), \
                  patch.object(file_server, 'is_forbidden', return_value=False), \
-                 patch('gdo.base.method.file_server.module_enabled', return_value=True), \
+                 patch('gdo.base.method.file_server.module_enabled', side_effect=lambda name: name == 'markdown'), \
                  patch.object(Application, 'header'):
                 result = method.gdo_execute()
-            self.assertIsInstance(result, GDT_RawResponse)
-            self.assertIn(b'<h1>Hello <em>there</em> &amp; friends</h1>', result.body)
-            self.assertIn(b'<strong>World</strong>', result.body)
-            self.assertIn(b'<title>Hello there &amp; friends</title>', result.body)
-            self.assertIn(b'<meta name="description" content="World &quot;test&quot; &amp; more">', result.body)
-            self.assertIn(b'<style>', result.body)
-            self.assertIn(b'prefers-color-scheme: dark', result.body)
+            self.assertIsInstance(result, GDT_HTML)
+            self.assertIn('<article class="gdo-markdown">', result.render_html())
+            self.assertIn('<h1>Hello <em>there</em> &amp; friends</h1>', result.render_html())
+            self.assertIn('<strong>World</strong>', result.render_html())
+            self.assertEqual('Hello there &amp; friends', method.gdo_render_title())
+            self.assertEqual('World &quot;test&quot; &amp; more', method.gdo_render_descr())
 
             with patch.object(method, 'get_seo_file', return_value=None), \
                  patch.object(method, 'get_url', return_value='README.md'), \

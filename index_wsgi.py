@@ -219,7 +219,7 @@ def pygdo_application(environ, start_response):
             session = GDO_Session.start(False)
             user = session.get_user()
             Application.set_current_user(user)
-            method = file_server().env_server(user.get_server()).env_user(user).input('_url', file.get_file().get_short_path()).input('render_md', qs.get('render_md', ['0'])[0]).explicitly_allowed()
+            method = file_server().env_server(user.get_server()).env_user(user).env_session(session).input('_url', file.get_file().get_short_path()).input('render_md', qs.get('render_md', ['0'])[0]).explicitly_allowed()
             gdt = method.execute()
             gdt = aiorun(gdt)
             if isinstance(gdt, GDT_RawResponse):
@@ -233,6 +233,9 @@ def pygdo_application(environ, start_response):
                 for chunk in gdt:
                     yield chunk
                 return
+            if getattr(method, '_markdown_rendered', False):
+                Application.get_page().init_sidebars()
+                Application.header('Content-Type', 'text/html; charset=UTF-8')
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
             yield Application.get_page().method(method).result(gdt).render(Mode.render_html).encode()
@@ -240,6 +243,7 @@ def pygdo_application(environ, start_response):
         if Files.is_file(path):
             session = GDO_Session.start(False)
             user = session.get_user()
+            Application.set_current_user(user)
             method = file_server().env_server(user.get_server()).args(args).env_user(user).env_session(session).input('render_md', qs.get('render_md', ['0'])[0])
             gdt = method.execute()
             gdt = aiorun(gdt)
@@ -258,6 +262,8 @@ def pygdo_application(environ, start_response):
             # Returning without calling ``start_response`` makes mod_wsgi
             # turn the intentional 403 into a generic 500.
             Application.header('Content-Type', 'text/html; charset=UTF-8')
+            if getattr(method, '_markdown_rendered', False):
+                Application.get_page().init_sidebars()
             headers = Application.get_headers()
             start_response(Application.get_status(), headers)
             if Application.get_status().startswith('304'):
