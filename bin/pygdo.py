@@ -97,6 +97,12 @@ def cli_effective_user(origin):
     return user
 
 
+def prepare_repl_response(message, result):
+    from gdo.base.Render import Mode
+    message.result_gdt(result)
+    message.result(message.render_response(Mode.render_cli), Mode.render_cli)
+
+
 async def process_line(line: str) -> None:
     from gdo.base.Exceptions import GDOParamError, GDOModuleException, GDOError
     from gdo.base.Application import Application
@@ -104,7 +110,6 @@ async def process_line(line: str) -> None:
     from gdo.core.connector.Bash import Bash
     from gdo.base.Message import Message
     from gdo.base.Util import CLI
-    from gdo.core.GDT_Container import GDT_Container
     try:
         server = Bash.get_server()
         user = await CLI.get_current_user()
@@ -122,17 +127,7 @@ async def process_line(line: str) -> None:
             while asyncio.iscoroutine(gdt):
                 gdt = await gdt
             await Application.execute_queue()
-            message._gdt_result = GDT_Container()
-            message._gdt_result.add_field(Application.get_page()._top_bar)
-            message._gdt_result.add_field(gdt)
-            txt1 = gdt.render(Mode.render_cli)
-            txt2 = Application.get_page()._top_bar.render(Mode.render_cli)
-            if txt2:
-                message._result += txt2
-            if txt1:
-                if txt2:
-                    message._result += "\n"
-                message._result += txt1
+            prepare_repl_response(message, gdt)
             Application.IS_LOCAL_CLI_COMMAND = True
             try:
                 await message.deliver()
