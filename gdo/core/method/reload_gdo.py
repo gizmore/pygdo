@@ -5,6 +5,9 @@ from gdo.core.GDT_String import GDT_String
 
 
 class reload_gdo(Method):
+    def gdo_method_hidden(self) -> bool:
+        return True
+
     def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_String('class').not_null(),

@@ -9,6 +9,9 @@ from gdo.core.GDO_Permission import GDO_Permission
 class start_codex(Method):
     """Run the one approved Mira/Codex recovery script for the owner."""
 
+    def gdo_method_hidden(self) -> bool:
+        return True
+
     CODEX_LAUNCHER = Path('/usr/local/bin/launch-mira-codex')
 
     @classmethod

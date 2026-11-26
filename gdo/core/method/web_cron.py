@@ -5,6 +5,9 @@ from gdo.core.Cronjob import Cronjob
 
 class web_cron(Method):
 
+    def gdo_method_hidden(self) -> bool:
+        return True
+
     def gdo_user_permission(self) -> str | None:
         return 'cronjob'
 

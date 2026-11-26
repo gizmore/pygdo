@@ -14,6 +14,9 @@ from gdo.ui.GDT_Link import GDT_Link
 class linked(MethodQueryCards):
     """Show every connector account belonging to one linked-account group."""
 
+    def gdo_method_hidden(self) -> bool:
+        return True
+
     def gdo_needs_authentication(self) -> bool:
         return False
 

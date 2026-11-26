@@ -10,6 +10,9 @@ from gdo.install.Installer import Installer
 class safe_install(Method):
     """Install one module from a text connector without destructive actions."""
 
+    def gdo_method_hidden(self) -> bool:
+        return True
+
     @classmethod
     def gdo_trigger(cls) -> str:
         return 'safe.install'

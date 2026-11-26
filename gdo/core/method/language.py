@@ -6,5 +6,8 @@ from gdo.core.GDT_Dict import GDT_Dict
 
 class language(Method):
 
+    def gdo_method_hidden(self) -> bool:
+        return True
+
     def gdo_execute(self) -> GDT:
         return GDT_Dict(Trans.CACHE.get(Application.get_lang_iso(), Trans.EN))

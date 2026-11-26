@@ -10,6 +10,9 @@ from gdo.core.GDO_Permission import GDO_Permission
 
 
 class backup_make_now(Method):
+
+    def gdo_method_hidden(self) -> bool:
+        return True
     @classmethod
     def gdo_trigger(cls) -> str:
         return 'backup.make_now'
