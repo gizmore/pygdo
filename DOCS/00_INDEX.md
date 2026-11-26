@@ -13,3 +13,4 @@ Welcome to the PyGDO documentation.
 - [IBDES v0.1](./IBDES.md)
 - [TODO](./TODO.md)
 - [Ideas](./IDEAS.md)
+- [Benchmarks](./99_BENCHMARKS.md)

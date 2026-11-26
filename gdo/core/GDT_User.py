@@ -119,6 +119,9 @@ class GDT_User(GDT_Object):
         user_id = val if val.isnumeric() else Strings.regex_first(r'^(\d+)-', val)
         if user_id:
             val_serv = Strings.regex_first(r'{([^{}]+)}$', StringsUtil.utf8deobfuscate(val))
+            if not val_serv and not self._same_channel and not self._same_server:
+                user = self._table.get_by_aid(str(int(user_id)))
+                return [user] if user else []
             query = self._table.select().where(f'user_id={int(user_id)}')
             users = self.scope_server(query, val_serv).limit(1).exec().fetch_all()
             if self._same_channel:

@@ -24,6 +24,40 @@ for the lifetime of the worker process. A web or ASGI request clears the
 non-persistent object cache through `Cache.clear_ocache()`; it does not rebuild
 the whole process.
 
+## Persistent object-cache entries
+
+`gdo_persistent()` controls the lifetime of a table's **process-local object
+cache**, not whether its rows are stored in the database. It defaults to
+`False`. A cached GDO can override it to return `True`:
+
+```python
+def gdo_persistent(self) -> bool:
+    return True
+```
+
+When the table is first registered, `Cache.table_for()` adds cached,
+non-persistent tables to `NCACHE`. Request-boundary `clear_ocache()` clears
+those tables; persistent tables stay in that worker's `OCACHE`. A later
+`get_by_aid()` can therefore reuse a cached instance across requests in the
+same process. This does not preload rows, share Python objects across workers,
+or turn arbitrary `select()` queries into cache lookups. `gdo_cached()` must
+also be enabled (its default is `True`). Cached entries can remain until
+explicit eviction, cache clear, or process exit, so consider memory growth.
+
+Persistence is not a freshness guarantee. GDO `save()` updates the local and
+Redis caches and may send an IPC update; receiving `base.ipc_gdo` updates an
+already-cached local object or reloads it. That is asynchronous and depends on
+the process consuming the event. Raw SQL and bulk operations can bypass GDO
+cache updates; deletions and other processes need particular care. Verify all
+write paths, workers, event delivery and rollback behavior before relying on
+persistent cached fields for authorization. `is_persisted()` and
+`gdo_can_persist()` instead concern database row persistence.
+
+`GDO_ForumBoard` uses persistent object caching and checks its cached permission.
+Changes may therefore be stale in other workers, especially after raw SQL or
+missed IPC. This is an explicit tradeoff: refresh or clear affected worker
+caches after changing board access, and do not assume revocation is immediate.
+
 ## Optional Redis cache
 
 Redis is configured through `redis.enabled`, `redis.host`, `redis.port`,

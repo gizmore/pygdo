@@ -59,6 +59,8 @@ class ScopedUserTest(unittest.TestCase):
         self.remote_only = self.user('4', '20', 'paul')
         self.table = MagicMock()
         self.table.select.side_effect = lambda: FakeQuery([self.local, self.remote, self.local_other, self.remote_only])
+        self.table.get_by_aid.side_effect = lambda uid: next(
+            (user for user in (self.local, self.remote, self.local_other, self.remote_only) if user.get_id() == uid), None)
         self.patches = [patch('gdo.core.GDO_User.GDO_User.table', return_value=self.table),
                         patch.object(GDT_User, 'with_completion', return_value=None)]
         for p in self.patches:
@@ -106,6 +108,13 @@ class ScopedUserTest(unittest.TestCase):
             self.assertEqual(field.query_gdos('tina-chan{rizon}'), [self.remote])
         self.assertEqual(field.query_gdos('2'), [self.remote])
         self.assertEqual(field.same_server().query_gdos('2'), [])
+
+    def test_unscoped_numeric_lookup_uses_id_cache_and_handles_missing_user(self):
+        field = GDT_User('to')
+        self.assertEqual(field.query_gdos('002'), [self.remote])
+        self.assertEqual(field.query_gdos('999'), [])
+        self.table.get_by_aid.assert_any_call('2')
+        self.table.select.assert_not_called()
 
     def test_completion_accepts_unfinished_server_suffix(self):
         from gdo.core.method.user_completion import user_completion
