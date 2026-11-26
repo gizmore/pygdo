@@ -13,6 +13,9 @@ class list_cli(Method):
     def gdo_trigger(cls) -> str:
         return 'settings'
 
+    def gdo_method_hidden(self) -> bool:
+        return True
+
     def gdo_parameters(self) -> list[GDT]:
         return [
         ]

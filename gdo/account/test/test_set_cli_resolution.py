@@ -13,6 +13,24 @@ class SetCliResolutionTest(unittest.TestCase):
     def setUp(self):
         Application.mode(Mode.render_cli)
 
+    def test_empty_set_lists_settings(self):
+        method = MagicMock()
+        method.param_value.return_value = None
+        with patch('gdo.account.method.list_cli.list_cli.gdo_execute', return_value='settings') as listing:
+            self.assertEqual('settings', set_cli.gdo_execute(method))
+        listing.assert_called_once_with(method)
+        method._env_user.save_setting.assert_not_called()
+
+    def test_setting_name_is_optional(self):
+        with patch.object(GDT_UserSetting, 'KNOWN', {'language': GDT_String('language')}):
+            name = set_cli().gdo_parameters()[0]
+            self.assertFalse(name.is_not_null())
+            self.assertTrue(name.validate(None))
+
+    def test_standalone_settings_is_hidden(self):
+        from gdo.account.method.list_cli import list_cli
+        self.assertTrue(list_cli().gdo_method_hidden())
+
     def test_unique_prefix_resolves_to_canonical_setting(self):
         language = GDT_String('language')
         with patch.object(GDT_UserSetting, 'KNOWN', {'language': language}):

@@ -17,13 +17,17 @@ class set_cli(Method):
 
     def gdo_parameters(self) -> list[GDT]:
         return [
-            GDT_UserSetting('name').not_null(),
+            GDT_UserSetting('name'),
             GDT_String('value').positional(),
         ]
 
     def gdo_execute(self) -> GDT:
         user = self._env_user
-        key = self.param_value('name').get_name()
+        setting = self.param_value('name')
+        if setting is None:
+            from gdo.account.method.list_cli import list_cli
+            return list_cli.gdo_execute(self)
+        key = setting.get_name()
         value = self.param_val('value')
         gdt = GDO_UserSetting.setting_column(key, user)
         mode = self._env_mode
