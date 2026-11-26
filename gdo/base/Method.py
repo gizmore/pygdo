@@ -114,7 +114,8 @@ class Method(WithPermissionCheck, WithEnv, WithError, GDT):
         return cls.gdo_trigger()
 
     def gdo_method_hidden(self) -> bool:
-        return False
+        module = self.gdo_module()
+        return bool(getattr(module, 'gdo_compact_text_help', False) and self.gdo_trigger() != module.get_name)
 
     def gdo_transactional(self) -> bool:
         return Application.get_request_method() != 'GET'
