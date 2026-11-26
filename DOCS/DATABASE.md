@@ -56,9 +56,12 @@ in a private ZIP under `protected/backup/`. Select another configuration with
 `./gdo_backup.sh --config=protected/config_test.toml`. The configuration file
 itself is not included. Keep backups private and copy them off the machine;
 test restoration separately before relying on them. Database and files are
-captured sequentially, not as one atomic snapshot. `./gdo_backup.sh --quick`
-writes only a timestamped SQL dump, without files or a ZIP. The local Mira Dog
-launcher runs a full backup before starting and aborts if it fails.
+captured sequentially, not as one atomic snapshot. `./gdo_backup.sh --files=0 --db=1`
+writes only a timestamped SQL dump; `--files=1 --db=0` creates a ZIP without a
+database dump. Both flags default to 1, and both cannot be 0. The source files
+in the ZIP are Git-tracked files; ignored source files are not included. The
+configured files directory excludes top-level `git_*` checkout directories. The
+local Mira Dog launcher does not run a backup automatically.
 
 ## Learning by Examples
 

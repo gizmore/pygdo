@@ -19,17 +19,19 @@ class Backup:
         self.files_dir = Path(files_dir).resolve()
         self.db_config = db_config
 
-    def archive(self, target_dir: str | Path, timestamp: datetime | None = None, *, include_config: bool = True, source_root: Path | None = None) -> Path:
+    def archive(self, target_dir: str | Path, timestamp: datetime | None = None, *, include_config: bool = True, source_root: Path | None = None, include_database: bool = True) -> Path:
         target_dir = Path(target_dir).expanduser().resolve()
         target_dir.mkdir(parents=True, exist_ok=True)
         stamp = timestamp or datetime.now()
         target = self._new_target(target_dir, stamp)
         with tempfile.TemporaryDirectory(prefix='pygdo-backup-') as temporary:
             dump = Path(temporary) / 'database.sql'
-            self.dump_database(dump)
+            if include_database:
+                self.dump_database(dump)
             try:
                 with ZipFile(target, 'x', ZIP_DEFLATED) as archive:
-                    archive.write(dump, 'database.sql')
+                    if include_database:
+                        archive.write(dump, 'database.sql')
                     if include_config:
                         archive.write(self.config_path, 'protected/config.toml')
                     self._add_files(archive)
@@ -73,9 +75,14 @@ class Backup:
     def _add_files(self, archive: ZipFile):
         if not self.files_dir.is_dir():
             return
-        for path in self.files_dir.rglob('*'):
-            if path.is_file() and not path.is_symlink():
-                archive.write(path, str(Path('files') / path.relative_to(self.files_dir)))
+        for directory, names, filenames in os.walk(self.files_dir, followlinks=False):
+            root = Path(directory)
+            if root == self.files_dir:
+                names[:] = [name for name in names if not name.startswith('git_')]
+            for filename in filenames:
+                path = root / filename
+                if path.is_file() and not path.is_symlink():
+                    archive.write(path, str(Path('files') / path.relative_to(self.files_dir)))
 
     @staticmethod
     def _add_tracked_source(archive: ZipFile, source_root: Path):

@@ -76,8 +76,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', default='protected/config.toml',
                         help='PyGDO TOML config (default: protected/config.toml)')
-    parser.add_argument('--quick', action='store_true', help='dump only the database as a SQL file')
+    parser.add_argument('--files', choices=('0', '1'), default='1',
+                        help='include uploads and tracked source files (default: 1)')
+    parser.add_argument('--db', choices=('0', '1'), default='1',
+                        help='include the database (default: 1)')
     args = parser.parse_args()
+    include_files = args.files == '1'
+    include_db = args.db == '1'
+    if not include_files and not include_db:
+        parser.error('at least one of --files or --db must be 1')
     os.umask(0o077)
     config_path = Path(args.config)
     if not config_path.is_absolute():
@@ -85,9 +92,9 @@ def main() -> int:
     try:
         with config_path.open('rb') as config_file:
             config = tomllib.load(config_file)
-        db = config['db']
+        db = config['db'] if include_db else {}
         files = None
-        if not args.quick:
+        if include_files:
             files = Path(config['dir']['files'])
             if not files.is_absolute():
                 files = PROJECT / files
@@ -102,7 +109,12 @@ def main() -> int:
         if not private_backup_directory(target):
             raise ValueError('backup directory must not be accessible by group or others')
         backup = Backup(config_path, files if files is not None else PROJECT, db)
-        output = quick_backup(backup, target) if args.quick else backup.archive(target, include_config=False, source_root=PROJECT)
+        if not include_files:
+            output = quick_backup(backup, target)
+        elif include_db:
+            output = backup.archive(target, include_config=False, source_root=PROJECT)
+        else:
+            output = backup.archive(target, include_config=False, source_root=PROJECT, include_database=False)
         print(f'Backup created: {output}')
         return 0
     except Exception as error:

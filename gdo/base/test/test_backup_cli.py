@@ -1,6 +1,7 @@
 import importlib.util
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -51,7 +52,7 @@ class BackupCLITest(unittest.TestCase):
                 patch('sys.argv', ['gdo_backup.py']):
             self.assertEqual(1, backup_cli.main())
 
-    def test_quick_dump_does_not_require_files_or_create_zip(self):
+    def test_database_only_does_not_require_files_or_create_zip(self):
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp)
             (project / 'protected').mkdir()
@@ -62,7 +63,7 @@ class BackupCLITest(unittest.TestCase):
             with patch.object(backup_cli, 'PROJECT', project), \
                     patch.object(backup_cli.socket, 'gethostname', return_value='mogwai'), \
                     patch.object(backup_cli.Backup, 'dump_database', side_effect=dump), \
-                    patch('sys.argv', ['gdo_backup.py', '--quick']):
+                    patch('sys.argv', ['gdo_backup.py', '--files=0', '--db=1']):
                 self.assertEqual(0, backup_cli.main())
                 self.assertEqual(0, backup_cli.main())
             outputs = list((project / 'protected' / 'backup').iterdir())
@@ -70,6 +71,41 @@ class BackupCLITest(unittest.TestCase):
             self.assertTrue(all(p.suffix == '.sql' and 'mogwai' in p.name for p in outputs))
             self.assertTrue(all(p.read_text() == 'SELECT 1;' for p in outputs))
             self.assertTrue(all(p.stat().st_mode & 0o777 == 0o600 for p in outputs))
+
+    def test_files_only_does_not_require_database_config(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            (project / 'protected').mkdir()
+            (project / 'uploads').mkdir()
+            (project / 'protected' / 'config.toml').write_text('[dir]\nfiles="uploads"\n', encoding='utf8')
+            with patch.object(backup_cli, 'PROJECT', project), \
+                    patch.object(backup_cli, 'Backup') as backup, \
+                    patch('sys.argv', ['gdo_backup.py', '--files=1', '--db=0']):
+                self.assertEqual(0, backup_cli.main())
+            backup.return_value.archive.assert_called_once_with(
+                project / 'protected' / 'backup', include_config=False, source_root=project, include_database=False)
+
+    def test_files_only_archive_contains_uploads_without_database(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = root / 'uploads'
+            files.mkdir()
+            (files / 'example.txt').write_text('example', encoding='utf8')
+            (files / 'git_repo' / 'checkout').mkdir(parents=True)
+            (files / 'git_repo' / 'checkout' / 'tracked.txt').write_text('skip', encoding='utf8')
+            (files / 'git_notes.txt').write_text('keep', encoding='utf8')
+            backup = backup_cli.Backup(root / 'unused.toml', files, {})
+            with patch.object(backup, 'dump_database') as dump:
+                archive = backup.archive(root / 'backups', include_config=False, include_database=False)
+            dump.assert_not_called()
+            with zipfile.ZipFile(archive) as zipped:
+                self.assertEqual({'files/example.txt', 'files/git_notes.txt'}, set(zipped.namelist()))
+
+    def test_neither_and_removed_quick_are_rejected(self):
+        for args in (['--files=0', '--db=0'], ['--quick']):
+            with self.subTest(args=args), patch('sys.argv', ['gdo_backup.py', *args]), \
+                    self.assertRaises(SystemExit):
+                backup_cli.main()
 
     def test_quick_dump_failure_removes_temporary_file(self):
         with tempfile.TemporaryDirectory() as tmp:
