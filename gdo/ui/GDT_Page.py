@@ -68,6 +68,9 @@ class GDT_Page(GDT):
         return self._result.render_rss()
 
     def render_html(self):
+        active_module = self._method.gdo_module().get_name
+        for bar in (self._left_bar, self._right_bar):
+            bar._active_module = active_module
         result = ''
         if seconds := self._method.gdo_cached():
             key = self._method._raw_args.get_args_cache_key(self._method)
@@ -128,8 +131,12 @@ class GDT_Page(GDT):
         return GDT_Serialize('json').mode(SerializeMode.JSON).to_val(json)
 
     def init_sidebars(self):
-        for module in ModuleLoader.instance().enabled():
-            start = len(self._left_bar._fields)
+        for module in sorted(ModuleLoader.instance().enabled(), key=lambda module: module._priority, reverse=True):
+            bars = (self._left_bar, self._right_bar)
+            starts = [len(bar._fields) for bar in bars]
             module.gdo_init_sidebar(self)
-            if len(self._left_bar._fields) > start:
-                self._left_bar._group_starts.add(start)
+            for bar, start in zip(bars, starts):
+                if len(bar._fields) > start:
+                    bar._group_starts.add(start)
+                    for index in range(start, len(bar._fields)):
+                        bar._entry_modules[index] = module.get_name
