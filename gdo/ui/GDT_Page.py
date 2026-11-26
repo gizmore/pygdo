@@ -129,4 +129,7 @@ class GDT_Page(GDT):
 
     def init_sidebars(self):
         for module in ModuleLoader.instance().enabled():
+            start = len(self._left_bar._fields)
             module.gdo_init_sidebar(self)
+            if len(self._left_bar._fields) > start:
+                self._left_bar._group_starts.add(start)

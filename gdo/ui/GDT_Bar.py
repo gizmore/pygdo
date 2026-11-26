@@ -7,11 +7,12 @@ from gdo.ui.WithFlow import WithFlow
 
 class GDT_Bar(WithName, GDT_Container):
 
-    __slots__ = ('_flow_horz',)
+    __slots__ = ('_flow_horz', '_group_starts')
 
     def __init__(self, name: str = None):
         super().__init__()
         self._name = name
+        self._group_starts = set()
         # self.name(name or self.generate_name())
 
     def render_html(self, mode: Mode = Mode.render_html):
@@ -23,4 +24,8 @@ class GDT_Bar(WithName, GDT_Container):
         #     })
 
     def render_bar_fields(self):
-        return "\n".join([f"<li>{gdt.render_html()}</li>" for gdt in self._fields])
+        fields = []
+        for index, gdt in enumerate(self._fields):
+            group_class = ' class="gdt-bar-group-start"' if index in self._group_starts else ''
+            fields.append(f'<li{group_class}>{gdt.render_html()}</li>')
+        return "\n".join(fields)
