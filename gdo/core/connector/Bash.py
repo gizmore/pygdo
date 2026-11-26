@@ -1,3 +1,5 @@
+import subprocess
+
 from gdo.base.Logger import Logger
 from gdo.base.Message import Message
 from gdo.base.Render import Mode
@@ -46,9 +48,14 @@ class Bash(Connector):
         # Replies sent by another process need a route back to the active REPL.
         # Direct commands inside the REPL retain their normal local output.
         if (not getattr(Application, 'IS_REPL', False)
-                and not getattr(Application, 'IS_LOCAL_CLI_COMMAND', False) and Cache.RCACHE):
-            if Cache.RCACHE.publish(self.repl_channel(msg._env_user.get_id()), msg._result):
+                and not getattr(Application, 'IS_LOCAL_CLI_COMMAND', False)):
+            if Cache.RCACHE and Cache.RCACHE.publish(self.repl_channel(msg._env_user.get_id()), msg._result):
                 return
+            try:
+                subprocess.run(['wall'], input=str(msg._result), text=True, check=True, timeout=5)
+                return
+            except (OSError, subprocess.SubprocessError) as ex:
+                Logger.warning(f'Bash wall delivery failed: {ex}')
         gdo_print(msg._result)
 
     def gdo_handle_message(self, message: Message):

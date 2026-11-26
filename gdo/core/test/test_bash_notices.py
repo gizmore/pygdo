@@ -5,14 +5,18 @@ from gdo.core.connector.Bash import Bash
 
 
 class BashNoticeTest(unittest.IsolatedAsyncioTestCase):
-    async def test_notice_is_printed_to_current_process(self):
+    async def test_remote_notice_without_repl_uses_wall(self):
         message = Mock()
         message._result = 'notice text'
         with patch('gdo.core.connector.Bash.Application.is_unit_test', return_value=False), \
                 patch('gdo.core.connector.Bash.Cache.RCACHE', None), \
+                patch('gdo.core.connector.Bash.Application.IS_REPL', False, create=True), \
+                patch('gdo.core.connector.Bash.Application.IS_LOCAL_CLI_COMMAND', False, create=True), \
+                patch('gdo.core.connector.Bash.subprocess.run') as wall, \
                 patch('gdo.core.connector.Bash.gdo_print') as output:
             await Bash().gdo_send_to_user(message, notice=True)
-        output.assert_called_once_with('notice text')
+        wall.assert_called_once_with(['wall'], input='notice text', text=True, check=True, timeout=5)
+        output.assert_not_called()
 
     async def test_remote_reply_publishes_to_target_repl(self):
         message = Mock()
@@ -41,3 +45,16 @@ class BashNoticeTest(unittest.IsolatedAsyncioTestCase):
             await Bash().gdo_send_to_user(message)
         redis.publish.assert_not_called()
         output.assert_called_once_with('local result')
+
+    async def test_wall_failure_falls_back_to_local_output(self):
+        message = Mock()
+        message._result = 'notice text'
+        with patch('gdo.core.connector.Bash.Application.is_unit_test', return_value=False), \
+                patch('gdo.core.connector.Bash.Application.IS_REPL', False, create=True), \
+                patch('gdo.core.connector.Bash.Application.IS_LOCAL_CLI_COMMAND', False, create=True), \
+                patch('gdo.core.connector.Bash.Cache.RCACHE', None), \
+                patch('gdo.core.connector.Bash.subprocess.run', side_effect=OSError('unavailable')), \
+                patch('gdo.core.connector.Bash.Logger.warning'), \
+                patch('gdo.core.connector.Bash.gdo_print') as output:
+            await Bash().gdo_send_to_user(message)
+        output.assert_called_once_with('notice text')
