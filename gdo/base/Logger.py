@@ -1,5 +1,6 @@
 import sys
 import datetime
+import re
 from contextvars import ContextVar
 
 import aiofiles
@@ -36,6 +37,16 @@ class Logger:
     @classmethod
     def get_user(cls) -> 'GDO_User|None':
         return cls.USER.get()
+
+    @classmethod
+    def user_log_dir(cls, user: 'GDO_User') -> str:
+        # Display names come from connectors and are not safe filesystem paths.
+        display = re.sub(r'[^\w.-]+', '_', user.get_displayname() or user.get_name() or '', flags=re.UNICODE).strip('._')[:80] or 'user'
+        user_id = str(user.get_id())
+        if not user_id.isascii() or not user_id.isdecimal():
+            raise ValueError('User logs require a persisted numeric user ID')
+        server = re.sub(r'[^\w.-]+', '_', user.get_server().get_name(), flags=re.UNICODE).strip('._') or 'server'
+        return f'{cls._base}{server}/{display}-{user_id}/'
 
     @classmethod
     def request(cls, url: str, qs: str):
@@ -95,8 +106,8 @@ class Logger:
         with open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:
             fo.write(f'{pre}{content}\n')
             cls.LINES_WRITTEN += 1 #PYPP#DELETE#
-        if user and user_log:
-            dir_name = f"{cls._base}{user.get_server().get_name()}/{user.get_name()}/"
+        if user and user_log and user.get_id() is not None:
+            dir_name = cls.user_log_dir(user)
             WithPygdo.util('Files').create_dir(dir_name)
             with open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 fo.write(f'{pre}{content}\n')
@@ -112,8 +123,8 @@ class Logger:
         async with aiofiles.open(f"{cls._base}{path}", 'a', encoding='utf8') as fo:
             await fo.write(f"{pre}{content}\n")
             cls.LINES_WRITTEN += 1  #PYPP#DELETE#
-        if user and user_log:
-            dir_name = f"{cls._base}{user.get_server().get_name()}/{user.get_name()}/"
+        if user and user_log and user.get_id() is not None:
+            dir_name = cls.user_log_dir(user)
             await WithPygdo.util('Files').acreate_dir(dir_name)
             async with aiofiles.open(f"{dir_name}{path}", 'a', encoding='utf8') as fo:
                 await fo.write(f"{pre}{content}\n")
