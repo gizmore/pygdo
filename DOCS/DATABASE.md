@@ -23,11 +23,12 @@ which is the only one that holds the defined GDT columns for a GDO.
 
 ## Code-driven schema migration
 
-GDO and GDT declarations are the schema source of truth.  After changing a
-model's columns, install a newly introduced module with
-`./gdo_adm.sh install <module>` so its tables exist, then migrate an existing
-module with `./gdo_adm.sh migrate <module>`.  To reconcile every available
-module, use:
+GDO and GDT declarations are the schema source of truth. After changing a
+model's columns, use `./gdo_adm.sh migrate <module>`. This first provides the
+module and its dependencies, then reinstalls them (including install hooks),
+and finally migrates the selected module's tables. Provisioning may clone
+repositories and run requirement/post-install scripts. To reconcile all
+currently installed modules, use:
 
 ```sh
 ./gdo_adm.sh migrate --all

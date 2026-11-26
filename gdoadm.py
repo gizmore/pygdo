@@ -184,6 +184,8 @@ class App:
         parser.add_argument('-y', '--yes', action='store_true')
         parser.add_argument('-s', '--ssh', action='store_true')
         parser.add_argument('-a', '--all', action='store_true')
+        parser.add_argument('--no-install', action='store_true',
+                            help='Only provide modules; do not start installation')
         args = parser.parse_args(sys.argv[2:])
 
         loader = ModuleLoader.instance()
@@ -210,17 +212,31 @@ class App:
 
         unknown = []
         for name in wanted:
-            if name not in providers:
+            if name not in providers and name not in on_disk:
                 unknown.append(name)
         if unknown:
             print(f"Unknown modules: {', '.join(unknown)}")
             exit(1)
+        # Follow provider dependencies even when the requested module itself
+        # is already present; one of its dependencies may still be missing.
+        seen = set()
+        pending = list(wanted)
         missing = []
-        for name in wanted:
+        while pending:
+            name = pending.pop(0)
+            if name in seen:
+                continue
+            seen.add(name)
+            if name not in providers and name not in on_disk:
+                print(f'Unknown dependency: {name}', file=sys.stderr)
+                raise SystemExit(1)
             if name not in on_disk:
                 missing.append(name)
+            pending.extend(providers[name][1] if name in providers else on_disk[name].gdo_dependencies())
         if not missing:
             print(f"All wanted modules and their dependencies are on disk. You can ./gdo_adm.sh install {args.modules} now.")
+            if args.no_install:
+                return
             if not args.yes:
                 choice = input('Shall i do this now? (y)').lower()
                 if choice != 'y' or choice != '':
@@ -232,19 +248,6 @@ class App:
             subprocess.run(process_args, check=True)
             exit(0)
         need = missing
-        to_process = list(need)
-        before = 0
-        after = len(to_process)
-        while before != after:
-            before = len(to_process)
-            for name in to_process:
-                deps = providers[name][1]
-                for dep in deps:
-                    if dep not in on_disk:
-                        need.append(dep)
-            to_process = Arrays.unique(need)
-            after = len(to_process)
-        need = Arrays.unique(need)
         print(f"You need to clone {len(need)} modules: {', '.join(need)}.")
         choices = {}
         for name in need:
@@ -303,6 +306,7 @@ class App:
         loader = ModuleLoader.instance()
         parser = argparse.ArgumentParser(description='Install modules. Example: ./gdo_adm.sh install --all or ./gdo_adm.sh install Core|Dog*')
         parser.add_argument('--reinstall', action='store_true')
+        parser.add_argument('--strict', action='store_true', help='Stop when a module installation fails')
         parser.add_argument('-a', '--all', action='store_true')
         parser.add_argument('-y', '--yes', action='store_true')
         parser.add_argument('module', nargs='?')
@@ -325,7 +329,7 @@ class App:
         # loader.init_user_settings()
         loader.load_modules_fs()
         loader.init_user_settings()
-        await Installer.install_modules(modules, True)
+        await Installer.install_modules(modules, True, strict=args.strict)
         await self.cc()
         print("All Done!")
 
@@ -439,19 +443,42 @@ class App:
 
     async def migrate(self):
         parser = argparse.ArgumentParser(
-            description='Migrate the database for a single module or all of them.')
+            description='Provide and install modules before migrating their database tables.')
         parser.add_argument('--all', '-a', action='store_true')
         parser.add_argument('module', nargs='?')
         args = parser.parse_args(sys.argv[2:])
-        loader = ModuleLoader.instance()
-        loader.load_modules_db()
         if args.all:
-            modules = loader.load_modules_fs('*', True)
+            loader = ModuleLoader.instance()
+            loader.load_modules_db()
+            names = list(loader.load_modules_fs('*', True))
+            if not names:
+                print('No installed modules found!', file=sys.stderr)
+                raise SystemExit(1)
+            selected = ','.join(names)
         elif args.module:
-            modules = loader.load_modules_fs(args.module, True)
+            if any(char in args.module for char in '*?['):
+                loader = ModuleLoader.instance()
+                loader.load_modules_db()
+                names = list(loader.load_modules_fs(args.module, True))
+                if not names:
+                    print('No installed modules match the pattern!', file=sys.stderr)
+                    raise SystemExit(1)
+                selected = ','.join(names)
+            else:
+                selected = args.module
         else:
             parser.print_help()
-            exit(0)
+            return
+        # Provision without its optional implicit install, then install once.
+        # Use separate processes so each stage loads the latest module state.
+        subprocess.run(['./gdo_adm.sh', 'provide', '--yes', '--no-install', selected], check=True)
+        subprocess.run(['./gdo_adm.sh', 'install', '--reinstall', '--strict', selected], check=True)
+        loader = ModuleLoader.instance()
+        loader.load_modules_db(True)
+        modules = loader.load_modules_fs(selected, True)
+        if not modules:
+            print('No installed modules found to migrate!', file=sys.stderr)
+            raise SystemExit(1)
         modules = list(modules.values())
         # modules = Installer.modules_with_deps(modules)
         loader.init_modules(False, True)

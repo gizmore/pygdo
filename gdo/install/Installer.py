@@ -15,7 +15,7 @@ from gdo.base.Util import Arrays, msg, Files, gdo_print
 class Installer:
 
     @classmethod
-    async def install_modules(cls, modules: list[GDO_Module], verbose: bool = False):
+    async def install_modules(cls, modules: list[GDO_Module], verbose: bool = False, strict: bool = False):
         if verbose:
             gdo_print("Collecting modules and dependencies.")
         modules = cls.modules_with_deps(modules)
@@ -23,7 +23,9 @@ class Installer:
         if verbose:
             gdo_print(f"Installing {len(modules)} module entries.")
         for module in modules:
-            await cls.install_module(module, verbose)
+            installed = await cls.install_module(module, verbose)
+            if strict and not installed and module.is_installable():
+                raise RuntimeError(f'Installation failed for module {module.get_name}')
 
         if verbose:
             gdo_print("Re-Loading installed modules.")
@@ -155,6 +157,7 @@ class Installer:
     def migrate_gdo(cls, gdo: GDO):
         db = Application.db()
         restore_from_zzz = False # If error occurs, try to rename zzz table to table
+        created_temp = False
         tablename = gdo.gdo_table_name()
         temptable = f"zzz_temp_{tablename}"
         try:
@@ -166,6 +169,7 @@ class Installer:
             # beyond MySQL's 64-character identifier limit.  A CTAS snapshot
             # contains exactly the old columns we need, without constraints.
             db.query(f"CREATE TABLE {temptable} AS SELECT * FROM {tablename} WHERE 0")
+            created_temp = True
             if cols := cls.column_names(gdo, temptable):  # something changed?
                 columns = ",".join(cols)
                 db.query(f"INSERT INTO {temptable} SELECT * FROM {tablename}")  # copy old to zzz
@@ -179,15 +183,19 @@ class Installer:
                 # Adding the FKs afterwards still validates the complete,
                 # restored table.
                 db.create_table_fk(gdo)  # with FKs
+                restore_from_zzz = False
         except Exception as ex:
             Logger.exception(ex)
             if restore_from_zzz:
                 db.foreign_keys(False)
                 db.drop_table(tablename)  # Remove old temp table
                 db.query(f"RENAME TABLE {temptable} TO {tablename}")
+                created_temp = False
                 db.create_table_fk(gdo)
+            raise
         finally:
-            db.drop_table(temptable)  # Remove old temp table
+            if created_temp and not restore_from_zzz:
+                db.drop_table(temptable)
             db.foreign_keys(True)
 
     @classmethod

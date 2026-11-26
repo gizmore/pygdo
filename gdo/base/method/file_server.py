@@ -1,6 +1,8 @@
 import mimetypes
 import os
 import time
+from html import escape
+from html.parser import HTMLParser
 from urllib.parse import quote, unquote
 from functools import lru_cache
 from os import path
@@ -34,6 +36,42 @@ table { border-collapse: collapse; display: block; overflow-x: auto; }
 th, td { border: 1px solid #8886; padding: .4rem .7rem; }
 @media (prefers-color-scheme: dark) { a { color: #7cdbb4; } blockquote { color: #bbb; } }
 '''
+
+
+class MarkdownMetadata(HTMLParser):
+    """Extract plain text from the first heading and paragraph of rendered Markdown."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.title = None
+        self.description = None
+        self._tag = None
+        self._parts = []
+        self._ignored = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ('script', 'style'):
+            self._ignored += 1
+        elif not self._ignored and self._tag is None:
+            if tag in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6') and self.title is None:
+                self._tag, self._parts = tag, []
+            elif tag == 'p' and self.description is None:
+                self._tag, self._parts = tag, []
+
+    def handle_data(self, data):
+        if self._tag and not self._ignored:
+            self._parts.append(data)
+
+    def handle_endtag(self, tag):
+        if tag in ('script', 'style') and self._ignored:
+            self._ignored -= 1
+        elif tag == self._tag:
+            value = ' '.join(''.join(self._parts).split())
+            if tag == 'p':
+                self.description = value
+            else:
+                self.title = value
+            self._tag = None
 
 
 class file_server(Method):
@@ -138,10 +176,25 @@ class file_server(Method):
             with open(file_path, encoding='utf-8', errors='replace') as source:
                 text = source.read()
                 rendered = MDConvert(text).to_html(text)
+            metadata = MarkdownMetadata()
+            metadata.feed(rendered)
+            title = f'<title>{escape(metadata.title)}</title>' if metadata.title else ''
+            description = (f'<meta name="description" content="{escape(metadata.description, quote=True)}">'
+                           if metadata.description else '')
+            image = ''
+            root = os.path.realpath(Application.file_path())
+            absolute = os.path.abspath(file_path)
+            real = os.path.realpath(file_path)
+            if (module_enabled('link_preview') and not self.get_seo_file()
+                    and not file_server.is_forbidden(self.get_url())
+                    and absolute == real and os.path.commonpath((root, real)) == root):
+                from gdo.link_preview.MarkdownPreview import MarkdownPreview
+                if image_url := MarkdownPreview.for_html(rendered, MARKDOWN_PREVIEW_STYLE):
+                    image = f'<meta property="og:image" content="{escape(image_url, quote=True)}">'
             Application.header('X-Content-Type-Options', 'nosniff')
             body = ('<!doctype html><html><head><meta charset="utf-8">'
                     '<meta name="viewport" content="width=device-width, initial-scale=1">'
-                    '<style>' + MARKDOWN_PREVIEW_STYLE + '</style></head><body>'
+                    + title + description + image + '<style>' + MARKDOWN_PREVIEW_STYLE + '</style></head><body>'
                     + rendered + '</body></html>').encode('utf-8')
             return GDT_RawResponse(body, 'text/html; charset=UTF-8')
         if self.check_etag(file_path):
