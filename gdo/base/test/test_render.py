@@ -7,6 +7,14 @@ from gdo.core.Connector import Connector
 
 class RenderTest(unittest.TestCase):
 
+    def test_mail_rendering_is_html_with_escaped_plain_input(self):
+        plain = Render.convert_text('Answer: <answer>', Mode.render_txt, Mode.render_mail)
+        self.assertIn('Answer: &lt;answer&gt;', plain)
+        formatted = Render.convert_text('<b>strong</b> &amp; <i>italic</i>', Mode.render_html, Mode.render_mail)
+        self.assertIn('<b>strong</b> &amp; <i>italic</i>', formatted)
+        self.assertEqual('<b>text</b>', Render.bold('text', Mode.render_mail))
+
+
     def test_plain_text_is_escaped_for_telegram(self):
         self.assertEqual(
             'Answer: &lt;answer&gt;',

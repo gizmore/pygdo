@@ -401,7 +401,7 @@ class GDT(WithSerialization):
         return self.render_txt()
 
     def render_mail(self) -> str:
-        return self.render_txt()
+        return self.render_html()
 
     def render_gtk(self):
         return

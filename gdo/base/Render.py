@@ -45,11 +45,12 @@ class Mode(Enum):
             Mode.render_telegram,
             Mode.render_markdown,
             Mode.render_slack,
+            Mode.render_mail,
             Mode.render_txt,
         ]
 
     def is_html(self) -> bool:
-        return self.value < 10
+        return self.value < 10 or self == Mode.render_mail
 
     def is_textual(self):
         return not self.is_html()
@@ -77,7 +78,7 @@ class Render(WithPygdo):
             return cls._irc_to_html(text)
         if source in (
             Mode.render_html, Mode.render_cell, Mode.render_form,
-            Mode.render_list, Mode.render_card,
+            Mode.render_list, Mode.render_card, Mode.render_mail,
         ):
             return text
         # Telegram inbound messages, CLI text, and translations are text,
@@ -150,7 +151,7 @@ class Render(WithPygdo):
                 return cls._cli_color(s, '2')
             case Mode.render_irc:
                 return cls._irc_color(s, '03')
-            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_mail:
                 return f"<span class=\"green\">{s}</span>"
             case Mode.render_nil | _:
                 return f'green({mode.name})'
@@ -168,7 +169,7 @@ class Render(WithPygdo):
                 return cls._cli_color(s, '1')
             case Mode.render_irc:
                 return cls._irc_color(s, '04')
-            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_mail:
                 return f"<span class=\"red\">{s}</span>"
             case Mode.render_nil | _:
                 return f'red({mode.name})'
@@ -185,7 +186,7 @@ class Render(WithPygdo):
                 return cls._cli_mode('1', s)
             case Mode.render_irc:
                 return f"\x02{s}\x02"
-            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_telegram:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_telegram | Mode.render_mail:
                 return f"<b>{s}</b>"
             case Mode.render_nil | _:
                 return f'bold({mode.name} {s})'
@@ -200,7 +201,7 @@ class Render(WithPygdo):
                 return s
             case Mode.render_cli:
                 return cls._cli_mode('2', s)
-            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_mail:
                 return f"<span class=\"dim\">{s}</span>"
             case Mode.render_nil | _:
                 return f'dim({mode.name})'
@@ -219,7 +220,7 @@ class Render(WithPygdo):
                 return cls._cli_mode('3', s)
             case Mode.render_irc:
                 return f"\x1D{s}\x1d"
-            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_telegram:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_telegram | Mode.render_mail:
                 return f"<i>{s}</i>"
             case Mode.render_nil | _:
                 return f'italic({mode.name})'
@@ -234,7 +235,7 @@ class Render(WithPygdo):
                 return cls._cli_mode('4', s)
             case Mode.render_irc:
                 return f"\x1f{s}\x1f"
-            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_telegram:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_telegram | Mode.render_mail:
                 return f"<u>{s}</u>"
             case Mode.render_nil | _:
                 return f'underline({mode.name})'
@@ -251,7 +252,7 @@ class Render(WithPygdo):
                 return cls._cli_mode('9', s)
             case Mode.render_irc:
                 return f"\x1e{s}\x1e"
-            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_mail:
                 return f"<strike>{s}</strike>"
             case Mode.render_nil | _:
                 return f'strike({mode.name})'
@@ -264,7 +265,7 @@ class Render(WithPygdo):
                 return f"!{s}!"
             case Mode.render_cli:
                 return cls._cli_mode('5', s)
-            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_mail:
                 return f'<span class="blink">{s}</span>'
             case Mode.render_nil | _:
                 return f'blink({mode.name})'
@@ -277,7 +278,7 @@ class Render(WithPygdo):
                 return '_' * len(s)
             case Mode.render_cli:
                 return cls._cli_mode('6', s)
-            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list:
+            case Mode.render_html | Mode.render_cell | Mode.render_card | Mode.render_form | Mode.render_list | Mode.render_mail:
                 return f'<span class="invisible">{s}</span>'
             case Mode.render_nil | _:
                 return f'invisible({mode.name})'

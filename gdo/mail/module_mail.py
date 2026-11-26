@@ -41,9 +41,15 @@ class module_mail(GDO_Module):
         ]
 
     def set_email_for(self, user: GDO_User, email: str, confirmed: bool = True):
+        previous_email = user.get_setting_val('email')
+        if previous_email != email:
+            user.save_setting('email_confirmed', None)
         user.save_setting('email', email)
         if confirmed:
-            self.set_mail_confirmed_for(user)
+            self.set_mail_confirmed_for(user, previous_email)
 
-    def set_mail_confirmed_for(self, user: GDO_User):
+    def set_mail_confirmed_for(self, user: GDO_User, previous_email: str = None):
         user.save_setting('email_confirmed', Time.get_date())
+        # A confirmation is an action even if the timestamp is unchanged.
+        # The address is already stored before this event is published.
+        Application.publish_event('user_email_confirmed', user, user.get_setting_val('email'), previous_email)

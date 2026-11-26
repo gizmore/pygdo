@@ -1,3 +1,6 @@
+import base64
+from pathlib import Path
+
 from gdo.base.Trans import t
 from gdo.file.GDT_File import GDT_File
 from gdo.ui.WithHREF import WithHREF
@@ -38,6 +41,19 @@ class GDT_Image(WithSize, WithHREF, GDT_File):
 
     def render_html(self) -> str:
         return f'<img{self.html_attrs()} src="{self.render_href()}"{self.html_alternate()} width="{self._width}" height="{self._height}">'
+
+    def render_mail(self) -> str:
+        files = self.get_file()
+        if not files:
+            return self.render_html()
+        image = files[0]
+        if not image.is_image():
+            return self.render_html()
+        data = getattr(image, '_file_data', None)
+        if data is None:
+            data = Path(image.get_path()).read_bytes()
+        encoded = base64.b64encode(data).decode('ascii')
+        return f'<img{self.html_attrs()} src="data:{image.get_mime()};base64,{encoded}"{self.html_alternate()} width="{self._width}" height="{self._height}">'
 
     def render_card(self) -> str:
         return self.render_html()

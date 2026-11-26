@@ -122,6 +122,7 @@ class Message(WithEnv):
 
     async def execute(self):
         from gdo.base.Trans import Trans
+        Application.tick()
         with Trans.message_context(self._env_server, self._env_channel):
             return await self._execute_in_context()
 
