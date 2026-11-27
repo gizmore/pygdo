@@ -1,4 +1,5 @@
 import unittest
+import json
 from unittest.mock import patch
 
 from gdoadm import App
@@ -17,6 +18,9 @@ class SkeletonConfirmationTest(unittest.IsolatedAsyncioTestCase):
                 '/tmp/skel-test/__init__.py',
                 'from gdo.video.module_video import module_video\n',
             )
+            package = next(call.args[1] for call in files.put_contents.call_args_list
+                           if call.args[0] == '/tmp/skel-test/package.json')
+            self.assertEqual({}, json.loads(package)['dependencies'])
 
     async def test_without_yes_still_prompts_before_writing(self):
         with patch('sys.argv', ['gdoadm.py', 'skel', 'video']), \
