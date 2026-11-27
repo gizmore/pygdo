@@ -1,9 +1,11 @@
 from abc import abstractmethod
 
 from gdo.base.GDO import GDO
+from gdo.base.Application import Application
 from gdo.base.GDT import GDT
 from gdo.core.GDT_Object import GDT_Object
 from gdo.form.GDT_Form import GDT_Form
+from gdo.form.GDT_CSRF import GDT_CSRF
 from gdo.form.GDT_Submit import GDT_Submit
 from gdo.form.MethodForm import MethodForm
 
@@ -45,6 +47,8 @@ class MethodCrud(MethodForm):
         return self.param_value(self.crud_name(), False)
 
     def gdo_create_form(self, form: GDT_Form) -> None:
+        if Application.IS_HTTP:
+            form.add_field(GDT_CSRF())
         gdo = self.crud_gdo()
         target = gdo or self.gdo_table()
         form.add_fields(*self.gdo_form_fields(target))
