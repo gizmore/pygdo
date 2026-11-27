@@ -115,7 +115,13 @@ class GDO_Server(GDO):
 
     def get_connector(self) -> Connector:
         if self._connector is None:
-            self._connector = self.gdo_value('serv_connector')()
+            # Resolve against the current registry, not a previously cached
+            # conversion: connector modules can register after a failed lookup.
+            name = self.get_connector_name()
+            klass = Connector.get_by_name(name) if name else None
+            if klass is None:
+                raise LookupError(f'Connector {name!r} is not registered for server {self.get_name()!r}')
+            self._connector = klass()
             self._connector.server(self)
         return self._connector
 
