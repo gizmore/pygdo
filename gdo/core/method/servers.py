@@ -1,6 +1,7 @@
 from gdo.base.GDO import GDO
 from gdo.base.Render import Mode
 from gdo.core.GDO_Server import GDO_Server
+from gdo.core.Connector import Connector
 from gdo.message.GDT_Bold import GDT_Bold
 from gdo.message.GDT_Colored import GDT_Colored
 from gdo.message.GDT_Glyph import GDT_Glyph
@@ -33,6 +34,10 @@ class servers(MethodQueryTable):
     def render_gdo(self, gdo: GDO_Server, mode: Mode) -> str:
         """Render the stable ID and the connector's current connection state."""
         server_id = GDT_Bold().add_field(GDT_Glyph(gdo.get_id())).render(mode)
+        connector_name = gdo.get_connector_name()
+        if not connector_name or Connector.get_by_name(connector_name) is None:
+            name = GDT_Glyph(gdo.get_name()).render(mode)
+            return f'{server_id}-{name} (???)'
         color = 'green' if gdo.get_connector().is_connected() else 'red'
         name = GDT_Colored(color).add_field(GDT_Glyph(gdo.get_name())).render(mode)
         return f'{server_id}-{name}'

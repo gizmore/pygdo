@@ -2,10 +2,18 @@ import unittest
 
 from gdo.base.Render import Mode, Render
 from gdo.base.Message import Message
+from gdo.base.GDT import GDT
 from gdo.core.Connector import Connector
 
 
 class RenderTest(unittest.TestCase):
+
+    def test_gdt_mail_defaults_to_html_renderer(self):
+        class HtmlField(GDT):
+            def render_html(self):
+                return '<strong>hello</strong>'
+
+        self.assertEqual('<strong>hello</strong>', HtmlField().render(Mode.render_mail))
 
     def test_mail_rendering_is_html_with_escaped_plain_input(self):
         plain = Render.convert_text('Answer: <answer>', Mode.render_txt, Mode.render_mail)
