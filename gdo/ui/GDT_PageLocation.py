@@ -17,3 +17,12 @@ class GDT_PageLocation(GDT_Enum):
     def get_value(self):
         v = self.get_val()
         return None if v is None or v == '_none' else getattr(Application.get_page(), v)
+
+    def to_val(self, value):
+        if value is None:
+            return '_none'
+        page = Application.get_page()
+        for key in self.gdo_choices():
+            if key != '_none' and value is getattr(page, key):
+                return key
+        return super().to_val(value)
