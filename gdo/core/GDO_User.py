@@ -279,7 +279,7 @@ class GDO_User(GDO):
         return self._authenticated
 
     def is_online(self) -> bool:
-        return self.get_server().is_user_online(self)
+        return self.get_server().is_user_online(self) or Application.get_module_user().instance().is_recently_active(self)
 
     def is_ghost(self) -> bool:
         return self.is_type('ghost')

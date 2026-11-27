@@ -1,9 +1,12 @@
-from math import floor
+from uuid import uuid4
+
+from redis.exceptions import RedisError
 
 from gdo.base.Application import Application
 from gdo.base.Cache import Cache
 from gdo.base.GDO_Module import GDO_Module
 from gdo.base.GDT import GDT
+from gdo.base.Logger import Logger
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_Secret import GDT_Secret
@@ -21,6 +24,9 @@ from gdo.user.GDT_ProfileLink import GDT_ProfileLink
 
 
 class module_user(GDO_Module):
+
+    ONLINE_SECONDS = 360
+    UNLOCK_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) end return 0"
 
     def __init__(self):
         super().__init__()
@@ -68,15 +74,56 @@ class module_user(GDO_Module):
         ]
 
     def get_activity_cut_date(self) -> str:
-        if seconds := int(self.cfg_activity_accuracy()):
-            return Time.get_date(int(floor(Application.TIME / seconds) * seconds))
         return Time.get_date(Application.TIME)
 
     def set_last_activity(self, user: GDO_User):
         # TCP uses Ghost until tcpauth completes. A Ghost may carry the
         # synthetic id 0, but it must never create a user-setting row.
-        if self.cfg_activity_accuracy() and not user.is_ghost() and user.is_persisted():
+        if not self.cfg_activity_accuracy() or user.is_ghost() or not user.is_persisted():
+            return
+        redis = Cache.RCACHE
+        if redis is None:
             user.save_setting('last_activity', self.get_activity_cut_date())
+            return
+        prefix = self.presence_prefix(user)
+        token = uuid4().hex
+        lock = prefix + ':lock'
+        acquired = False
+        try:
+            redis.set(prefix + ':seen', str(Application.TIME), ex=self.ONLINE_SECONDS)
+            last_write = redis.get(prefix + ':written')
+            if last_write is not None and Application.TIME - float(last_write) < int(self.cfg_activity_accuracy()):
+                return
+            acquired = bool(redis.set(lock, token, nx=True, ex=60))
+            if not acquired:
+                return
+            last_write = redis.get(prefix + ':written')
+            if last_write is not None and Application.TIME - float(last_write) < int(self.cfg_activity_accuracy()):
+                return
+            user.save_setting('last_activity', self.get_activity_cut_date())
+            redis.set(prefix + ':written', str(Application.TIME))
+        except RedisError as error:
+            Logger.exception(error, 'Redis user activity unavailable')
+            user.save_setting('last_activity', self.get_activity_cut_date())
+        finally:
+            if acquired:
+                try:
+                    redis.eval(self.UNLOCK_SCRIPT, 1, lock, token)
+                except RedisError as error:
+                    Logger.exception(error, 'Redis user activity lock release failed')
+
+    @staticmethod
+    def presence_prefix(user: GDO_User) -> str:
+        return f'gdo:{Application.config("core.env", "default")}:user:presence:{user.get_id()}'
+
+    def is_recently_active(self, user: GDO_User) -> bool:
+        if Cache.RCACHE is None or user.is_ghost() or not user.is_persisted():
+            return False
+        try:
+            return bool(Cache.RCACHE.exists(self.presence_prefix(user) + ':seen'))
+        except RedisError as error:
+            Logger.exception(error, 'Redis user presence unavailable')
+            return False
 
     def gdo_init_sidebar(self, page: 'GDT_Page'):
         user = GDO_User.current()
