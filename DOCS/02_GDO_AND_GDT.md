@@ -40,4 +40,21 @@ database connector leaves non-NULL values as strings; conversion is deferred
 until the typed value is requested. SQL NULL is represented by `None`.
 
 
-###
+### [GDT](../gdo/base/GDT.py)
+
+A GDT is the base class of everything.
+
+It is interesting to note, that this abstract base class does not have any member variables.
+
+Often, you can set parameters for a GDT, like the integer range.
+
+```
+gdt = GDT_UInt('some_key').min(10).max(20).initial('15')
+gdt = GDT_String('name').ascii()
+```
+
+Boolean options can be enabled explicitly, for example `case_s(True)`;
+case sensitivity defaults to false. Use `utf8()` or `ascii()` to select the
+encoding; UTF-8 is the default.
+
+A GDT has to convert between two representations to be functional.
