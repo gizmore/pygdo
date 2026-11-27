@@ -34,5 +34,10 @@ Overwrite gdo_columns() to return a list of GDTs.
  - If you (ab)use this class as a DTO, override gdo_can_persist()
  - If you inherit from your own GDO classes with polymorphism, override gdo_real_class()
 
+Use `gdo_val('column')` for the stored string representation and
+`gdo_value('column')` when you need the value converted by its GDT. The
+database connector leaves non-NULL values as strings; conversion is deferred
+until the typed value is requested. SQL NULL is represented by `None`.
+
 
 ###
