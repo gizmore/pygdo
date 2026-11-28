@@ -74,7 +74,7 @@ class module_user(GDO_Module):
         ]
 
     def get_activity_cut_date(self) -> str:
-        return Time.get_date(Application.TIME)
+        return Time.get_date(Application.TIME - self.ONLINE_SECONDS)
 
     def set_last_activity(self, user: GDO_User):
         # TCP uses Ghost until tcpauth completes. A Ghost may carry the
@@ -83,7 +83,7 @@ class module_user(GDO_Module):
             return
         redis = Cache.RCACHE
         if redis is None:
-            user.save_setting('last_activity', self.get_activity_cut_date())
+            user.save_setting('last_activity', Time.get_date(Application.TIME))
             return
         prefix = self.presence_prefix(user)
         token = uuid4().hex
@@ -91,6 +91,7 @@ class module_user(GDO_Module):
         acquired = False
         try:
             redis.set(prefix + ':seen', str(Application.TIME), ex=self.ONLINE_SECONDS)
+            Application.publish_event('user_presence_seen', user, Application.TIME)
             last_write = redis.get(prefix + ':written')
             if last_write is not None and Application.TIME - float(last_write) < int(self.cfg_activity_accuracy()):
                 return
@@ -100,11 +101,11 @@ class module_user(GDO_Module):
             last_write = redis.get(prefix + ':written')
             if last_write is not None and Application.TIME - float(last_write) < int(self.cfg_activity_accuracy()):
                 return
-            user.save_setting('last_activity', self.get_activity_cut_date())
+            user.save_setting('last_activity', Time.get_date(Application.TIME))
             redis.set(prefix + ':written', str(Application.TIME))
         except RedisError as error:
             Logger.exception(error, 'Redis user activity unavailable')
-            user.save_setting('last_activity', self.get_activity_cut_date())
+            user.save_setting('last_activity', Time.get_date(Application.TIME))
         finally:
             if acquired:
                 try:

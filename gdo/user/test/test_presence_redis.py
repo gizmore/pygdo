@@ -40,6 +40,7 @@ class RedisPresenceTest(GDOTestCase):
         with patch.object(Cache, 'RCACHE', self.redis), \
              patch.object(Application, 'config', return_value='test'), \
              patch.object(self.module, 'cfg_activity_accuracy', return_value=300), \
+             patch.object(Application, 'publish_event') as event, \
              patch('gdo.user.module_user.Time.get_date', side_effect=lambda t: str(t)), \
              patch.object(Application, 'TIME', 1001):
             self.module.set_last_activity(self.user)
@@ -53,11 +54,18 @@ class RedisPresenceTest(GDOTestCase):
             self.assertEqual('1301', self.data['gdo:test:user:presence:42:seen'])
             self.assertEqual('1301', self.data['gdo:test:user:presence:42:written'])
             self.redis.set.assert_any_call('gdo:test:user:presence:42:seen', '1301', ex=360)
+            self.assertEqual([1001, 1200, 1301], [call.args[2] for call in event.call_args_list])
+
+    def test_cutoff_is_six_minutes_before_now(self):
+        with patch.object(Application, 'TIME', 1000), \
+             patch('gdo.user.module_user.Time.get_date', side_effect=lambda timestamp: str(timestamp)):
+            self.assertEqual('640', self.module.get_activity_cut_date())
 
     def test_failed_save_does_not_mark_written(self):
         self.user.save_setting.side_effect = RuntimeError('database failed')
         with patch.object(Cache, 'RCACHE', self.redis), \
              patch.object(Application, 'config', return_value='test'), \
+             patch.object(Application, 'publish_event'), \
              patch.object(self.module, 'cfg_activity_accuracy', return_value=300), \
              patch.object(Application, 'TIME', 1001):
             with self.assertRaises(RuntimeError):
